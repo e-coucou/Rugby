@@ -22,7 +22,7 @@ def get_all_csv(base):
     oMaj, maj = '', ''
     for y in range(2003,2016):
         for m in range(1,13):
-            for dd in { '1', '5', '10','15', '20', '25', '30'}:
+            for dd in { '1', '6', '12','18', '24', '30'}:
                 d = str(y)+'-'+str(m)+'-'+dd
                 u = base+d
                 j = get_data(u)
