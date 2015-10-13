@@ -146,7 +146,7 @@ def get_args():
     parser = argparse.ArgumentParser(description='Recupere les historiques de classement de l IRB depuis 2003')
     parser.add_argument("-p","--proxy",default='proxy.my-org.local:8080',help="si vous etes derriere un proxy =1")
     parser.add_argument("-s","--source",default='mru',choices=['mru','wru'],help="mru/wru pour men ou wemen")
-    parser.add_argument("-m","--mode",default='maj',choices=['maj','score','all','date', 'event'],help="maj : le classement actuel, score : evaluer un classement, all : tous les classements, date : classement à une date option -D")
+    parser.add_argument("-m","--mode",default='maj',choices=['maj','score','all','date', 'event','match'],help="maj : le classement actuel, score : evaluer un classement, all : tous les classements, date : classement à une date option -D")
     parser.add_argument("-d","--debug",default=False,action="store_true", help="=1 en mode DEBUG" )
     parser.add_argument("-D","--Date", default='9999-12-31',help="Date de la demande : aaaa-mm-jj" )
     parser.add_argument("-O","--Outside",default= False , action="store_true" ,help="par defaut NO Proxy")
@@ -212,7 +212,9 @@ if __name__ == "__main__":
     elif mode == 'input' :
         print args.input
     elif mode == 'event' :
-        #get_event('http://cmsapi.pulselive.com/rugby/event')
+        get_event('http://cmsapi.pulselive.com/rugby/event')
+        get_match('http://cmsapi.pulselive.com/rugby/match/')
+    elif mode == 'match' :
         get_match('http://cmsapi.pulselive.com/rugby/match/')
     print "\nby e-Coucou 2015"
 """    for e in j['entries']:
