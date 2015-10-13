@@ -22,12 +22,13 @@ def get_all_csv(base):
     oMaj, maj = '', ''
     for y in range(2003,2016):
         for m in range(1,13):
-            for dd in { '1', '6', '12','18', '24', '30'}:
-                d = str(y)+'-'+str(m)+'-'+dd
+            for dd in range(1,32,6):
+                d = str(y)+'-'+str(m)+'-'+str(dd)
                 u = base+d
                 j = get_data(u)
                 try:
                     maj = j['effective']['label']
+                    #print d, maj, '(',oMaj,')'
                     if (maj <> oMaj) :
                         get_rank(j['entries'],maj.replace('-','/'))
                         oMaj = maj
@@ -58,7 +59,10 @@ def get_info(crit,dict):
             break
 
 def get_result(l_pts,v_pts,l_score,v_score,wc):
-    delta = -min(10,l_pts+3-v_pts)*0.1
+    if wc :
+    	delta = -min(10,l_pts-v_pts)*0.1
+    else:
+    	delta = -min(10,l_pts+3-v_pts)*0.1
     l,v = delta, -delta
     if (l_score > v_score):
         l = l + 1
@@ -69,7 +73,7 @@ def get_result(l_pts,v_pts,l_score,v_score,wc):
     if wc :
         l = 2 * l
         v = 2 * v
-    if abs(l_score-v_score)>=15 :
+    if abs(l_score-v_score)>15 :
         l = 1.5 * l
         v = 1.5 * v
     return l_pts+l, v_pts+v
@@ -83,7 +87,7 @@ def get_args():
     parser.add_argument("-s","--source",default='mru',choices=['mru','wru'],help="mru/wru pour men ou wemen")
     parser.add_argument("-m","--mode",default='maj',choices=['maj','score','all','date'],help="maj : le classement actuel, score : evaluer un classement, all : tous les classements, date : classement à une date option -D")
     parser.add_argument("-d","--debug",default=False,action="store_true", help="=1 en mode DEBUG" )
-    parser.add_argument("-D","--Date", default='2999-12-31',help="Date de la demande : aaaa-mm-jj" )
+    parser.add_argument("-D","--Date", default='9999-12-31',help="Date de la demande : aaaa-mm-jj" )
     parser.add_argument("-O","--Outside",default= False , action="store_true" ,help="par defaut NO Proxy")
     parser.add_argument("-c","--csv",default= False , action="store_true" ,help="par defaut mode présentation sinon mode CSV")
     parser.add_argument("-U","--Username",default="eric",help="username")
@@ -92,6 +96,7 @@ def get_args():
     parser.add_argument("-V","--Visiteur",default="WAL",help="visiteur")
     parser.add_argument("-L","--Local",default="ENG",help="local")
     parser.add_argument("-S","--Score",default="19-16",help="score sous le format x-y")
+    parser.add_argument("-i","--input",help="fichier de résultats en json visiteur/local et abbrev et score")
     args = parser.parse_args()
     proxy = args.Username+':'+args.Password+'@'+args.proxy
     p={'http': 'http://'+proxy , 'https':'https://'+proxy}
@@ -116,8 +121,11 @@ if __name__ == "__main__":
     t0 = time.time()
     #   u = 'http://cmsapi.pulselive.com/rugby/rankings/mru?language=en&client=pulse'
     u = 'http://cmsapi.pulselive.com/rugby/rankings/'+args.source+'?date='
+    uu = 'http://cmsapi.pulselive.com/rugby/match?endDate=2015-10-13&startDate=2015-07-12&sort=desc&states=C&pageSize=10&client=pulse'
+    uv = 'http://cmsapi.pulselive.com/rugby/match?startDate=2015-10-12&endDate=2016-01-12&states=U,L&pageSize=10&client=pulse'
 
     mode = args.mode.lower()
+    if args.input <> None : mode = 'input'
     if mode == 'date' :
         u = u +  args.Date
         j = get_date(u)
@@ -125,6 +133,7 @@ if __name__ == "__main__":
         u = u +  '9999-12-31'
         j = get_date(u)
     elif mode == 'score' :
+        u = u +  args.Date
         j = get_date(u)
         visiteur = get_info(args.Visiteur,j['entries'])
         local =  get_info(args.Local,j['entries'])
@@ -135,10 +144,12 @@ if __name__ == "__main__":
             print "       {0:5.1f}                                      {1:5.1f}".format(local['pts'],visiteur['pts'])
             print "    ({0:5d})                                    ({1:5d})".format(int(score[0]),int(score[1]))
             v,l = get_result(local['pts'],visiteur['pts'],int(score[0]),int(score[1]), True)
-            print "       {0:5.1f}                                      {1:5.1f}".format(v,l)
+            print "       {0:5.2f}                                      {1:5.2f}".format(v,l)
     elif mode == 'all' :
         get_all_csv(u)
-    print "by e-Coucou 2015"
+    elif mode == 'input' :
+        print args.input
+    print "\n\n\nby e-Coucou 2015"
 """    for e in j['entries']:
         print e['team']['abbreviation']
 """
