@@ -6,6 +6,8 @@
 """
 import json, requests, argparse, time
 
+menu = { 1:"Matchs" , 2:"Evenements" , 3:"Classement" , 4:"Exit" }
+
 def get_data(url):
 	requete = s.get(url,proxies=p)
 	js = json.loads(requete.content)
@@ -78,48 +80,67 @@ def get_result(l_pts,v_pts,l_score,v_score,wc):
         l = 1.5 * l
         v = 1.5 * v
     return l_pts+l*wc, v_pts+v*wc
-def get_match(url):
-    match = str(raw_input("Choisir le numero du match [14232]: ")) or '14232'
-    u = url+match+'/summary?language=en&client=pulse'
-    j = get_data(u)
-    """
-    for e in j:
-        print e
-    for e in j['teams'][0] :
-        print '- ',e
-        for i in j['teams'][0][e]:
-            print '      ',j['teams'][0][e][i]
-    """
-    i=0
-    print j['teams'][0]['teamList']['captainId']
-    for e in j['teams'][0]['teamList']['list']:
-        print '   ',e['player']['id'],e['player']['name']['display'],e['number'],e['positionLabel']#j['teams'][0]['teamList']['list'][i]['player']['name']['display']
-        i = i+1
-    print '-------------------------------------------'
-    return
 
-def get_event(url):
-    startDate = str(raw_input('Date de debut [2015-01-01] :')) or '2015-01-01'
-    endDate=str(raw_input('Date de fin [2015-12-31] :')) or '2015-12-31'
-    pageSize='100'
-    page=0
-    i=0
-    nbPage=9
-    while page < nbPage :
-        u = url + '?startDate='+startDate+'&endDate='+endDate+'&pageSize='+pageSize+'&page='+str(page)
-        page = page+1
-        j = get_data(u)
-        nbPage = int(j['pageInfo']['numPages'])
-        for e in j['content']:
-            if (e['sport'] == args.source) & (args.filtre in e['label']) :
-                print "{0:5d} - {1:60}  ({2:} / {3:})".format(int(e['id']),e['label'].encode('windows-1252'),e['start']['label'],e['end']['label'])
-    print
-    event = str(raw_input("Choisir le numero de l'evenement [1238]: ")) or '1238'
-    u = url+'/'+event+'/schedule?language=en&client=pulse'+'&status=C'
-    j = get_data(u)
-    print '-------------------------------------------'
-    print "{0:} du {1:} au {2:}\n-".format(j['event']['label'], j['event']['start']['label'], j['event']['end']['label'])
-    for e in j['matches']:
+# Recupere les information sur le match
+def get_match(match):
+	url = 'http://cmsapi.pulselive.com/rugby/match/'
+	u = url+match+'/summary?language=en&client=pulse'
+	j = get_data(u)
+	print u
+	for e in j['teams'][0]:
+		print e
+	for e in j['teams'][0]['scoring']:
+		print e
+	#print j['teams'][1]['scoring']
+	"""
+	for e in j['teams'][0] :
+		print '- ',e
+		for i in j['teams'][0][e]:
+			print '      ',j['teams'][0][e][i]
+	"""
+	t = time.gmtime(j['match']['time']['millis']/1000+7200)
+	d= time.strftime('%A %d %B %Y', t)
+	print time.strftime('%A %d %B %Y')
+	print '--------------------------------------------'
+	print "({0:}) - {1:} au {2:}  -> ({3:} personnes)\nLe {4:}\n".format(j['match']['matchId'],j['match']['events'][0]['label'],j['match']['venue']['name'].encode('windows-1252'),j['match']['attendance'],d)
+	for e in j['officials']:
+		print "{0:20} {1:25}  ({2:})".format(e['position'],e['official']['name']['display'],e['official']['pob'].encode('windows-1252'))
+	print '\n',j['match']['teams'][0]['name'],j['match']['scores'][0],'  -  ',j['match']['scores'][1], j['match']['teams'][1]['name']
+	for i in [0,1]:
+		print '--------------------------------------------'
+		print '--',j['match']['teams'][i]['name']
+		captain = j['teams'][i]['teamList']['captainId']
+		for e in j['teams'][i]['teamList']['list']:
+			c=''
+			if captain == e['player']['id'] : c='c'
+			print "{4:1} {2:3d} ({0:5}) {1:30}  '{3:}'".format(e['player']['id'],e['player']['name']['display'].encode('windows-1252'),int(e['number']),e['positionLabel'],c)
+	print '-------------------------------------------'
+	return
+
+def get_event(startDate,endDate):
+	global EVENT 
+	base_u = 'http://cmsapi.pulselive.com/rugby/event'
+	pageSize='100'
+	page=0
+	i=0
+	nbPage=9
+	print "Liste de evenements ... : filtre'"+args.filtre+"'"
+	while page < nbPage :
+		u = base_u + '?startDate='+startDate+'&endDate='+endDate+'&pageSize='+pageSize+'&page='+str(page)
+		page = page+1
+		j = get_data(u)
+		nbPage = int(j['pageInfo']['numPages'])
+		for e in j['content']:
+			if (e['sport'] == args.source) & (args.filtre in e['label']) :
+				print "{0:5d} - {1:60}  ({2:} / {3:})".format(int(e['id']),e['label'].encode('windows-1252'),e['start']['label'],e['end']['label'])
+				EVENT = str(int(e['id']))
+	event = str(raw_input("Choisir le numero de l'evenement ["+EVENT+"]: ")) or EVENT
+	u = base_u +'/'+event+'/schedule?language=en&client=pulse'+'&status=C'
+	j = get_data(u)
+	#print j
+	print '-------------------------------------------'
+	print "{0:} du {1:} au {2:}\n-".format(j['event']['label'], j['event']['start']['label'], j['event']['end']['label'])
+	for e in j['matches']:
 		t = time.gmtime(e['time']['millis']/1000+7200)
 		d= time.strftime('%Y-%m-%d', t)
 		u_rk = 'http://cmsapi.pulselive.com/rugby/rankings/'+args.source+'?date='+d
@@ -134,9 +155,12 @@ def get_event(url):
 			p1=f1['pts']
 		if e['status']== 'C' :
 			s0,s1 = get_result(p0,p1,e['scores'][0],e['scores'][1],j['event']['rankingsWeight'])
-		print "{13:5} {2:2}{0:13} {3:3} -{4:3} {1:13}{7:14} {5:} {8:5} -> ({11:4.1f}-{12:4.1f}) {6:}".format(e['teams'][0]['name'],e['teams'][1]['name'],e['status'],e['scores'][0],e['scores'][1], time.strftime('%d/%m %H:%M', t),e['venue']['name'].encode('windows-1252'),e['eventPhase'],e['attendance'],p0,p1,s0,s1,e['matchId'])
-    print '-------------------------------------------'
-    return
+		try :
+			print "{13:5} {2:2}{0:13} {3:3} -{4:3} {1:13}{7:14} {5:} {8:5} -> ({11:4.1f}-{12:4.1f}) {6:}".format(e['teams'][0]['name'],e['teams'][1]['name'],e['status'],e['scores'][0],e['scores'][1], time.strftime('%d/%m %H:%M', t),e['venue']['name'].encode('windows-1252'),e['eventPhase'],e['attendance'],p0,p1,s0,s1,e['matchId'])
+		except :
+			print "{13:5} {2:2}{0:13} {3:3} -{4:3} {1:13}{7:14} {5:} {8:5} -> ({11:4.1f}-{12:4.1f}) {6:}".format(e['teams'][0]['name'],e['teams'][1]['name'],e['status'],e['scores'][0],e['scores'][1], time.strftime('%d/%m %H:%M', t),p0,e['eventPhase'],e['attendance'],p0,p1,s0,s1,e['matchId'])
+	print '-------------------------------------------'
+	return
 
 	
 def get_args():
@@ -146,7 +170,7 @@ def get_args():
     parser = argparse.ArgumentParser(description='Recupere les historiques de classement de l IRB depuis 2003')
     parser.add_argument("-p","--proxy",default='proxy.my-org.local:8080',help="si vous etes derriere un proxy =1")
     parser.add_argument("-s","--source",default='mru',choices=['mru','wru'],help="mru/wru pour men ou wemen")
-    parser.add_argument("-m","--mode",default='maj',choices=['maj','score','all','date', 'event','match'],help="maj : le classement actuel, score : evaluer un classement, all : tous les classements, date : classement à une date option -D")
+    parser.add_argument("-m","--mode",default='maj',choices=['maj','score','all','date', 'event','match','menu'],help="maj : le classement actuel, score : evaluer un classement, all : tous les classements, date : classement à une date option -D")
     parser.add_argument("-d","--debug",default=False,action="store_true", help="=1 en mode DEBUG" )
     parser.add_argument("-D","--Date", default='9999-12-31',help="Date de la demande : aaaa-mm-jj" )
     parser.add_argument("-O","--Outside",default= False , action="store_true" ,help="par defaut NO Proxy")
@@ -175,6 +199,24 @@ def get_args():
         aff('Men/Wemen    :',args.source)
         aff('proxy : ',proxy)
     return
+""" ----------------------------------------------------------------------------------------------------------------------------"""
+def rank():
+	l = 'A quelle date souhaitez vous le classement : ['+args.Date+']: '
+	d = str(raw_input(l)) or args.Date
+	u = 'http://cmsapi.pulselive.com/rugby/rankings/'+args.source+'?date='+d
+	j = get_date(u)
+def event():
+	startDate = str(raw_input('Date de debut [2015-01-01] :')) or '2015-01-01'
+	endDate=str(raw_input('Date de fin [2015-12-31] :')) or '2015-12-31'
+	get_event(startDate,endDate)
+	match = str(raw_input("Choisir le numero du match [14232]: ")) or '14232'
+	get_match(match)
+	return	
+
+def match():
+	match = str(raw_input("Choisir le numero du match [14232]: ")) or '14232'
+	get_match(match)
+	return
 
 """-----------------------------------------------------------------------------------------------------------------------------"""
 if __name__ == "__main__":
@@ -212,14 +254,31 @@ if __name__ == "__main__":
     elif mode == 'input' :
         print args.input
     elif mode == 'event' :
-        get_event('http://cmsapi.pulselive.com/rugby/event')
-        get_match('http://cmsapi.pulselive.com/rugby/match/')
+		event()
     elif mode == 'match' :
-        get_match('http://cmsapi.pulselive.com/rugby/match/')
+		m_match()
+    elif mode == 'menu' :
+		q=False
+		while not q:
+			options=menu.keys()
+			options.sort()
+			for entry in options: 
+				print entry, menu[entry]
+			sel=raw_input("# selection :") 
+			if sel =='1': 
+				match() 
+			elif sel == '2': 
+				event()
+			elif sel == '3':
+				rank() 
+			elif (sel == '4') | (sel == '0'): 
+				break
+			else: 
+				print "Mauvaise option !" 
     print "\nby e-Coucou 2015"
-"""    for e in j['entries']:
-        print e['team']['abbreviation']
+"""    
+		for e in j['entries']:
+		print e['team']['abbreviation']
 		http://cmsapi.pulselive.com/rugby/match/14232/timeline?language=en&client=pulse  timeline info
 		http://cmsapi.pulselive.com/rugby/match/14232/stats?language=en&client=pulse stat info
-		http://cmsapi.pulselive.com/rugby/match/14232/summary?language=en&client=pulse info
 """
