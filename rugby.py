@@ -143,7 +143,10 @@ def get_match(match):
     print '--------------------------------------------'
     print "({0:}) - {1:} au {2:}  -> ({3:} personnes)\nLe {4:}\n".format(j['match']['matchId'],j['match']['events'][0]['label'],j['match']['venue']['name'].encode('windows-1252'),j['match']['attendance'],d)
     for e in j['officials']:
-		print "{0:20} {1:25}  ({2:})".format(e['position'],e['official']['name']['display'],e['official']['pob'].encode('windows-1252'))
+        try :
+            print "{0:20} {1:25}  ({2:})".format(e['position'],e['official']['name']['display'],e['official']['pob'].encode('windows-1252'))
+        except:
+            if DEBUG : print e
     print '\n',j['match']['teams'][0]['name'],j['match']['scores'][0],'  -  ',j['match']['scores'][1], j['match']['teams'][1]['name']
     for i in [0,1]:
 		print '--------------------------------------------'
