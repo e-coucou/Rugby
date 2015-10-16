@@ -83,14 +83,15 @@ def get_result(l_pts,v_pts,l_score,v_score,wc):
     return l_pts+l*wc, v_pts+v*wc
 
 # Recupere les information sur les duels
-def get_duel(t1,t2):
+def get_duel(t1,t2,startDate,endDate):
 	url ='http://cmsapi.pulselive.com/rugby/match'
-	startDate = '1965-05-01'
-	endDate = '9999-12-31'
 	pageSize='100'
 	page=0
 	i=0
 	nbPage=99
+	t={}
+	t[t1]={'v':0,'d':0,'n':0,'p':0,'c':0}
+	t[t2]={'v':0,'d':0,'n':0,'p':0,'c':0}
 	print "Liste des matchs entre "+t1+" - "+t2
 	if CSV : 
 		fo=open("duel.csv",'w')
@@ -117,9 +118,23 @@ def get_duel(t1,t2):
 							fo.write("{0:};{5:};{1:};{2:};{3:};{4:};{6:};{7:}\n".format(int(e['matchId']),e['teams'][0]['name'],int(e['scores'][0]),int(e['scores'][1]),e['teams'][1]['name'],e['events'][0]['start']['label'],e['events'][0]['label'],i+1))
 						print "{0:5d} {5} -> {1:15} {2:3d}  -  {3:3d} {4:15} {6:50} ({7:})".format(int(e['matchId']),e['teams'][0]['name'],int(e['scores'][0]),int(e['scores'][1]),e['teams'][1]['name'],e['events'][0]['start']['label'],e['events'][0]['label'],i+1)
 						i = i+1
+						# gestion du tableau
+						t[l1]['p'] = t[l1]['p'] + int(e['scores'][0])
+						t[l1]['c'] = t[l1]['c'] + int(e['scores'][1])
+						t[l2]['p'] = t[l2]['p'] + int(e['scores'][1])
+						t[l2]['c'] = t[l2]['c'] + int(e['scores'][0])
+						if int(e['scores'][0]) > int(e['scores'][1]) :
+							t[l1]['v'] = t[l1]['v'] + 1
+							t[l2]['d'] = t[l2]['d'] + 1
+						else :
+							t[l1]['d'] = t[l1]['d'] + 1
+							t[l2]['v'] = t[l2]['v'] + 1
 				except :
 					if DEBUG : print e
 	fo.close()
+	print '\n--------------------------------------------------'
+	print '{0:5} : victoire/defaite = {1:}/{2:} pour/contre = {3:}/{4:}'.format(t1,t[t1]['v'],t[t1]['d'],t[t1]['p'],t[t1]['c'])
+	print '{0:5} : victoire/defaite = {1:}/{2:} pour/contre = {3:}/{4:}'.format(t2,t[t2]['v'],t[t2]['d'],t[t2]['p'],t[t2]['c'])
 	return
 
 def get_team(j):
@@ -287,9 +302,11 @@ def match():
 	return
 
 def duel():
-    team1 = str(raw_input("Abreviation de la premiere equipe [FRA]: ")) or 'FRA'
-    team2 = str(raw_input("Abreviation de la premiere equipe [NZL]: ")) or 'NZL'
-    get_duel(team1,team2)
+	team1 = str(raw_input("Abreviation de la premiere equipe [FRA]: ")) or 'FRA'
+	team2 = str(raw_input("Abreviation de la premiere equipe [NZL]: ")) or 'NZL'
+	startDate = str(raw_input('Date de debut [1995-01-01] :')) or '1995-01-01'
+	endDate=str(raw_input('Date de fin [2015-12-31] :')) or '2015-12-31'
+	get_duel(team1,team2,startDate,endDate)
 
 """-----------------------------------------------------------------------------------------------------------------------------"""
 if __name__ == "__main__":
