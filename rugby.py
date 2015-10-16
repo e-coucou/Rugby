@@ -84,80 +84,106 @@ def get_result(l_pts,v_pts,l_score,v_score,wc):
 
 # Recupere les information sur les duels
 def get_duel(t1,t2):
-    url ='http://cmsapi.pulselive.com/rugby/match'
-    startDate = '1965-05-01'
-    endDate = '9999-12-31'
-    pageSize='100'
-    page=0
-    i=0
-    nbPage=99
-    print "Liste des matchs entre "+t1+" - "+t2
-    while page < nbPage :
-        u = url + '?startDate='+startDate+'&endDate='+endDate+'&pageSize='+pageSize+'&page='+str(page)
-        #print u
-        page = page+1
-        j = get_data(u)
-        nbPage = int(j['pageInfo']['numPages'])
-        for e in j['content']:
-            #print e['teams']
-            try :
-                l1=e['teams'][0]['abbreviation']
-            except : l1=' '
-            try :
-                l2=e['teams'][1]['abbreviation']
-            except : l2=' '
-            #print l1,l2,'
-            if (((l1 == t1) & (l2 == t2)) | ((l2 == t1) & (l1 == t2))) :
-                try :
-                    if e['events'][0]['sport']=='mru' :
-                        print "{0:5d} {5} -> {1:15} {2:3d}  -  {3:3d} {4:15} {6:50} ({7:})".format(int(e['matchId']),e['teams'][0]['name'],int(e['scores'][0]),int(e['scores'][1]),e['teams'][1]['name'],e['events'][0]['start']['label'],e['events'][0]['label'],i+1)
-                        i = i+1
-                except :
-                    if DEBUG : print e
-    return
+	url ='http://cmsapi.pulselive.com/rugby/match'
+	startDate = '1965-05-01'
+	endDate = '9999-12-31'
+	pageSize='100'
+	page=0
+	i=0
+	nbPage=99
+	print "Liste des matchs entre "+t1+" - "+t2
+	if CSV : 
+		fo=open("duel.csv",'w')
+		fo.write("Id;Local;Pts1;Pts2;Visiteur;Date;Stade;Cpt\n")
+	while page < nbPage :
+		u = url + '?startDate='+startDate+'&endDate='+endDate+'&pageSize='+pageSize+'&page='+str(page)
+		#print u
+		page = page+1
+		j = get_data(u)
+		nbPage = int(j['pageInfo']['numPages'])
+		for e in j['content']:
+			#print e['teams']
+			try :
+				l1=e['teams'][0]['abbreviation']
+			except : l1=' '
+			try :
+				l2=e['teams'][1]['abbreviation']
+			except : l2=' '
+			#print l1,l2,'
+			if (((l1 == t1) & (l2 == t2)) | ((l2 == t1) & (l1 == t2))) :
+				try :
+					if e['events'][0]['sport']=='mru' :
+						if CSV :
+							fo.write("{0:};{5:};{1:};{2:};{3:};{4:};{6:};{7:}\n".format(int(e['matchId']),e['teams'][0]['name'],int(e['scores'][0]),int(e['scores'][1]),e['teams'][1]['name'],e['events'][0]['start']['label'],e['events'][0]['label'],i+1))
+						print "{0:5d} {5} -> {1:15} {2:3d}  -  {3:3d} {4:15} {6:50} ({7:})".format(int(e['matchId']),e['teams'][0]['name'],int(e['scores'][0]),int(e['scores'][1]),e['teams'][1]['name'],e['events'][0]['start']['label'],e['events'][0]['label'],i+1)
+						i = i+1
+				except :
+					if DEBUG : print e
+	fo.close()
+	return
+
+def get_team(j):
+	t = []
+	t.append({})
+	t.append({})
+	for i in [0,1]:
+		for e in j['teams'][i]['scoring']:
+			print e
+			for f in j['teams'][i]['scoring'][e]:
+				#print f['playerId'],time.strftime('%H:%M',time.gmtime(f['time']['secs'])),f['typeLabel']
+				try :
+					joueur = str(f['playerId'])
+				except :
+					joueur = 'Pen'
+				try :
+					t[i][joueur].append({'type':e,'tps':time.strftime('%H:%M',time.gmtime(f['time']['secs']))})
+				except :
+					t[i][joueur] = []
+					t[i][joueur].append({'type':e,'tps':time.strftime('%H:%M',time.gmtime(f['time']['secs']))})
+	return t
 
 # Recupere les information sur le match
 def get_match(match):
-    url = 'http://cmsapi.pulselive.com/rugby/match/'
-    u = url+match+'/summary?language=en&client=pulse'
-    j = get_data(u)
-    print u
-    for e in j['teams'][0]:
-        print e
-    for i in [0,1]:
-        for e in j['teams'][i]['scoring']:
-            print e
-            for f in j['teams'][i]['scoring'][e]:
-                print f['playerId'],time.strftime('%H:%M',time.gmtime(f['time']['secs'])),f['typeLabel']
-                #team[i][f['playerId']]=time.strftime('%H:%M',time.gmtime(f['time']['secs']))
-    #print j['teams'][1]['scoring']
-    """
-	for e in j['teams'][0] :
-		print '- ',e
-		for i in j['teams'][0][e]:
-			print '      ',j['teams'][0][e][i]
-	"""
-    t = time.gmtime(j['match']['time']['millis']/1000+7200)
-    d= time.strftime('%A %d %B %Y', t)
-    print time.strftime('%A %d %B %Y')
-    print '--------------------------------------------'
-    print "({0:}) - {1:} au {2:}  -> ({3:} personnes)\nLe {4:}\n".format(j['match']['matchId'],j['match']['events'][0]['label'],j['match']['venue']['name'].encode('windows-1252'),j['match']['attendance'],d)
-    for e in j['officials']:
-        try :
-            print "{0:20} {1:25}  ({2:})".format(e['position'],e['official']['name']['display'],e['official']['pob'].encode('windows-1252'))
-        except:
-            if DEBUG : print e
-    print '\n',j['match']['teams'][0]['name'],j['match']['scores'][0],'  -  ',j['match']['scores'][1], j['match']['teams'][1]['name']
-    for i in [0,1]:
+	url = 'http://cmsapi.pulselive.com/rugby/match/'
+	u = url+match+'/summary?language=en&client=pulse'
+	j = get_data(u)
+	print u
+	team=get_team(j)
+	t = time.gmtime(j['match']['time']['millis']/1000+7200)
+	d= time.strftime('%A %d %B %Y', t)
+	print '--------------------------------------------'
+	print time.strftime('%A %d %B %Y')
+	print '--------------------------------------------'
+	print "({0:}) - {1:} au {2:}  -> ({3:} personnes)\n{4:}\n".format(j['match']['matchId'],j['match']['events'][0]['label'],j['match']['venue']['name'].encode('windows-1252'),j['match']['attendance'],d)
+	for e in j['officials']:
+		try :
+			print "{0:20} {1:25}  ({2:})".format(e['position'],e['official']['name']['display'],e['official']['pob'].encode('windows-1252'))
+		except:
+			if DEBUG : print e
+	print '\n',j['match']['teams'][0]['name'],j['match']['scores'][0],'  -  ',j['match']['scores'][1], j['match']['teams'][1]['name'],'\n'
+	for i in [0,1]:
 		print '--------------------------------------------'
-		print '--',j['match']['teams'][i]['name']
+		print '--',j['match']['teams'][i]['name'],'              ',
+		try : 
+			for p in team[i]['Pen'] :
+				print "Essai Penalite={0:7}".format(p['tps']),
+			print '\n'
+		except : 
+			print '\n'
 		captain = j['teams'][i]['teamList']['captainId']
 		for e in j['teams'][i]['teamList']['list']:
 			c=''
 			if captain == e['player']['id'] : c='c'
-			print "{4:1} {2:3d} ({0:5}) {1:30}  '{3:}'".format(e['player']['id'],e['player']['name']['display'].encode('windows-1252'),int(e['number']),e['positionLabel'],c)
-    print '-------------------------------------------'
-    return
+			print "{4:1} {2:3d} ({0:5}) {1:30}  '{3:12}'".format(e['player']['id'],e['player']['name']['display'].encode('windows-1252'),int(e['number']),e['positionLabel'],c),
+			try : 
+				for p in team[i][str(e['player']['id'])] :
+					print "{0:}={1:7}".format(p['type'],p['tps']),
+				print ''
+			except : 
+				print '' #joueur,team[i],
+		print
+	print '-------------------------------------------'
+	return
 
 def get_event(startDate,endDate):
 	global EVENT 
