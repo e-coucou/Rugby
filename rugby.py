@@ -227,6 +227,8 @@ def get_json():
             js['links'][i]['source'] = e['teams'][0]['id']
             js['links'][i]['target'] = e['teams'][1]['id']
             js['links'][i]['value'] = e['scores'][0]+e['scores'][1]
+            js['links'][i]['scoreL'] = e['scores'][0]
+            js['links'][i]['scoreV'] = e['scores'][1]
             try:
                 name[str(e['teams'][0]['id'])]['send'] = name[str(e['teams'][0]['id'])]['send'] + e['scores'][0]
                 name[str(e['teams'][0]['id'])]['receive'] = name[str(e['teams'][0]['id'])]['receive'] + e['scores'][1]

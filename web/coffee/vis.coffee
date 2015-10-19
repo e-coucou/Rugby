@@ -137,7 +137,7 @@ Network = () ->
   tooltip = Tooltip("vis-tooltip", 250)
 
   # charge used in pays/eMail/artist layout
-  charge = (node) -> -Math.pow(node.radius, 2.0) / 2
+  charge = (node) -> -Math.pow(node.radius, 3.0) / 2
 
   # Starting point for network visualization
   # Initializes visualization and starts force layout
@@ -243,7 +243,7 @@ Network = () ->
 #        alert d.name
       else
         d.searched = false
-        element.style("fill", (d) -> nodeColors(d.Direction)) #by ep .artist or name
+        element.style("fill", (d) -> nodeColors(d.id)) #by ep .artist or name
           .style("stroke-width", 1.0)
 
   network.updateData = (newData) ->
@@ -258,7 +258,7 @@ Network = () ->
   setupData = (data) ->
     # initialize circle radius scale
     countExtent = d3.extent(data.nodes, (d) -> d.send) #playcount
-    circleRadius = d3.scale.sqrt().range([1, 20]).domain(countExtent)
+    circleRadius = d3.scale.sqrt().range([1, 30]).domain(countExtent)
 
     data.nodes.forEach (n) ->
       # set initial x/y to values within the width/height
@@ -411,7 +411,7 @@ Network = () ->
         .attr("cx", (d) -> d.x)
         .attr("cy", (d) -> d.y)
         .attr("r", (d) -> d.radius)
-        .style("fill", (d) -> nodeColors( d.Direction ))
+        .style("fill", (d) -> nodeColors( d.id ))  #by ep direction
         .style("stroke", (d) -> strokeFor(d))
         .style("stroke-width", 1.0)
     else
@@ -420,7 +420,7 @@ Network = () ->
         .attr("cx", (d) -> d.x)
         .attr("cy", (d) -> d.y)
         .attr("r", (d) -> d.radius)
-        .style("fill", (d) -> nodeColors( d.OU ))
+        .style("fill", (d) -> nodeColors( d.OU ))  #by ep
         .style("stroke", (d) -> strokeFor(d))
         .style("stroke-width", 1.0)
 
@@ -435,9 +435,9 @@ Network = () ->
       .data(curLinksData, (d) -> "#{d.source.id}_#{d.target.id}_#{d.value.id}")
     link.enter().append("line")
       .attr("class", "link")
-      .style("stroke", "#aaa" ) #"#ddd")
-      .style("stroke-opacity", 0.5)
-      .style("stroke-width", (d) -> Math.sqrt(d.value / 3) )
+      .style("stroke", "#a0c" ) #"#ddd")
+      .style("stroke-opacity", 0.7)
+      .style("stroke-width", (d) -> Math.sqrt(d.value / 2) )
       .attr("x1", (d) -> d.source.x)
       .attr("y1", (d) -> d.source.y)
       .attr("x2", (d) -> d.target.x)
@@ -453,8 +453,8 @@ Network = () ->
     layout = newLayout
     if layout == "force"
       force.on("tick", forceTick)
-        .charge(-150)  #-200
-        .linkDistance(25)  #50
+        .charge(-1500)  #-200
+        .linkDistance(140)  #50
     else if layout == "radial"
       force.on("tick", radialTick)
         .charge(charge)
@@ -529,18 +529,18 @@ Network = () ->
 #     d3.select(this).attr("stroke", "#555")
 #    alert lsum
 
-    content = '<p class="title"> Direction n°' + d.Direction + '</p>'
+    content = '<p class="title">' + d.name + '</p>'
     content += '<hr class="tooltip-hr">'
-    content += '<p class="name">' + d.name + '</p>'  # ep artist
+    content += '<p class="name">' + d.id + '</p>'  # ep artist
     content += '<hr class="tooltip-hr">'
     content += '<p class="main">Pour -> '+d.send+'</p>'
     content += '<p class="main">Contre <- '+d.receive+'</p>'
     content += '<hr class="tooltip-hr">'
-    content += '<p class="main">Etablissement '+d.OU+'</p>'
+    content += '<p class="main">blabla '+d.OU+'</p>'
     content += '<hr class="tooltip-hr">'
-    content += '<p class="main">'+lsum+' échanges</p>'
+    content += '<p class="main">'+lsum+' points</p>'
     if color == "dir"
-      content += '<p class="main">(Direction)</p>'
+      content += '<p class="main">(---)</p>'
     else
       content += '<p class="main">(OU)</p>'
     tooltip.showTooltip(content,d3.event)
@@ -557,7 +557,7 @@ Network = () ->
       .style("stroke-width", 2.0)
 
   showDetailsLink = (d,i) ->
-    content = '<p class="title">LINK</p>'
+    content = '<p class="title">'+d.scoreL+' - '+d.scoreV+'</p>'
     content += '<hr class="tooltip-hr">'
     content += '<p class="main">' + d.source.name + '</p>'  # ep artist
     content += '<p class="main">to</p>'
@@ -641,5 +641,5 @@ $ ->
     searchTerm = $(this).val()
     myNetwork.updateSearch(searchTerm)
 
-  d3.json "data/email-072012.json", (json) ->
+  d3.json "data/WRC2015.json", (json) ->
     myNetwork("#vis", json)
