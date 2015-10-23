@@ -237,9 +237,9 @@ d3.json("rank.json", function(nations) {
       return {
         name: d.name,
         region: d.region,
-        income: interpolateValues(d.points, year),
-        population: interpolateValues(d.matchs, year),
-        lifeExpectancy: interpolateValues(d.rank, year)
+        points: interpolateValues(d.points, year),
+        matchs: interpolateValues(d.matchs, year),
+        rank: interpolateValues(d.rank, year)
       };
     });
   }
