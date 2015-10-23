@@ -92,7 +92,7 @@ var xScale = d3.scale.linear().domain([0, 100]).range([0, width]),  // vs log
     colorScale = d3.scale.category20c();  //10
 
 // The x & y axes.
-var xAxis = d3.svg.axis().orient("bottom").scale(xScale).ticks(12, d3.format(",d")),
+var xAxis = d3.svg.axis().orient("bottom").scale(xScale).ticks(18, d3.format(",d")),
     yAxis = d3.svg.axis().scale(yScale).orient("left");
 
 // Create the SVG container and set the origin.
@@ -157,7 +157,7 @@ d3.json("rank.json", function(nations) {
 
   // Add a title.
   dot.append("title")
-      .text(function(d) { return d.name; });
+      .text(function(d) { return d.name+'\n'+d.rank; });
 
   // Add an overlay for the year label.
   var box = label.node().getBBox();
