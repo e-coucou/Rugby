@@ -139,7 +139,7 @@ var label = svg.append("text")
     .text(2003);
 
 // Load the data.
-d3.json("rank3.json", function(nations) {
+d3.json("rank3.json", function(irb) {
 
   // A bisector since many nation's data is sparsely-defined.
   var bisect = d3.bisector(function(d) { return d[0]; });
@@ -192,7 +192,7 @@ d3.json("rank3.json", function(nations) {
   // After the transition finishes, you can mouseover to change the year.
   function enableInteraction() {
     var yearScale = d3.scale.linear()
-        .domain([2003, 2015])
+        .domain([2003, 2016])
         .range([box.x + 10, box.x + box.width - 10])
         .clamp(true);
 
@@ -233,7 +233,7 @@ d3.json("rank3.json", function(nations) {
 
   // Interpolates the dataset for the given (fractional) year.
   function interpolateData(year) {
-    return nations.map(function(d) {
+    return irb.map(function(d) {
       return {
         name: d.name,
         region: d.region,
