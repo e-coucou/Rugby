@@ -54,6 +54,7 @@ def get_rank_json(base):
 		for m in range(1,13): #1
 			for dd in range(1,32,6):
 				d = str(y)+'-'+str(m)+'-'+str(dd)
+				yy = y + ((m-1)*30.0+dd)/365.0
 				u = base+d
 				j = get_data(u)
 				try:
@@ -61,9 +62,9 @@ def get_rank_json(base):
 					if (maj <> oMaj) :
 						for e in j['entries']:
 							try :
-								name[str(e['team']['id'])]['points'].append([y,e['pts']])
-								name[str(e['team']['id'])]['rank'].append([y,e['pos']])
-								name[str(e['team']['id'])]['matchs'].append([y,e['matches']])
+								name[str(e['team']['id'])]['points'].append([yy,e['pts']])
+								name[str(e['team']['id'])]['rank'].append([yy,e['pos']])
+								name[str(e['team']['id'])]['matchs'].append([yy,e['matches']])
 							except :
 								name[str(e['team']['id'])] = {}
 								name[str(e['team']['id'])]['name'] = str(e['team']['name'])
@@ -77,7 +78,6 @@ def get_rank_json(base):
 	f = open('rank.json','w')
 	for n in name :
 		js.append(name[n])
-	print js
 	json.dump(js,f)
 	f.close()
 	return
