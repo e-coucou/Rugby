@@ -74,9 +74,9 @@ text {
 <script>
 
 // Various accessors that specify the four dimensions of data to visualize.
-function x(d) { return d.income; }
-function y(d) { return d.lifeExpectancy; }
-function radius(d) { return d.population; }
+function x(d) { return d.points; }
+function y(d) { return d.rank; }
+function radius(d) { return d.matchs; }
 function color(d) { return d.region; }
 function key(d) { return d.name; }
 
@@ -237,9 +237,9 @@ d3.json("nations.json", function(nations) {
       return {
         name: d.name,
         region: d.region,
-        income: interpolateValues(d.income, year),
-        population: interpolateValues(d.population, year),
-        lifeExpectancy: interpolateValues(d.lifeExpectancy, year)
+        income: interpolateValues(d.points, year),
+        population: interpolateValues(d.matchs, year),
+        lifeExpectancy: interpolateValues(d.rank, year)
       };
     });
   }

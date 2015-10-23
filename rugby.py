@@ -6,7 +6,7 @@
 """
 import json, requests, argparse, time
 
-menu = { 1:"Matchs" , 2:"Evenements" , 3:"Classement" ,4:"Duels", 5:"json", 6:"Exit" }
+menu = { 1:"Matchs" , 2:"Evenements" , 3:"Classement" ,4:"Duels", 5:"json", 6:"rank json", 7:"Exit" }
 DEBUG = 0
 
 def get_data(url):
@@ -46,6 +46,42 @@ def get_all_csv(base):
                 except:
                     j=j
 
+def get_rank_json(base):
+	oMaj,maj = '',''
+	js = []
+	name = {}
+	for y in range(2003,2016): #2016
+		for m in range(1,13): #1
+			for dd in range(1,32,6):
+				d = str(y)+'-'+str(m)+'-'+str(dd)
+				u = base+d
+				j = get_data(u)
+				try:
+					maj = j['effective']['label']
+					if (maj <> oMaj) :
+						for e in j['entries']:
+							try :
+								name[str(e['team']['id'])]['points'].append([y,e['pts']])
+								name[str(e['team']['id'])]['rank'].append([y,e['pos']])
+								name[str(e['team']['id'])]['matchs'].append([y,e['matches']])
+							except :
+								name[str(e['team']['id'])] = {}
+								name[str(e['team']['id'])]['name'] = str(e['team']['name'])
+								name[str(e['team']['id'])]['region'] = 'EU'
+								name[str(e['team']['id'])]['points'] = []
+								name[str(e['team']['id'])]['rank'] = []
+								name[str(e['team']['id'])]['matchs'] = []
+						oMaj = maj
+				except:
+					j=j
+	f = open('rank.json','w')
+	for n in name :
+		js.append(name[n])
+	print js
+	json.dump(js,f)
+	f.close()
+	return
+					
 def get_date(u):
     j = get_data(u)
     try:
@@ -204,61 +240,62 @@ def get_match(match):
 	print '-------------------------------------------'
 	return
 def get_json():
-    EVENT = '1238'
-    base_u = 'http://cmsapi.pulselive.com/rugby/event'
-    event = str(raw_input("Choisir le numero de l'evenement ["+EVENT+"]: ")) or EVENT
-    u = base_u +'/'+event+'/schedule?language=en&client=pulse'+'&status=C'
-    print u
-    j = get_data(u)
+	EVENT = '1238'
+	base_u = 'http://cmsapi.pulselive.com/rugby/event'
+	event = str(raw_input("Choisir le numero de l'evenement ["+EVENT+"]: ")) or EVENT
+	u = base_u +'/'+event+'/schedule?language=en&client=pulse'+'&status=C'
+	print u
+	j = get_data(u)
     # nodes : name group send receive OU
     # links : source target value
-    js = {}
-    name = {}
-    js['nodes'] = []
-    js['links'] = []
-    i=0
-    for e in j['matches']:
-        t = time.gmtime(e['time']['millis']/1000+7200)
-        d= time.strftime('%Y-%m-%d', t)
-        try :
+	js = {}
+	name = {}
+	js['nodes'] = []
+	js['links'] = []
+	i=0
+	for e in j['matches']:
+		t = time.gmtime(e['time']['millis']/1000+7200)
+		d= time.strftime('%Y-%m-%d', t)
+		try :
             #print "'group':'{2:2}','name':'{0:13}' {3:3} -{4:3} {1:13}{6:14} {5:}".format(e['teams'][0]['name'],e['teams'][1]['name'],e['teams'][0]['id'],e['scores'][0],e['scores'][1], time.strftime('%d/%m %H:%M', t),e['eventPhase'])
             #print "'source':{0:},'target':{1:},'value':{2:}".format(e['teams'][0]['id'],e['teams'][1]['id'],e['scores'][0]-e['scores'][1])
-            js['links'].append({})
-            js['links'][i]['source'] = e['teams'][0]['id']
-            js['links'][i]['target'] = e['teams'][1]['id']
-            js['links'][i]['value'] = e['scores'][0]+e['scores'][1]
-            js['links'][i]['scoreL'] = e['scores'][0]
-            js['links'][i]['scoreV'] = e['scores'][1]
-            try:
-                name[str(e['teams'][0]['id'])]['send'] = name[str(e['teams'][0]['id'])]['send'] + e['scores'][0]
-                name[str(e['teams'][0]['id'])]['receive'] = name[str(e['teams'][0]['id'])]['receive'] + e['scores'][1]
-            except:
-                name[str(e['teams'][0]['id'])]={}
-                name[str(e['teams'][0]['id'])]['name'] = e['teams'][0]['name']
-                name[str(e['teams'][0]['id'])]['id'] = e['teams'][0]['id']
-                name[str(e['teams'][0]['id'])]['send'] = 0
-                name[str(e['teams'][0]['id'])]['receive'] = 0
-                name[str(e['teams'][0]['id'])]['OU'] = 0 #e['eventPhase']
-            try:
-                name[str(e['teams'][1]['id'])]['send'] = name[str(e['teams'][1]['id'])]['send'] + e['scores'][1]
-                name[str(e['teams'][1]['id'])]['receive'] = name[str(e['teams'][1]['id'])]['receive'] + e['scores'][0]
-            except:
-                name[str(e['teams'][1]['id'])]={}
-                name[str(e['teams'][1]['id'])]['name'] = e['teams'][1]['name']
-                name[str(e['teams'][1]['id'])]['id'] = e['teams'][1]['id']
-                name[str(e['teams'][1]['id'])]['send'] = 0
-                name[str(e['teams'][1]['id'])]['receive'] = 0
-                name[str(e['teams'][1]['id'])]['OU'] = 0 #e['eventPhase']
-            i = i+1
-        #           json['links'].append('"source":'+e['teams'][0]['id'])
-        except :
-            print 'erreur'
-    for e in name:
-        js['nodes'].append(name[e])
-    print js
-    f = open('email-072012.json','w')
-    json.dump(js,f)
-    return
+			js['links'].append({})
+			js['links'][i]['source'] = e['teams'][0]['id']
+			js['links'][i]['target'] = e['teams'][1]['id']
+			js['links'][i]['value'] = e['scores'][0]+e['scores'][1]
+			js['links'][i]['scoreL'] = e['scores'][0]
+			js['links'][i]['scoreV'] = e['scores'][1]
+			try:
+				name[str(e['teams'][0]['id'])]['send'] = name[str(e['teams'][0]['id'])]['send'] + e['scores'][0]
+				name[str(e['teams'][0]['id'])]['receive'] = name[str(e['teams'][0]['id'])]['receive'] + e['scores'][1]
+			except:
+				name[str(e['teams'][0]['id'])]={}
+				name[str(e['teams'][0]['id'])]['name'] = e['teams'][0]['name']
+				name[str(e['teams'][0]['id'])]['id'] = e['teams'][0]['id']
+				name[str(e['teams'][0]['id'])]['send'] = 0
+				name[str(e['teams'][0]['id'])]['receive'] = 0
+				name[str(e['teams'][0]['id'])]['OU'] = 0 #e['eventPhase']
+			try:
+				name[str(e['teams'][1]['id'])]['send'] = name[str(e['teams'][1]['id'])]['send'] + e['scores'][1]
+				name[str(e['teams'][1]['id'])]['receive'] = name[str(e['teams'][1]['id'])]['receive'] + e['scores'][0]
+			except:
+				name[str(e['teams'][1]['id'])]={}
+				name[str(e['teams'][1]['id'])]['name'] = e['teams'][1]['name']
+				name[str(e['teams'][1]['id'])]['id'] = e['teams'][1]['id']
+				name[str(e['teams'][1]['id'])]['send'] = 0
+				name[str(e['teams'][1]['id'])]['receive'] = 0
+				name[str(e['teams'][1]['id'])]['OU'] = 0 #e['eventPhase']
+			i = i+1
+		#           json['links'].append('"source":'+e['teams'][0]['id'])
+		except :
+			print 'erreur'
+	for e in name:
+		js['nodes'].append(name[e])
+	print js
+	f = open('email-072012.json','w')
+	json.dump(js,f)
+	f.close()
+	return
 
 def get_event(startDate,endDate):
 	global EVENT 
@@ -425,7 +462,9 @@ if __name__ == "__main__":
                 duel()
             elif sel == '5':
                 get_json()
-            elif (sel == '6') | (sel == '0'):
+            elif sel == '6':
+                get_rank_json(u)
+            elif (sel == '7') | (sel == '0'):
                 q=True
                 break
             else:
