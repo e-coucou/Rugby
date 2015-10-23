@@ -92,7 +92,7 @@ var xScale = d3.scale.linear().domain([0, 100]).range([0, width]),  // vs log
     colorScale = d3.scale.category20c();  //10
 
 // The x & y axes.
-var xAxis = d3.svg.axis().orient("top").scale(xScale).ticks(18, d3.format(",d")),
+var xAxis = d3.svg.axis().orient("bottom").scale(xScale).ticks(18, d3.format(",d")),
     yAxis = d3.svg.axis().scale(yScale).orient("left");
 
 // Create the SVG container and set the origin.
