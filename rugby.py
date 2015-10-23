@@ -47,17 +47,17 @@ def get_all_csv(base):
                     j=j
 
 def get_rank_json(base):
-	oMaj,maj = '',''
-	js = []
-	name = {}
-	for y in range(2003,2016): #2016
-		for m in range(1,13): #1
-			for dd in range(1,32,6):
-				d = str(y)+'-'+str(m)+'-'+str(dd)
-				yy = y + ((m-1)*30.0+dd)/365.0
-				u = base+d
-				j = get_data(u)
-				try:
+    oMaj,maj = '',''
+    js = []
+    name = {}
+    for y in range(2003,2016): #2016
+        for m in range(1,13,2): #1,13
+            for dd in range(1,32,32):
+                d = str(y)+'-'+str(m)+'-'+str(dd)
+                yy = y + ((m-1)*30.4+dd)/365.0
+                u = base+d
+                j = get_data(u)
+                try:
 					maj = j['effective']['label']
 					if (maj <> oMaj) :
 						for e in j['entries']:
@@ -73,14 +73,14 @@ def get_rank_json(base):
 								name[str(e['team']['id'])]['rank'] = []
 								name[str(e['team']['id'])]['matchs'] = []
 						oMaj = maj
-				except:
-					j=j
-	f = open('rank.json','w')
-	for n in name :
-		js.append(name[n])
-	json.dump(js,f)
-	f.close()
-	return
+                except:
+                    j=j
+    f = open('rank3.json','w')
+    for n in name :
+        js.append(name[n])
+    json.dump(js,f)
+    f.close()
+    return
 					
 def get_date(u):
     j = get_data(u)

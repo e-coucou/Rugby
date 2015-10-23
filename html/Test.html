@@ -139,7 +139,7 @@ var label = svg.append("text")
     .text(2003);
 
 // Load the data.
-d3.json("rank2.json", function(nations) {
+d3.json("rank3.json", function(nations) {
 
   // A bisector since many nation's data is sparsely-defined.
   var bisect = d3.bisector(function(d) { return d[0]; });
