@@ -157,7 +157,7 @@ d3.json("rank3.json", function(irb) {
 
   // Add a title.
   dot.append("title")
-      .text(function(d) { return d.name+'\n'+d.points; });
+      .text(function(d) { return d.name+'\n'+d.points+'\n'+d.rank+'\n'+d.matchs; });
 
   // Add an overlay for the year label.
   var box = label.node().getBBox();
