@@ -87,9 +87,9 @@ var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
 
 // Various scales. These domains make assumptions of data, naturally.
 var xScale = d3.scale.linear().domain([0, 100]).range([0, width]),  // vs log
-    yScale = d3.scale.linear().domain([1, 100]).range([height, 0]),
+    yScale = d3.scale.linear().domain([0, 100]).range([height, 0]),
     radiusScale = d3.scale.sqrt().domain([1, 200]).range([1, 20]),
-    colorScale = d3.scale.category20c();  //10
+    colorScale = d3.scale.category20();  //10
 
 // The x & y axes.
 var xAxis = d3.svg.axis().orient("bottom").scale(xScale).ticks(18, d3.format(",d")),
@@ -248,11 +248,11 @@ d3.json("rank3.json", function(irb) {
   function interpolateValues(values, year) {
     var i = bisect.left(values, year, 0, values.length - 1),
         a = values[i];
-    if (i > 0) {
-      var b = values[i - 1],
-          t = (year - a[0]) / (b[0] - a[0]);
-      return a[1] * (1 - t) + b[1] * t;
-    }
+//    if (i > 0) {
+//      var b = values[i - 1],
+//          t = (year - a[0]) / (b[0] - a[0]);
+//      return a[1] * (1 - t) + b[1] * t;
+//    }
     return a[1];
   }
 });
