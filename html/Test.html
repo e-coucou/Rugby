@@ -232,7 +232,7 @@ d3.json("rank3.json", function(irb) {
   // Updates the display to show the specified year.
   function displayYear(year) {
     dot.data(interpolateData(year), key).call(position).sort(order);
-    label.text(Math.round((year-Math.floor(year))*12)+'/'+Math.round(year));
+    label.text(Math.round((year-Math.floor(year))*12)+'/'+Math.floor(year));
   }
 
   // Interpolates the dataset for the given (fractional) year.
