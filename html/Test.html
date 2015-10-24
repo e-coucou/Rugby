@@ -30,7 +30,7 @@ text {
 }
 
 .year.label {
-  font: 500 196px "Helvetica Neue";
+  font: 500 128px "Helvetica Neue";
   fill: #ddd;
 }
 
@@ -57,17 +57,13 @@ text {
 
 <aside>Passez la souris au dessus de l'année pour vous déplacer dans le temps.</aside>
 
-<p class="attribution">Source: <a href="https://github.com/RandomEtc/mind-gapper-js">Tom Carden</a>, <a href="http://gapminder.org">Gapminder</a>.
+<p class="attribution">Source: <a href="https://github.com/e-coucou/Rugby">e-Coucou</a>, <a href="http://www.pulselive.com">PulseLive</a>.
 
-<p>This is a recreation in <a href="http://d3js.org/">D3</a> of Gapminder’s <a href="http://gapminder.org/world/">Wealth & Health of Nations</a>, made famous by Hans Rosling’s memorable <a href="http://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen.html">2006 TED talk</a>. It shows the dynamic fluctuation in per-capita income (<i>x</i>), life expectancy (<i>y</i>) and population (radius) of 180 nations over the last 209 years. Nations are colored by geographic region; mouseover to read their names.
-
-<p>As <a href="http://randometc.github.com/mind-gapper-js/">Tom Carden</a> noted, there’s a surprising amount of work that goes into making something look simple. For one, data collected in recent years is consistent, while data prior to 1950 is sparse; although potentially misleading, these visualizations use <a href="http://en.wikipedia.org/wiki/Lerp_(computing)">linear interpolation</a> for missing data points. The lookup for the two interpolation values at each frame is accelerated using <a href="http://en.wikipedia.org/wiki/Binary_search_algorithm">bisection</a> of sorted arrays per dimension.
-
-<p>Interested to see how this chart was implemented? <a href="view-source:http://bost.ocks.org/mike/nations/">View source!</a> Want a fun project? Try adding a <a href="https://github.com/mbostock/d3/wiki/Voronoi-Geom">Voronoi overlay</a> (as in this <a href="http://mbostock.github.com/d3/talk/20111116/airports.html">airport diagram</a>) to improve mouseover interaction on small targets. Or try a static version, using trails instead of motion.
+<p>Ce petit test de visualisation en <a href="http://d3js.org/">D3</a> des données sur le Rugby collectées par <a href="http://www.pulselive.com/"></a>. Ce graphe montre les fluctuations en points sur les abscisses (<i>x</i>), le rang en ordonnée (<i>y</i>) et le nombre de matches par an est représenté par la taille de la pastille (rayon). Les Pays sont coloriés aléatoirement ; en passant la souris sur les pastilles vous pourrez découvrir les noms.
 
 <footer>
-  <aside>March 13, 2012</aside>
-  <a href="../" rel="author">Mike Bostock</a>
+  <aside>24 Octobre 2015</aside>
+  <a href="index.html" rel="author">e-Coucou</a>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script></script>
@@ -141,8 +137,8 @@ var label = svg.append("text")
 // Add the year label; the value is set on transition.
 var pays = svg.append("text")
     .attr("class", "year label")
-    .attr("text-anchor", "start")
-    .attr("y", 24)
+    .attr("text-anchor", "end")
+    .attr("y", 56)
     .attr("x", 24)
     .text('France');
 
@@ -156,7 +152,7 @@ d3.json("rank3.json", function(irb) {
   var dot = svg.append("g")
       .attr("class", "dots")
     .selectAll(".dot")
-      .data(interpolateData(2003))
+      .data(interpolateData(2003.5))
     .enter().append("circle")
       .attr("class", "dot")
       .style("fill", function(d) { return colorScale(color(d)); })
@@ -229,7 +225,7 @@ d3.json("rank3.json", function(irb) {
   // Tweens the entire chart by first tweening the year, and then the data.
   // For the interpolated data, the dots and label are redrawn.
   function tweenYear() {
-    var year = d3.interpolateNumber(2003, 2015.84);
+    var year = d3.interpolateNumber(2003, 2016);
     return function(t) { displayYear(year(t)); };
   }
 
