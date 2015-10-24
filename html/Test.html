@@ -138,6 +138,14 @@ var label = svg.append("text")
     .attr("x", width)
     .text(2003);
 
+// Add the year label; the value is set on transition.
+var pays = svg.append("text")
+    .attr("class", "year label")
+    .attr("text-anchor", "end")
+    .attr("y", 24)
+    .attr("x", 24)
+    .text('France');
+
 // Load the data.
 d3.json("rank3.json", function(irb) {
 
