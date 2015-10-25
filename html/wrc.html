@@ -1,0 +1,162 @@
+<!doctype html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+<title>RUGBY WORLD CUP</title>
+<meta name="description" content="Interactive visualisation Rugby World Cup.">
+<meta name="author" content="e-Coucou">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- CSS concatenated and minified via ant build script-->
+<!--<link rel="stylesheet" href="css/reset.css">
+<link rel="stylesheet" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/style.css">
+<style>
+    @import url(../css/visu.css?aea6f0a);
+</style>
+<!-- end CSS-->
+
+</head>
+
+<body>
+<div id="container" class="container">
+    <header>
+        <aside>Octobre, 2015</aside>
+        <a href="index.html" rel="author">e-Coucou</a>
+    </header>
+    <h1>Rugby World Cup</h1>
+    <p>presentation visuelle des coupes du monde Rugby depuis 1989 à 2015 ...</p>
+    <h3>vous pouvez accéder à toutes les évolutions du classement IRB depuis 2003 ... <a href="ranking.html" rel="author">Ranking</a></h3>
+    <hr>
+    <div id="mois_selection" class="control">
+        <h3>Mois</h3>
+    <select id="mois_select">
+        <option value="WRC2015.json">World Cup 2015 ...</option>
+        <option value="WRC1987.json">World Cup 1987</option>
+        <option value="WRC1991.json">World Cup 1991</option>
+        <option value="WRC1995.json">World Cup 1995</option>
+        <option value="WRC1999.json">World Cup 1999</option>
+        <option value="WRC2003.json">World Cup 2003</option>
+        <option value="WRC2007.json">World Cup 2007</option>
+        <option value="WRC2011.json">World Cup 2011</option>
+    </select>
+    </div>
+<div id="controls">
+	<div id="layouts" class="control">
+		<h3>Layout</h3>
+		<a id="force" class="active">Network</a>
+		<a id="radial">Circles</a>
+		</div>
+	<div id="filters" class="control">
+		<h3>Filter</h3>
+		<a id="all" class="active">All</a>
+		<a id="popular">GROS ...</a>
+        <a id="obscure">Petits</a>
+    </div>
+	<div id="sorts" class="control">
+		<h3>Sort</h3>
+        <a id="songs" class="active">#marqués</a>
+		<a id="links">Delta points</a>
+    </div>
+	<div id="search_section" class="control">
+		<form id="search_form" method="post" action="">
+			<p class="search_title">
+			Search
+			<input id="search" class="text-input" type="text" value="">
+			</p>
+		</form>
+	</div>
+	<div id="main" role="main">
+		<div id="vis">
+			<script src="js/libs/modernizr-2.0.6.min.js"></script>
+			<style>
+			.node {
+				stroke: #fff;
+				stroke-width: 1.5px;
+			}
+			.link {
+				stroke: #999;
+				stroke-opacity: .6;
+			}
+			</style>
+		</div>
+<!--
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script>
+
+        var width = 1200,
+            height = 900;
+            
+        var color = d3.scale.category20();
+            
+        var force = d3.layout.force()
+            .charge(-150)
+            .linkDistance(25)
+            .size([width, height]);
+            
+        var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+            
+        d3.json("email.json", function(error, graph) {
+                    force
+                    .nodes(graph.nodes)
+                    .links(graph.links)
+                    .start();
+                    
+        var link = svg.selectAll(".link")
+                    .data(graph.links)
+                    .enter().append("line")
+                    .attr("class", "link")
+                    .style("stroke-width", function(d) { return Math.sqrt(d.value/1); });
+                    
+        var node = svg.selectAll(".node")
+                    .data(graph.nodes)
+                    .enter().append("circle")
+                    .attr("class", "node")
+                    .attr("r", function(d) { return Math.sqrt(d.send/1); })
+                    .style("fill", function(d) { return color(d.Direction); })
+                    .call(force.drag);
+                    
+        node.append("title")
+                    .text(function(d) {
+                          mess = '['+d.OU + ']'+d.name +'\n -> mails envoyés : '+ d.send+'\n <- mails recus : '+ d.receive+'('+d.Direction+')'
+                          return mess; });
+        
+                
+        force.on("tick", function() {
+        
+                 link.attr("x1", function(d) { return d.source.x; })
+                             .attr("y1", function(d) { return d.source.y; })
+                             .attr("x2", function(d) { return d.target.x; })
+                             .attr("y2", function(d) { return d.target.y; });
+                             
+                             node.attr("cx", function(d) { return d.x; })
+                             .attr("cy", function(d) { return d.y; });
+                             });
+                    });
+            
+        </script>
+-->
+	</div>
+</div>
+<footer>
+    <p>Mille et un remerciements à <a href="http://bl.ocks.org/mbostock">Mike Bostock</a> et à <a href="http://alignedleft.com/tutorials/d3/">Scott Murray</a>.</p>
+    <aside>Data : 25 Octobre 2015</aside>
+    <a href="index.html" rel="author">e-Coucou</a>
+</footer>
+<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script> -->
+<script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.2.min.js"><\/script>')</script>
+
+
+<script defer src="js/plugins.js"></script>
+<script defer src="js/script.js"></script>
+<script src="js/libs/coffee-script.js"></script>
+<script src="js/libs/d3.v2.js"></script>
+<script src="js/Tooltip.js"></script>
+<script type="text/coffeescript" src="coffee/vis.coffee"></script>
+</div>
+</body>
+</html>

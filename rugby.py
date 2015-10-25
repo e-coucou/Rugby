@@ -53,7 +53,7 @@ def get_rank_json(base):
     for y in range(2003,2016): #2016
         for m in range(1,13,1): #1,13
             print str(m)+'/'+str(y)
-            for dd in range(1,32,32):
+            for dd in range(1,15,32):
                 d = str(y)+'-'+str(m)+'-'+str(dd)
                 yy = y + ((m-1)*30.4+dd)/365.0
                 u = base+d

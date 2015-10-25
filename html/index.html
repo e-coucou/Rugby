@@ -1,162 +1,287 @@
-<!doctype html>
-<head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-
+<!DOCTYPE html>
 <title>RUGBY WORLD CUP</title>
-<meta name="description" content="Interactive visualisation Rugby World Cup.">
+<meta name="description" content="Interactive visualisation Rugby Ranking IRB.">
 <meta name="author" content="e-Coucou">
-
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
-<!-- CSS concatenated and minified via ant build script-->
-<!--<link rel="stylesheet" href="css/reset.css">
-<link rel="stylesheet" href="css/bootstrap.min.css">-->
+<html class="ocks-org do-not-copy">
+<meta charset="utf-8">
+<title>Ranking evolution</title>
 <link rel="stylesheet" href="css/style.css">
 <style>
-    @import url(../css/visu.css?aea6f0a);
+
+@import url(../css/visu.css?aea6f0a);
+
+#chart {
+  margin-left: -40px;
+  height: 506px;
+}
+
+text {
+  font: 10px sans-serif;
+}
+
+.dot {
+  stroke: #000;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.label {
+  fill: #777;
+}
+
+.year.label {
+  font: 500 112px "Helvetica Neue";
+  fill: #ddd;
+}
+
+.year.label.active {
+  fill: #48b;
+}
+.pays.label {
+    font: 500 48px "Helvetica Neue";
+    fill: #bce;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+  cursor: ew-resize;
+}
+
 </style>
-<!-- end CSS-->
 
-</head>
+<header>
+  <aside>Octobre, 2015</aside>
+  <a href="index.html" rel="author">e-Coucou</a>
+  <a href="wrc.html" rel="author">WRC Graphes</a>
+</header>
 
-<body>
-<div id="container" class="container">
-    <header>
-        <aside>Octobre, 2015</aside>
-        <a href="index.html" rel="author">e-Coucou</a>
-    </header>
-    <h1>Rugby World Cup</h1>
-    <p>presentation visuelle des coupes du monde Rugby depuis 1989 à 2015 ...</p>
-    <h3>vous pouvez accéder à toutes les évolutions du classement IRB depuis 2003 ... <a href="ranking.html" rel="author">Ranking</a></h3>
-    <hr>
-    <div id="mois_selection" class="control">
-        <h3>Mois</h3>
-    <select id="mois_select">
-        <option value="WRC2015.json">World Cup 2015 ...</option>
-        <option value="WRC1987.json">World Cup 1987</option>
-        <option value="WRC1991.json">World Cup 1991</option>
-        <option value="WRC1995.json">World Cup 1995</option>
-        <option value="WRC1999.json">World Cup 1999</option>
-        <option value="WRC2003.json">World Cup 2003</option>
-        <option value="WRC2007.json">World Cup 2007</option>
-        <option value="WRC2011.json">World Cup 2011</option>
-    </select>
-    </div>
-<div id="controls">
-	<div id="layouts" class="control">
-		<h3>Layout</h3>
-		<a id="force" class="active">Network</a>
-		<a id="radial">Circles</a>
-		</div>
-	<div id="filters" class="control">
-		<h3>Filter</h3>
-		<a id="all" class="active">All</a>
-		<a id="popular">GROS ...</a>
-        <a id="obscure">Petits</a>
-    </div>
-	<div id="sorts" class="control">
-		<h3>Sort</h3>
-        <a id="songs" class="active">#marqués</a>
-		<a id="links">Delta points</a>
-    </div>
-	<div id="search_section" class="control">
-		<form id="search_form" method="post" action="">
-			<p class="search_title">
-			Search
-			<input id="search" class="text-input" type="text" value="">
-			</p>
-		</form>
-	</div>
-	<div id="main" role="main">
-		<div id="vis">
-			<script src="js/libs/modernizr-2.0.6.min.js"></script>
-			<style>
-			.node {
-				stroke: #fff;
-				stroke-width: 1.5px;
-			}
-			.link {
-				stroke: #999;
-				stroke-opacity: .6;
-			}
-			</style>
-		</div>
-<!--
-    <script src="http://d3js.org/d3.v3.min.js"></script>
-    <script>
+<h1>Ranking IRB depuis 2003</h1>
 
-        var width = 1200,
-            height = 900;
-            
-        var color = d3.scale.category20();
-            
-        var force = d3.layout.force()
-            .charge(-150)
-            .linkDistance(25)
-            .size([width, height]);
-            
-        var svg = d3.select("body").append("svg")
-            .attr("width", width)
-            .attr("height", height);
-            
-        d3.json("email.json", function(error, graph) {
-                    force
-                    .nodes(graph.nodes)
-                    .links(graph.links)
-                    .start();
-                    
-        var link = svg.selectAll(".link")
-                    .data(graph.links)
-                    .enter().append("line")
-                    .attr("class", "link")
-                    .style("stroke-width", function(d) { return Math.sqrt(d.value/1); });
-                    
-        var node = svg.selectAll(".node")
-                    .data(graph.nodes)
-                    .enter().append("circle")
-                    .attr("class", "node")
-                    .attr("r", function(d) { return Math.sqrt(d.send/1); })
-                    .style("fill", function(d) { return color(d.Direction); })
-                    .call(force.drag);
-                    
-        node.append("title")
-                    .text(function(d) {
-                          mess = '['+d.OU + ']'+d.name +'\n -> mails envoyés : '+ d.send+'\n <- mails recus : '+ d.receive+'('+d.Direction+')'
-                          return mess; });
-        
-                
-        force.on("tick", function() {
-        
-                 link.attr("x1", function(d) { return d.source.x; })
-                             .attr("y1", function(d) { return d.source.y; })
-                             .attr("x2", function(d) { return d.target.x; })
-                             .attr("y2", function(d) { return d.target.y; });
-                             
-                             node.attr("cx", function(d) { return d.x; })
-                             .attr("cy", function(d) { return d.y; });
-                             });
-                    });
-            
-        </script>
--->
-	</div>
-</div>
+<p id="chart"></p>
+
+<aside>
+<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://rugby-rky.herokuapp.com/ranking.html" data-via="EricP_">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+</aside><br>
+<aside>Passez la souris au dessus de l'année pour vous déplacer dans le temps.</aside>
+<p class="attribution">Source: <a href="https://github.com/e-coucou/Rugby">e-Coucou</a>, <a href="http://www.pulselive.com">PulseLive</a>.
+
+<p>Petite visualisation utilisant la bibliothèque <a href="http://d3js.org/">D3</a>. Elle montre l'évolution des classements IRB. Les données sur le Rugby sont collectées par <a href="http://www.pulselive.com/">Puslive</a>. L'IRB classe les équipes de Rugby depuis 2003, chaque rencontre permet l'attribution de points en fonction de l'enjeux et de l'écart du score (pour info en Coupe du Mande les points comptent double). Le maximum de points est 100.</p>
+<p>Les abscisses (<i>x</i>) représentent le nombre de points, en ordonnée (<i>y</i>) le classement et le nombre de matches disputés par an est représenté par la taille de la pastille (rayon). Les Pays sont coloriés aléatoirement. En passant la souris sur les pastilles vous pourrez découvrir les noms, points et classement.
+<p>à venir le classement des équipes fémines ...</p>
 <footer>
     <p>Mille et un remerciements à <a href="http://bl.ocks.org/mbostock">Mike Bostock</a> et à <a href="http://alignedleft.com/tutorials/d3/">Scott Murray</a>.</p>
-    <aside>Data : 25 Octobre 2015</aside>
+    <aside>Data : 19 Octobre 2015</aside>
     <a href="index.html" rel="author">e-Coucou</a>
 </footer>
-<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script> -->
-<script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.2.min.js"><\/script>')</script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script></script>
+<script>
 
-<script defer src="js/plugins.js"></script>
-<script defer src="js/script.js"></script>
-<script src="js/libs/coffee-script.js"></script>
-<script src="js/libs/d3.v2.js"></script>
-<script src="js/Tooltip.js"></script>
-<script type="text/coffeescript" src="coffee/vis.coffee"></script>
-</div>
-</body>
-</html>
+// Various accessors that specify the four dimensions of data to visualize.
+function x(d) { return (d.points); }
+function y(d) { return (d.rank); }
+function radius(d) { return d.matchs; }
+function color(d) { return d.name; }  // region
+function key(d) { return d.name; }
+
+// Chart dimensions.
+var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
+    width = 960 - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// Various scales. These domains make assumptions of data, naturally.
+var xScale = d3.scale.linear().domain([0, 100]).range([0, width]),  // vs log
+    yScale = d3.scale.linear().domain([0, 100]).range([0,height]),
+    radiusScale = d3.scale.sqrt().domain([1, 200]).range([1, 20]),
+    colorScale = d3.scale.category20();  //10
+
+// The x & y axes.
+var xAxis = d3.svg.axis().orient("bottom").scale(xScale).ticks(18, d3.format(",d")),
+    yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+// Create the SVG container and set the origin.
+var svg = d3.select("#chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+// Add the x-axis.
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+// Add the y-axis.
+svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis);
+
+// Add an x-axis label.
+svg.append("text")
+    .attr("class", "x label")
+    .attr("text-anchor", "end")
+    .attr("x", width)
+    .attr("y", height - 6)
+    .text("nombre de point");
+
+// Add a y-axis label.
+svg.append("text")
+    .attr("class", "y label")
+    .attr("text-anchor", "end")
+    .attr("y", 6)
+    .attr("dy", ".75em")
+    .attr("transform", "rotate(-90)")
+    .text("ranking");
+
+// Add the year label; the value is set on transition.
+var label = svg.append("text")
+    .attr("class", "year label")
+    .attr("text-anchor", "end")
+    .attr("y", height - 24)
+    .attr("x", width)
+    .text('12/2003');
+
+// Add the year label; the value is set on transition.
+var pays = svg.append("text")
+    .attr("class", "pays label")
+    .attr("text-anchor", "begin")
+    .attr("y", 44)
+    .attr("x", 24)
+    .text('France');
+
+// Load the data.
+d3.json("data/ranking.json", function(irb) {
+
+  // A bisector since many nation's data is sparsely-defined.
+  var bisect = d3.bisector(function(d) { return d[0]; });
+
+  // Add a dot per nation. Initialize the data at 2003, and set the colors... 20 aleatoires
+  var dot = svg.append("g")
+    .attr("class", "dots")
+    .selectAll(".dot")
+    .data(interpolateData(2003.5))
+    .enter().append("circle")
+    .attr("class", "dot")
+    .style("fill", function(d) { return colorScale(color(d)); })
+    .call(position)
+        .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+' ('+Math.floor(d.points*10)/10+')');})
+    .sort(order);
+
+  // Add a title.
+  dot.append("title")
+      .text(function(d) { return d.name; });
+
+  // Add an overlay for the year label.
+  var box = label.node().getBBox();
+
+  var overlay = svg.append("rect")
+        .attr("class", "overlay")
+        .attr("x", box.x)
+        .attr("y", box.y)
+        .attr("width", box.width)
+        .attr("height", box.height)
+        .on("mouseover", enableInteraction);
+
+  // Start a transition that interpolates the data based on year.
+  svg.transition()
+      .duration(30000)
+      .ease("linear")
+      .tween("year", tweenYear)
+      .each("end", enableInteraction);
+
+  // Positions the dots based on data.
+  function position(dot) {
+    dot .attr("cx", function(d) { return xScale(x(d)); })
+        .attr("cy", function(d) { return yScale(y(d)); })
+        .attr("r", function(d) { return radiusScale(radius(d)); });
+  }
+
+  // Defines a sort order so that the smallest dots are drawn on top.
+  function order(a, b) {
+    return radius(b) - radius(a);
+  }
+
+  // After the transition finishes, you can mouseover to change the year.
+  function enableInteraction() {
+    var yearScale = d3.scale.linear()
+        .domain([2003, 2016])
+        .range([box.x + 10, box.x + box.width - 10])
+        .clamp(true);
+
+    // Cancel the current transition, if any.
+    svg.transition().duration(0);
+
+    overlay
+        .on("mouseover", mouseover)
+        .on("mouseout", mouseout)
+        .on("mousemove", mousemove)
+        .on("touchmove", mousemove);
+
+    function mouseover() {
+      label.classed("active", true);
+    }
+
+    function mouseout() {
+      label.classed("active", false);
+    }
+
+    function mousemove() {
+      displayYear(yearScale.invert(d3.mouse(this)[0]));
+    }
+  }
+
+  // Tweens the entire chart by first tweening the year, and then the data.
+  // For the interpolated data, the dots and label are redrawn.
+  function tweenYear() {
+    var year = d3.interpolateNumber(2003, 2016);
+    return function(t) { displayYear(year(t)); };
+  }
+
+  // Updates the display to show the specified year.
+  function displayYear(year) {
+    dot.data(interpolateData(year), key).call(position).sort(order);
+    label.text(Math.round((year-Math.floor(year))*12)+'/'+Math.floor(year));
+  }
+
+  // Interpolates the dataset for the given (fractional) year.
+  function interpolateData(year) {
+    return irb.map(function(d) {
+      return {
+        name: d.name,
+        region: d.region,
+        points: interpolateValues(d.points, year),
+        matchs: interpolateValues(d.matchs, year),
+        rank: interpolateValues(d.rank, year)
+      };
+    });
+  }
+
+  // Finds (and possibly interpolates) the value for the specified year.
+  function interpolateValues(values, year) {
+    var i = bisect.left(values, year, 0, values.length - 1),
+        a = values[i];
+//    if (i > 0) {
+//      var b = values[i - 1],
+//          t = (year - a[0]) / (b[0] - a[0]);
+//      return a[1] * (1 - t) + b[1] * t;
+//    }
+    return a[1];
+  }
+});
+
+</script>
+<script>
+
+GoogleAnalyticsObject = "ga", ga = function() { ga.q.push(arguments); }, ga.q = [], ga.l = +new Date;
+ga("create", "UA-48272912-3", "ocks.org");
+ga("send", "pageview");
+
+</script>
+<script async src="//www.google-analytics.com/analytics.js"></script>
