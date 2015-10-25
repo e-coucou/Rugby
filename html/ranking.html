@@ -158,7 +158,7 @@ d3.json("data/rank3.json", function(irb) {
   // A bisector since many nation's data is sparsely-defined.
   var bisect = d3.bisector(function(d) { return d[0]; });
 
-  // Add a dot per nation. Initialize the data at 2003, and set the colors.
+  // Add a dot per nation. Initialize the data at 2003, and set the colors... 20 aleatoires
   var dot = svg.append("g")
     .attr("class", "dots")
     .selectAll(".dot")
