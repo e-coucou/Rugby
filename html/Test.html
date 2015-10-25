@@ -37,6 +37,13 @@ text {
 .year.label.active {
   fill: #aaa;
 }
+.pays.label {
+    font: 500 48px "Helvetica Neue";
+    fill: #ddd;
+}
+.pays.label.active {
+    fill: #3aa;
+}
 
 .overlay {
   fill: none;
@@ -136,9 +143,9 @@ var label = svg.append("text")
 
 // Add the year label; the value is set on transition.
 var pays = svg.append("text")
-    .attr("class", "year label")
+    .attr("class", "pays label")
     .attr("text-anchor", "begin")
-    .attr("y", 64)
+    .attr("y", 48)
     .attr("x", 24)
     .text('France');
 
