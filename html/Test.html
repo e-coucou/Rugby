@@ -150,14 +150,15 @@ d3.json("rank3.json", function(irb) {
 
   // Add a dot per nation. Initialize the data at 2003, and set the colors.
   var dot = svg.append("g")
-      .attr("class", "dots")
+    .attr("class", "dots")
     .selectAll(".dot")
-      .data(interpolateData(2003.5))
+    .data(interpolateData(2003.5))
     .enter().append("circle")
-      .attr("class", "dot")
-      .style("fill", function(d) { return colorScale(color(d)); })
-      .call(position)
-      .sort(order);
+    .attr("class", "dot")
+    .style("fill", function(d) { return colorScale(color(d)); })
+    .call(position)
+        .on("mouseover",function(d) {return pays.text(d.pays)})
+    .sort(order);
 
   // Add a title.
   dot.append("title")
