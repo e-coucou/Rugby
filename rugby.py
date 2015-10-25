@@ -6,7 +6,7 @@
 """
 import json, requests, argparse, time
 
-menu = { 1:"Matchs" , 2:"Evenements" , 3:"Classement" ,4:"Duels", 5:"json", 6:"rank json", 7:"Exit" }
+menu = { 1:"Matchs" , 2:"Evenements" , 3:"Classement" ,4:"Duels", 5:"MAJ WRC2105", 6:"rank json", 7:"Exit" }
 DEBUG = 0
 
 def get_data(url):
@@ -292,7 +292,7 @@ def get_json():
 	for e in name:
 		js['nodes'].append(name[e])
 	print js
-	f = open('email-072012.json','w')
+	f = open(r"html/data/WRC2015.json",'w')
 	json.dump(js,f)
 	f.close()
 	return
