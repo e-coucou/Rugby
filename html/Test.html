@@ -63,10 +63,10 @@ text {
 
 <p class="attribution">Source: <a href="https://github.com/e-coucou/Rugby">e-Coucou</a>, <a href="http://www.pulselive.com">PulseLive</a>.
 
-<p>Ce petit test de visualisation en <a href="http://d3js.org/">D3</a> des données sur le Rugby collectées par <a href="http://www.pulselive.com/"></a>. Ce graphe montre les fluctuations en points sur les abscisses (<i>x</i>), le rang en ordonnée (<i>y</i>) et le nombre de matches par an est représenté par la taille de la pastille (rayon). Les Pays sont coloriés aléatoirement ; en passant la souris sur les pastilles vous pourrez découvrir les noms.
+<p>Ce petit test de visualisation en <a href="http://d3js.org/">D3</a> à partir des données sur le Rugby collectées par <a href="http://www.pulselive.com/"></a>. Ce graphe montre les évolutions des classements des équipes de Rugby depuis 2003. Les abscisses (<i>x</i>) représentent le nombre de points, en ordonnée (<i>y</i>) le classement et le nombre de matches disputés par an est représenté par la taille de la pastille (rayon). Les Pays sont coloriés aléatoirement. En passant la souris sur les pastilles vous pourrez découvrir les noms, points et classement.
 
 <footer>
-  <aside>24 Octobre 2015</aside>
+  <aside>25 Octobre 2015</aside>
   <a href="index.html" rel="author">e-Coucou</a>
 </footer>
 
@@ -161,12 +161,12 @@ d3.json("rank3.json", function(irb) {
     .attr("class", "dot")
     .style("fill", function(d) { return colorScale(color(d)); })
     .call(position)
-        .on("mouseover",function(d) {return pays.text('('+d.rank+') '+d.name)})
+        .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+' ('+d.points+')');})
     .sort(order);
 
   // Add a title.
   dot.append("title")
-      .text(function(d) { return d.name+'\n'+d.points+'\n'+d.rank+'\n'+d.matchs; });
+      .text(function(d) { return d.name; });
 
   // Add an overlay for the year label.
   var box = label.node().getBBox();
