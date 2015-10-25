@@ -39,10 +39,7 @@ text {
 }
 .pays.label {
     font: 500 48px "Helvetica Neue";
-    fill: #ddd;
-}
-.pays.label.active {
-    fill: #3aa;
+    fill: #3dd;
 }
 
 .overlay {
@@ -145,7 +142,7 @@ var label = svg.append("text")
 var pays = svg.append("text")
     .attr("class", "pays label")
     .attr("text-anchor", "begin")
-    .attr("y", 48)
+    .attr("y", 44)
     .attr("x", 24)
     .text('France');
 
@@ -164,7 +161,7 @@ d3.json("rank3.json", function(irb) {
     .attr("class", "dot")
     .style("fill", function(d) { return colorScale(color(d)); })
     .call(position)
-        .on("mouseover",function(d) {return pays.text(d.name)})
+        .on("mouseover",function(d) {return pays.text('('+d.rank+') '+d.name)})
     .sort(order);
 
   // Add a title.
