@@ -8,7 +8,7 @@ RadialPlacement = () ->
   # how much to separate each location by
   increment = 10  #20
   # how large to make the layout
-  radius = 200
+  radius = 150
   # where the center of the layout should be
   center = {"x":0, "y":0}
   # what angle to start at
@@ -501,7 +501,7 @@ Network = () ->
   moveToRadialLayout = (alpha) ->
     k = alpha * 0.1
     (d) ->
-      centerNode = groupCenters(d.name)  #ep artist
+      centerNode = groupCenters(d.name)
       d.x += (centerNode.x - d.x) * k
       d.y += (centerNode.y - d.y) * k
 
