@@ -162,7 +162,7 @@ d3.json("data/rank3.json", function(irb) {
   var dot = svg.append("g")
     .attr("class", "dots")
     .selectAll(".dot")
-    .data(interpolateData(2003.9))
+    .data(interpolateData(2003))
     .enter().append("circle")
     .attr("class", "dot")
     .style("fill", function(d) { return colorScale(color(d)); })
