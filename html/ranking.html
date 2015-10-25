@@ -142,7 +142,7 @@ var label = svg.append("text")
     .attr("text-anchor", "end")
     .attr("y", height - 24)
     .attr("x", width)
-    .text('12/2003');
+    .text(2003);
 
 // Add the year label; the value is set on transition.
 var pays = svg.append("text")
@@ -207,7 +207,7 @@ d3.json("data/rank3.json", function(irb) {
   // After the transition finishes, you can mouseover to change the year.
   function enableInteraction() {
     var yearScale = d3.scale.linear()
-        .domain([2003.9, 2016])
+        .domain([2003, 2016])
         .range([box.x + 10, box.x + box.width - 10])
         .clamp(true);
 
