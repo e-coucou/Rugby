@@ -156,7 +156,7 @@ var pays = svg.append("text")
     .text('France');
 
 // Load the data.
-d3.json("data/rank3.json", function(irb) {
+d3.json("data/ranking.json", function(irb) {
 
   // A bisector since many nation's data is sparsely-defined.
   var bisect = d3.bisector(function(d) { return d[0]; });

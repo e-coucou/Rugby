@@ -51,7 +51,8 @@ def get_rank_json(base):
     js = []
     name = {}
     for y in range(2003,2016): #2016
-        for m in range(1,13,2): #1,13
+        for m in range(1,13,1): #1,13
+            print str(m)+'/'+str(y)
             for dd in range(1,32,32):
                 d = str(y)+'-'+str(m)+'-'+str(dd)
                 yy = y + ((m-1)*30.4+dd)/365.0
@@ -75,7 +76,7 @@ def get_rank_json(base):
 						oMaj = maj
                 except:
                     j=j
-    f = open('rank3.json','w')
+    f = open(r"html/data/ranking.json",'w')
     for n in name :
         js.append(name[n])
     json.dump(js,f)
