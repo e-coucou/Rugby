@@ -161,7 +161,7 @@ d3.json("rank3.json", function(irb) {
     .attr("class", "dot")
     .style("fill", function(d) { return colorScale(color(d)); })
     .call(position)
-        .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+' ('+d.points+')');})
+        .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+' ('+Math.floor(d.points*10)/10+')');})
     .sort(order);
 
   // Add a title.
