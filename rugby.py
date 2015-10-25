@@ -479,4 +479,5 @@ if __name__ == "__main__":
 		print e['team']['abbreviation']
 		http://cmsapi.pulselive.com/rugby/match/14232/timeline?language=en&client=pulse  timeline info
 		http://cmsapi.pulselive.com/rugby/match/14232/stats?language=en&client=pulse stat info
+        http://dynamic.pulselive.com/dynamic/client/irb/static/i/sprites/tLogo@x2.png // logos
 """
