@@ -172,7 +172,7 @@ d3.json("data/ranking.json", function(irb) {
     .style("fill", function(d) { return colorScale(color(d)); })
     .call(position)
     .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+' ('+Math.floor(d.points*10)/10+')');})
-	.on("click", function (d) {return d.style("fill",d3.RGB(255,0,0));})
+	.on("click", function (d) {return d.style("fill",d3.rgb(255,0,0));})
     .sort(order);
 
   // Add a title.
