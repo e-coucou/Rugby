@@ -172,7 +172,8 @@ d3.json("data/ranking.json", function(irb) {
     .style("fill", function(d) { return colorScale(color(d)); })
     .call(position)
     .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+' ('+Math.floor(d.points*10)/10+')');})
-	.on("click", function (d) {return d3.select(this).style("fill",d3.rgb(255,0,0));})
+	.on("click", trace_test(d.name))
+//        .on("click", function (d) {return d3.select(this).style("fill",d3.rgb(255,0,0));})
     .sort(order);
 
   // Add a title.
@@ -183,7 +184,7 @@ d3.json("data/ranking.json", function(irb) {
   var trace =svg.append("h")
     .attr("class", "dots")
     .selectAll(".dot")
-    .data(parcourt())
+//    .data(parcourt())
     .enter().append("circle")
     .attr("class", "dot");
 	
@@ -273,17 +274,22 @@ d3.json("data/ranking.json", function(irb) {
   }
   // tracé du parcourt ...
   function parcourt(name) {
-	for(annee=2003.8; annee<2006.0
-    return irb.map(function(d) {
-	  if d.name == name {
-		return {
-			points: interpolateValues(d.points, year),
-			matchs: interpolateValues(d.matchs, year),
-		};
-	  };
-    });
+    for(annee=2003.8; annee<2006.0; annee += 0.1)
+        {
+            return irb.map(function(d) {
+            if (d.name == name) {
+               return {
+                 points: interpolateValues(d.points, year),
+                 matchs: interpolateValues(d.matchs, year),
+                };
+            };
+        });
+    };
 	
   }
+    function trace_test(name) {
+        trace.data(parcourt(name));
+        }
   // Finds (and possibly interpolates) the value for the specified year.
   function interpolateValues(values, year) {
     var i = bisect.left(values, year, 0, values.length - 1),
@@ -298,11 +304,11 @@ d3.json("data/ranking.json", function(irb) {
 });
 
 </script>
-<script>
+<!--<script>
 
 GoogleAnalyticsObject = "ga", ga = function() { ga.q.push(arguments); }, ga.q = [], ga.l = +new Date;
 ga("create", "UA-48272912-3", "ocks.org");
 ga("send", "pageview");
 
-</script>
+</script>-->
 <script async src="//www.google-analytics.com/analytics.js"></script>
