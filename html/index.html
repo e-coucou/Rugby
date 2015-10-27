@@ -179,6 +179,14 @@ d3.json("data/ranking.json", function(irb) {
   dot.append("title")
       .text(function(d) { return d.name; });
 
+  // Add trace
+  var trace =svg.append("h")
+    .attr("class", "dots")
+    .selectAll(".dot")
+    .data(parcourt())
+    .enter().append("circle")
+    .attr("class", "dot");
+	
   // Add an overlay for the year label.
   var box = label.node().getBBox();
 
@@ -263,7 +271,19 @@ d3.json("data/ranking.json", function(irb) {
       };
     });
   }
-
+  // tracé du parcourt ...
+  function parcourt(name) {
+	for(annee=2003.8; annee<2006.0
+    return irb.map(function(d) {
+	  if d.name == name {
+		return {
+			points: interpolateValues(d.points, year),
+			matchs: interpolateValues(d.matchs, year),
+		};
+	  };
+    });
+	
+  }
   // Finds (and possibly interpolates) the value for the specified year.
   function interpolateValues(values, year) {
     var i = bisect.left(values, year, 0, values.length - 1),
