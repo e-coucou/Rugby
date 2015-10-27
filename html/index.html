@@ -185,7 +185,7 @@ d3.json("data/ranking.json", function(irb) {
     .attr("class", "dots")
     .selectAll(".dot")
 //    .data(parcourt())
-    .enter().append("circle")
+//    .enter().append("circle")
     .attr("class", "dot");
 	
   // Add an overlay for the year label.
@@ -288,7 +288,9 @@ d3.json("data/ranking.json", function(irb) {
 	
   }
     function trace_test(name) {
-        trace.data(parcourt(name));
+        trace.data(parcourt(name))
+        .enter()
+        .append("circle");
         }
   // Finds (and possibly interpolates) the value for the specified year.
   function interpolateValues(values, year) {
