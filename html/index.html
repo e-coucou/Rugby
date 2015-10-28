@@ -277,8 +277,8 @@ d3.json("data/ranking.json", function(irb) {
     for(annee=2003.8; annee<2006.0; annee += 0.1)
         {
             return irb.map(function(d) {
-			console.log(d.name+''+name)
             if (d.name == name) {
+				console.log(annee+' '+d.points)
                return {
                  points: interpolateValues(d.points, annee),
                  matchs: interpolateValues(d.matchs, annee),
