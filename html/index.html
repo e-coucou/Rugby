@@ -183,10 +183,7 @@ d3.json("data/ranking.json", function(irb) {
   // Add trace
   var trace =svg.append("h")
     .attr("class", "dots")
-    .selectAll(".dot")
-//    .data(parcourt())
-//    .enter().append("circle")
-    .attr("class", "dot");
+    .selectAll(".dot");
 	
   // Add an overlay for the year label.
   var box = label.node().getBBox();
@@ -297,6 +294,7 @@ d3.json("data/ranking.json", function(irb) {
         trace.data(test)
         .enter()
         .append("circle")
+		.attr("class", "dot")
 		.style("fill",d3.rgb(255,0,0))
         .attr("cx", function(d) { return xScale(x(d)); })
         .attr("cy", function(d) { return yScale(y(d)); })
