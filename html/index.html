@@ -286,7 +286,7 @@ d3.json("data/ranking.json", function(irb) {
         });
   }
     function trace_test(name) {
-		console.log(parcourt(name,2004.0)[1])
+		console.log(parcourt(name,2004.0).rank)
         trace.data(parcourt(name,2004.0))
         .enter()
         .append("circle")
