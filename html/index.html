@@ -274,14 +274,12 @@ d3.json("data/ranking.json", function(irb) {
   function parcourt(name) {
            //return 
 	for (annee=2003.8 ; annee < 2016.0 ; annee += 0.1) {
-		   irb.forEach(function(d) {
-            if (d.name == name) {
-//		console.log(interpolateValues(d.points, annee))
-//		console.log(interpolateValues(d.rank, annee))
-             var l =  test.push( {
-				name : d.name ,
-				points : interpolateValues(d.points, annee) ,
-				rank : interpolateValues(d.rank, annee) 
+		irb.forEach(function(d) {
+          if (d.name == name) {
+            var l =  test.push( {
+				pays: d.name ,
+				points: interpolateValues(d.points, annee) ,
+				rank: interpolateValues(d.rank, annee) 
 				});
             }
         });
