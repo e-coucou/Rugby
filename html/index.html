@@ -276,19 +276,20 @@ d3.json("data/ranking.json", function(irb) {
   function parcourt(name) {
     for(annee=2003.8; annee<2006.0; annee += 0.1)
         {
-console.log(            return irb.map(function(d) {
+           return irb.map(function(d) {
             if (d.name == name) {
                return {
                  points: interpolateValues(d.points, annee),
                  matchs: interpolateValues(d.matchs, annee),
                 };
             };
-        });)
+        });
     };
 	
   }
     function trace_test(name) {
 		console.log(name)
+		console.log(parcourt(name))
         trace.data(parcourt(name))
         .enter()
         .append("circle")
