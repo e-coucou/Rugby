@@ -297,6 +297,7 @@ d3.json("data/ranking.json", function(irb) {
         trace.data(test)
         .enter()
         .append("circle")
+		.style("fill",d3.rgb(255,0,0))
         .attr("cx", function(d) { return xScale(x(d)); })
         .attr("cy", function(d) { return yScale(y(d)); })
         .attr("r", function(d) { return radiusScale(1); });
