@@ -272,6 +272,7 @@ d3.json("data/ranking.json", function(irb) {
       };
     });
   }
+  var test;
   // tracé du parcourt ...
   function parcourt(name,annee) {
            //return 
@@ -279,15 +280,16 @@ d3.json("data/ranking.json", function(irb) {
             if (d.name == name) {
 //		console.log(interpolateValues(d.points, annee))
 //		console.log(interpolateValues(d.rank, annee))
-               return {
+               test.push(return {
                  points: interpolateValues(d.points, annee),
                  rank: interpolateValues(d.rank, annee)
-                };
+                };)
             }
         });
   }
     function trace_test(name) {
-		console.log(parcourt(name,2004.0))
+		parcourt(name,2004.0)
+		console.log(test)
         trace.data(parcourt(name,2004.0))
         .enter()
         .append("circle")
