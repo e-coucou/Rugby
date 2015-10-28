@@ -181,7 +181,7 @@ d3.json("data/ranking.json", function(irb) {
       .text(function(d) { return d.name; });
 
   // Add trace
-  var trace =svg.append("h")
+  var trace =svg.append("g")
     .attr("class", "dots")
     .selectAll(".dot");
 	
@@ -289,7 +289,7 @@ d3.json("data/ranking.json", function(irb) {
 		test =[];
 		parcourt(name);
 		console.log(test);
-        dot.data(test)
+        trace.data(test)
         .enter()
         .append("circle")
 		.attr("class", "dot")
