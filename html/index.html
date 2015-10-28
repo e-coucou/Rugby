@@ -272,7 +272,7 @@ d3.json("data/ranking.json", function(irb) {
       };
     });
   }
-  var test;
+  var test=[];
   // tracé du parcourt ...
   function parcourt(name,annee) {
            //return 
@@ -280,10 +280,10 @@ d3.json("data/ranking.json", function(irb) {
             if (d.name == name) {
 //		console.log(interpolateValues(d.points, annee))
 //		console.log(interpolateValues(d.rank, annee))
-               test.push( {
+             var l =  test.push( {
                  points: interpolateValues(d.points, annee),
                  rank: interpolateValues(d.rank, annee)
-                };)
+                };);
             }
         });
   }
