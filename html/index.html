@@ -274,10 +274,10 @@ d3.json("data/ranking.json", function(irb) {
   }
   // tracé du parcourt ...
   function parcourt(name,annee) {
-           return irb.reduce(function(d) {
+           return irb.filter(function(d) {
             if (d.name == name) {
-		console.log(interpolateValues(d.points, annee))
-		console.log(interpolateValues(d.rank, annee))
+//		console.log(interpolateValues(d.points, annee))
+//		console.log(interpolateValues(d.rank, annee))
                return {
                  points: interpolateValues(d.points, annee),
                  rank: interpolateValues(d.rank, annee)
