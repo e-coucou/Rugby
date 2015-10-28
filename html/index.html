@@ -280,7 +280,7 @@ d3.json("data/ranking.json", function(irb) {
             if (d.name == name) {
 //		console.log(interpolateValues(d.points, annee))
 //		console.log(interpolateValues(d.rank, annee))
-               test.push(return {
+               test.push( {
                  points: interpolateValues(d.points, annee),
                  rank: interpolateValues(d.rank, annee)
                 };)
