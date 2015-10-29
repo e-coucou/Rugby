@@ -119,6 +119,8 @@ var svg = d3.select("#chart").append("svg")
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+//Data
+var test=[{name: 'x', rank: 100, annee: 2003}];
 
 // Add the x-axis.
 svg.append("g")
@@ -311,7 +313,6 @@ function trace_test(name) {
       };
     });
   }
-  var test=[];
   // tracé du parcourt ...
   function parcourt(name) {
     test.length=0;       //return 
