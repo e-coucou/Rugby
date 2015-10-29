@@ -22,9 +22,6 @@ text {
 .dot {
   stroke: #000;
 }
-.trace {
-  stroke: #00F;
-}
 
 .axis path, .axis line {
   fill: none;
@@ -200,7 +197,7 @@ d3.json("data/ranking.json", function(irb) {
   var trace = svg.append("g")
     .attr("class", "trace")
     .selectAll(".dot")
-	.data(parcourt("France"))
+	.data(test) //parcourt("France"))
     .enter().append("circle")
 	.attr("class", "trace")
 	.style("fill",d3.rgb(255,255,255))
@@ -292,8 +289,7 @@ function trace_test(name,instance) {
 
   // Updates the display to show specific trace.
   function displayTrace() {
-	console.log("Dsiplay TRace");
-    trace.data(test).call(trace_pos).style("fill",d3.rgb(164,164,164));
+    trace.data(test).enter().append("circle").call(trace_pos).style("fill",d3.rgb(164,164,164));
   }
 
   // Interpolates the dataset for the given (fractional) year.
