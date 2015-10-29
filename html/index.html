@@ -304,8 +304,10 @@ d3.json("data/ranking.json", function(irb) {
 	}
   }
     function trace_test(name) {
-		trace.selectAll("dot").remove();
 		test.length = 0;
+		trace.selectAll("dot")
+			.data(test)
+			.remove();
 		parcourt(name);
 		console.log(test);
         trace.data(test)
