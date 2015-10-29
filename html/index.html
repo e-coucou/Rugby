@@ -204,7 +204,7 @@ d3.json("data/ranking.json", function(irb) {
 	.call(trace_pos);
 
 function trace_test(name,instance) {
-	trace.data(test).remove();
+	trace.data(test).exit().remove();
 	parcourt(name);
 	displayTrace();
 	d3.select(instance).style("fill",d3.rgb(255,0,0));
@@ -288,7 +288,7 @@ function trace_test(name,instance) {
 
   // Updates the display to show specific trace.
   function displayTrace() {
-	trace.remove(); //.style("fill",d3.rgb(0,0,255)); //.remove();
+	//trace.remove(); //.style("fill",d3.rgb(0,0,255)); //.remove();
     trace.data(test).enter().append("circle").attr("class", "trace").call(trace_pos).style("fill",d3.rgb(164,164,164));
   }
 
