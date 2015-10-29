@@ -187,7 +187,6 @@ d3.json("data/ranking.json", function(irb) {
     .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+' ('+Math.floor(d.points*10)/10+')');})
         .on("click", function(d) { return trace_test(d,this);})
 //        .on("click", function (d) {return d3.select(this).style("fill",d3.rgb(255,0,0));})
-        .filter(function(d,i) {return d.sel % i === 1;})
     .sort(order);
 
   // Add a title.
