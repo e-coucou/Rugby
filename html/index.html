@@ -22,6 +22,9 @@ text {
 .dot {
   stroke: #000;
 }
+.trace {
+  stroke: #00F;
+}
 
 .axis path, .axis line {
   fill: none;
@@ -131,6 +134,7 @@ svg.append("g")
 // Add the x-date.
 svg.append("g")
     .attr("class", "x axis")
+    .attr("transform", "translate(0," + height+25 + ")")
     .call(xDate);
 
 // Add an x-axis label.
@@ -138,7 +142,7 @@ svg.append("text")
     .attr("class", "x label")
     .attr("text-anchor", "end")
     .attr("x", width)
-    .attr("y", height + 15)
+    .attr("y", height - 6)
     .text("nombre de points");
 
 // Add an x-date label.
@@ -146,7 +150,7 @@ svg.append("text")
     .attr("class", "x label")
     .attr("text-anchor", "end")
     .attr("x", width)
-    .attr("y", height - 15)
+    .attr("y", height + 35)
     .text("années");
 
 // Add a y-axis label.
@@ -201,7 +205,26 @@ d3.json("data/ranking.json", function(irb) {
   // Add trace
   var trace = svg.append("g")
     .attr("class", "trace")
-    .selectAll(".trace");
+    .selectAll(".trace")
+	.enter();
+
+function trace_test(name) {
+	test.length = 0;
+	trace.selectAll(".trace")
+		.data(test)
+		.remove();
+	parcourt(name);
+	console.log(test);
+    trace.selectAll(".trace")
+		.data(test)
+        .enter()
+        .append("circle")
+		.attr("class", "trace")
+		.style("fill",d3.rgb(255,0,0))
+        .attr("cx", function(d) { return dScale(a(d)); })
+        .attr("cy", function(d) { return yScale(y(d)); })
+        .attr("r", function(d) { return radiusScale(5); });
+}
 	
   // Add an overlay for the year label.
   var box = label.node().getBBox();
@@ -303,22 +326,7 @@ d3.json("data/ranking.json", function(irb) {
         });
 	}
   }
-    function trace_test(name) {
-		test.length = 0;
-		trace.selectAll(".trace")
-			.data(test)
-			.remove();
-		parcourt(name);
-		console.log(test);
-        trace.data(test)
-        .enter()
-        .append("circle")
-		.attr("class", "trace")
-		.style("fill",d3.rgb(255,0,0))
-        .attr("cx", function(d) { return dScale(a(d)); })
-        .attr("cy", function(d) { return yScale(y(d)); })
-        .attr("r", function(d) { return radiusScale(5); });
-        }
+
   // Finds (and possibly interpolates) the value for the specified year.
   function interpolateValues(values, year) {
     var i = bisect.left(values, year, 0, values.length - 1),
