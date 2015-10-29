@@ -144,16 +144,8 @@ svg.append("text")
     .attr("class", "x label")
     .attr("text-anchor", "end")
     .attr("x", width)
-    .attr("y", height - 6)
+    .attr("y", height + 26)
     .text("nombre de points");
-
-// Add an x-date label.
-svg.append("text")
-    .attr("class", "x label")
-    .attr("text-anchor", "end")
-    .attr("x", width)
-    .attr("y", height + 35)
-    .text("années");
 
 // Add a y-axis label.
 svg.append("text")
@@ -212,7 +204,7 @@ d3.json("data/ranking.json", function(irb) {
     .enter().append("circle")
 	.attr("class", "trace")
 	.style("fill",d3.rgb(255,255,255))
-	.call(trace_pos(0));
+	.call(trace_pos);
 
 function trace_test(name,instance) {
 	console.log(test);
@@ -246,10 +238,10 @@ function trace_test(name,instance) {
         .attr("cy", function(d) { return yScale(y(d)); })
         .attr("r", function(d) { return radiusScale(radius(d)); });
   }
-  function trace_pos(trace,r) {
+  function trace_pos(trace) {
     trace.attr("cx", function(d) { return dScale(a(d)); })
         .attr("cy", function(d) { return yScale(y(d)); })
-        .attr("r", function(d) { return radiusScale(r); });
+        .attr("r", function(d) { return radiusScale(1); });
 	}
   // Defines a sort order so that the smallest dots are drawn on top.
   function order(a, b) {
@@ -301,7 +293,7 @@ function trace_test(name,instance) {
   // Updates the display to show specific trace.
   function displayTrace() {
 	console.log("Dsiplay TRace");
-    trace.data(test).call(trace_pos(1)).style("fill",d3.rgb(164,164,164));
+    trace.data(test).call(trace_pos).style("fill",d3.rgb(164,164,164));
   }
 
   // Interpolates the dataset for the given (fractional) year.
