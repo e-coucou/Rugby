@@ -108,7 +108,7 @@ var xAxis = d3.svg.axis().orient("bottom").scale(xScale).ticks(18, d3.format(",d
     yAxis = d3.svg.axis().scale(yScale).orient("left");
 
 // x axes for dates
-var xDate = d3.svg.axis().orient("bottom").scale(dScale).ticks(18, d3.format(",d"));
+var xDate = d3.svg.axis().orient("top").scale(dScale).ticks(18, d3.format(",d"));
 	
 // Create the SVG container and set the origin.
 var svg = d3.select("#chart").append("svg")
@@ -304,7 +304,7 @@ d3.json("data/ranking.json", function(irb) {
 	}
   }
     function trace_test(name) {
-		trace.selectAll()
+		trace.selectAll("g")
 			.data([])
 			.exit()
 			.remove();
