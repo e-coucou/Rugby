@@ -318,7 +318,8 @@ function trace_test(name,instance) {
   }
   // tracé du parcourt ...
   function parcourt(name) {
-    test.length=0;       //return 
+    console.log(name)
+	test.length=0;       //return 
 	for (annee=2003.8 ; annee < 2016.0 ; annee += 0.1) {
 		irb.forEach(function(d) {
           if (d.name == name) {
