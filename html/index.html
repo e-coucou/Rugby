@@ -205,25 +205,18 @@ d3.json("data/ranking.json", function(irb) {
   // Add trace
   var trace = svg.append("g")
     .attr("class", "trace")
-    .selectAll(".trace")
-	.enter();
-
-function trace_test(name) {
-	test.length = 0;
-	trace.selectAll(".trace")
-		.data(test)
-		.remove();
-	parcourt(name);
-	console.log(test);
-    trace.selectAll(".trace")
+    .selectAll(".trace");
 		.data(test)
         .enter()
         .append("circle")
 		.attr("class", "trace")
 		.style("fill",d3.rgb(255,0,0))
-        .attr("cx", function(d) { return dScale(a(d)); })
-        .attr("cy", function(d) { return yScale(y(d)); })
-        .attr("r", function(d) { return radiusScale(5); });
+		.call(trace_pos);
+
+function trace_test(name) {
+	parcourt(name);
+//	console.log(test);
+	displayTrace();
 }
 	
   // Add an overlay for the year label.
@@ -250,7 +243,11 @@ function trace_test(name) {
         .attr("cy", function(d) { return yScale(y(d)); })
         .attr("r", function(d) { return radiusScale(radius(d)); });
   }
-
+  function trace_pos(trace) {
+    trace.attr("cx", function(d) { return dScale(a(d)); })
+        .attr("cy", function(d) { return yScale(y(d)); })
+        .attr("r", function(d) { return radiusScale(5); });
+	}
   // Defines a sort order so that the smallest dots are drawn on top.
   function order(a, b) {
     return radius(b) - radius(a);
@@ -298,6 +295,11 @@ function trace_test(name) {
     label.text(Math.round((year-Math.floor(year))*12)+'/'+Math.floor(year));
   }
 
+  // Updates the display to show specific trace.
+  function displayTrace() {
+    trace.data(test, key).call(trace_pos);
+  }
+
   // Interpolates the dataset for the given (fractional) year.
   function interpolateData(year) {
     return irb.map(function(d) {
@@ -313,7 +315,7 @@ function trace_test(name) {
   var test=[];
   // tracé du parcourt ...
   function parcourt(name) {
-           //return 
+    test.length=0;       //return 
 	for (annee=2003.8 ; annee < 2016.0 ; annee += 0.1) {
 		irb.forEach(function(d) {
           if (d.name == name) {
