@@ -322,6 +322,7 @@ function trace_test(name,instance) {
 	test.length=0;       //return 
 	for (annee=2003.8 ; annee < 2016.0 ; annee += 0.1) {
 		irb.forEach(function(d) {
+		  console.log(d.name)
           if (d.name == name) {
             var l =  test.push( {
 				pays: d.name ,
