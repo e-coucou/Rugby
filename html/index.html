@@ -195,8 +195,8 @@ d3.json("data/ranking.json", function(irb) {
 
   // Add trace
   var trace = svg.append("g")
-    .attr("class", "trace")
-    .selectAll(".dot")
+    .attr("class", "traces")
+    .selectAll(".trace")
 	.data(test) //parcourt("France"))
     .enter().append("circle")
 	.attr("class", "trace")
@@ -289,7 +289,7 @@ function trace_test(name,instance) {
 
   // Updates the display to show specific trace.
   function displayTrace() {
-	trace.selectAll(".trace.circle").style("fill",d3.rgb(0,0,255)); //.remove();
+	trace.selectAll(".trace").style("fill",d3.rgb(0,0,255)); //.remove();
     trace.data(test).enter().append("circle").attr("class", "trace").call(trace_pos).style("fill",d3.rgb(164,164,164));
   }
 
