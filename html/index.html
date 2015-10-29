@@ -208,7 +208,7 @@ d3.json("data/ranking.json", function(irb) {
   var trace = svg.append("g")
     .attr("class", "trace")
     .selectAll(".dot")
-	.data(parcourt(""))
+	.data(parcourt("France"))
     .enter().append("circle")
 	.attr("class", "trace")
 	.style("fill",d3.rgb(255,0,0))
