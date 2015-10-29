@@ -289,8 +289,8 @@ function trace_test(name,instance) {
 
   // Updates the display to show specific trace.
   function displayTrace() {
-	trace.selectAll(".trace").remove();
-    trace.data(test).enter().append("circle").call(trace_pos).style("fill",d3.rgb(164,164,164));
+	trace.selectAll(".trace.circle").remove();
+    trace.data(test).enter().append("circle").attr("class", "trace").call(trace_pos).style("fill",d3.rgb(164,164,164));
   }
 
   // Interpolates the dataset for the given (fractional) year.
