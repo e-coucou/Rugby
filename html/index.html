@@ -90,7 +90,7 @@ text {
 function x(d) { return (d.points); }
 function y(d) { return (d.rank); }
 function a(d) { return (d.annee); }
-function radius(d) { return d.matchs; }
+function radius(d) { return (d.matchs===undefined ? 0 : d.matchs); }
 function color(d) { return d.name; }  // region
 function key(d) { return d.name; }
 
@@ -102,7 +102,7 @@ var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
 // Various scales. These domains make assumptions of data, naturally.
 var xScale = d3.scale.linear().domain([0, 100]).range([0, width]),  // vs log
     yScale = d3.scale.linear().domain([0, 100]).range([0,height]),
-    radiusScale = d3.scale.sqrt().domain([1, 200]).range([1, 20]),
+    radiusScale = d3.scale.sqrt().domain([0, 200]).range([1, 20]),
 	dScale = d3.scale.linear().domain([2003, 2016]).range([0, width]),
     colorScale = d3.scale.category20();  //10
 
