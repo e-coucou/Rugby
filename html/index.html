@@ -187,7 +187,7 @@ d3.json("data/ranking.json", function(irb) {
     .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+' ('+Math.floor(d.points*10)/10+')');})
         .on("click", function(d) { return trace_test(d,this);})
 //        .on("click", function (d) {return d3.select(this).style("fill",d3.rgb(255,0,0));})
-        .filter(function(d) {return d.sel==0;})
+        .filter(function(d) {return d.sel === 0;})
     .sort(order);
 
   // Add a title.
@@ -307,7 +307,7 @@ function trace_test(d,instance) {
   // Updates the display to show the specified year.
   function displayYear(year) {
     dot.data(interpolateData(year), key).call(position).sort(order)
-        .filter(function(d) {return d.sel >0});
+        .filter(function(d) {return d.sel === 1});
     label.text(Math.round((year-Math.floor(year))*12)+'/'+Math.floor(year));
   }
 
