@@ -204,9 +204,8 @@ d3.json("data/ranking.json", function(irb) {
 	.call(trace_pos);
 
 function trace_test(name,instance) {
-	console.log(test);
+	trace.data(test).remove();
 	parcourt(name);
-	console.log(test);
 	displayTrace();
 	d3.select(instance).style("fill",d3.rgb(255,0,0));
 }
