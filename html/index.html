@@ -196,7 +196,7 @@ d3.json("data/ranking.json", function(irb) {
     .style("fill", function(d) { return colorScale(color(d)); })
     .call(position)
     .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+' ('+Math.floor(d.points*10)/10+')');})
-        .on("click", function(d) { return trace_test(d.name);})
+        .on("click", function(d) { return trace_test(d.name,this);})
 //        .on("click", function (d) {return d3.select(this).style("fill",d3.rgb(255,0,0));})
     .sort(order);
 
@@ -207,18 +207,19 @@ d3.json("data/ranking.json", function(irb) {
   // Add trace
   var trace = svg.append("g")
     .attr("class", "trace")
-    .selectAll(".trace")
+    .selectAll(".dot")
 	.data(test)
     .enter().append("circle")
 	.attr("class", "trace")
 	.style("fill",d3.rgb(255,0,0))
 	.call(trace_pos);
 
-function trace_test(name) {
+function trace_test(name,instance) {
 	console.log(test);
 	parcourt(name);
 	console.log(test);
 	displayTrace();
+	d3.select(instance).style("fill",d3.rgb(255,0,0));
 }
 	
   // Add an overlay for the year label.
