@@ -221,6 +221,17 @@ function trace_test(name,instance) {
         .attr("height", box.height)
         .on("mouseover", enableInteraction);
 
+// Add an overlay for the pays label.
+  var p_box = pays.node().getBBox();
+
+  var overlay = svg.append("rect")
+        .attr("class", "overlay")
+        .attr("x", box.x)
+        .attr("y", box.y)
+        .attr("width", box.width)
+        .attr("height", box.height)
+        .on("mouseover", enablePays);
+
   // Start a transition that interpolates the data based on year.
   svg.transition()
       .duration(30000)
@@ -273,6 +284,17 @@ function trace_test(name,instance) {
     }
   }
 
+  // Enable Pays
+  function enablePays() {
+    svg.transition().duration(0);
+
+    overlay
+        .on("click", mouseclick)
+
+    function mouseclick() {
+      pays.classed("active", true);
+    }
+  }
   // Tweens the entire chart by first tweening the year, and then the data.
   // For the interpolated data, the dots and label are redrawn.
   function tweenYear() {
