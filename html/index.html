@@ -289,7 +289,7 @@ function trace_test(name,instance) {
 
   // Updates the display to show specific trace.
   function displayTrace() {
-	trace.selectAll(".trace").exit().remove();
+	trace.selectAll(".trace").remove();
     trace.data(test).enter().append("circle").call(trace_pos).style("fill",d3.rgb(164,164,164));
   }
 
