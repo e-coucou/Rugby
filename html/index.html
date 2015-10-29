@@ -215,8 +215,9 @@ d3.json("data/ranking.json", function(irb) {
 	.call(trace_pos);
 
 function trace_test(name) {
+	console.log(test);
 	parcourt(name);
-//	console.log(test);
+	console.log(test);
 	displayTrace();
 }
 	
@@ -298,7 +299,8 @@ function trace_test(name) {
 
   // Updates the display to show specific trace.
   function displayTrace() {
-    trace.data(test, key).call(trace_pos);
+	console.log("Dsiplay TRace");
+    trace.data(test).call(trace_pos);
   }
 
   // Interpolates the dataset for the given (fractional) year.
