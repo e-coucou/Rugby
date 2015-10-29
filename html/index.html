@@ -86,7 +86,7 @@ text {
 // Various accessors that specify the four dimensions of data to visualize.
 function x(d) { return (d.points); }
 function y(d) { return (d.rank); }
-function d(d) { return (d.annee); }
+function a(d) { return (d.annee); }
 function radius(d) { return d.matchs; }
 function color(d) { return d.name; }  // region
 function key(d) { return d.name; }
@@ -315,7 +315,7 @@ d3.json("data/ranking.json", function(irb) {
         .append("circle")
 		.attr("class", "dot")
 		.style("fill",d3.rgb(255,0,0))
-        .attr("cx", function(d) { return dScale(d(d)); })
+        .attr("cx", function(d) { return dScale(a(d)); })
         .attr("cy", function(d) { return yScale(y(d)); })
         .attr("r", function(d) { return radiusScale(5); });
         }
