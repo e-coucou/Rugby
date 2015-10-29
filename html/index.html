@@ -205,13 +205,12 @@ d3.json("data/ranking.json", function(irb) {
   // Add trace
   var trace = svg.append("g")
     .attr("class", "trace")
-    .selectAll(".trace");
-		.data(test)
-        .enter()
-        .append("circle")
-		.attr("class", "trace")
-		.style("fill",d3.rgb(255,0,0))
-		.call(trace_pos);
+    .selectAll(".trace")
+	.data(test)
+    .enter().append("circle")
+	.attr("class", "trace")
+	.style("fill",d3.rgb(255,0,0))
+	.call(trace_pos);
 
 function trace_test(name) {
 	parcourt(name);
