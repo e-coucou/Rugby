@@ -63,12 +63,12 @@ text {
 <h1>Ranking IRB depuis 2003</h1>
 
 <p id="chart"></p>
-
+<br>
 <aside>
 <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://rugby-rky.herokuapp.com/index.html" data-via="EricP_">Tweet</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 </aside><br>
-<aside>Passez la souris au dessus de l'année pour vous déplacer dans le temps.</aside>
+<aside>Passez la souris au dessus de l'axe des abscisses pour vous déplacer dans le temps.</aside>
 <p class="attribution">Source: <a href="https://github.com/e-coucou/Rugby">e-Coucou</a>, <a href="http://www.pulselive.com">PulseLive</a>.
 
 <p>Petite visualisation utilisant la bibliothèque <a href="http://d3js.org/">D3</a>. Elle montre l'évolution des classements IRB. Les données sur le Rugby sont collectées par <a href="http://www.pulselive.com/">Puslive</a>. L'IRB classe les équipes de Rugby depuis 2003, chaque rencontre permet l'attribution de points en fonction de l'enjeux et de l'écart du score (pour info en Coupe du Mande les points comptent double). Le maximum de points est 100.</p>
@@ -141,7 +141,7 @@ svg.append("text")
     .attr("class", "x label")
     .attr("text-anchor", "end")
     .attr("x", width)
-    .attr("y", height + 26)
+    .attr("y", height + 20)
     .text("nombre de points");
 
 // Add a y-axis label.
