@@ -86,7 +86,8 @@ text {
 // Various accessors that specify the four dimensions of data to visualize.
 function x(d) { return (d.points); }
 function y(d) { return (d.rank); }
-function radius(d) { return d.matchs; }
+function a(d) { return (d.annee); }
+function radius(d) { return (d.matchs===undefined ? 0 : d.matchs); }
 function color(d) { return d.name; }  // region
 function key(d) { return d.name; }
 
@@ -98,19 +99,25 @@ var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
 // Various scales. These domains make assumptions of data, naturally.
 var xScale = d3.scale.linear().domain([0, 100]).range([0, width]),  // vs log
     yScale = d3.scale.linear().domain([0, 100]).range([0,height]),
-    radiusScale = d3.scale.sqrt().domain([1, 200]).range([1, 20]),
+    radiusScale = d3.scale.sqrt().domain([0, 200]).range([1, 20]),
+	dScale = d3.scale.linear().domain([2003, 2016]).range([0, width]),
     colorScale = d3.scale.category20();  //10
 
 // The x & y axes.
 var xAxis = d3.svg.axis().orient("bottom").scale(xScale).ticks(18, d3.format(",d")),
     yAxis = d3.svg.axis().scale(yScale).orient("left");
 
+// x axes for dates
+var xDate = d3.svg.axis().orient("top").scale(dScale).ticks(18, d3.format(",d"));
+	
 // Create the SVG container and set the origin.
 var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+//Data
+var test=[{name: 'x', rank: 100, annee: 2003}];
 
 // Add the x-axis.
 svg.append("g")
@@ -123,12 +130,18 @@ svg.append("g")
     .attr("class", "y axis")
     .call(yAxis);
 
+// Add the x-date.
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xDate);
+
 // Add an x-axis label.
 svg.append("text")
     .attr("class", "x label")
     .attr("text-anchor", "end")
     .attr("x", width)
-    .attr("y", height - 6)
+    .attr("y", height + 26)
     .text("nombre de points");
 
 // Add a y-axis label.
@@ -148,7 +161,7 @@ var label = svg.append("text")
     .attr("x", width)
     .text('12/2003');
 
-// Add the year label; the value is set on transition.
+// Add the information label; the value is set on transition.
 var pays = svg.append("text")
     .attr("class", "pays label")
     .attr("text-anchor", "begin")
@@ -172,13 +185,32 @@ d3.json("data/ranking.json", function(irb) {
     .style("fill", function(d) { return colorScale(color(d)); })
     .call(position)
     .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+' ('+Math.floor(d.points*10)/10+')');})
-	.on("click", function (d) {return d3.select(this).style("fill",d3.rgb(255,0,0));})
+        .on("click", function(d) { return trace_test(d,this);})
+//        .on("click", function (d) {return d3.select(this).style("fill",d3.rgb(255,0,0));})
     .sort(order);
 
   // Add a title.
   dot.append("title")
       .text(function(d) { return d.name; });
 
+  // Add trace
+  var trace = svg.append("g")
+    .attr("class", "traces")
+    .selectAll(".trace")
+	.data(test) //parcourt("France"))
+    .enter().append("circle")
+	.attr("class", "trace")
+	.style("fill",d3.rgb(255,255,255))
+	.call(trace_pos);
+
+function trace_test(d,instance) {
+	trace.data(test).exit().remove();
+	parcourt(d.name);
+	displayTrace();
+    d.sel = 1;
+	d3.select(instance).style("fill",d3.rgb(255,0,0));
+}
+	
   // Add an overlay for the year label.
   var box = label.node().getBBox();
 
@@ -189,6 +221,17 @@ d3.json("data/ranking.json", function(irb) {
         .attr("width", box.width)
         .attr("height", box.height)
         .on("mouseover", enableInteraction);
+
+// Add an overlay for the pays label.
+  var p_box = pays.node().getBBox();
+
+  var p_overlay = svg.append("rect")
+        .attr("class", "overlay")
+        .attr("x", p_box.x)
+        .attr("y", p_box.y)
+        .attr("width", p_box.width)
+        .attr("height", p_box.height)
+        .on("mouseover", enablePays);
 
   // Start a transition that interpolates the data based on year.
   svg.transition()
@@ -203,7 +246,11 @@ d3.json("data/ranking.json", function(irb) {
         .attr("cy", function(d) { return yScale(y(d)); })
         .attr("r", function(d) { return radiusScale(radius(d)); });
   }
-
+  function trace_pos(trace) {
+    trace.attr("cx", function(d) { return dScale(a(d)); })
+        .attr("cy", function(d) { return yScale(y(d)); })
+        .attr("r", function(d) { return radiusScale(1); });
+	}
   // Defines a sort order so that the smallest dots are drawn on top.
   function order(a, b) {
     return radius(b) - radius(a);
@@ -238,6 +285,17 @@ d3.json("data/ranking.json", function(irb) {
     }
   }
 
+  // Enable Pays
+  function enablePays() {
+    svg.transition().duration(0);
+
+    p_overlay
+        .on("click", mouseclick)
+
+    function mouseclick() {
+      pays.classed("active", true);
+    }
+  }
   // Tweens the entire chart by first tweening the year, and then the data.
   // For the interpolated data, the dots and label are redrawn.
   function tweenYear() {
@@ -247,8 +305,16 @@ d3.json("data/ranking.json", function(irb) {
 
   // Updates the display to show the specified year.
   function displayYear(year) {
-    dot.data(interpolateData(year), key).call(position).sort(order);
+    dot.data(interpolateData(year), key).call(position).sort(order)
+        .filter(function(d,i) {return d.sel % i === 1});
     label.text(Math.round((year-Math.floor(year))*12)+'/'+Math.floor(year));
+  }
+
+  // Updates the display to show specific trace.
+  function displayTrace() {
+	//trace.remove(); //.style("fill",d3.rgb(0,0,255)); //.remove();
+	d3.selectAll(".trace").remove();
+    trace.data(test).enter().append("circle").attr("class", "trace").call(trace_pos).style("fill",d3.rgb(164,164,164));
   }
 
   // Interpolates the dataset for the given (fractional) year.
@@ -259,9 +325,26 @@ d3.json("data/ranking.json", function(irb) {
         region: d.region,
         points: interpolateValues(d.points, year),
         matchs: interpolateValues(d.matchs, year),
-        rank: interpolateValues(d.rank, year)
+        rank: interpolateValues(d.rank, year),
+        sel: 0
       };
     });
+  }
+  // tracé du parcourt ...
+  function parcourt(name) {
+	test.length=0;       //return 
+	for (annee=2003.8 ; annee < 2016.0 ; annee += 0.1) {
+		irb.forEach(function(d) {
+          if (d.name == name) {
+            var l =  test.push( {
+				pays: d.name ,
+				annee: annee ,
+				rank: interpolateValues(d.rank, annee) 
+				});
+            }
+        });
+	}
+	return test;
   }
 
   // Finds (and possibly interpolates) the value for the specified year.
@@ -278,11 +361,11 @@ d3.json("data/ranking.json", function(irb) {
 });
 
 </script>
-<script>
+<!--<script>
 
 GoogleAnalyticsObject = "ga", ga = function() { ga.q.push(arguments); }, ga.q = [], ga.l = +new Date;
 ga("create", "UA-48272912-3", "ocks.org");
 ga("send", "pageview");
 
-</script>
+</script>-->
 <script async src="//www.google-analytics.com/analytics.js"></script>
