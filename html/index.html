@@ -217,9 +217,9 @@ function trace_test(d,instance) {
   var overlay = svg.append("rect")
         .attr("class", "overlay")
         .attr("x", 0) //box.x)
-        .attr("y", height) //box.y)
+        .attr("y", height - 20) //box.y)
         .attr("width", width) // box.width)
-        .attr("height", height) // box.height)
+        .attr("height", 40) // box.height)
         .on("mouseover", enableInteraction);
 
 // Add an overlay for the pays label.
@@ -260,7 +260,8 @@ function trace_test(d,instance) {
   function enableInteraction() {
     var yearScale = d3.scale.linear()
         .domain([2003.8, 2016])
-        .range([box.x + 10, box.x + box.width - 10])
+//        .range([box.x + 10, box.x + box.width - 10])
+        .range([20, width ])
         .clamp(true);
 
     // Cancel the current transition, if any.
