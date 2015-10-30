@@ -259,9 +259,9 @@ function trace_test(d,instance) {
   // After the transition finishes, you can mouseover to change the year.
   function enableInteraction() {
     var yearScale = d3.scale.linear()
-        .domain([2003.8, 2016])
+        .domain([2003, 2016])
 //        .range([box.x + 10, box.x + box.width - 10])
-        .range([20, width ])
+        .range([0, width ])
         .clamp(true);
 
     // Cancel the current transition, if any.
