@@ -63,12 +63,12 @@ text {
 <h1>Ranking IRB depuis 2003</h1>
 
 <p id="chart"></p>
-
+<br>
 <aside>
 <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://rugby-rky.herokuapp.com/index.html" data-via="EricP_">Tweet</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 </aside><br>
-<aside>Passez la souris au dessus de l'année pour vous déplacer dans le temps.</aside>
+<aside>Passez la souris au dessus de l'axe des abscisses pour vous déplacer dans le temps.</aside>
 <p class="attribution">Source: <a href="https://github.com/e-coucou/Rugby">e-Coucou</a>, <a href="http://www.pulselive.com">PulseLive</a>.
 
 <p>Petite visualisation utilisant la bibliothèque <a href="http://d3js.org/">D3</a>. Elle montre l'évolution des classements IRB. Les données sur le Rugby sont collectées par <a href="http://www.pulselive.com/">Puslive</a>. L'IRB classe les équipes de Rugby depuis 2003, chaque rencontre permet l'attribution de points en fonction de l'enjeux et de l'écart du score (pour info en Coupe du Mande les points comptent double). Le maximum de points est 100.</p>
@@ -141,7 +141,7 @@ svg.append("text")
     .attr("class", "x label")
     .attr("text-anchor", "end")
     .attr("x", width)
-    .attr("y", height + 26)
+    .attr("y", height + 20)
     .text("nombre de points");
 
 // Add a y-axis label.
@@ -179,13 +179,13 @@ d3.json("data/ranking.json", function(irb) {
   var dot = svg.append("g")
     .attr("class", "dots")
     .selectAll(".dot")
-    .data(interpolateData(2003.5))
+        .data(interpolateData(2003.0,0xFF))
     .enter().append("circle")
     .attr("class", "dot")
     .style("fill", function(d) { return colorScale(color(d)); })
     .call(position)
     .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+' ('+Math.floor(d.points*10)/10+')');})
-        .on("click", function(d) { return trace_test(d,this);})
+    .on("click", function(d) { return trace_test(d,this);})
 //        .on("click", function (d) {return d3.select(this).style("fill",d3.rgb(255,0,0));})
     .sort(order);
 
@@ -207,19 +207,20 @@ function trace_test(d,instance) {
 	trace.data(test).exit().remove();
 	parcourt(d.name);
 	displayTrace();
-    d.sel = 1;
+    d.sel = 20;
+    console.log(d);
 	d3.select(instance).style("fill",d3.rgb(255,0,0));
 }
 	
   // Add an overlay for the year label.
   var box = label.node().getBBox();
-
+  // taille de la fenetre correspond a la dimension de l'abscisse
   var overlay = svg.append("rect")
         .attr("class", "overlay")
-        .attr("x", box.x)
-        .attr("y", box.y)
-        .attr("width", box.width)
-        .attr("height", box.height)
+        .attr("x", 0) //box.x)
+        .attr("y", height - 20) //box.y)
+        .attr("width", width) // box.width)
+        .attr("height", 40) // box.height)
         .on("mouseover", enableInteraction);
 
 // Add an overlay for the pays label.
@@ -260,7 +261,8 @@ function trace_test(d,instance) {
   function enableInteraction() {
     var yearScale = d3.scale.linear()
         .domain([2003, 2016])
-        .range([box.x + 10, box.x + box.width - 10])
+//        .range([box.x + 10, box.x + box.width - 10])
+        .range([0, width ])
         .clamp(true);
 
     // Cancel the current transition, if any.
@@ -305,8 +307,12 @@ function trace_test(d,instance) {
 
   // Updates the display to show the specified year.
   function displayYear(year) {
-    dot.data(interpolateData(year), key).call(position).sort(order)
-        .filter(function(d,i) {return d.sel % i === 1});
+        var donnee = interpolateData(year,0xFF);
+        console.log(donnee);
+    dot.data(donnee, key)
+        .call(position)
+        .sort(order)
+        .filter(function(d) {return d.sel === 1});
     label.text(Math.round((year-Math.floor(year))*12)+'/'+Math.floor(year));
   }
 
@@ -318,15 +324,14 @@ function trace_test(d,instance) {
   }
 
   // Interpolates the dataset for the given (fractional) year.
-  function interpolateData(year) {
+  function interpolateData(year,masq) {
     return irb.map(function(d) {
       return {
         name: d.name,
-        region: d.region,
+        sel: d.region & masq,
         points: interpolateValues(d.points, year),
         matchs: interpolateValues(d.matchs, year),
         rank: interpolateValues(d.rank, year),
-        sel: 0
       };
     });
   }
