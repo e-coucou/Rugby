@@ -179,7 +179,7 @@ d3.json("data/ranking.json", function(irb) {
   var dot = svg.append("g")
     .attr("class", "dots")
     .selectAll(".dot")
-        .data(interpolateData(2003.0),0xFF)
+        .data(interpolateData(2003.0,0xFF)
     .enter().append("circle")
     .attr("class", "dot")
     .style("fill", function(d) { return colorScale(color(d)); })
