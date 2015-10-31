@@ -328,7 +328,7 @@ function trace_test(d,instance) {
     return irb.map(function(d) {
       return {
         name: d.name,
-        sel: 1 && masq,
+        sel: d.region & masq,
         points: interpolateValues(d.points, year),
         matchs: interpolateValues(d.matchs, year),
         rank: interpolateValues(d.rank, year),
