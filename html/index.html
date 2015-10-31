@@ -168,15 +168,16 @@ var pays = svg.append("text")
     .attr("y", 44)
     .attr("x", 24)
     .text('France');
+
 // histo coupe du monde
 svg.append("text")
-.attr("class", "y label")
-.attr("text-anchor", "begin")
-.attr("y", height-100)
-.attr("x", 50)
-.attr("dy", ".75em")
-.attr("transform", "rotate(-90)")
-.text("RWC 2003");
+    .attr("class", "y label")
+    .attr("text-anchor", "begin")
+    .attr("y", 100)
+    .attr("x", dScale(2003.8))
+    .attr("dy", ".75em")
+    .attr("transform", "rotate(-90)")
+    .text("RWC 2003");
 console.log(dScale(2003.8));
 
 // Load the data.
