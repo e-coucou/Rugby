@@ -179,7 +179,7 @@ d3.json("data/ranking.json", function(irb) {
   var dot = svg.append("g")
     .attr("class", "dots")
     .selectAll(".dot")
-        .data(interpolateData(2003.0),#FF)
+        .data(interpolateData(2003.0),0xFF)
     .enter().append("circle")
     .attr("class", "dot")
     .style("fill", function(d) { return colorScale(color(d)); })
@@ -307,7 +307,7 @@ function trace_test(d,instance) {
 
   // Updates the display to show the specified year.
   function displayYear(year) {
-        var donnee = interpolateData(year,#FF);
+        var donnee = interpolateData(year,0xFF);
         console.log(donnee);
     dot.data(donnee, key)
         .call(position)
