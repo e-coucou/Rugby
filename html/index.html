@@ -179,7 +179,7 @@ d3.json("data/ranking.json", function(irb) {
   var dot = svg.append("g")
     .attr("class", "dots")
     .selectAll(".dot")
-    .data(interpolateData(2003.0))
+        .data(interpolateData(2003.0),#FF)
     .enter().append("circle")
     .attr("class", "dot")
     .style("fill", function(d) { return colorScale(color(d)); })
@@ -307,7 +307,7 @@ function trace_test(d,instance) {
 
   // Updates the display to show the specified year.
   function displayYear(year) {
-        var donnee = interpolateData(year);
+        var donnee = interpolateData(year,#FF);
         console.log(donnee);
     dot.data(donnee, key)
         .call(position)
@@ -324,11 +324,11 @@ function trace_test(d,instance) {
   }
 
   // Interpolates the dataset for the given (fractional) year.
-  function interpolateData(year) {
+  function interpolateData(year,masq) {
     return irb.map(function(d) {
       return {
         name: d.name,
-        region: d.region,
+        sel: d.region,
         points: interpolateValues(d.points, year),
         matchs: interpolateValues(d.matchs, year),
         rank: interpolateValues(d.rank, year),
