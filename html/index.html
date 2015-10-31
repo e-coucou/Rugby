@@ -171,11 +171,10 @@ var pays = svg.append("text")
 
 // histo coupe du monde
 svg.append("text")
-    .attr("class", "y label")
+    .attr("class", "x label")
     .attr("text-anchor", "begin")
-    .attr("y", 437)
     .attr("x", dScale(2003.8))
-    .attr("dy", ".75em")
+    .attr("y", height-30)
     .attr("transform", "rotate(-90)")
     .text("RWC 2003");
 console.log(dScale(2003.8));
