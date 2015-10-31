@@ -307,10 +307,12 @@ function trace_test(d,instance) {
 
   // Updates the display to show the specified year.
   function displayYear(year) {
-    dot.data(interpolateData(year), key)
+        var donnee = interpolateData(year);
+        console.log(donnee);
+    dot.data(donnee, key)
         .call(position)
         .sort(order)
-        .filter(function(d,i) {return d.sel === 1});
+        .filter(function(d) {return d.sel === 1});
     label.text(Math.round((year-Math.floor(year))*12)+'/'+Math.floor(year));
   }
 
