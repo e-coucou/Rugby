@@ -169,18 +169,15 @@ var pays = svg.append("text")
     .attr("x", 24)
     .text('France');
 
-// Load the data.
-d3.json("data/1238.json", function(info) {
-        var a2015 = 2003.8;
-    
-    svg.append("text")
-        .attr("class", "x label")
-        .attr("text-anchor", "begin")
-        .attr("x", xScale(a2015))
-        .attr("y", height - 20)
-        .attr("dy", ".75em")
-        .attr("transform", "rotate(-90)")
-        .text("ranking");});
+var a2015 = 2003.8;
+svg.append("text")
+    .attr("class", "x label")
+    .attr("text-anchor", "begin")
+    .attr("x", xScale(a2015))
+    .attr("y", height - 20)
+    .attr("dy", ".75em")
+    .attr("transform", "rotate(-90)")
+    .text("Australie");
         
 d3.json("data/ranking.json", function(irb) {
 
