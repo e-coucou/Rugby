@@ -180,8 +180,10 @@ svg.append("text")
 //    .attr("dy", ".75em")
     .attr("transform", "translate("+dScale(2003.8)+","+(height-20)+") rotate(-90)")
     .text("RWC 2003");
-console.log(dScale(2003.8));
 
+d3.json("data/1238_e.json", function(data){
+        console.log(data);
+});
 // Load the data.
 d3.json("data/ranking.json", function(irb) {
 
