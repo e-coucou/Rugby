@@ -200,7 +200,7 @@ var rwc_liste = [ "5_n.json","952_n.json", "1023_n.json", "1238_n.json"];
 
 for (index=0;index<4;index++) {
     d3.json("data/"+rwc_liste[index], function(data){  // event numbers
-    //    console.log(data);
+       console.log(data);
     var date_s = new Date(data.event.start.millis);
     var date_e = new Date(data.event.end.millis);
     var start = date_s.getFullYear() + ( date_s.getMonth()*30.4 + date_s.getDate() )/(12*30.4);
@@ -210,8 +210,11 @@ for (index=0;index<4;index++) {
         .attr("class", "abs label")
         .attr("text-anchor", "begin")
         .attr("transform", "translate("+dScale(end)+","+(height-20)+") rotate(-90)")
-        .text(data.event.label);
-           var datal =[ dScale(start) , dScale(end)];
+        .text(data.event.label)
+        .on("mouseover",function(d){ return rwc.text(data.event.start.label);});
+    
+    var datal =[ dScale(start) , dScale(end)];
+ 
     svg.append("path")
         .datum(datal)
         .attr("class", "line")
