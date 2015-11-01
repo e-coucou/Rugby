@@ -182,9 +182,10 @@ var pays = svg.append("text")
 //    .text("RWC 2003");
 
 var rwc = [ "5_n.json","952_n.json", "1023_n.json", "1238_n.json"];
-console.log(rwc[1]);
-
-d3.json("data/1238_n.json", function(data){  //1238 event numbers
+for (index=0;i<5;i++) {
+    console.log(rwc[1]);
+    
+   d3.json("data/"+rwc[index], function(data){  // event numbers
         console.log(data);
     var date_s = new Date(data.event.start.millis);
     var date_e = new Date(data.event.end.millis);
@@ -197,7 +198,8 @@ d3.json("data/1238_n.json", function(data){  //1238 event numbers
         .attr("text-anchor", "begin")
         .attr("transform", "translate("+dScale(start)+","+(height-20)+") rotate(-90)")
         .text(data.event.label);
-});
+  });
+};
 // Load the data.
 d3.json("data/ranking.json", function(irb) {
 
