@@ -211,7 +211,7 @@ for (index=0;index<4;index++) {
         .attr("text-anchor", "begin")
         .attr("transform", "translate("+dScale(end)+","+(height-20)+") rotate(-90)")
         .text(data.event.label)
-        .on("mouseover",function(d){ return rwc.text("Coupe du monde \ndu "+data.event.start.label+" au "+data.event.end.label);});
+        .on("mouseover",function(d){ return rwc.html("Coupe du monde <br/>du "+data.event.start.label+" au "+data.event.end.label);});
     
     var datal =[ dScale(start) , dScale(end)];
  
