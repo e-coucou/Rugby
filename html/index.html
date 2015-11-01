@@ -39,13 +39,16 @@ text {
   font: 500 112px "Helvetica Neue";
   fill: #ddd;
 }
-
 .year.label.active {
   fill: #48b;
 }
 .pays.label {
     font: 500 48px "Helvetica Neue";
     fill: #bce;
+}
+.rwc.label {
+    font: 500 14px "Helvetica Neue";
+    fill: #48b;
 }
 
 .overlay {
@@ -183,28 +186,26 @@ var pays = svg.append("text")
     .attr("x", 24)
     .text('France');
 
-// histo coupe du monde
-//svg.append("text")
-//    .attr("class", "abs label")
-//    .attr("text-anchor", "begin")
-//    .attr("x", dScale(2003.8))
-//    .attr("y", height-30)
-//    .attr("dy", ".75em")
-//    .attr("transform", "translate("+dScale(2003.8)+","+(height-20)+") rotate(-90)")
-//    .text("RWC 2003");
+// Add the information label for RWC.
+var rwc = svg.append("text")
+    .attr("class", "rwc label")
+    .attr("text-anchor", "begin")
+    .attr("y", 200)
+    .attr("x", 24)
+    .text('?');
 
-var rwc = [ "5_n.json","952_n.json", "1023_n.json", "1238_n.json"];
+// histo coupe du monde
+
+var rwc_liste = [ "5_n.json","952_n.json", "1023_n.json", "1238_n.json"];
+
 for (index=0;index<4;index++) {
-    console.log(rwc[1]);
-    
-   d3.json("data/"+rwc[index], function(data){  // event numbers
-        console.log(data);
+    d3.json("data/"+rwc_liste[index], function(data){  // event numbers
+    //    console.log(data);
     var date_s = new Date(data.event.start.millis);
     var date_e = new Date(data.event.end.millis);
     var start = date_s.getFullYear() + ( date_s.getMonth()*30.4 + date_s.getDate() )/(12*30.4);
     var end = date_e.getFullYear() + ( date_e.getMonth()*30.4 + date_e.getDate() )/(12*30.4);
-        console.log(start);
-
+  
     svg.append("text")
         .attr("class", "abs label")
         .attr("text-anchor", "begin")
