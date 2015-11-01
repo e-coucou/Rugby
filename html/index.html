@@ -181,6 +181,9 @@ var pays = svg.append("text")
 //    .attr("transform", "translate("+dScale(2003.8)+","+(height-20)+") rotate(-90)")
 //    .text("RWC 2003");
 
+var rwc = [ "5_n.json","952_n.json", "1023_n.json", "1238_n.json"];
+console.log(rwc[1]);
+
 d3.json("data/1238_n.json", function(data){  //1238 event numbers
         console.log(data);
     var date_s = new Date(data.event.start.millis);
