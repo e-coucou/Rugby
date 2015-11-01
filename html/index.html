@@ -130,7 +130,7 @@ var test=[{name: 'x', rank: 100, annee: 2003}];
 var line = d3.svg.line()
     .x(function(d) {
        console.log(d);
-       return d.start; })
+       return d.value; })
     .y(function(d) { return height; });
 
 // Add the x-axis.
@@ -210,9 +210,9 @@ for (index=0;index<4;index++) {
         .attr("text-anchor", "begin")
         .attr("transform", "translate("+dScale(start)+","+(height-20)+") rotate(-90)")
         .text(data.event.label);
- 
+           var datal =[ { 'value:'dScale(start)} ,{ 'value:' dScale(end)}]
     svg.append("path")
-        .datum([ dScale(start) , dScale(end)])
+        .datum(datal)
         .attr("class", "line")
         .attr("d", line);
   });
