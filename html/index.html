@@ -211,7 +211,7 @@ for (index=0;index<4;index++) {
         .attr("text-anchor", "begin")
         .attr("transform", "translate("+dScale(end)+","+(height-20)+") rotate(-90)")
         .text(data.event.label)
-        .on("mouseover",function(d){ return rwc.text(data.event.start.label);});
+        .on("mouseover",function(d){ return rwc.text("du "+data.event.start.label+" au "+data.event.end.label);});
     
     var datal =[ dScale(start) , dScale(end)];
  
@@ -236,7 +236,7 @@ d3.json("data/ranking.json", function(irb) {
     .attr("class", "dot")
     .style("fill", function(d) { return colorScale(color(d)); })
     .call(position)
-    .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+' ('+Math.floor(d.points*10)/10+')');})
+    .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+'\n('+Math.floor(d.points*10)/10+')');})
     .on("click", function(d) { return trace_test(d,this);})
 //        .on("click", function (d) {return d3.select(this).style("fill",d3.rgb(255,0,0));})
     .sort(order);
