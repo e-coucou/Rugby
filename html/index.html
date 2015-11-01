@@ -182,7 +182,8 @@ svg.append("text")
     .text("RWC 2003");
 
 d3.json("data/1238_n.json", function(data){  //1238 event numbers
-        console.log(data);
+        console.log(data.start);
+        console.log(GetFullYear(data.start.millis));
 });
 // Load the data.
 d3.json("data/ranking.json", function(irb) {
