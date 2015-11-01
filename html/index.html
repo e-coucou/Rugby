@@ -121,6 +121,11 @@ var svg = d3.select("#chart").append("svg")
 //Data
 var test=[{name: 'x', rank: 100, annee: 2003}];
 
+// les lignes
+var line = d3.svg.line()
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(height); });
+
 // Add the x-axis.
 svg.append("g")
     .attr("class", "x axis")
@@ -192,12 +197,17 @@ for (index=0;index<4;index++) {
     var start = date_s.getFullYear() + ( date_s.getMonth()*30.4 + date_s.getDate() )/(12*30.4);
     var end = date_e.getFullYear() + ( date_e.getMonth()*30.4 + date_e.getDate() )/(12*30.4);
         console.log(start);
-
+    var val
     svg.append("text")
         .attr("class", "abs label")
         .attr("text-anchor", "begin")
         .attr("transform", "translate("+dScale(start)+","+(height-20)+") rotate(-90)")
         .text(data.event.label);
+ 
+    svg.append("path")
+        .datum([dScale(start)] , dScale(end)])
+        .attr("class", "line")
+        .attr("d", line);
   });
 };
 // Load the data.
