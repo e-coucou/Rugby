@@ -183,6 +183,7 @@ svg.append("text")
 
 d3.json("data/1238_n.json", function(data){  //1238 event numbers
         console.log(data.data);
+        console.log(data.event.start);
         console.log(getFullYear(data.event.start.millis));
 });
 // Load the data.
