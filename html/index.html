@@ -123,8 +123,8 @@ var test=[{name: 'x', rank: 100, annee: 2003}];
 
 // les lignes
 var line = d3.svg.line()
-    .x(function(d) { return x(50); })
-    .y(function(d) { return y(height); });
+    .x(function(d) { return d.x; })
+    .y(function(d) { return height; });
 
 // Add the x-axis.
 svg.append("g")
@@ -204,7 +204,7 @@ for (index=0;index<4;index++) {
         .attr("transform", "translate("+dScale(start)+","+(height-20)+") rotate(-90)")
         .text(data.event.label);
  
-           console.log(line.x);
+    console.log(line.x);
     svg.append("path")
         .datum([ dScale(start) , dScale(end)])
         .attr("class", "line")
