@@ -205,7 +205,7 @@ for (index=0;index<4;index++) {
         .text(data.event.label);
  
     svg.append("path")
-        .datum([dScale(start)] , dScale(end)])
+        .datum([ dScale(start) , dScale(end)])
         .attr("class", "line")
         .attr("d", line);
   });
