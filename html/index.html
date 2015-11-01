@@ -128,7 +128,7 @@ var test=[{name: 'x', rank: 100, annee: 2003}];
 
 // les lignes
 var line = d3.svg.line()
-    .x(function(d) { return 50; })
+    .x(function(d) { return d.start; })
     .y(function(d) { return height; });
 
 // Add the x-axis.
