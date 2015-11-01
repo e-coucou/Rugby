@@ -55,9 +55,9 @@ text {
 }
 
 .line {
-    fill: none;
-    stroke: steelblue;
-    stroke-width: 1.5px;
+    fill: red;
+    stroke: red;
+    stroke-width: 3.5px;
 }
 </style>
 
@@ -208,7 +208,7 @@ for (index=0;index<4;index++) {
     svg.append("text")
         .attr("class", "abs label")
         .attr("text-anchor", "begin")
-        .attr("transform", "translate("+dScale(start)+","+(height-20)+") rotate(-90)")
+        .attr("transform", "translate("+dScale(end)+","+(height-20)+") rotate(-90)")
         .text(data.event.label);
            var datal =[ dScale(start) , dScale(end)];
     svg.append("path")
