@@ -204,7 +204,7 @@ for (index=0;index<4;index++) {
         .attr("transform", "translate("+dScale(start)+","+(height-20)+") rotate(-90)")
         .text(data.event.label);
  
-           console.log(line);
+           console.log(line.x);
     svg.append("path")
         .datum([ dScale(start) , dScale(end)])
         .attr("class", "line")
