@@ -192,7 +192,7 @@ var rwc = svg.append("text")
     .attr("text-anchor", "begin")
     .attr("y", 200)
     .attr("x", 24)
-    .text('');
+    .text('?');
 
 // histo coupe du monde
 
@@ -225,7 +225,7 @@ for (index=0;index<4;index++) {
 		rwc.text(data.event.label+ "["+data.event.id+"]");
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("du "+data.event.start.label+" au "+data.event.end.label);
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Fréquentation   : "+data.data.attendance);
-		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Points marqués  : "+data.event.points);
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Points marqués  : "+data.data.points);
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Essais          : "+data.data.tries);
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Drops           : "+data.data.dropGoals);
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Pénalités       : "+data.data.penalties);
