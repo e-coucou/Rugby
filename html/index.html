@@ -223,6 +223,7 @@ for (index=0;index<4;index++) {
 		
 	function info() {
 		d3.selectAll(".rwc").remove();
+		rwc.svg.append("text");
 		rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);
 		rwc.append("text").text(data.event.id);
 		}
