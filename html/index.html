@@ -224,6 +224,7 @@ for (index=0;index<4;index++) {
 	function info(d) {
 		d3.selectAll(".rwc").remove();
 		rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);
+		rwc.append("text").text(data.event.id);
 		}
   });
 };
