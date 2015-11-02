@@ -212,7 +212,7 @@ for (index=0;index<4;index++) {
         .attr("text-anchor", "begin")
         .attr("transform", "translate("+dScale(end)+","+(height-20)+") rotate(-90)")
         .text(data.event.label)
-        .on("mouseover",function(d){ return rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);});
+        .on("mouseover", info(d) ); //function(d){ return rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);});
     
     var datal =[ dScale(start) , dScale(end)];
  
@@ -223,6 +223,7 @@ for (index=0;index<4;index++) {
 		
 	function info(d) {
 		d3.selectAll(".rwc").remove();
+		rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);
 		}
   });
 };
