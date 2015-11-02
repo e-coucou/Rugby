@@ -192,8 +192,7 @@ var rwc = svg.append("text")
     .attr("text-anchor", "begin")
     .attr("y", 200)
     .attr("x", 24)
-    .attr("dy", ".35em")
-    .text('?');
+    .text('');
 
 // histo coupe du monde
 
@@ -212,7 +211,7 @@ for (index=0;index<4;index++) {
         .attr("text-anchor", "begin")
         .attr("transform", "translate("+dScale(end)+","+(height-20)+") rotate(-90)")
         .text(data.event.label)
-        .on("mouseover", info() ); //function(d){ return rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);});
+        .on("mouseover", function(d) { return info();} ); //function(d){ return rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);});
     
     var datal =[ dScale(start) , dScale(end)];
  
@@ -223,12 +222,16 @@ for (index=0;index<4;index++) {
 		
 	function info() {
 //		d3.selectAll(".tspan").remove();
-		console.log("ici");
-		rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);
-		rwc.selectAll("text")
-			.append("tspan")
-			.attr("class", "rwc tspan")
-			.text(data.event.id);
+		rwc.text(data.event.label+ "["+data.event.id+"]");
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("du "+data.event.start.label+" au "+data.event.end.label);
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Fréquentation   : "+data.data.attendance);
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Points marqués  : "+data.event.points);
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Essais          : "+data.data.tries);
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Drops           : "+data.data.dropGoals);
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Pénalités       : "+data.data.penalties);
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Transformations : "+data.data.conversions);
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Cartons Jaunes  : "+data.data.yellowCards);
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Cartons Rouges  : "+data.data.redCards);
 		}
   });
 };
