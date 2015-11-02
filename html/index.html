@@ -78,7 +78,9 @@ text {
 <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://rugby-rky.herokuapp.com/index.html" data-via="EricP_">Tweet</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 </aside><br>
-<aside>Passez la souris au dessus de l'axe des abscisses pour vous déplacer dans le temps.</aside>
+<aside>Passez la souris au dessus de l'axe des abscisses pour vous déplacer dans le temps.<br>
+Cliquez sur les pastilles des Pays pour voir l'évolution des classements.<br>
+Passez la souris sur les dates de Coupes du Monde pour voir les statistiques.</aside>
 <p class="attribution">Source: <a href="https://github.com/e-coucou/Rugby">e-Coucou</a>, <a href="http://www.pulselive.com">PulseLive</a>.
 
 <p>Petite visualisation utilisant la bibliothèque <a href="http://d3js.org/">D3</a>. Elle montre l'évolution des classements IRB. Les données sur le Rugby sont collectées par <a href="http://www.pulselive.com/">Puslive</a>. L'IRB classe les équipes de Rugby depuis 2003, chaque rencontre permet l'attribution de points en fonction de l'enjeux et de l'écart du score (pour info en Coupe du Mande les points comptent double). Le maximum de points est 100.</p>
@@ -203,8 +205,8 @@ for (index=0;index<4;index++) {
        console.log(data);
     var date_s = new Date(data.event.start.millis);
     var date_e = new Date(data.event.end.millis);
-    var start = date_s.getFullYear() + ( date_s.getMonth()*30.4 + date_s.getDate() )/(12*30.4);
-    var end = date_e.getFullYear() + ( date_e.getMonth()*30.4 + date_e.getDate() )/(12*30.4);
+    var start = date_s.getFullYear() + ( date_s.getMonth()*30.4 + date_s.getDate() )/(365.0);
+    var end = date_e.getFullYear() + ( date_e.getMonth()*30.4 + date_e.getDate() )/(365.0);
   
     svg.append("text")
         .attr("class", "abs label")
@@ -222,8 +224,8 @@ for (index=0;index<4;index++) {
 		
 	function info() {
 //		d3.selectAll(".tspan").remove();
-		rwc.text(data.event.label+ "["+data.event.id+"]");
-		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("du "+data.event.start.label+" au "+data.event.end.label);
+		rwc.text(data.event.label+ "   ["+data.event.id+"]");
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("du "+date_s.getDate()+"/"+(date_s.getMonth()+1)+"/"+date_s.getFullYear()+" au "+date_e.getDate()+"/"+(date_e.getMonth()+1)+"/"+date_e.getFullYear());
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Fréquentation   : "+data.data.attendance);
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Points marqués  : "+data.data.points);
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Essais          : "+data.data.tries);
