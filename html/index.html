@@ -221,7 +221,7 @@ for (index=0;index<rwc_index.length;index++) {
         .attr("transform", "translate("+dScale(end)+","+(height-20)+") rotate(-90)")
         .text(data.event.label)
         .on("mouseover", function(d) { return info();} ); //function(d){ return rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);});
-    if (data.event.rankingsWeight == 2 ) {
+    if ((data.event.rankingsWeight == 2 )||(start > 2008.0)) {
 		var datal =[ dScale(start) , dScale(end)];
  
 		svg.append("path")
