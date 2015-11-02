@@ -43,16 +43,16 @@ text {
   fill: #48b;
 }
 .pays.label {
-    font: 500 48px "Helvetica Neue";
+    font: 500 44px "Helvetica Neue";
     fill: #bce;
 }
 .rwc.label {
-    font: 500 20px "Helvetica Neue";
+    font: 500 18px "Helvetica Neue";
     fill: #48b;
 }
 .rwc.tspan {
-    font: 500 14px "Helvetica Neue";
-    fill: #48b;
+    font: 500 11px "Helvetica Neue";
+    fill: #227;
 }
 
 .overlay {
@@ -70,20 +70,18 @@ text {
 
 <header>
   <aside>Novembre, 2015</aside>
-  <a href="index.html" rel="author">e-Coucou</a>
+  <a href="index.html" rel="author">e-Coucou</a><br>
   <a href="wrc.html" rel="author">WRC Graphes</a>
 </header>
-
 <h1>Ranking IRB depuis 2003</h1>
-
 <p id="chart"></p>
-<br>
+<br><br><br>
 <aside>
 <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://rugby.e-coucou.com/index.html" data-via="EricP_">Tweet</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-</aside><br>
-<aside>Passez la souris au dessus de l'axe des abscisses pour vous déplacer dans le temps.<br>
-Cliquez sur les pastilles des Pays pour voir l'évolution des classements.<br>
+</aside><br><br>
+<aside>Passez la souris au dessus de l'axe des abscisses pour vous déplacer dans le temps.<br><br>
+Cliquez sur les pastilles des Pays pour voir l'évolution des classements.<br><br>
 Passez la souris sur les dates de Coupes du Monde pour voir les statistiques.</aside>
 <p class="attribution">Source: <a href="https://github.com/e-coucou/Rugby">e-Coucou</a>, <a href="http://www.pulselive.com">PulseLive</a>.
 
@@ -110,11 +108,11 @@ function key(d) { return d.name; }
 // Chart dimensions.
 var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
     width = 960 - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 550 - margin.top - margin.bottom;
 
 // Various scales. These domains make assumptions of data, naturally.
 var xScale = d3.scale.linear().domain([0, 100]).range([0, width]),  // vs log
-    yScale = d3.scale.linear().domain([0, 100]).range([0,height]),
+    yScale = d3.scale.linear().domain([0, 110]).range([0,height]),
     radiusScale = d3.scale.sqrt().domain([0, 200]).range([1, 20]),
 	dScale = d3.scale.linear().domain([2003, 2016]).range([0, width]),
     colorScale = d3.scale.category20();  //10
@@ -133,12 +131,12 @@ var svg = d3.select("#chart").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 //Data
-var test=[{name: 'x', rank: 100, annee: 2003}];
+var test=[{name: 'x', rank: 110, annee: 2003}];
 
 // les lignes
 var line = d3.svg.line()
     .x(function(d) {
-       console.log(d);
+       // console.log(d);
        return d; })
     .y(function(d) { return height; });
 
@@ -196,7 +194,7 @@ var pays = svg.append("text")
 var rwc = svg.append("text")
     .attr("class", "rwc label")
     .attr("text-anchor", "begin")
-    .attr("y", 100)
+    .attr("y", 65)
     .attr("x", 24)
     .text('?');
 
@@ -206,10 +204,10 @@ var rwc_liste = [ "5_n.json","952_n.json", "1023_n.json", "1238_n.json"];
 var rwc_index = [ "5", "952" ,"1023" , "1238" , "145" ,"344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244"];
 for (index=0;index<rwc_index.length;index++) {
 	var url = "http://cmsapi.pulselive.com/rugby/event/"+rwc_index[index]+"/numbers?language=en&client=pulse";
-    console.log(url);
+    //console.log(url);
 //	d3.json("data/"+rwc_liste[index], function(data){  // event numbers
 	d3.json(url, function(data){  // event numbers
-       console.log(data);
+       //console.log(data);
     var date_s = new Date(data.event.start.millis);
     var date_e = new Date(data.event.end.millis);
     var start = date_s.getFullYear() + ( date_s.getMonth()*30.4 + date_s.getDate() )/(365.0);
@@ -220,7 +218,8 @@ for (index=0;index<rwc_index.length;index++) {
         .attr("text-anchor", "begin")
         .attr("transform", "translate("+dScale(end)+","+(height-20)+") rotate(-90)")
         .text(data.event.label)
-        .on("mouseover", function(d) { return info();} ); //function(d){ return rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);});
+        .on("mouseover", function(d) { return info();} ) //function(d){ return rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);});
+        .on("click", function(d) { return matches(data.event.id);} ); //function(d){ return rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);});
     if ((data.event.rankingsWeight == 2 )||(start > 2008.0)) {
 		var datal =[ dScale(start) , dScale(end)];
  
@@ -243,6 +242,19 @@ for (index=0;index<rwc_index.length;index++) {
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Cartons Jaunes  : "+data.data.yellowCards);
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Cartons Rouges  : "+data.data.redCards);
 		}
+            
+    function matches(index) {
+        var url = "http://cmsapi.pulselive.com/rugby/event/"+index+"/schedule?language=en&client=pulse";
+        d3.selectAll(".tspan").remove();
+        // console.log(url);
+        d3.json(url, function(data){  // event schedule
+            console.log(data);
+            for (i=0;i<data.matches.length;i++) {
+                date = new Date(data.matches[i].time.millis);
+               rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(data.matches[i].teams[0].name+' '+data.matches[i].scores[0]+' - '+data.matches[i].scores[1]+' '+data.matches[i].teams[1].name+'  ('+data.matches[i].venue.name+' - '+data.matches[i].attendance+' - '+data.matches[i].eventPhase+' - '+date.getDate()+'/'+(date.getMonth()+1)+')');
+            }
+        }
+    )}
   });
 };
 // Load the data.
@@ -284,7 +296,7 @@ function trace_test(d,instance) {
 	parcourt(d.name);
 	displayTrace();
     d.sel = 20;
-    console.log(d);
+    //console.log(d);
 	d3.select(instance).style("fill",d3.rgb(255,0,0));
 }
 	
@@ -294,9 +306,9 @@ function trace_test(d,instance) {
   var overlay = svg.append("rect")
         .attr("class", "overlay")
         .attr("x", 0) //box.x)
-        .attr("y", height - 20) //box.y)
+        .attr("y", height - 5) //box.y)
         .attr("width", width) // box.width)
-        .attr("height", 40) // box.height)
+        .attr("height", 25) // box.height)
         .on("mouseover", enableInteraction);
 
 // Add an overlay for the pays label.
