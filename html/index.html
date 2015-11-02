@@ -47,6 +47,10 @@ text {
     fill: #bce;
 }
 .rwc.label {
+    font: 500 20px "Helvetica Neue";
+    fill: #48b;
+}
+.rwc.tspan {
     font: 500 14px "Helvetica Neue";
     fill: #48b;
 }
@@ -199,9 +203,12 @@ var rwc = svg.append("text")
 // histo coupe du monde
 
 var rwc_liste = [ "5_n.json","952_n.json", "1023_n.json", "1238_n.json"];
-
-for (index=0;index<4;index++) {
-    d3.json("data/"+rwc_liste[index], function(data){  // event numbers
+var rwc_index = [ "5", "952" ,"1023" , "1238" , "145" ,"344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244"];
+for (index=0;index<rwc_index.length;index++) {
+	var url = "http://cmsapi.pulselive.com/rugby/event/"+rwc_index[index]+"/numbers?language=en&client=pulse";
+    console.log(url);
+//	d3.json("data/"+rwc_liste[index], function(data){  // event numbers
+	d3.json(url, function(data){  // event numbers
        console.log(data);
     var date_s = new Date(data.event.start.millis);
     var date_e = new Date(data.event.end.millis);
@@ -214,13 +221,14 @@ for (index=0;index<4;index++) {
         .attr("transform", "translate("+dScale(end)+","+(height-20)+") rotate(-90)")
         .text(data.event.label)
         .on("mouseover", function(d) { return info();} ); //function(d){ return rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);});
-    
-    var datal =[ dScale(start) , dScale(end)];
+    if (data.event.rankingsWeight == 2 ) {
+		var datal =[ dScale(start) , dScale(end)];
  
-    svg.append("path")
-        .datum(datal)
-        .attr("class", "line")
-        .attr("d", line);
+		svg.append("path")
+			.datum(datal)
+			.attr("class", "line")
+			.attr("d", line);
+	}
 		
 	function info() {
 //		d3.selectAll(".tspan").remove();
