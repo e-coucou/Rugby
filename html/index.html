@@ -62,9 +62,12 @@ text {
 }
 
 .line {
-    fill: red;
     stroke: #00C;
     stroke-width: 4.5px;
+}
+.curseur {
+    stroke: #00C;
+    stroke-width: 0.5px;
 }
 </style>
 
@@ -135,10 +138,11 @@ var test=[{name: 'x', rank: 110, annee: 2003}];
 
 // les lignes
 var line = d3.svg.line()
-    .x(function(d) {
-       // console.log(d);
-       return d; })
+    .x(function(d) { return d; })
     .y(function(d) { return height; });
+var curseur = d3.svg.line()
+    .x(function(d) { console.log(d.x); return d.x; })
+    .y(function(d) { return d.y; });
 
 // Add the x-axis.
 svg.append("g")
@@ -402,6 +406,13 @@ function trace_test(d,instance) {
         .sort(order)
         .filter(function(d) {return d.sel === 1});
     label.text(Math.round((year-Math.floor(year))*12)+'/'+Math.floor(year));
+	var datac = [ { "x" : dScale(year), "y" : 0 }, { "x" : dScale(year), "y" : height } ];
+	
+	d3.selectAll(".curseur").remove();
+	svg.append("path")
+		.datum(datac)
+		.attr("class", "curseur")
+		.attr("d", curseur);
   }
 
   // Updates the display to show specific trace.
