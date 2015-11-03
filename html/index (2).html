@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<title>RUGBY WORLD CUP</title>
+<meta name="description" content="Interactive visualisation Rugby Ranking IRB.">
+<meta name="author" content="e-Coucou">
+<html class="ocks-org do-not-copy">
+<meta charset="utf-8">
+<title>Ranking evolution</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+
+@import url(../css/visu.css?aea6f0a);
+
+#chart {
+  margin-left: -40px;
+  height: 506px;
+}
+
+text {
+  font: 10px sans-serif;
+}
+
+.dot {
+  stroke: #000;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.label {
+  fill: #777;
+}
+.abs.label {
+    fill: #48b;
+}
+.year.label {
+  font: 500 112px "Helvetica Neue";
+  fill: #ddd;
+}
+.year.label.active {
+  fill: #48b;
+}
+.pays.label {
+    font: 500 44px "Helvetica Neue";
+    fill: #bce;
+}
+.rwc.label {
+    font: 500 18px "Helvetica Neue";
+    fill: #48b;
+}
+.rwc.tspan {
+    font: 500 11px "Helvetica Neue";
+    fill: #227;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+  cursor: ew-resize;
+}
+
+.line {
+    stroke: #00C;
+    stroke-width: 4.5px;
+}
+.curseur {
+    stroke: #00C;
+    stroke-width: 0.5px;
+}
+.rect {
+    font: 500 11px "Helvetica Neue";
+	fill: #bce;
+    stroke: #bce;
+    stroke-width: 0.5px;
+}
+
+</style>
+
+<header>
+  <aside>Novembre, 2015</aside>
+  <a href="index.html" rel="author">e-Coucou</a><br>
+  <a href="wrc.html" rel="author">WRC Graphes</a>
+</header>
+<h1>Ranking IRB depuis 2003</h1>
+<p id="chart"></p>
+<br><br><br>
+<aside>
+<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://rugby.e-coucou.com/index.html" data-via="EricP_">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+</aside><br><br>
+<aside>Passez la souris au dessus de l'axe des abscisses pour vous déplacer dans le temps.<br><br>
+Cliquez sur les pastilles des Pays pour voir l'évolution des classements.<br><br>
+Passez la souris sur les dates de Coupes du Monde pour voir les statistiques.</aside>
+<p class="attribution">Source: <a href="https://github.com/e-coucou/Rugby">e-Coucou</a>, <a href="http://www.pulselive.com">PulseLive</a>.
+
+<p>Petite visualisation utilisant la bibliothèque <a href="http://d3js.org/">D3</a>. Elle montre l'évolution des classements IRB. Les données sur le Rugby sont collectées par <a href="http://www.pulselive.com/">Puslive</a>. L'IRB classe les équipes de Rugby depuis 2003, chaque rencontre permet l'attribution de points en fonction de l'enjeux et de l'écart du score (pour info en Coupe du Mande les points comptent double). Le maximum de points est 100.</p>
+<p>Les abscisses (<i>x</i>) représentent le nombre de points, en ordonnée (<i>y</i>) le classement et le nombre de matches disputés par an est représenté par la taille de la pastille (rayon). Les Pays sont coloriés aléatoirement. En passant la souris sur les pastilles vous pourrez découvrir les noms, points et classement.
+<p>à venir le classement des équipes fémines ...</p>
+<footer>
+    <p>Mille et un remerciements à <a href="http://bl.ocks.org/mbostock">Mike Bostock</a> et à <a href="http://alignedleft.com/tutorials/d3/">Scott Murray</a>.</p>
+    <aside>Data : 19 Octobre 2015</aside>
+    <a href="index.html" rel="author">e-Coucou</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script></script>
+<script>
+
+// Various accessors that specify the four dimensions of data to visualize.
+function x(d) { return (d.points); }
+function y(d) { return (d.rank); }
+function a(d) { return (d.annee); }
+function radius(d) { return (d.matchs===undefined ? 0 : d.matchs); }
+function color(d) { return d.name; }  // region
+function key(d) { return d.name; }
+
+// Chart dimensions.
+var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
+    width = 960 - margin.right,
+    height = 550 - margin.top - margin.bottom;
+
+// Various scales. These domains make assumptions of data, naturally.
+var xScale = d3.scale.linear().domain([0, 100]).range([0, width]),  // vs log
+    yScale = d3.scale.linear().domain([0, 110]).range([0,height]),
+    radiusScale = d3.scale.sqrt().domain([0, 200]).range([1, 20]),
+	dScale = d3.scale.linear().domain([2003, 2016]).range([0, width]),
+    colorScale = d3.scale.category20();  //10
+
+// The x & y axes.
+var xAxis = d3.svg.axis().orient("bottom").scale(xScale).ticks(18, d3.format(",d")),
+    yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+// x axes for dates
+var xDate = d3.svg.axis().orient("top").scale(dScale).ticks(18, d3.format(",d"));
+	
+// Create the SVG container and set the origin.
+var svg = d3.select("#chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+//Data
+var test=[{name: 'x', rank: 110, annee: 2003}];
+
+// les lignes
+var line = d3.svg.line()
+    .x(function(d) { return d; })
+    .y(function(d) { return height; });
+var curseur = d3.svg.line()
+    .x(function(d) { return d.x; })
+    .y(function(d) { return d.y; });
+
+// Add the x-axis.
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+// Add the y-axis.
+svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis);
+
+// Add the x-date.
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xDate);
+
+// Add an x-axis label.
+svg.append("text")
+    .attr("class", "x label")
+    .attr("text-anchor", "end")
+    .attr("x", width)
+    .attr("y", height + 20)
+    .text("nombre de points");
+
+// Add a y-axis label.
+svg.append("text")
+    .attr("class", "y label")
+    .attr("text-anchor", "end")
+    .attr("y", 6)
+    .attr("dy", ".75em")
+    .attr("transform", "rotate(-90)")
+    .text("ranking");
+
+// Add the year label; the value is set on transition.
+var label = svg.append("text")
+    .attr("class", "year label")
+    .attr("text-anchor", "end")
+    .attr("y", height - 24)
+    .attr("x", width)
+    .text('12/2003');
+
+// Add the information label; the value is set on transition.
+var pays = svg.append("text")
+    .attr("class", "pays label")
+    .attr("text-anchor", "begin")
+    .attr("y", 44)
+    .attr("x", 24)
+    .text('');
+
+// Add the information label for RWC.
+var rwc = svg.append("text")
+    .attr("class", "rwc label")
+    .attr("text-anchor", "begin")
+    .attr("y", 65)
+    .attr("x", 24)
+    .text('');
+	
+rwc.append("rect")
+    .attr("class", "rect")
+    .attr("y", 65)
+    .attr("x", 24)
+	.attr("width",100)
+	.attr("height",20);
+
+// histo coupe du monde
+
+var rwc_liste = [ "5_n.json","952_n.json", "1023_n.json", "1238_n.json"];
+var rwc_index = [ "5", "952" ,"1023" , "1238" , "145" ,"344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1236","1296","1557"];
+for (index=0;index<rwc_index.length;index++) {
+	var url = "http://cmsapi.pulselive.com/rugby/event/"+rwc_index[index]+"/numbers?language=en&client=pulse";
+    //console.log(url);
+//	d3.json("data/"+rwc_liste[index], function(data){  // event numbers
+	d3.json(url, function(data){  // event numbers
+       //console.log(data);
+    var date_s = new Date(data.event.start.millis);
+    var date_e = new Date(data.event.end.millis);
+    var start = date_s.getFullYear() + ( date_s.getMonth()*30.4 + date_s.getDate() )/(365.0);
+    var end = date_e.getFullYear() + ( date_e.getMonth()*30.4 + date_e.getDate() )/(365.0);
+  
+    svg.append("text")
+        .attr("class", "abs label")
+        .attr("text-anchor", "begin")
+        .attr("transform", "translate("+dScale(end)+","+(height-20)+") rotate(-90)")
+        .text(data.event.label)
+        .on("mouseover", function(d) { return info();} ) //function(d){ return rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);});
+        .on("click", function(d) { return matches(data.event.id);} ); //function(d){ return rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);});
+    if ((data.event.rankingsWeight == 2 )||(start > 2008.0)) {
+		var datal =[ dScale(start) , dScale(end)];
+ 
+		svg.append("path")
+			.datum(datal)
+			.attr("class", "line")
+			.attr("d", line);
+	}
+		
+	function info() {
+//		d3.selectAll(".tspan").remove();
+		rwc.text(data.event.label+ "   ["+data.event.id+"]");
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("du "+date_s.getDate()+"/"+(date_s.getMonth()+1)+"/"+date_s.getFullYear()+" au "+date_e.getDate()+"/"+(date_e.getMonth()+1)+"/"+date_e.getFullYear());
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Fréquentation   : "+data.data.attendance);
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Points marqués  : "+data.data.points);
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Essais          : "+data.data.tries);
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Drops           : "+data.data.dropGoals);
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Pénalités       : "+data.data.penalties);
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Transformations : "+data.data.conversions);
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Cartons Jaunes  : "+data.data.yellowCards);
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Cartons Rouges  : "+data.data.redCards);
+		}
+            
+    function matches(index) {
+        var url = "http://cmsapi.pulselive.com/rugby/event/"+index+"/schedule?language=en&client=pulse";
+        d3.selectAll(".tspan").remove();
+        // console.log(url);
+        d3.json(url, function(data){  // event schedule
+            console.log(data);
+            for (i=0;i<data.matches.length;i++) {
+                date = new Date(data.matches[i].time.millis);
+               rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(data.matches[i].teams[0].name+' '+data.matches[i].scores[0]+' - '+data.matches[i].scores[1]+' '+data.matches[i].teams[1].name+'  ('+data.matches[i].venue.name+' - '+data.matches[i].attendance+' - '+data.matches[i].eventPhase+' - '+date.getDate()+'/'+(date.getMonth()+1)+')');
+            }
+        }
+    )}
+  });
+};
+// Load the data.
+d3.json("data/ranking.json", function(irb) {
+
+  // A bisector since many nation's data is sparsely-defined.
+  var bisect = d3.bisector(function(d) { return d[0]; });
+
+  // Add a dot per nation. Initialize the data at 2003, and set the colors... 20 aleatoires
+  var dot = svg.append("g")
+    .attr("class", "dots")
+    .selectAll(".dot")
+        .data(interpolateData(2003.0,0xFF))
+    .enter().append("circle")
+    .attr("class", "dot")
+    .style("fill", function(d) { return colorScale(color(d)); })
+    .call(position)
+    .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+' ('+Math.floor(d.points*10)/10+')');})
+    .on("click", function(d) { return trace_test(d,this);})
+    .sort(order);
+
+  // Add a title.
+  dot.append("title")
+      .text(function(d) { return d.name; });
+
+  // Add trace
+  var trace = svg.append("g")
+    .attr("class", "traces")
+    .selectAll(".trace")
+	.data(test) //parcourt("France"))
+    .enter().append("circle")
+	.attr("class", "trace")
+	.style("fill",d3.rgb(255,255,255))
+	.call(trace_pos);
+
+function trace_test(d,instance) {
+	trace.data(test).exit().remove();
+	parcourt(d.name);
+	displayTrace();
+    d.sel = 20;
+    //console.log(d);
+	d3.select(instance).style("fill",d3.rgb(255,0,0));
+}
+	
+  // Add an overlay for the year label.
+  var box = label.node().getBBox();
+  // taille de la fenetre correspond a la dimension de l'abscisse
+  var overlay = svg.append("rect")
+        .attr("class", "overlay")
+        .attr("x", 0) //box.x)
+        .attr("y", height - 5) //box.y)
+        .attr("width", width) // box.width)
+        .attr("height", 25) // box.height)
+        .on("mouseover", enableInteraction);
+
+// Add an overlay for the pays label.
+  var p_box = pays.node().getBBox();
+
+  var p_overlay = svg.append("rect")
+        .attr("class", "overlay")
+        .attr("x", p_box.x)
+        .attr("y", p_box.y)
+        .attr("width", p_box.width)
+        .attr("height", p_box.height)
+        .on("mouseover", enablePays);
+
+  // Start a transition that interpolates the data based on year.
+  svg.transition()
+      .duration(30000)
+      .ease("linear")
+      .tween("year", tweenYear)
+      .each("end", enableInteraction);
+
+  // Positions the dots based on data.
+  function position(dot) {
+    dot .attr("cx", function(d) { return xScale(x(d)); })
+        .attr("cy", function(d) { return yScale(y(d)); })
+        .attr("r", function(d) { return radiusScale(radius(d)); });
+  }
+  function trace_pos(trace) {
+    trace.attr("cx", function(d) { return dScale(a(d)); })
+        .attr("cy", function(d) { return yScale(y(d)); })
+        .attr("r", function(d) { return radiusScale(1); });
+	}
+  // Defines a sort order so that the smallest dots are drawn on top.
+  function order(a, b) {
+    return radius(b) - radius(a);
+  }
+
+  // After the transition finishes, you can mouseover to change the year.
+  function enableInteraction() {
+    var yearScale = d3.scale.linear()
+        .domain([2003, 2016])
+//        .range([box.x + 10, box.x + box.width - 10])
+        .range([0, width ])
+        .clamp(true);
+
+    // Cancel the current transition, if any.
+    svg.transition().duration(0);
+
+    overlay
+        .on("mouseover", mouseover)
+        .on("mouseout", mouseout)
+        .on("mousemove", mousemove)
+        .on("touchmove", mousemove);
+
+    function mouseover() {
+      label.classed("active", true);
+    }
+
+    function mouseout() {
+      label.classed("active", false);
+    }
+
+    function mousemove() {
+      displayYear(yearScale.invert(d3.mouse(this)[0]));
+    }
+  }
+
+  // Enable Pays
+  function enablePays() {
+    svg.transition().duration(0);
+
+    p_overlay
+        .on("click", mouseclick)
+
+    function mouseclick() {
+      pays.classed("active", true);
+    }
+  }
+  // Tweens the entire chart by first tweening the year, and then the data.
+  // For the interpolated data, the dots and label are redrawn.
+  function tweenYear() {
+    var year = d3.interpolateNumber(2003, 2016);
+    return function(t) { displayYear(year(t)); };
+  }
+
+  // Updates the display to show the specified year.
+  function displayYear(year) {
+        var donnee = interpolateData(year,0xFF);
+    //    console.log(donnee);
+    dot.data(donnee, key)
+        .call(position)
+        .sort(order)
+        .filter(function(d) {return d.sel === 1});
+    label.text(Math.round((year-Math.floor(year))*12)+'/'+Math.floor(year));
+	var datac = [ { "x" : dScale(year), "y" : 0 }, { "x" : dScale(year), "y" : height } ];
+	
+	d3.selectAll(".curseur").remove();
+	svg.append("path")
+		.datum(datac)
+		.attr("class", "curseur")
+		.attr("d", curseur);
+  }
+
+  // Updates the display to show specific trace.
+  function displayTrace() {
+	//trace.remove(); //.style("fill",d3.rgb(0,0,255)); //.remove();
+	d3.selectAll(".trace").remove();
+    trace.data(test).enter().append("circle").attr("class", "trace").call(trace_pos).style("fill",d3.rgb(164,164,164));
+  }
+
+  // Interpolates the dataset for the given (fractional) year.
+  function interpolateData(year,masq) {
+    return irb.map(function(d) {
+      return {
+        name: d.name,
+        sel: d.region & masq,
+        points: interpolateValues(d.points, year),
+        matchs: interpolateValues(d.matchs, year),
+        rank: interpolateValues(d.rank, year),
+      };
+    });
+  }
+  // tracé du parcourt ...
+  function parcourt(name) {
+	test.length=0;       //return 
+	for (annee=2003.8 ; annee < 2016.0 ; annee += 0.1) {
+		irb.forEach(function(d) {
+          if (d.name == name) {
+            var l =  test.push( {
+				pays: d.name ,
+				annee: annee ,
+				rank: interpolateValues(d.rank, annee) 
+				});
+            }
+        });
+	}
+	return test;
+  }
+
+  // Finds (and possibly interpolates) the value for the specified year.
+  function interpolateValues(values, year) {
+    var i = bisect.left(values, year, 0, values.length - 1),
+        a = values[i];
+//    if (i > 0) {
+//      var b = values[i - 1],
+//          t = (year - a[0]) / (b[0] - a[0]);
+//      return a[1] * (1 - t) + b[1] * t;
+//    }
+    return a[1];
+  }
+});
+
+</script>
+<!--<script>
+
+GoogleAnalyticsObject = "ga", ga = function() { ga.q.push(arguments); }, ga.q = [], ga.l = +new Date;
+ga("create", "UA-48272912-3", "ocks.org");
+ga("send", "pageview");
+
+</script>-->
+<script async src="//www.google-analytics.com/analytics.js"></script>
