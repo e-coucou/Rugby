@@ -69,6 +69,12 @@ text {
     stroke: #00C;
     stroke-width: 0.5px;
 }
+.rect {
+    font: 500 11px "Helvetica Neue";
+    fill: #bce;
+    stroke: #bce;
+    stroke-width: 0.5px;
+}
 </style>
 
 <header>
@@ -109,7 +115,7 @@ function color(d) { return d.name; }  // region
 function key(d) { return d.name; }
 
 // Chart dimensions.
-var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = 960 - margin.right,
     height = 550 - margin.top - margin.bottom;
 
@@ -141,7 +147,7 @@ var line = d3.svg.line()
     .x(function(d) { return d; })
     .y(function(d) { return height; });
 var curseur = d3.svg.line()
-    .x(function(d) { console.log(d.x); return d.x; })
+    .x(function(d) { return d.x; })
     .y(function(d) { return d.y; });
 
 // Add the x-axis.
@@ -190,22 +196,22 @@ var label = svg.append("text")
 var pays = svg.append("text")
     .attr("class", "pays label")
     .attr("text-anchor", "begin")
-    .attr("y", 44)
+    .attr("y", 14)
     .attr("x", 24)
-    .text('France');
+    .text('');
 
 // Add the information label for RWC.
 var rwc = svg.append("text")
     .attr("class", "rwc label")
     .attr("text-anchor", "begin")
-    .attr("y", 65)
+    .attr("y", 37)
     .attr("x", 24)
-    .text('?');
+    .text('');
 
 // histo coupe du monde
 
 var rwc_liste = [ "5_n.json","952_n.json", "1023_n.json", "1238_n.json"];
-var rwc_index = [ "5", "952" ,"1023" , "1238" , "145" ,"344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1236","1296","1557"];
+var rwc_index = [ "5", "952" ,"1023" , "1238" , "145" ,"344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1183","1236","1296","1557","1577","714","855","886","926","970"];
 for (index=0;index<rwc_index.length;index++) {
 	var url = "http://cmsapi.pulselive.com/rugby/event/"+rwc_index[index]+"/numbers?language=en&client=pulse";
     //console.log(url);
@@ -255,10 +261,21 @@ for (index=0;index<rwc_index.length;index++) {
             console.log(data);
             for (i=0;i<data.matches.length;i++) {
                 date = new Date(data.matches[i].time.millis);
-               rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(data.matches[i].teams[0].name+' '+data.matches[i].scores[0]+' - '+data.matches[i].scores[1]+' '+data.matches[i].teams[1].name+'  ('+data.matches[i].venue.name+' - '+data.matches[i].attendance+' - '+data.matches[i].eventPhase+' - '+date.getDate()+'/'+(date.getMonth()+1)+')');
-            }
-        }
-    )}
+                if (i % 2 === 0) {
+                    rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(data.matches[i].teams[0].name+' '+data.matches[i].scores[0]+' - '+data.matches[i].scores[1]+' '+data.matches[i].teams[1].name)
+                .append("title").text(function(d) { return 'le '+date.getDate()+'/'+(date.getMonth()+1)+'\n'+data.matches[i].venue.name + '\nSpectateurs: '+data.matches[i].attendance+'\n'+data.matches[i].eventPhase+'\nmatch #'+data.matches[i].matchId;});
+//                .on("mouseover", function(d) { return this.attr("fill",d3.rgb(255,255,0));});
+                }
+                else {
+                    rwc.append("tspan").attr("class", "rwc tspan").attr("dx",180).attr("x", 24).text(data.matches[i].teams[0].name+' '+data.matches[i].scores[0]+' - '+data.matches[i].scores[1]+' '+data.matches[i].teams[1].name)
+                .append("title").text(function(d) { return 'le '+date.getDate()+'/'+(date.getMonth()+1)+'\n'+data.matches[i].venue.name + '\nSpectateurs: '+data.matches[i].attendance+'\n'+data.matches[i].eventPhase+'\nmatch #'+data.matches[i].matchId;});
+                }
+
+            } // end for
+            
+        
+        } //end json
+    )} // matches
   });
 };
 // Load the data.
