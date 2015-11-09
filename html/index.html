@@ -75,6 +75,32 @@ text {
     stroke: #bce;
     stroke-width: 0.5px;
 }
+.tooltip {
+    font: 500 11px "Helvetica Neue";
+    position: absolute;			
+    text-align: center;			
+    width: 200px;					
+    height: 150px;					
+    padding: 2px;				
+ 	line-height: 1;
+	font-weight: bold;
+	padding: 12px;
+	background: rgba(0, 0, 0, 0.8);
+	color: #bce;
+	border-radius: 1px;
+}
+.tip {	
+    position: absolute;			
+    text-align: center;			
+    width: 60px;					
+    height: 28px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: lightsteelblue;	
+    border: 0px;		
+    border-radius: 2px;			
+    pointer-events: none;			
+}
 </style>
 
 <header>
@@ -103,7 +129,8 @@ Passez la souris sur les dates de Coupes du Monde pour voir les statistiques.</a
     <a href="index.html" rel="author">e-Coucou</a>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script></script>
 <script>
 
 // Various accessors that specify the four dimensions of data to visualize.
@@ -207,6 +234,24 @@ var rwc = svg.append("text")
     .attr("y", 37)
     .attr("x", 24)
     .text('');
+	
+// Add tooltip pour les matches
+var tip = d3.tip()
+	.attr('class', 'tooltip')
+	.offset([-10, 0])
+	.html(function(data,i) {
+		return "<strong>Id:</strong><span style='color:red'>"+data.matches[i].matchId+"</span>";});
+
+// add tip
+  svg.call(tip);
+
+ // Define the div for the tooltip
+
+var div = d3.select("body").append("div")	
+    .attr("class", "tooltip")				
+	.style("left","600px")
+	.style("top","250px")
+    .style("opacity", 0);
 
 // histo coupe du monde
 
@@ -222,7 +267,7 @@ for (index=0;index<rwc_index.length;index++) {
     var date_e = new Date(data.event.end.millis);
     var start = date_s.getFullYear() + ( date_s.getMonth()*30.4 + date_s.getDate() )/(365.0);
     var end = date_e.getFullYear() + ( date_e.getMonth()*30.4 + date_e.getDate() )/(365.0);
-  
+
     svg.append("text")
         .attr("class", "abs label")
         .attr("text-anchor", "begin")
@@ -238,7 +283,8 @@ for (index=0;index<rwc_index.length;index++) {
 			.attr("class", "line")
 			.attr("d", line);
 	}
-		
+
+	
 	function info() {
 //		d3.selectAll(".tspan").remove();
 		rwc.text(data.event.label+ "   ["+data.event.id+"]");
@@ -264,15 +310,21 @@ for (index=0;index<rwc_index.length;index++) {
                 if (i % 2 === 0) {
                     rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(data.matches[i].teams[0].name+' '+data.matches[i].scores[0]+' - '+data.matches[i].scores[1]+' '+data.matches[i].teams[1].name)
                 .append("title").text(function(d) { return 'le '+date.getDate()+'/'+(date.getMonth()+1)+'\n'+data.matches[i].venue.name + '\nSpectateurs: '+data.matches[i].attendance+'\n'+data.matches[i].eventPhase+'\nmatch #'+data.matches[i].matchId;});
-//                .on("mouseover", function(d) { return this.attr("fill",d3.rgb(255,255,0));});
-                }
+				}
                 else {
                     rwc.append("tspan").attr("class", "rwc tspan").attr("dx",180).attr("x", 24).text(data.matches[i].teams[0].name+' '+data.matches[i].scores[0]+' - '+data.matches[i].scores[1]+' '+data.matches[i].teams[1].name)
                 .append("title").text(function(d) { return 'le '+date.getDate()+'/'+(date.getMonth()+1)+'\n'+data.matches[i].venue.name + '\nSpectateurs: '+data.matches[i].attendance+'\n'+data.matches[i].eventPhase+'\nmatch #'+data.matches[i].matchId;});
                 }
-
             } // end for
-            
+            rwc.selectAll("tspan")
+			    .on('mouseover', function(d,i) { div.transition()		
+						.duration(200)		
+						.style("opacity", .9);		
+						div	.html("<strong>Id:</strong><span style='color:white'>"+ "<br/>"+data.matches[i].matchId);})
+				.on("mouseout", function(d) { div.transition()		
+						.duration(500)		
+						.style("opacity", 0);});	
+
         
         } //end json
     )} // matches
@@ -345,7 +397,7 @@ function trace_test(d,instance) {
 
   // Start a transition that interpolates the data based on year.
   svg.transition()
-      .duration(30000)
+      .duration(10000)
       .ease("linear")
       .tween("year", tweenYear)
       .each("end", enableInteraction);
