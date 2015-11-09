@@ -70,36 +70,24 @@ text {
     stroke-width: 0.5px;
 }
 .rect {
-    font: 500 11px "Helvetica Neue";
+    font: 11px "Helvetica Neue";
     fill: #bce;
     stroke: #bce;
     stroke-width: 0.5px;
 }
 .tooltip {
-    font: 500 11px "Helvetica Neue";
+    font: 11px "Helvetica Neue";
     position: absolute;			
     text-align: center;			
-    width: 200px;					
-    height: 150px;					
+    width: 300px;
+    height: 150px;
     padding: 2px;				
  	line-height: 1;
-	font-weight: bold;
+    font-weight: bold;
 	padding: 12px;
-	background: rgba(0, 0, 0, 0.8);
+	background: rgba(100, 100, 100, 0.8);
 	color: #bce;
 	border-radius: 1px;
-}
-.tip {	
-    position: absolute;			
-    text-align: center;			
-    width: 60px;					
-    height: 28px;					
-    padding: 2px;				
-    font: 12px sans-serif;		
-    background: lightsteelblue;	
-    border: 0px;		
-    border-radius: 2px;			
-    pointer-events: none;			
 }
 </style>
 
@@ -108,6 +96,15 @@ text {
   <a href="index.html" rel="author">e-Coucou</a><br>
   <a href="wrc.html" rel="author">WRC Graphes</a>
 </header>
+<aside>
+<div id="mois_selection" class="control" left="100px" top="30px" position="absolute">
+    <select id="mois_select">
+        <option value=1>World Cup</option>
+        <option value=2>Six Nations</option>
+        <option value=3>Tri Nations</option>
+        <option value=4>TOP 3</option>
+    </select>
+</div></aside>
 <h1>Ranking IRB depuis 2003</h1>
 <p id="chart"></p>
 <br><br><br>
@@ -234,29 +231,18 @@ var rwc = svg.append("text")
     .attr("y", 37)
     .attr("x", 24)
     .text('');
-	
-// Add tooltip pour les matches
-var tip = d3.tip()
-	.attr('class', 'tooltip')
-	.offset([-10, 0])
-	.html(function(data,i) {
-		return "<strong>Id:</strong><span style='color:red'>"+data.matches[i].matchId+"</span>";});
-
-// add tip
-  svg.call(tip);
 
  // Define the div for the tooltip
 
 var div = d3.select("body").append("div")	
     .attr("class", "tooltip")				
-	.style("left","600px")
-	.style("top","250px")
+	.style("left","500px")
+	.style("top","150px")
     .style("opacity", 0);
 
 // histo coupe du monde
-
-var rwc_liste = [ "5_n.json","952_n.json", "1023_n.json", "1238_n.json"];
-var rwc_index = [ "5", "952" ,"1023" , "1238" , "145" ,"344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1183","1236","1296","1557","1577","714","855","886","926","970"];
+function update_event(id_liste) {
+var rwc_index = [ "5","952","1023","1238","145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1183","1236","1296","1557","1577","714","855","886","926","970"];
 for (index=0;index<rwc_index.length;index++) {
 	var url = "http://cmsapi.pulselive.com/rugby/event/"+rwc_index[index]+"/numbers?language=en&client=pulse";
     //console.log(url);
@@ -317,10 +303,12 @@ for (index=0;index<rwc_index.length;index++) {
                 }
             } // end for
             rwc.selectAll("tspan")
-			    .on('mouseover', function(d,i) { div.transition()		
+			    .on('mouseover', function(d,i) {
+                    date = new Date(data.matches[i].time.millis);
+                    div.transition()
 						.duration(200)		
 						.style("opacity", .9);		
-						div	.html("<strong>Id:</strong><span style='color:white'>"+ "<br/>"+data.matches[i].matchId);})
+						div	.html("<strong>Id: </strong><span style='color:white'>"+data.matches[i].matchId+"</br><strong>Stade: </strong><span style='color:white'>"+data.matches[i].venue.name+"</br><strong>Spectateurs: </strong><span style='color:white'>"+data.matches[i].attendance+"</br><strong>le: </strong><span style='color:white'>"+date.getDate()+"/"+(date.getMonth()+1)) ;})
 				.on("mouseout", function(d) { div.transition()		
 						.duration(500)		
 						.style("opacity", 0);});	
@@ -330,6 +318,7 @@ for (index=0;index<rwc_index.length;index++) {
     )} // matches
   });
 };
+} // end function event
 // Load the data.
 d3.json("data/ranking.json", function(irb) {
 
@@ -532,7 +521,12 @@ function trace_test(d,instance) {
     return a[1];
   }
 });
+d3.select("#mois_select").on("change", change)
 
+update_event(3);
+function change() {
+console.log(d3.select("#mois_select").property("value"));
+}
 </script>
 <!--<script>
 
