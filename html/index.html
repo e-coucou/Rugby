@@ -48,7 +48,7 @@ text {
 }
 .rwc.label {
     font: 500 18px "Helvetica Neue";
-    fill: #48b;
+    fill: #009;
 }
 .rwc.tspan {
     font: 500 11px "Helvetica Neue";
@@ -79,23 +79,28 @@ text {
     font: 11px "Helvetica Neue";
     position: absolute;			
     text-align: left;			
-    width: 300px;
-    height: 400px;
+    width: 380px;
+    height: 480px;
     padding: 2px;				
  	line-height: 1;
     font-weight: bold;
 	padding: 12px;
-	background: rgba(100, 100, 100, 0.8);
-	color: #bce;
+	background: rgba(100 ,149 ,237, 0.8);
+	color: #009;
 	border-radius: 1px;
 }
 th {
-    font: 13px "Helvetica Neue";
+    font: 15px "Helvetica Neue";
 	padding: 2px;
-	color: blue;
+    color: #009;
 }
 td {
+    font: 11px "Helvetica Neue";
 	color: white;
+}
+hr {
+    stroke : white;
+    stroke-width: 3.5px;
 }
 </style>
 
@@ -242,11 +247,10 @@ var rwc = svg.append("text")
     .text('');
 
  // Define the div for the tooltip
-
 var div = d3.select("body").append("div")	
     .attr("class", "tooltip")				
 	.style("left","500px")
-	.style("top","100px")
+	.style("top","80px")
     .style("opacity", 0);
 
 // histo coupe du monde
@@ -281,7 +285,6 @@ function update_event(id_liste) {
 			.attr("class", "line")
 			.attr("d", line);
 	}
-
 	
 	function info() {
 //		d3.selectAll(".tspan").remove();
@@ -316,13 +319,7 @@ function update_event(id_liste) {
             } // end for
             rwc.selectAll("tspan")
 				.on('mouseover', function(d,i) {return matchs(data,i);})
-//			    .on('mouseover', function(d,i) {
-//                    date = new Date(data.matches[i].time.millis);
-//                    div.transition()
-//						.duration(200)		
-//						.style("opacity", .9);		
-//						div	.html("<strong>Id: </strong><span style='color:white'>"+data.matches[i].matchId+"</br><strong>Stade: </strong><span style='color:white'>"+data.matches[i].venue.name+"</br><strong>Spectateurs: </strong><span style='color:white'>"+data.matches[i].attendance+"</br><strong>le: </strong><span style='color:white'>"+date.getDate()+"/"+(date.getMonth()+1)) ;})
-				.on("mouseout", function(d) { div.transition()		
+				.on("mouseout", function(d) { div.transition()
 						.duration(500)		
 						.style("opacity", 0);});	
 
@@ -334,13 +331,25 @@ function update_event(id_liste) {
 	function matchs(data,i) {
 		date = new Date(data.matches[i].time.millis);
 		var url = "http://cmsapi.pulselive.com/rugby/match/"+data.matches[i].matchId+"/summary?language=en&client=pulse";
-		var html = "<strong>Id: </strong>"+data.matches[i].matchId+"</br><strong>Stade: </strong>"+data.matches[i].venue.name+"</br><strong>Spectateurs: </strong>"+data.matches[i].attendance+"</br><strong>le: </strong>"+date.getDate()+"/"+(date.getMonth()+1)+"</br><table style='width:100%'>";
+		var html = data.matches[i].venue.name+" ("+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+") ["+data.matches[i].matchId+"] : "+data.matches[i].attendance+" personnes.<hr>";
 		d3.json(url, function(m){  // matchs info
 			console.log(m);
-			html +="<tr><th>"+ m.match.teams[0].name+"</th><th>"+m.match.teams[1].name+"</th></tr>";
-			for (n=0;n<m.teams[0].teamList.list.length;n++) {
-				html +="<tr><td>"+ m.teams[0].teamList.list[n].player.name.display+"</td><td>"+m.teams[1].teamList.list[n].player.name.display+"</td></tr>";
-				} // end for
+            for (n=0;n<m.officials.length;n++)  {
+                html += " "+m.officials[n].official.name.display+" ("+m.officials[n].position+")</br>";
+            }
+			html +="<hr><table style='width:100%'><tr><th>"+ m.match.teams[0].name+" ("+m.match.scores[0]+")</th><th>"+m.match.teams[1].name+" ("+m.match.scores[1]+")</th></tr>";
+            n=0;
+            o=0;
+                cap0 =m.teams[0].teamList.captainId;
+                cap1 =m.teams[1].teamList.captainId;
+            while ( ( n<m.teams[0].teamList.list.length ) || ( o<m.teams[1].teamList.list.length ) ){
+                if ( n < m.teams[0].teamList.list.length ) {
+                html +="<tr><td>"+ m.teams[0].teamList.list[n].player.name.display+(m.teams[0].teamList.list[n++].player.id === cap0 ? " (c) " : "")+"</td><td>";}
+                else { html += "<tr><td> </td><td>"}
+                if (o < m.teams[1].teamList.list.length ) {
+                     html += m.teams[1].teamList.list[o].player.name.display+(m.teams[1].teamList.list[o++].player.id === cap1 ? " (c) " : "")+"</td></tr>"; }
+                else { html =+ " </td></tr>" ;}
+            } // end boucle
 			html += "</table>";
 			div.transition()
 				.duration(200)		
