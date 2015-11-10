@@ -78,9 +78,9 @@ text {
 .tooltip {
     font: 11px "Helvetica Neue";
     position: absolute;			
-    text-align: center;			
+    text-align: left;			
     width: 300px;
-    height: 150px;
+    height: 400px;
     padding: 2px;				
  	line-height: 1;
     font-weight: bold;
@@ -88,6 +88,14 @@ text {
 	background: rgba(100, 100, 100, 0.8);
 	color: #bce;
 	border-radius: 1px;
+}
+th {
+    font: 13px "Helvetica Neue";
+	padding: 2px;
+	color: blue;
+}
+td {
+	color: white;
 }
 </style>
 
@@ -238,7 +246,7 @@ var rwc = svg.append("text")
 var div = d3.select("body").append("div")	
     .attr("class", "tooltip")				
 	.style("left","500px")
-	.style("top","150px")
+	.style("top","100px")
     .style("opacity", 0);
 
 // histo coupe du monde
@@ -307,12 +315,13 @@ function update_event(id_liste) {
                 }
             } // end for
             rwc.selectAll("tspan")
-			    .on('mouseover', function(d,i) {
-                    date = new Date(data.matches[i].time.millis);
-                    div.transition()
-						.duration(200)		
-						.style("opacity", .9);		
-						div	.html("<strong>Id: </strong><span style='color:white'>"+data.matches[i].matchId+"</br><strong>Stade: </strong><span style='color:white'>"+data.matches[i].venue.name+"</br><strong>Spectateurs: </strong><span style='color:white'>"+data.matches[i].attendance+"</br><strong>le: </strong><span style='color:white'>"+date.getDate()+"/"+(date.getMonth()+1)) ;})
+				.on('mouseover', function(d,i) {return matchs(data,i);})
+//			    .on('mouseover', function(d,i) {
+//                    date = new Date(data.matches[i].time.millis);
+//                    div.transition()
+//						.duration(200)		
+//						.style("opacity", .9);		
+//						div	.html("<strong>Id: </strong><span style='color:white'>"+data.matches[i].matchId+"</br><strong>Stade: </strong><span style='color:white'>"+data.matches[i].venue.name+"</br><strong>Spectateurs: </strong><span style='color:white'>"+data.matches[i].attendance+"</br><strong>le: </strong><span style='color:white'>"+date.getDate()+"/"+(date.getMonth()+1)) ;})
 				.on("mouseout", function(d) { div.transition()		
 						.duration(500)		
 						.style("opacity", 0);});	
@@ -321,7 +330,24 @@ function update_event(id_liste) {
         } //end json
     )} // matches
   });
-};
+}; // end for event
+	function matchs(data,i) {
+		date = new Date(data.matches[i].time.millis);
+		var url = "http://cmsapi.pulselive.com/rugby/match/"+data.matches[i].matchId+"/summary?language=en&client=pulse";
+		var html = "<strong>Id: </strong>"+data.matches[i].matchId+"</br><strong>Stade: </strong>"+data.matches[i].venue.name+"</br><strong>Spectateurs: </strong>"+data.matches[i].attendance+"</br><strong>le: </strong>"+date.getDate()+"/"+(date.getMonth()+1)+"</br><table style='width:100%'>";
+		d3.json(url, function(m){  // matchs info
+			console.log(m);
+			html +="<tr><th>"+ m.match.teams[0].name+"</th><th>"+m.match.teams[1].name+"</th></tr>";
+			for (n=0;n<m.teams[0].teamList.list.length;n++) {
+				html +="<tr><td>"+ m.teams[0].teamList.list[n].player.name.display+"</td><td>"+m.teams[1].teamList.list[n].player.name.display+"</td></tr>";
+				} // end for
+			html += "</table>";
+			div.transition()
+				.duration(200)		
+				.style("opacity", .9);
+			div.html(html);
+			}) // end json
+	} // end matches
 } // end function event
 // Load the data.
 d3.json("data/ranking.json", function(irb) {
