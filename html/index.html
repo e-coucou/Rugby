@@ -103,6 +103,7 @@ text {
         <option value=2>Six Nations</option>
         <option value=3>Tri Nations</option>
         <option value=4>TOP 3</option>
+        <option value=5>Pacific Nations Cup</option>
     </select>
 </div></aside>
 <h1>Ranking IRB depuis 2003</h1>
@@ -242,17 +243,20 @@ var div = d3.select("body").append("div")
 
 // histo coupe du monde
 function update_event(id_liste) {
-var rwc_index = [ "5","952","1023","1238","145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1183","1236","1296","1557","1577","714","855","886","926","970"];
-for (index=0;index<rwc_index.length;index++) {
-	var url = "http://cmsapi.pulselive.com/rugby/event/"+rwc_index[index]+"/numbers?language=en&client=pulse";
-    //console.log(url);
-//	d3.json("data/"+rwc_liste[index], function(data){  // event numbers
-	d3.json(url, function(data){  // event numbers
+	var rwc_index = [[ "5","952","1023","1238"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135"],["1577"],["925","957","971","1006","1072","1130","1166","1235","1273","1569"]];
+	d3.selectAll(".abs.label").remove();
+	d3.selectAll(".line").remove();
+
+	for (index=0;index<rwc_index[id_liste].length;index++) {
+		var url = "http://cmsapi.pulselive.com/rugby/event/"+rwc_index[id_liste][index]+"/numbers?language=en&client=pulse";
+		//console.log(url);
+		//	d3.json("data/"+rwc_liste[index], function(data){  // event numbers
+		d3.json(url, function(data){  // event numbers
        //console.log(data);
-    var date_s = new Date(data.event.start.millis);
-    var date_e = new Date(data.event.end.millis);
-    var start = date_s.getFullYear() + ( date_s.getMonth()*30.4 + date_s.getDate() )/(365.0);
-    var end = date_e.getFullYear() + ( date_e.getMonth()*30.4 + date_e.getDate() )/(365.0);
+			var date_s = new Date(data.event.start.millis);
+			var date_e = new Date(data.event.end.millis);
+			var start = date_s.getFullYear() + ( date_s.getMonth()*30.4 + date_s.getDate() )/(365.0);
+			var end = date_e.getFullYear() + ( date_e.getMonth()*30.4 + date_e.getDate() )/(365.0);
 
     svg.append("text")
         .attr("class", "abs label")
@@ -521,11 +525,15 @@ function trace_test(d,instance) {
     return a[1];
   }
 });
+
+update_event(0); // on commence avec la World Cup
+
 d3.select("#mois_select").on("change", change)
 
-update_event(3);
 function change() {
-console.log(d3.select("#mois_select").property("value"));
+	sel = d3.select("#mois_select").property("value") - 1;
+	console.log(sel);
+	update_event(sel);
 }
 </script>
 <!--<script>
