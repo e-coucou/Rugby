@@ -5,7 +5,7 @@
 <html class="ocks-org do-not-copy">
 <meta charset="utf-8">
 <title>Ranking evolution</title>
-<link rel="stylesheet" href="css/style.css">
+<!--<link rel="stylesheet" href="css/style.css">-->
 <style>
 
 @import url(../css/visu.css?aea6f0a);
@@ -54,13 +54,11 @@ text {
     font: 500 11px "Helvetica Neue";
     fill: #227;
 }
-
 .overlay {
   fill: none;
   pointer-events: all;
   cursor: ew-resize;
 }
-
 .line {
     stroke: #00C;
     stroke-width: 4.5px;
@@ -101,6 +99,11 @@ hr {
     stroke : white;
     stroke-width: 3.5px;
 }
+select {
+    position: relative;
+    left: 800px;
+    top:500px;
+}
 </style>
 
 <header>
@@ -108,17 +111,15 @@ hr {
   <a href="index.html" rel="author">e-Coucou</a><br>
   <a href="wrc.html" rel="author">WRC Graphes</a>
 </header>
-<aside>
-<div id="mois_selection" class="control" left="100px" top="30px" position="absolute">
-    <select id="mois_select">
-        <option value=1>World Cup</option>
-        <option value=2>Six Nations</option>
-        <option value=3>Tri Nations</option>
-        <option value=4>TOP 3</option>
-        <option value=5>Pacific Nations Cup</option>
-    </select>
-</div></aside>
 <h1>Ranking IRB depuis 2003</h1>
+<div id="select">
+<select id="mois_select" class="styledSelect">
+    <option value=1>World Cup</option>
+    <option value=2>Six Nations</option>
+    <option value=3>Tri Nations</option>
+    <option value=4>TOP 3</option>
+    <option value=5>Pacific Nations Cup</option>
+</select></div>
 <p id="chart"></p>
 <br><br><br>
 <aside>
@@ -210,7 +211,7 @@ svg.append("text")
     .attr("class", "x label")
     .attr("text-anchor", "end")
     .attr("x", width)
-    .attr("y", height + 20)
+    .attr("y", height + 30)
     .text("nombre de points");
 
 // Add a y-axis label.
@@ -250,7 +251,7 @@ var rwc = svg.append("text")
 var div = d3.select("body").append("div")	
     .attr("class", "tooltip")				
 	.style("left","500px")
-	.style("top","10px")
+	.style("top","20px")
     .style("opacity", 0);
 
 // histo coupe du monde
