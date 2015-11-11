@@ -76,12 +76,11 @@ text {
     stroke-width: 0.5px;
 }
 .tooltip {
+    opacity: 0.1;
     font: 11px "Helvetica Neue";
     position: absolute;			
     text-align: left;			
-    width: 380px;
-    height: 480px;
-    padding: 2px;				
+    padding: 2px;
  	line-height: 1;
     font-weight: bold;
 	padding: 12px;
@@ -175,6 +174,7 @@ var xDate = d3.svg.axis().orient("top").scale(dScale).ticks(18, d3.format(",d"))
 var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
+    .attr("position", 2)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 //Data
@@ -250,7 +250,7 @@ var rwc = svg.append("text")
 var div = d3.select("body").append("div")	
     .attr("class", "tooltip")				
 	.style("left","500px")
-	.style("top","80px")
+	.style("top","10px")
     .style("opacity", 0);
 
 // histo coupe du monde
@@ -319,9 +319,14 @@ function update_event(id_liste) {
             } // end for
             rwc.selectAll("tspan")
 				.on('mouseover', function(d,i) {return matchs(data,i);})
-				.on("mouseout", function(d) { div.transition()
+				.on('mouseout', function(d) {
+                    d3.selectAll("table").remove();
+                    div.transition()
 						.duration(500)		
-						.style("opacity", 0);});	
+						.style("opacity", 0)
+                        .attr("width", "3px")
+                        .attr("height","4px");
+                    });
 
         
         } //end json
@@ -352,7 +357,9 @@ function update_event(id_liste) {
             } // end boucle
 			html += "</table>";
 			div.transition()
-				.duration(200)		
+                .attr("width", "380px")
+                .attr("height","480px")
+				.duration(200)
 				.style("opacity", .9);
 			div.html(html);
 			}) // end json
