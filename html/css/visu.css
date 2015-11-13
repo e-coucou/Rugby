@@ -1,91 +1,67 @@
-/* Copyright 2013 Michael Bostock. All rights reserved. Do not copy. */
+/* by ep */
 
 @import url(//fonts.googleapis.com/css?family=PT+Serif|PT+Serif:b|PT+Serif:i|PT+Sans|PT+Sans:b);
 
 html {
-  min-width: 1040px;
+  min-width: 1160px;
 }
 
-.ocks-org body {
-  background: #fcfcfa;
-  color: #333;
+.rky body {
+  background: #f5fffa;
+  color: #789;
   font-family: "PT Serif", serif;
   margin: 1em auto 4em auto;
   position: relative;
-  width: 960px;
+  width: 1080px;
 }
 
-.ocks-org header,
-.ocks-org footer,
-.ocks-org aside,
-.ocks-org h1,
-.ocks-org h2,
-.ocks-org h3,
-.ocks-org h4 {
+/* define header,footer, aside ...*/
+.rky header,
+.rky footer,
+.rky aside,
+.rky h1,{
   font-family: "PT Sans", sans-serif;
 }
 
-.ocks-org h1,
-.ocks-org h2,
-.ocks-org h3,
-.ocks-org h4 {
-  color: #000;
+.rky h1 {
+  color: #191970;
 }
-
-.ocks-org header,
-.ocks-org footer {
-  color: #636363;
+.rky header,
+.rky footer,
+.rk aside {
+  color: #2f4f4f;
 }
 
 h1 {
   font-size: 34px;
   font-weight: 200;
-  letter-spacing: -2px;
+  letter-spacing: 0px;
   margin: .3em 0 .1em 0;
-}
-
-h2 {
-  margin-top: 2em;
-}
-
-h1, h2 {
   text-rendering: optimizeLegibility;
 }
 
-h2 a[name],
-h2 a[id] {
-  color: #ccc;
-  right: 100%;
-  padding: 0 .3em;
-  position: absolute;
-}
-
-header,
+.rky aside,
 footer {
   font-size: small;
-}
-
-.ocks-org header aside,
-.ocks-org footer aside {
   float: left;
-  margin-right: .5em;
+  margin-right: 0.8em;
 }
 
-.ocks-org header aside:after,
-.ocks-org footer aside:after {
+.rky header aside:after,
+.rky footer aside:after {
   padding-left: .5em;
-  content: "/";
+  content: "|";
 }
 
 footer {
-  margin-top: 8em;
+  margin-top: 5em;
 }
 
 h1 ~ aside {
   font-size: small;
   right: 0;
   position: absolute;
-  width: 180px;
+  width: 200px;
 }
 
 .attribution {
@@ -110,20 +86,11 @@ blockquote q {
   font-style: oblique;
 }
 
-ul {
-  padding: 0;
+.rky a {
+    color: #4169E1;
 }
 
-li {
-  width: 690px;
-  margin-left: 30px;
-}
-
-a {
-  color: steelblue;
-}
-
-a:not(:hover) {
+.rky a:not(:hover) {
   text-decoration: none;
 }
 
@@ -174,33 +141,11 @@ body > pre {
 }
 
 svg {
-  font: 10px sans-serif;
+  font: 11px "helvetic neue";
 }
 
 .axis path, .axis line {
   fill: none;
-  stroke: #000;
+  stroke: #191970;
   shape-rendering: crispEdges;
-}
-
-sup, sub {
-  line-height: 0;
-}
-
-q:before {
-  content: "â€œ";
-}
-
-q:after {
-  content: "â€";
-}
-
-blockquote q {
-  line-height: 1.5em;
-  display: inline;
-}
-
-blockquote q:before,
-blockquote q:after {
-  content: "";
 }

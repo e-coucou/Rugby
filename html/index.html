@@ -2,12 +2,12 @@
 <title>RUGBY WORLD CUP</title>
 <meta name="description" content="Interactive visualisation Rugby Ranking IRB.">
 <meta name="author" content="e-Coucou">
-<html class="ocks-org do-not-copy">
+<html class="rky">
 <meta charset="utf-8">
 <title>Ranking evolution</title>
+<link type="text/css" rel="stylesheet" href="../css/colorBrewer.css">
 <style>
-
-@import url(../css/visu.css?aea6f0a);
+@import url(../css/visu.css);
 
 #chart {
   margin-left: -40px;
@@ -24,7 +24,6 @@ text {
 
 .axis path, .axis line {
   fill: none;
-  stroke: #000;
   shape-rendering: crispEdges;
 }
 
@@ -32,25 +31,25 @@ text {
   fill: #777;
 }
 .abs.label {
-    fill: #48b;
+    fill: #191970;
 }
 .year.label {
-  font: 500 112px "Helvetica Neue";
-  fill: #ddd;
+    font: 500 112px "helvetica neue";
+    fill: #ddd;
 }
 .year.label.active {
-  fill: #48b;
+  fill: #191970;
 }
 .pays.label {
-    font: 500 44px "Helvetica Neue";
-    fill: #bce;
+    font: 44px "helvetica neue";
+    fill: #191970; /*#bce;*/
 }
 .rwc.label {
-    font: 500 18px "Helvetica Neue";
-    fill: #009;
+    font: 18px "helvetica neue";
+    fill: #191970;
 }
 .rwc.tspan {
-    font: 500 11px "Helvetica Neue";
+    font: 11px "helvetica neue";
     fill: #227;
 }
 .overlay {
@@ -59,49 +58,50 @@ text {
   cursor: ew-resize;
 }
 .line {
-    stroke: #00C;
+    stroke: #191970;
     stroke-width: 4.5px;
 }
 .curseur {
-    stroke: #00C;
+    stroke: #191970;
     stroke-width: 0.5px;
 }
 .rect {
-    font: 11px "Helvetica Neue";
+    font: 11px;
     fill: #bce;
     stroke: #bce;
     stroke-width: 0.5px;
 }
 .tooltip {
     opacity: 0.1;
-    font: 11px "Helvetica Neue";
+    font: 11px "helvetica neue";
     position: absolute;			
     text-align: left;			
     padding: 2px;
  	line-height: 1;
     font-weight: bold;
 	padding: 12px;
-	background: rgba(100 ,149 ,237, 0.8);
-	color: #009;
+    background: #B0C4DE;/*rgba(100 ,149 ,237, 0.8);*/
+	color: #191970;
 	border-radius: 1px;
 }
 th {
-    font: 15px "Helvetica Neue";
+    font: 15px "helvetica neue";
 	padding: 2px;
-    color: #009;
+    color: #191970;
 }
 td {
-    font: 11px "Helvetica Neue";
-	color: white;
-}
-hr {
-    stroke : white;
-    stroke-width: 3.5px;
+    font: 11px "helvetica neue";
+    color: #F5FFFA;
 }
 select#mois_select {
     position: absolute;
-    left: 800px;
+    right: 20px;
     top:570px;
+}
+select#color {
+    position: absolute;
+    right: 20px;
+    top:590px;
 }
 </style>
 <header>
@@ -110,13 +110,41 @@ select#mois_select {
   <aside>visualisation en graphe des Coupes du Monde </aside><a href="wrc.html" rel="author">RWC Graphes</a>
 </header>
 <select id="mois_select" class="styledSelect">
+    <optgroup label="ChampionShip from IRB.">
     <option value=1>World Cup</option>
     <option value=2>Six Nations</option>
     <option value=3>Tri Nations</option>
     <option value=4>TOP 3</option>
     <option value=5>Pacific Nations Cup</option>
+    </optgroup>
 </select>
-<h1>Ranking IRB depuis 2003</h1>
+<select id="color" class="styleSelect">
+    <optgroup label="Colors by Cynthia Brewer.">
+        <option value="BrBG">BrBG</option>
+        <option value="PiYG">PiYG</option>
+        <option value="PRGn">PRGn</option>
+        <option value="PuOr">PuOr</option>
+        <option value="RdBu">RdBu</option>
+        <option value="RdGy">RdGy</option>
+        <option value="RdYlBu">RdYlBu</option>
+        <option value="RdYlGn">RdYlGn</option>
+        <option value="Spectral">Spectral</option>
+        <option value="Purples">Purples</option>
+        <option value="Blues">Blues</option>
+        <option value="Oranges">Oranges</option>
+        <option value="Greens">Greens</option>
+        <option value="Reds">Reds</option>
+        <option value="Greys">Greys</option>
+        <option value="Accent">Accent</option>
+        <option value="Pastel1">Pastel1</option>
+        <option value="Pastel2">Pastel2</option>
+        <option value="Set1">Set1</option>
+        <option value="Set2">Set2</option>
+        <option value="Set3">Set3</option>
+        <option value="Rky" selected="">Rky</option>
+    </optgroup>
+</select>
+<h1>Classement IRB depuis 2003</h1>
 <p id="chart"></p>
 <br><br><br>
 <aside>
@@ -141,6 +169,7 @@ Sélectionnez différentes compétitions avec le menu déroulant.<br><br></aside
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
 <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script></script>
+<script src="../js/colorbrewer.js"></script></script>
 <script>
 
 // Various accessors that specify the four dimensions of data to visualize.
@@ -153,7 +182,7 @@ function key(d) { return d.name; }
 
 // Chart dimensions.
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 960 - margin.right,
+    width = 1080 - margin.right,
     height = 550 - margin.top - margin.bottom;
 
 // Various scales. These domains make assumptions of data, naturally.
@@ -161,7 +190,8 @@ var xScale = d3.scale.linear().domain([0, 100]).range([0, width]),  // vs log
     yScale = d3.scale.linear().domain([0, 110]).range([0,height]),
     radiusScale = d3.scale.sqrt().domain([0, 200]).range([1, 20]),
 	dScale = d3.scale.linear().domain([2003, 2016]).range([0, width]),
-    colorScale = d3.scale.category20();  //10
+    colorScale = d3.scale.ordinal()
+        .range(colorbrewer.Rky[27]);
 
 // The x & y axes.
 var xAxis = d3.svg.axis().orient("bottom").scale(xScale).ticks(18, d3.format(",d")),
@@ -220,7 +250,7 @@ svg.append("text")
     .attr("y", 6)
     .attr("dy", ".75em")
     .attr("transform", "rotate(-90)")
-    .text("ranking");
+    .text("classement");
 
 // Add the year label; the value is set on transition.
 var label = svg.append("text")
@@ -242,7 +272,7 @@ var pays = svg.append("text")
 var rwc = svg.append("text")
     .attr("class", "rwc label")
     .attr("text-anchor", "begin")
-    .attr("y", 37)
+    .attr("y", 39)
     .attr("x", 24)
     .text('');
 
@@ -261,10 +291,7 @@ function update_event(id_liste) {
 
 	for (index=0;index<rwc_index[id_liste].length;index++) {
 		var url = "http://cmsapi.pulselive.com/rugby/event/"+rwc_index[id_liste][index]+"/numbers?language=en&client=pulse";
-		//console.log(url);
-		//	d3.json("data/"+rwc_liste[index], function(data){  // event numbers
 		d3.json(url, function(data){  // event numbers
-       //console.log(data);
 			var date_s = new Date(data.event.start.millis);
 			var date_e = new Date(data.event.end.millis);
 			var start = date_s.getFullYear() + ( date_s.getMonth()*30.4 + date_s.getDate() )/(365.0);
@@ -287,9 +314,8 @@ function update_event(id_liste) {
 	}
 	
 	function info() {
-//		d3.selectAll(".tspan").remove();
 		rwc.text(data.event.label+ "   ["+data.event.id+"]");
-		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("du "+date_s.getDate()+"/"+(date_s.getMonth()+1)+"/"+date_s.getFullYear()+" au "+date_e.getDate()+"/"+(date_e.getMonth()+1)+"/"+date_e.getFullYear());
+		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.8em").attr("x", 24).text("du "+date_s.getDate()+"/"+(date_s.getMonth()+1)+"/"+date_s.getFullYear()+" au "+date_e.getDate()+"/"+(date_e.getMonth()+1)+"/"+date_e.getFullYear());
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Fréquentation   : "+data.data.attendance);
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Points marqués  : "+data.data.points);
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Essais          : "+data.data.tries);
@@ -309,7 +335,7 @@ function update_event(id_liste) {
             for (i=0;i<data.matches.length;i++) {
                 date = new Date(data.matches[i].time.millis);
                 if (i % 2 === 0) {
-                    rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(data.matches[i].teams[0].name+' '+data.matches[i].scores[0]+' - '+data.matches[i].scores[1]+' '+data.matches[i].teams[1].name)
+                    rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.3em").attr("x", 24).text(data.matches[i].teams[0].name+' '+data.matches[i].scores[0]+' - '+data.matches[i].scores[1]+' '+data.matches[i].teams[1].name)
                 .append("title").text(function(d) { return 'le '+date.getDate()+'/'+(date.getMonth()+1)+'\n'+data.matches[i].venue.name + '\nSpectateurs: '+data.matches[i].attendance+'\n'+data.matches[i].eventPhase+'\nmatch #'+data.matches[i].matchId;});
 				}
                 else {
@@ -382,7 +408,6 @@ d3.json("data/ranking.json", function(irb) {
     .call(position)
     .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+'\n('+Math.floor(d.points*10)/10+')');})
     .on("click", function(d) { return trace_test(d,this);})
-//        .on("click", function (d) {return d3.select(this).style("fill",d3.rgb(255,0,0));})
     .sort(order);
 
   // Add a title.
@@ -570,13 +595,22 @@ function trace_test(d,instance) {
 
 update_event(0); // on commence avec la World Cup
 
-d3.select("#mois_select").on("change", change)
+d3.select("#mois_select").on("change", change);
 
 function change() {
 	sel = d3.select("#mois_select").property("value") - 1;
 	console.log(sel);
 	update_event(sel);
 }
+// customs couleurs des pastilles   thanks to Cynthia Brewer
+
+    d3.select("#color").on("change", function() {
+    colorScale = d3.scale.ordinal()
+                   .range(colorbrewer[this.value][9]);
+    d3.selectAll(".dot")
+      .style("fill", function(d) { return colorScale(color(d)); });
+});
+
 </script>
 <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
