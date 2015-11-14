@@ -366,7 +366,7 @@ function update_event(id_liste) {
 	function matchs(data,i) {
 		date = new Date(data.matches[i].time.millis);
 		var url = "http://cmsapi.pulselive.com/rugby/match/"+data.matches[i].matchId+"/summary?language=en&client=pulse";
-		var html = data.matches[i].venue.name+" ("+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+") ["+data.matches[i].matchId+"] : "+data.matches[i].attendance+" personnes.<hr>";
+		var html = data.matches[i].venue.name+" ("+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+") | "+data.matches[i].attendance+" personnes.<hr>";
 		d3.json(url, function(m){  // matchs info
 			console.log(m);
             html = m.match.eventPhase+" | "+m.match.description+"<hr>"+html;
