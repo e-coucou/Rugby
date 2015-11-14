@@ -96,18 +96,26 @@ td {
 select#mois_select {
     position: absolute;
     right: 20px;
-    top:570px;
+    top:520px;
 }
 select#color {
     position: absolute;
     right: 20px;
-    top:590px;
+    top:540px;
+}
+#twitter {
+    position: absolute;
+    right: 20px;
+    top: 20px;
 }
 </style>
 <header>
   <aside>Novembre, 2015</aside>
   <a href="index.html" rel="author">e-Coucou</a><br>
-  <aside>visualisation en graphe des Coupes du Monde </aside><a href="wrc.html" rel="author">RWC Graphes</a>
+  <aside>Visualisation en graphe des Coupes du Monde </aside><a href="wrc.html" rel="author">RWC Graphes</a>
+  <div id="twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-url="https://rugby.e-coucou.com/index.html" data-via="EricP_">Tweet</a>
+      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+  </div>
 </header>
 <select id="mois_select" class="styledSelect">
     <optgroup label="ChampionShip from IRB.">
@@ -146,11 +154,7 @@ select#color {
 </select>
 <h1>Classement IRB depuis 2003</h1>
 <p id="chart"></p>
-<br><br><br>
-<aside>
-<a href="https://twitter.com/share" class="twitter-share-button" data-url="https://rugby.e-coucou.com/index.html" data-via="EricP_">Tweet</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-</aside><br><br>
+<br><br>
 <aside>Passez la souris au dessus de l'axe des abscisses pour vous déplacer dans le temps.<br><br>
 Cliquez sur les pastilles des Pays pour voir l'évolution des classements.<br><br>
 Passez la souris sur les dates de Coupes du Monde pour voir les statistiques.<br><br>
@@ -365,6 +369,7 @@ function update_event(id_liste) {
 		var html = data.matches[i].venue.name+" ("+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+") ["+data.matches[i].matchId+"] : "+data.matches[i].attendance+" personnes.<hr>";
 		d3.json(url, function(m){  // matchs info
 			console.log(m);
+            html = m.match.eventPhase+" | "+m.match.description+"<hr>"+html;
             for (n=0;n<m.officials.length;n++)  {
                 html += " "+m.officials[n].official.name.display+" ("+m.officials[n].position+")</br>";
             }
@@ -602,7 +607,7 @@ function change() {
 	console.log(sel);
 	update_event(sel);
 }
-// customs couleurs des pastilles   thanks to Cynthia Brewer
+// customs couleurs des pastilles   thanks to Cynthia Brewer@
 
     d3.select("#color").on("change", function() {
     colorScale = d3.scale.ordinal()
