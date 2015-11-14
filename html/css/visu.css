@@ -1,11 +1,10 @@
-/* by ep */
+/* by e-coucou */
 
 @import url(//fonts.googleapis.com/css?family=PT+Serif|PT+Serif:b|PT+Serif:i|PT+Sans|PT+Sans:b);
 
 html {
   min-width: 1160px;
 }
-
 .rky body {
   background: #f5fffa;
   color: #789;
@@ -15,9 +14,7 @@ html {
   width: 1080px;
   top:50px;
 }
-
 /* define header,footer, aside ...*/
-
 .rky header {
     position: fixed;
     top:0px;
@@ -33,7 +30,9 @@ html {
 .rky h1,{
   font-family: "PT Sans", sans-serif;
 }
-
+.rky header aside {
+    margin-left: 50px;
+}
 .rky h1 {
   color: #191970;
 }
@@ -42,10 +41,6 @@ html {
 .rk aside {
   color: #2f4f4f;
 }
-.rky.aside  {
-    left: 200px;
-}
-
 h1 {
   font-size: 34px;
   font-weight: 200;
@@ -53,111 +48,89 @@ h1 {
   margin: .3em 0 .1em 0;
   text-rendering: optimizeLegibility;
 }
-
 .rky aside,
-footer {
+.rky footer {
   font-size: small;
   float: left;
   margin-right: 0.8em;
 }
-
 .rky header aside:after,
 .rky footer aside:after {
   padding-left: .5em;
   content: "|";
 }
-
-footer {
+.rky footer {
   margin-top: 5em;
 }
-
 h1 ~ aside {
   font-size: small;
   right: 0;
   position: absolute;
   width: 200px;
 }
-
 .attribution {
   font-size: small;
   margin-bottom: 2em;
 }
-
 body > p, li > p {
   line-height: 1.5em;
 }
-
 body > p {
   width: 720px;
 }
-
 body > blockquote {
   width: 640px;
 }
-
 blockquote q {
   display: block;
   font-style: oblique;
 }
-
 .rky a {
     color: #4169E1;
 }
-
 .rky a:not(:hover) {
   text-decoration: none;
 }
-
 pre, code, textarea {
   font-family: "Menlo", monospace;
 }
-
 code {
   line-height: 1em;
 }
-
 textarea {
   font-size: 100%;
 }
-
 body > pre {
   border-left: solid 2px #ccc;
   padding-left: 18px;
   margin: 2em 0 2em -20px;
 }
-
 .html .value,
 .javascript .string,
 .javascript .regexp {
   color: #756bb1;
 }
-
 .html .tag,
 .css .tag,
 .javascript .keyword {
   color: #3182bd;
 }
-
 .comment {
   color: #636363;
 }
-
 .html .doctype,
 .javascript .number {
   color: #31a354;
 }
-
 .html .attribute,
 .css .attribute,
 .javascript .class,
 .javascript .special {
   color: #e6550d;
 }
-
 svg {
   font: 11px "helvetic neue";
 }
-
 .axis path, .axis line {
   fill: none;
   stroke: #191970;
