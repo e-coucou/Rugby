@@ -105,8 +105,11 @@ select#color {
 }
 #twitter {
     position: absolute;
-    right: 20px;
-    top: 20px;
+    right: 80px;
+    top: 15px;
+}
+#captain {
+    color: #191970;
 }
 </style>
 <header>
@@ -115,6 +118,9 @@ select#color {
   <aside>Visualisation en graphe des Coupes du Monde </aside><a href="wrc.html" rel="author">RWC Graphes</a>
   <div id="twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-url="https://rugby.e-coucou.com/index.html" data-via="EricP_">Tweet</a>
       <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+  
+  <a>   | </a><script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script>
+      <script type="IN/Share" data-url="http://rugby.e-coucou.com" data-counter="right"></script>
   </div>
 </header>
 <select id="mois_select" class="styledSelect">
@@ -181,7 +187,7 @@ function x(d) { return (d.points); }
 function y(d) { return (d.rank); }
 function a(d) { return (d.annee); }
 function radius(d) { return (d.matchs===undefined ? 0 : d.matchs); }
-function color(d) { return d.name; }  // region
+function color(d) { return d.id; }  // region
 function key(d) { return d.name; }
 
 // Chart dimensions.
@@ -339,10 +345,11 @@ function update_event(id_liste) {
             for (i=0;i<data.matches.length;i++) {
                 date = new Date(data.matches[i].time.millis);
                 if (i % 2 === 0) {
-                    rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.3em").attr("x", 24).text(data.matches[i].teams[0].name+' '+data.matches[i].scores[0]+' - '+data.matches[i].scores[1]+' '+data.matches[i].teams[1].name)
-                .append("title").text(function(d) { return 'le '+date.getDate()+'/'+(date.getMonth()+1)+'\n'+data.matches[i].venue.name + '\nSpectateurs: '+data.matches[i].attendance+'\n'+data.matches[i].eventPhase+'\nmatch #'+data.matches[i].matchId;});
-				}
-                else {
+                    rwc.append("tspan")
+                        .attr("class", "rwc tspan").attr("dy", "1.3em").attr("x", 24)
+                        .text(data.matches[i].teams[0].name+' '+data.matches[i].scores[0]+' - '+data.matches[i].scores[1]+' '+data.matches[i].teams[1].name)
+                        .append("title").text(function(d) { return 'le '+date.getDate()+'/'+(date.getMonth()+1)+'\n'+data.matches[i].venue.name + '\nSpectateurs: '+data.matches[i].attendance+'\n'+data.matches[i].eventPhase+'\nmatch #'+data.matches[i].matchId;});
+                } else {
                     rwc.append("tspan").attr("class", "rwc tspan").attr("dx",180).attr("x", 24).text(data.matches[i].teams[0].name+' '+data.matches[i].scores[0]+' - '+data.matches[i].scores[1]+' '+data.matches[i].teams[1].name)
                 .append("title").text(function(d) { return 'le '+date.getDate()+'/'+(date.getMonth()+1)+'\n'+data.matches[i].venue.name + '\nSpectateurs: '+data.matches[i].attendance+'\n'+data.matches[i].eventPhase+'\nmatch #'+data.matches[i].matchId;});
                 }
@@ -380,10 +387,10 @@ function update_event(id_liste) {
                 cap1 =m.teams[1].teamList.captainId;
             while ( ( n<m.teams[0].teamList.list.length ) || ( o<m.teams[1].teamList.list.length ) ){
                 if ( n < m.teams[0].teamList.list.length ) {
-                html +="<tr><td>"+ m.teams[0].teamList.list[n].player.name.display+(m.teams[0].teamList.list[n++].player.id === cap0 ? " (c) " : "")+"</td><td>";}
+                html +="<tr><td>"+ m.teams[0].teamList.list[n].player.name.display+(m.teams[0].teamList.list[n].player.id === cap0 ? "<a id='captain'> (c) </a>(" : " (")+m.teams[0].teamList.list[n++].positionLabel+")</td><td>";}
                 else { html += "<tr><td> </td><td>"}
                 if (o < m.teams[1].teamList.list.length ) {
-                     html += m.teams[1].teamList.list[o].player.name.display+(m.teams[1].teamList.list[o++].player.id === cap1 ? " (c) " : "")+"</td></tr>"; }
+                html += m.teams[1].teamList.list[o].player.name.display+(m.teams[1].teamList.list[o].player.id === cap1 ? "<a id='captain'> (c) </a>(" : " (")+m.teams[1].teamList.list[o++].positionLabel+")</td></tr>"; }
                 else { html =+ " </td></tr>" ;}
             } // end boucle
 			html += "</table>";
@@ -414,6 +421,8 @@ d3.json("data/ranking.json", function(irb) {
     .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+'\n('+Math.floor(d.points*10)/10+')');})
     .on("click", function(d) { return trace_test(d,this);})
     .sort(order);
+//    .filter(function(d) { return (d.id === 42)});
+
 
   // Add a title.
   dot.append("title")
@@ -433,7 +442,6 @@ function trace_test(d,instance) {
 	trace.data(test).exit().remove();
 	parcourt(d.name);
 	displayTrace();
-    d.sel = 20;
     //console.log(d);
 	d3.select(instance).style("fill",d3.rgb(255,0,0));
 }
@@ -537,8 +545,9 @@ function trace_test(d,instance) {
     //    console.log(donnee);
     dot.data(donnee, key)
         .call(position)
-        .sort(order)
-        .filter(function(d) {return d.sel === 1});
+        .sort(order);
+ //       .filter(function(d) { return (d.id <= 42);});
+        
     label.text(Math.round((year-Math.floor(year))*12)+'/'+Math.floor(year));
 	var datac = [ { "x" : dScale(year), "y" : 0 }, { "x" : dScale(year), "y" : height } ];
 	
@@ -559,9 +568,10 @@ function trace_test(d,instance) {
   // Interpolates the dataset for the given (fractional) year.
   function interpolateData(year,masq) {
     return irb.map(function(d) {
+      //console.log(d);
       return {
         name: d.name,
-        sel: d.region & masq,
+        id: d.id,
         points: interpolateValues(d.points, year),
         matchs: interpolateValues(d.matchs, year),
         rank: interpolateValues(d.rank, year),
@@ -604,7 +614,10 @@ d3.select("#mois_select").on("change", change);
 
 function change() {
 	sel = d3.select("#mois_select").property("value") - 1;
-	console.log(sel);
+	//console.log(sel);
+/*    d3.selectAll(".dot")
+        .filter(function(d) { return (d.id != 42)})
+        .style("fill", "#f5fffa");*/
 	update_event(sel);
 }
 // customs couleurs des pastilles   thanks to Cynthia Brewer@
@@ -614,6 +627,7 @@ function change() {
                    .range(colorbrewer[this.value][9]);
     d3.selectAll(".dot")
       .style("fill", function(d) { return colorScale(color(d)); });
+
 });
 
 </script>

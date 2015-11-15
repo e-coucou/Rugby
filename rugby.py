@@ -69,7 +69,7 @@ def get_rank_json(base):
 							except :
 								name[str(e['team']['id'])] = {}
 								name[str(e['team']['id'])]['name'] = str(e['team']['name'])
-								name[str(e['team']['id'])]['region'] = 1
+								name[str(e['team']['id'])]['id'] = e['team']['id']
 								name[str(e['team']['id'])]['points'] = []
 								name[str(e['team']['id'])]['rank'] = []
 								name[str(e['team']['id'])]['matchs'] = []
