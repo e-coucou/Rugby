@@ -295,6 +295,7 @@ var div = d3.select("body").append("div")
 
 // histo coupe du monde
 function update_event(id_liste) {
+	var teams = [];
 	var rwc_index = [[ "5","952","1023","1238"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135"],["1577"],["925","957","971","1006","1072","1130","1166","1235","1273","1569"]];
 	d3.selectAll(".abs.label").remove();
 	d3.selectAll(".line").remove();
@@ -312,7 +313,7 @@ function update_event(id_liste) {
         .attr("text-anchor", "begin")
         .attr("transform", "translate("+dScale(end)+","+(height-20)+") rotate(-90)")
         .text(data.event.label)
-        .on("mouseover", function(d) { return info();} ) //function(d){ return rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);});
+        .on("mouseover", function(d) { return info(data.event.id);} ) //function(d){ return rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);});
         .on("click", function(d) { return matches(data.event.id);} ); //function(d){ return rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);});
     if ((data.event.rankingsWeight == 2 )||(start > 2008.0)) {
 		var datal =[ dScale(start) , dScale(end)];
@@ -323,7 +324,12 @@ function update_event(id_liste) {
 			.attr("d", line);
 	}
 	
-	function info() {
+	function info(index) {
+		// selectionne les équipes participantes a la compétition ...
+		var url_team = "http://cmsapi.pulselive.com/rugby/event/"+index+"/teams";
+		teams = [];
+		d3.json(url_team, function(liste){ liste.teams.forEach ( function (d,i) { teams.push(d.id); }) });
+		// affichage du résumé
 		rwc.text(data.event.label+ "   ["+data.event.id+"]");
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.8em").attr("x", 24).text("du "+date_s.getDate()+"/"+(date_s.getMonth()+1)+"/"+date_s.getFullYear()+" au "+date_e.getDate()+"/"+(date_e.getMonth()+1)+"/"+date_e.getFullYear());
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Fréquentation   : "+data.data.attendance);
@@ -334,11 +340,19 @@ function update_event(id_liste) {
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Transformations : "+data.data.conversions);
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Cartons Jaunes  : "+data.data.yellowCards);
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Cartons Rouges  : "+data.data.redCards);
+		d3.selectAll(".dot")
+		  .style("fill", function(d) { return colorScale(color(d)); });
 		}
             
     function matches(index) {
         var url = "http://cmsapi.pulselive.com/rugby/event/"+index+"/schedule?language=en&client=pulse";
-        d3.selectAll(".tspan").remove();
+		//console.log(teams);
+		// commencons par effacer les équipes non concernées par la compétition ...
+		d3.selectAll(".dot")
+			.filter(function(d)  { return (teams.indexOf(d.id) == -1); })
+			.style("fill", "#f5fffa");
+		// effacons l'ancienne liste ...
+		d3.selectAll(".tspan").remove();
         // console.log(url);
         d3.json(url, function(data){  // event schedule
             console.log(data);
@@ -374,6 +388,7 @@ function update_event(id_liste) {
 		date = new Date(data.matches[i].time.millis);
 		var url = "http://cmsapi.pulselive.com/rugby/match/"+data.matches[i].matchId+"/summary?language=en&client=pulse";
 		var html = data.matches[i].venue.name+" ("+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+") | "+data.matches[i].attendance+" personnes.<hr>";
+
 		d3.json(url, function(m){  // matchs info
 			console.log(m);
             html = m.match.eventPhase+" | "+m.match.description+"<hr>"+html;
