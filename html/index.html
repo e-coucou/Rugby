@@ -434,7 +434,7 @@ d3.json("data/ranking.json", function(irb) {
     .style("fill", function(d) { return colorScale(color(d)); })
     .call(position)
     .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+'\n('+Math.floor(d.points*10)/10+')');})
-    .on("click", function(d) { return trace_test(d,this);})
+    .on("click", function(d) { return trace_team(d,this);})
     .sort(order);
 //    .filter(function(d) { return (d.id === 42)});
 
@@ -447,13 +447,13 @@ d3.json("data/ranking.json", function(irb) {
   var trace = svg.append("g")
     .attr("class", "traces")
     .selectAll(".trace")
-	.data(test) //parcourt("France"))
+	.data(test)
     .enter().append("circle")
 	.attr("class", "trace")
 	.style("fill",d3.rgb(255,255,255))
 	.call(trace_pos);
 
-function trace_test(d,instance) {
+function trace_team(d,instance) {
 	trace.data(test).exit().remove();
 	parcourt(d.name);
 	displayTrace();
@@ -575,9 +575,8 @@ function trace_test(d,instance) {
 
   // Updates the display to show specific trace.
   function displayTrace() {
-	//trace.remove(); //.style("fill",d3.rgb(0,0,255)); //.remove();
 	d3.selectAll(".trace").remove();
-    trace.data(test).enter().append("circle").attr("class", "trace").call(trace_pos).style("fill",d3.rgb(164,164,164));
+    trace.data(test).enter().append("circle").attr("class", "trace").call(trace_pos).style("fill",d3.rgb(0,64,164));
   }
 
   // Interpolates the dataset for the given (fractional) year.
