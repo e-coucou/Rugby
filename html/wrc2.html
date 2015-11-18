@@ -15,7 +15,7 @@
 #controls {
 	width: 100%;
 	float: left;
-	margin-bottom: 10px;
+	margin-bottom: 1px;
 }
 .control {
   float: left;
@@ -60,60 +60,18 @@ p.search_title {
 select#mois_select {
     position: absolute;
     right: 20px;
-    top:50px;
-}
-.tooltip {
-    opacity: 1;
-    font: 11px "helvetica neue";
-    position: absolute;			
-    text-align: left;			
-    padding: 2px;
- 	line-height: 1;
-    font-weight: bold;
-	padding: 12px;
-    background: #B0C4DE;
-	color: #191970;
-	border-radius: 1px;
-}
-.tooltip p.main {
-  font-size: 15px;
-  text-align: center;
-  background: #B0C4DE;
-  padding:0;
-  margin:0;
-}
-
-hr.tooltip-hr {
-  padding:1px 0 0 0;
-  margin:3px 0 3px 0;
-  background: #B0C4DE;
-}
-
-.tooltip .title {
-  text-align: center;
-  font-size: 25px;
-  line-height: 24px;
-  background: #B0C4DE;
-  color:white;
-}
- 
-.tooltip .name {
-  font-size: 15px;
-  text-align: center;
-  font-weight:bold;
-  background: #B0C4DE;
-  color:#55f;
+    top:10px;
 }
 </style>
 <!-- end CSS-->
 
 </head>
 <body>
+<header>
+   <aside>Octobre, 2015</aside>
+   <a href="index.html" rel="author">e-Coucou</a>
+</header>
 <div id="container" class="container">
-    <header>
-        <aside>Octobre, 2015</aside>
-        <a href="index.html" rel="author">e-Coucou</a>
-    </header>
     <h1>Rugby World Cup</h1>
     <p>presentation visuelle des coupes du monde Rugby depuis 1989 à 2015 ...</p>
     <div id="mois_selection" class="control">
@@ -140,11 +98,6 @@ hr.tooltip-hr {
 		<a id="popular">GROS ...</a>
         <a id="obscure">Petits</a>
     </div>
-	<div id="sorts" class="control">
-		<h3>Sort</h3>
-        <a id="songs" class="active">#marqués</a>
-		<a id="links">Delta points</a>
-    </div>
 	<div id="search_section" class="control">
 		<form id="search_form" method="post" action="">
 			<p class="search_title">
@@ -154,19 +107,64 @@ hr.tooltip-hr {
 		</form>
 	</div>
 	<div id="main" role="main">
-		<div id="vis">
-			<script src="js/libs/modernizr-2.0.6.min.js"></script>
-			<style>
-			.node {
-				stroke: #fff;
-				stroke-width: 1.5px;
-			}
-			.link {
-				stroke: #999;
-				stroke-opacity: .6;
-			}
-			</style>
-		</div>
+<!--    <script src="http://d3js.org/d3.v3.min.js"></script>-->
+    <script src="js/libs/d3.v2.min.js"></script>
+    <script>
+
+        var width = 1200,
+            height = 900;
+            
+        var color = d3.scale.category20();
+            
+        var force = d3.layout.force()
+            .charge(-150)
+            .linkDistance(25)
+            .size([width, height]);
+            
+        var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+            
+        d3.json("data/WRC2015.json", function(graph) {
+					console.log(graph);
+                    force
+                    .nodes(graph.nodes)
+                    .links(graph.links)
+                    .start();
+                    
+        var link = svg.selectAll(".link")
+                    .data(graph.links)
+                    .enter().append("line")
+                    .attr("class", "link")
+                    .style("stroke-width", function(d) { return Math.sqrt(d.value/1); });
+                    
+        var node = svg.selectAll(".node")
+                    .data(graph.nodes)
+                    .enter().append("circle")
+                    .attr("class", "node")
+                    .attr("r", function(d) { return Math.sqrt(d.scoreL/1); })
+                    .style("fill", function(d) { return color(d.scoreV); })
+                    .call(force.drag);
+                    
+        node.append("title")
+                    .text(function(d) {
+                          mess = '['+d.OU + ']'+d.name +'\n -> mails envoyés : '+ d.send+'\n <- mails recus : '+ d.receive+'('+d.Direction+')'
+                          return mess; });
+        
+                
+        force.on("tick", function() {
+        
+                 link.attr("x1", function(d) { return d.source.x; })
+                             .attr("y1", function(d) { return d.source.y; })
+                             .attr("x2", function(d) { return d.target.x; })
+                             .attr("y2", function(d) { return d.target.y; });
+                             
+                             node.attr("cx", function(d) { return d.x; })
+                             .attr("cy", function(d) { return d.y; });
+                             });
+                    });
+            
+        </script>
 	</div>
 </div>
 <footer>
@@ -180,10 +178,8 @@ hr.tooltip-hr {
 
 <script defer src="js/plugins.js"></script>
 <script defer src="js/script.js"></script>
-<script src="js/libs/coffee-script.js"></script>
 <script src="js/libs/d3.v2.js"></script>
 <script src="js/Tooltip.js"></script>
-<script type="text/coffeescript" src="coffee/vis.coffee"></script>
 </div>
 </body>
 </html>
