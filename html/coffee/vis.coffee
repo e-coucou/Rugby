@@ -104,8 +104,8 @@ RadialPlacement = () ->
 Network = () ->
   # variables we want to access
   # in multiple places of Network
-  width = 960
-  height = 960
+  width = 850
+  height = 850
   # allData will store the unfiltered data
   allData = []
   curLinksData = []
