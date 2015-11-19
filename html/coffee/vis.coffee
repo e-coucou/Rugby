@@ -134,7 +134,7 @@ Network = () ->
   # color function used to color nodes
   nodeColors = d3.scale.category20()
   # tooltip used to display details
-  tooltip = Tooltip("vis-tooltip", 250)
+  tooltip = Tooltip("vis-tooltip", 300)
 
   # charge used in pays/eMail/artist layout
   charge = (node) -> -Math.pow(node.radius, 3.0) / 2
@@ -435,8 +435,8 @@ Network = () ->
       .data(curLinksData, (d) -> "#{d.source.id}_#{d.target.id}_#{d.value.id}")
     link.enter().append("line")
       .attr("class", "link")
-      .style("stroke", "#a0c" ) #"#ddd")
-      .style("stroke-opacity", 0.7)
+      .style("stroke", "#00c" )  #couleur originales
+      .style("stroke-opacity", 0.4)
       .style("stroke-width", (d) -> Math.sqrt(d.value / 2) )
       .attr("x1", (d) -> d.source.x)
       .attr("y1", (d) -> d.source.y)
@@ -531,12 +531,8 @@ Network = () ->
 
     content = '<p class="title">' + d.name + '</p>'
     content += '<hr class="tooltip-hr">'
-    content += '<p class="name">' + d.id + '</p>'  # ep artist
-    content += '<hr class="tooltip-hr">'
-    content += '<p class="main">Pour -> '+d.send+'</p>'
-    content += '<p class="main">Contre <- '+d.receive+'</p>'
-    content += '<hr class="tooltip-hr">'
-    content += '<p class="main">blabla '+d.OU+'</p>'
+    content += '<p class="main">'+d.send+' points marqués</p>'
+    content += '<p class="main">'+d.receive+' points encaissés</p>'
     content += '<hr class="tooltip-hr">'
     content += '<p class="main">'+lsum+' points</p>'
     if color == "dir"
@@ -557,20 +553,15 @@ Network = () ->
       .style("stroke-width", 2.0)
 
   showDetailsLink = (d,i) ->
-    content = '<p class="title">'+d.scoreL+' - '+d.scoreV+'</p>'
+    content = '<p class="title">'+d.source.name+' '+d.scoreL+' - '+d.scoreV+' '+d.target.name+'</p>'
     content += '<hr class="tooltip-hr">'
-    content += '<p class="main">' + d.source.name + '</p>'  # ep artist
-    content += '<p class="main">to</p>'
-    content += '<p class="main">' + d.target.name + '</p>'  # ep artist
-    content += '<hr class="tooltip-hr">'
-    content += '<p class="main">Nb de lien ' + '</p>'
-    content += '<p class="name">' + d.value + '</p>'  # ep artist
+    content += '<p class="name">' + d.value + '</p>'
     tooltip.showTooltip(content,d3.event)
 
     # higlight connected links
     if link
       link.style("stroke", (l) ->
-        if l.source == d or l.target == d then "#00f" else "#ddd"
+        if l.source == d or l.target == d then "#03c" else "#ddc"
       )
         .style("stroke-opacity", (l) ->
           if l.source == d or l.target == d then 2.0 else 0.5
