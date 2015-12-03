@@ -13,7 +13,11 @@
   margin-left: -40px;
   height: 506px;
 }
-
+.entete {
+    position: absolute;
+    height: 30px;
+    margin-top: 12px;
+}
 text {
   font: 10px sans-serif;
 }
@@ -108,9 +112,10 @@ select#color {
 }
 </style>
 <header>
-  <aside>Novembre, 2015</aside>
-  <a href="index.html" rel="author">e-Coucou</a><br>
-  <aside>Visualisation en graphe des Coupes du Monde </aside><a href="wrc.html" rel="author">RWC Graphes</a>
+  <aside >Novembre, 2015</aside>
+  <a class="entete" href="index.html" rel="author">e-Coucou</a>
+  <aside>Visualisation en graphe des Coupes du Monde </aside>
+  <a class="entete" href="wrc.html" rel="author"><img src="RWC.png" alt="Coupe du Monde" style="width:25px;height:25px;"></a>
   <div id="twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-url="https://rugby.e-coucou.com/index.html" data-via="EricP_">Tweet</a>
       <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
   
