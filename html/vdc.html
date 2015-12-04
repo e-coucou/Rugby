@@ -1,69 +1,69 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAA1h6T6f_uAHn29aRgrFjjTS5vJf7zfVA&callback=initializeMap"></script>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
-        <script type="text/javascript">
-            var map;
-            var directionsDisplay = null;
-            var directionsService;
-            var polylinePath;
-            var nodes = [];
-            var prevNodes = [];
-            var markers = [];
-            var durations = [];
-            // Initialize google maps
-            function initializeMap() {
-                // Map options
-                var opts = {
-                    center: new google.maps.LatLng(48.834268, 2.308016),
-                    zoom: 6,
-                    streetViewControl: false,
-                    mapTypeControl: false,
+<head>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAA1h6T6f_uAHn29aRgrFjjTS5vJf7zfVA&callback=initializeMap"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map;
+        var directionsDisplay = null;
+        var directionsService;
+        var polylinePath;
+        var nodes = [];
+        var prevNodes = [];
+        var markers = [];
+        var durations = [];
+        // Initialize google maps
+        function initializeMap() {
+        // Map options
+            var opts = {
+                center: new google.maps.LatLng(48.834268, 2.308016),
+                zoom: 6,
+                streetViewControl: false,
+                mapTypeControl: false,
                 };
-                map = new google.maps.Map(document.getElementById('map-canvas'), opts);
-                // Create map click event
-                google.maps.event.addListener(map, 'click', function(event) {
-                                              // Add destination (max 9)
-                                              if (nodes.length >= 20) {
-                                              alert('Max destinations added');
-                                              return;
-                                              }
-                                              // If there are directions being shown, clear them
-                                              clearDirections();
-                                              
-                                              // Add a node to map
-                                              marker = new google.maps.Marker({position: event.latLng, map: map});
-                                              markers.push(marker);
-                                              
-                                              // Store node's lat and lng
-                                              nodes.push(event.latLng);
-                                              
-                                              // Update destination count
-                                              $('#destinations-count').html(nodes.length);
-                                              });
-                                              // Add "my location" button
-                                              var myLocationDiv = document.createElement('div');
-                                              new getMyLocation(myLocationDiv, map);
-                                              map.controls[google.maps.ControlPosition.TOP_RIGHT].push(myLocationDiv);
-                                              
-                                              function getMyLocation(myLocationDiv, map) {
-                                                  var myLocationBtn = document.createElement('button');
-                                                  myLocationBtn.innerHTML = 'My Location';
-                                                  myLocationBtn.className = 'large-btn';
-                                                  myLocationBtn.style.margin = '5px';
-                                                  myLocationBtn.style.opacity = '0.95';
-                                                  myLocationBtn.style.borderRadius = '3px';
-                                                  myLocationDiv.appendChild(myLocationBtn);
+            map = new google.maps.Map(document.getElementById('map-canvas'), opts);
+            // Create map click event
+            google.maps.event.addListener(map, 'click', function(event) {
+                // Add destination (max 9)
+                if (nodes.length >= 20) {
+                    alert('Max destinations added');
+                    return;
+                }
+                // If there are directions being shown, clear them
+                clearDirections();
+                                        
+                // Add a node to map
+                marker = new google.maps.Marker({position: event.latLng, map: map});
+                markers.push(marker);
+                                        
+                // Store node's lat and lng
+                nodes.push(event.latLng);
+                                        
+                // Update destination count
+                $('#destinations-count').html(nodes.length);
+                });
+            // Add "my location" button
+            var myLocationDiv = document.createElement('div');
+            new getMyLocation(myLocationDiv, map);
+            map.controls[google.maps.ControlPosition.TOP_RIGHT].push(myLocationDiv);
+            
+            function getMyLocation(myLocationDiv, map) {
+                var myLocationBtn = document.createElement('button');
+                    myLocationBtn.innerHTML = 'Localisez moi';
+                    myLocationBtn.className = 'large-btn';
+                    myLocationBtn.style.margin = '5px';
+                    myLocationBtn.style.opacity = '0.95';
+                    myLocationBtn.style.borderRadius = '3px';
+                    myLocationDiv.appendChild(myLocationBtn);
                                                   
-                                                  google.maps.event.addDomListener(myLocationBtn, 'click', function() {
-                                                                                   navigator.geolocation.getCurrentPosition(function(success) {
-                                                                                                                            map.setCenter(new google.maps.LatLng(success.coords.latitude, success.coords.longitude));
-                                                                                                                            map.setZoom(12);
-                                                                                                                            });
-                                                                                   });
-                                              }
+                google.maps.event.addDomListener(myLocationBtn, 'click', function() {
+                    navigator.geolocation.getCurrentPosition(function(success) {
+                        map.setCenter(new google.maps.LatLng(success.coords.latitude, success.coords.longitude));
+                        map.setZoom(12);
+                    });
+                });
             }
+        }
         // Get all durations depending on travel type
         function getDurations(callback) {
             var service = new google.maps.DistanceMatrixService();
@@ -454,7 +454,7 @@
     </head>
     <body>
         <div>
-            <div id="map-canvas" style="width:660px; height:560px;"></div>
+            <div id="map-canvas" style="width:900px; height:560px;"></div>
             <div class="hr vpad"></div>
             <div>
                 <table>
