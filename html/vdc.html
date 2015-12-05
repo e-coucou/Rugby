@@ -68,29 +68,29 @@
         function getDurations(callback) {
             var service = new google.maps.DistanceMatrixService();
             service.getDistanceMatrix({
-                                      origins: nodes,
-                                      destinations: nodes,
-                                      travelMode: google.maps.TravelMode[$('#travel-type').val()],
-                                      avoidHighways: parseInt($('#avoid-highways').val()) > 0 ? true : false,
-                                      avoidTolls: false,
-                                      }, function(distanceData) {
-                                      // Create duration data array
-                                      var nodeDistanceData;
-                                      for (originNodeIndex in distanceData.rows) {
-                                      nodeDistanceData = distanceData.rows[originNodeIndex].elements;
-                                      durations[originNodeIndex] = [];
-                                      for (destinationNodeIndex in nodeDistanceData) {
-                                      if (durations[originNodeIndex][destinationNodeIndex] = nodeDistanceData[destinationNodeIndex].duration == undefined) {
-                                      alert('Error: couldn\'t get a trip duration from API');
-                                      return;
-                                      }
-                                      durations[originNodeIndex][destinationNodeIndex] = nodeDistanceData[destinationNodeIndex].duration.value;
-                                      }
-                                      }
-                                      if (callback != undefined) {
-                                      callback();
-                                      }
-                                      });
+                origins: nodes,
+                destinations: nodes,
+                travelMode: google.maps.TravelMode[$('#travel-type').val()],
+                avoidHighways: parseInt($('#avoid-highways').val()) > 0 ? true : false,
+                avoidTolls: false,
+                }, function(distanceData) {
+                    // Create duration data array
+                    var nodeDistanceData;
+                    for (originNodeIndex in distanceData.rows) {
+                        nodeDistanceData = distanceData.rows[originNodeIndex].elements;
+                        durations[originNodeIndex] = [];
+                        for (destinationNodeIndex in nodeDistanceData) {
+                            if (durations[originNodeIndex][destinationNodeIndex] = nodeDistanceData[destinationNodeIndex].duration == undefined) {
+                                alert('Error: couldn\'t get a trip duration from API');
+                                return;
+                            }
+                            durations[originNodeIndex][destinationNodeIndex] = nodeDistanceData[destinationNodeIndex].duration.value;
+                        }
+                    }
+                    if (callback != undefined) {
+                        callback();
+                    }
+            });
         }
         // Removes markers and temporary paths
         function clearMapMarkers() {
@@ -126,164 +126,162 @@
         google.maps.event.addDomListener(window, 'load', initializeMap);
         // Create listeners
         $(document).ready(function() {
-                          $('#clear-map').click(clearMap);
-                          // Start GA
-                          $('#find-route').click(function() {
-                                                 if (nodes.length < 2) {
-                                                 if (prevNodes.length >= 2) {
-                                                 nodes = prevNodes;
-                                                 } else {
-                                                 alert('Click on the map to select destination points');
-                                                 return;
-                                                 }
-                                                 }
-                                                 if (directionsDisplay != null) {
-                                                 directionsDisplay.setMap(null);
-                                                 directionsDisplay = null;
-                                                 }
+            $('#clear-map').click(clearMap);
+            // Start GA
+            $('#find-route').click(function() {
+                if (nodes.length < 2) {
+                    if (prevNodes.length >= 2) {
+                        nodes = prevNodes;
+                    } else {
+                        alert('Click on the map to select destination points');
+                        return;
+                    }
+                }
+            if (directionsDisplay != null) {
+                directionsDisplay.setMap(null);
+                directionsDisplay = null;
+            }
+                                   
+            $('#ga-buttons').hide();
+            // Get route durations
+            getDurations(function(){
+                $('.ga-info').show();
+                // Get config and create initial GA population
+                ga.getConfig();
+                var pop = new ga.population();
+                    pop.initialize(nodes.length);
+                var route = pop.getFittest().chromosome;
+                ga.evolvePopulation(pop, function(update) {
+                    $('#generations-passed').html(update.generation);
+                    $('#best-time').html((update.population.getFittest().getDistance() / 60).toFixed(2) + ' Mins');
+                                                                                  
+                    // Get route coordinates
+                    var route = update.population.getFittest().chromosome;
+                    var routeCoordinates = [];
+                    for (index in route) {
+                        routeCoordinates[index] = nodes[route[index]];
+                    }
+                    routeCoordinates[route.length] = nodes[route[0]];
+                    // Display temp. route
+                    if (polylinePath != undefined) {
+                        polylinePath.setMap(null);
+                    }
+                    polylinePath = new google.maps.Polyline({
+                        path: routeCoordinates,
+                        strokeColor: "#0066ff",
+                        strokeOpacity: 0.75,
+                        strokeWeight: 2,
+                    });
+                    polylinePath.setMap(map);
+                }, function(result) {
+                    // Get route
+                    route = result.population.getFittest().chromosome;
+                    // Add route to map
+                    directionsService = new google.maps.DirectionsService();
+                    directionsDisplay = new google.maps.DirectionsRenderer();
+                    directionsDisplay.setMap(map);
+                    var waypts = [];
+                    for (var i = 1; i < route.length; i++) {
+                        waypts.push({
+                            location: nodes[route[i]],
+                            stopover: true
+                        });
+                    }
+                    // Add final route to map
+                    var request = {
+                        origin: nodes[route[0]],
+                        destination: nodes[route[0]],
+                        waypoints: waypts,
+                        travelMode: google.maps.TravelMode[$('#travel-type').val()],
+                        avoidHighways: parseInt($('#avoid-highways').val()) > 0 ? true : false,
+                            avoidTolls: false
+                    };
+                    directionsService.route(request, function(response, status) {
+                        if (status == google.maps.DirectionsStatus.OK) {
+                            directionsDisplay.setDirections(response);
+                        }
+                        clearMapMarkers();
+                    });
+                });
+            });
+        });
+        });
+        // GA code
+        var ga = {
+            // Default config
+            "crossoverRate": 0.5,
+            "mutationRate": 0.1,
+            "populationSize": 50,
+            "tournamentSize": 5,
+            "elitism": true,
+            "maxGenerations": 50,
+            "tickerSpeed": 60,
+            // Loads config from HTML inputs
+            "getConfig": function() {
+                ga.crossoverRate = parseFloat($('#crossover-rate').val());
+                ga.mutationRate = parseFloat($('#mutation-rate').val());
+                ga.populationSize = parseInt($('#population-size').val()) || 50;
+                ga.elitism = parseInt($('#elitism').val()) || false;
+                ga.maxGenerations = parseInt($('#maxGenerations').val()) || 50;
+            },
+                              
+            // Evolves given population
+            "evolvePopulation": function(population, generationCallBack, completeCallBack) {
+                // Start evolution
+                var generation = 1;
+                var evolveInterval = setInterval(function() {
+                    if (generationCallBack != undefined) {
+                        generationCallBack({
+                            population: population,
+                            generation: generation,
+                        });
+                    }
+                    // Evolve population
+                    population = population.crossover();
+                    population.mutate();
+                    generation++;
                                                  
-                                                 $('#ga-buttons').hide();
-                                                 // Get route durations
-                                                 getDurations(function(){
-                                                              $('.ga-info').show();
-                                                              // Get config and create initial GA population
-                                                              ga.getConfig();
-                                                              var pop = new ga.population();
-                                                              pop.initialize(nodes.length);
-                                                              var route = pop.getFittest().chromosome;
-                                                              ga.evolvePopulation(pop, function(update) {
-                                                                                  $('#generations-passed').html(update.generation);
-                                                                                  $('#best-time').html((update.population.getFittest().getDistance() / 60).toFixed(2) + ' Mins');
-                                                                                  
-                                                                                  // Get route coordinates
-                                                                                  var route = update.population.getFittest().chromosome;
-                                                                                  var routeCoordinates = [];
-                                                                                  for (index in route) {
-                                                                                  routeCoordinates[index] = nodes[route[index]];
-                                                                                  }
-                                                                                  routeCoordinates[route.length] = nodes[route[0]];
-                                                                                  // Display temp. route
-                                                                                  if (polylinePath != undefined) {
-                                                                                  polylinePath.setMap(null);
-                                                                                  }
-                                                                                  polylinePath = new google.maps.Polyline({
-                                                                                                                          path: routeCoordinates,
-                                                                                                                          strokeColor: "#0066ff",
-                                                                                                                          strokeOpacity: 0.75,
-                                                                                                                          strokeWeight: 2,
-                                                                                                                          });
-                                                                                  polylinePath.setMap(map);
-                                                                                  }, function(result) {
-                                                                                  // Get route
-                                                                                  route = result.population.getFittest().chromosome;
-                                                                                  // Add route to map
-                                                                                  directionsService = new google.maps.DirectionsService();
-                                                                                  directionsDisplay = new google.maps.DirectionsRenderer();
-                                                                                  directionsDisplay.setMap(map);
-                                                                                  var waypts = [];
-                                                                                  for (var i = 1; i < route.length; i++) {
-                                                                                  waypts.push({
-                                                                                              location: nodes[route[i]],
-                                                                                              stopover: true
-                                                                                              });
-                                                                                  }
-                                                                                  
-                                                                                  // Add final route to map
-                                                                                  var request = {
-                                                                                  origin: nodes[route[0]],
-                                                                                  destination: nodes[route[0]],
-                                                                                  waypoints: waypts,
-                                                                                  travelMode: google.maps.TravelMode[$('#travel-type').val()],
-                                                                                  avoidHighways: parseInt($('#avoid-highways').val()) > 0 ? true : false,
-                                                                                  avoidTolls: false
-                                                                                  };
-                                                                                  directionsService.route(request, function(response, status) {
-                                                                                                          if (status == google.maps.DirectionsStatus.OK) {
-                                                                                                          directionsDisplay.setDirections(response);
-                                                                                                          }
-                                                                                                          clearMapMarkers();
-                                                                                                          });
-                                                                                  });
-                                                              });
-                                                 });
-                          });
-                          // GA code
-                          var ga = {
-                              // Default config
-                              "crossoverRate": 0.5,
-                              "mutationRate": 0.1,
-                              "populationSize": 50,
-                              "tournamentSize": 5,
-                              "elitism": true,
-                              "maxGenerations": 50,
-                              
-                              "tickerSpeed": 60,
-                              // Loads config from HTML inputs
-                              "getConfig": function() {
-                                  ga.crossoverRate = parseFloat($('#crossover-rate').val());
-                                  ga.mutationRate = parseFloat($('#mutation-rate').val());
-                                  ga.populationSize = parseInt($('#population-size').val()) || 50;
-                                  ga.elitism = parseInt($('#elitism').val()) || false;
-                                  ga.maxGenerations = parseInt($('#maxGenerations').val()) || 50;
-                              },
-                              
-                              // Evolves given population
-                              "evolvePopulation": function(population, generationCallBack, completeCallBack) {
-                                  // Start evolution
-                                  var generation = 1;
-                                  var evolveInterval = setInterval(function() {
-                                                                   if (generationCallBack != undefined) {
-                                                                   generationCallBack({
-                                                                                      population: population,
-                                                                                      generation: generation,
-                                                                                      });
-                                                                   }
-                                                                   // Evolve population
-                                                                   population = population.crossover();
-                                                                   population.mutate();
-                                                                   generation++;
-                                                                   
-                                                                   // If max generations passed
-                                                                   if (generation > ga.maxGenerations) {
-                                                                   // Stop looping
-                                                                   clearInterval(evolveInterval);
-                                                                   
-                                                                   if (completeCallBack != undefined) {
-                                                                   completeCallBack({
-                                                                                    population: population,
-                                                                                    generation: generation,
-                                                                                    });
-                                                                   }
-                                                                   }
-                                                                   }, ga.tickerSpeed);
-                              },
-                              // Population class
-                              "population": function() {
-                                  // Holds individuals of population
-                                  this.individuals = [];
+                    // If max generations passed
+                    if (generation > ga.maxGenerations) {
+                        // Stop looping
+                        clearInterval(evolveInterval);
+                                                 
+                        if (completeCallBack != undefined) {
+                            completeCallBack({
+                                population: population,
+                                generation: generation,
+                            });
+                        }
+                    }
+                    }, ga.tickerSpeed);
+            },
+            // Population class
+            "population": function() {
+                // Holds individuals of population
+                this.individuals = [];
+                
+                // Initial population of random individuals with given chromosome length
+                this.initialize = function(chromosomeLength) {
+                    this.individuals = [];
+                    
+                    for (var i = 0; i < ga.populationSize; i++) {
+                        var newIndividual = new ga.individual(chromosomeLength);
+                            newIndividual.initialize();
+                            this.individuals.push(newIndividual);
+                    }
+                };
                                   
-                                  // Initial population of random individuals with given chromosome length
-                                  this.initialize = function(chromosomeLength) {
-                                      this.individuals = [];
-                                      
-                                      for (var i = 0; i < ga.populationSize; i++) {
-                                          var newIndividual = new ga.individual(chromosomeLength);
-                                          newIndividual.initialize();
-                                          this.individuals.push(newIndividual);
-                                      }
-                                  };
-                                  
-                                  // Mutates current population
-                                  this.mutate = function() {
-                                      var fittestIndex = this.getFittestIndex();
-                                      for (index in this.individuals) {
-                                          // Don't mutate if this is the elite individual and elitism is enabled
-                                          if (ga.elitism != true || index != fittestIndex) {
-                                              this.individuals[index].mutate();
-                                          }
-                                      }
-                                  };
-                                  // Applies crossover to current population and returns population of offspring
+                // Mutates current population
+                this.mutate = function() {
+                    var fittestIndex = this.getFittestIndex();
+                    for (index in this.individuals) {
+                        // Don't mutate if this is the elite individual and elitism is enabled
+                        if (ga.elitism != true || index != fittestIndex) {
+                            this.individuals[index].mutate();
+                        }
+                    }
+                };
+                // Applies crossover to current population and returns population of offspring
                                   this.crossover = function() {
                                       // Create offspring population
                                       var newPopulation = new ga.population();
@@ -450,7 +448,7 @@
                                   };
                               },
                           };
-        </script>
+    </script>
     </head>
     <body>
         <div>
@@ -540,8 +538,11 @@
                         <td>
                             <select id="generations">
                                 <option value="20">20</option>
+                                <option value="30">30</option>
+                                <option value="40">40</option>
                                 <option value="50" selected="selected">50</option>
                                 <option value="100">100</option>
+                                <option value="200">200</option>
                             </select>
                         </td>
                     </tr>
