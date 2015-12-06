@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAA1h6T6f_uAHn29aRgrFjjTS5vJf7zfVA&callback=initializeMap"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAA1h6T6f_uAHn29aRgrFjjTS5vJf7zfVA"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
     <script type="text/javascript">
         var map;
@@ -19,13 +19,13 @@
                 center: new google.maps.LatLng(48.834268, 2.308016),
                 zoom: 6,
                 streetViewControl: false,
-                mapTypeControl: false,
+                mapTypeControl: false
                 };
             map = new google.maps.Map(document.getElementById('map-canvas'), opts);
             // Create map click event
             google.maps.event.addListener(map, 'click', function(event) {
                 // Add destination (max 9)
-                if (nodes.length >= 20) {
+                if (nodes.length >= 9) {
                     alert('Max destinations added');
                     return;
                 }
@@ -75,6 +75,7 @@
                 avoidTolls: false,
                 }, function(distanceData) {
                     // Create duration data array
+                    console.log(distanceData);
                     var nodeDistanceData;
                     for (originNodeIndex in distanceData.rows) {
                         nodeDistanceData = distanceData.rows[originNodeIndex].elements;
@@ -122,6 +123,7 @@
             
             $('#destinations-count').html('0');
         }
+        //----------------------------------------------------------------------------
         // Initial Google Maps
         google.maps.event.addDomListener(window, 'load', initializeMap);
         // Create listeners
@@ -137,74 +139,75 @@
                         return;
                     }
                 }
-            if (directionsDisplay != null) {
-                directionsDisplay.setMap(null);
-                directionsDisplay = null;
-            }
+                if (directionsDisplay != null) {
+                    directionsDisplay.setMap(null);
+                    directionsDisplay = null;
+                }
                                    
-            $('#ga-buttons').hide();
-            // Get route durations
-            getDurations(function(){
-                $('.ga-info').show();
-                // Get config and create initial GA population
-                ga.getConfig();
-                var pop = new ga.population();
+                $('#ga-buttons').hide();
+                // Get route durations
+                getDurations(function(){
+                    $('.ga-info').show();
+                    // Get config and create initial GA population
+                    ga.getConfig();
+                    var pop = new ga.population();
                     pop.initialize(nodes.length);
-                var route = pop.getFittest().chromosome;
-                ga.evolvePopulation(pop, function(update) {
-                    $('#generations-passed').html(update.generation);
-                    $('#best-time').html((update.population.getFittest().getDistance() / 60).toFixed(2) + ' Mins');
+                             console.log(nodes);
+                    var route = pop.getFittest().chromosome;
+                    ga.evolvePopulation(pop, function(update) {
+                        $('#generations-passed').html(update.generation);
+                        $('#best-time').html((update.population.getFittest().getDistance() / 60).toFixed(2) + ' Mins');
                                                                                   
-                    // Get route coordinates
-                    var route = update.population.getFittest().chromosome;
-                    var routeCoordinates = [];
-                    for (index in route) {
-                        routeCoordinates[index] = nodes[route[index]];
-                    }
-                    routeCoordinates[route.length] = nodes[route[0]];
-                    // Display temp. route
-                    if (polylinePath != undefined) {
-                        polylinePath.setMap(null);
-                    }
-                    polylinePath = new google.maps.Polyline({
-                        path: routeCoordinates,
-                        strokeColor: "#0066ff",
-                        strokeOpacity: 0.75,
-                        strokeWeight: 2,
-                    });
-                    polylinePath.setMap(map);
-                }, function(result) {
-                    // Get route
-                    route = result.population.getFittest().chromosome;
-                    // Add route to map
-                    directionsService = new google.maps.DirectionsService();
-                    directionsDisplay = new google.maps.DirectionsRenderer();
-                    directionsDisplay.setMap(map);
-                    var waypts = [];
-                    for (var i = 1; i < route.length; i++) {
-                        waypts.push({
-                            location: nodes[route[i]],
-                            stopover: true
-                        });
-                    }
-                    // Add final route to map
-                    var request = {
-                        origin: nodes[route[0]],
-                        destination: nodes[route[0]],
-                        waypoints: waypts,
-                        travelMode: google.maps.TravelMode[$('#travel-type').val()],
-                        avoidHighways: parseInt($('#avoid-highways').val()) > 0 ? true : false,
-                            avoidTolls: false
-                    };
-                    directionsService.route(request, function(response, status) {
-                        if (status == google.maps.DirectionsStatus.OK) {
-                            directionsDisplay.setDirections(response);
+                        // Get route coordinates
+                        var route = update.population.getFittest().chromosome;
+                        var routeCoordinates = [];
+                        for (index in route) {
+                            routeCoordinates[index] = nodes[route[index]];
                         }
-                        clearMapMarkers();
+                        routeCoordinates[route.length] = nodes[route[0]];
+                        // Display temp. route
+                        if (polylinePath != undefined) {
+                            polylinePath.setMap(null);
+                        }
+                        polylinePath = new google.maps.Polyline({
+                            path: routeCoordinates,
+                            strokeColor: "#8866aa",
+                            strokeOpacity: 0.75,
+                            strokeWeight: 4,
+                        });
+                        polylinePath.setMap(map);
+                    }, function(result) {
+                        // Get route
+                        route = result.population.getFittest().chromosome;
+                        // Add route to map
+                        directionsService = new google.maps.DirectionsService();
+                        directionsDisplay = new google.maps.DirectionsRenderer();
+                        directionsDisplay.setMap(map);
+                        var waypts = [];
+                        for (var i = 1; i < Math.min(route.length,9); i++) {
+                            waypts.push({
+                                location: nodes[route[i]],
+                                stopover: true
+                            });
+                        }
+                        // Add final route to map
+                        var request = {
+                            origin: nodes[route[0]],
+                            destination: nodes[route[0]],
+                            waypoints: waypts,
+                            travelMode: google.maps.TravelMode[$('#travel-type').val()],
+                            avoidHighways: parseInt($('#avoid-highways').val()) > 0 ? true : false,
+                            avoidTolls: false
+                        };
+                        directionsService.route(request, function(response, status) {
+                            if (status == google.maps.DirectionsStatus.OK) {
+                                directionsDisplay.setDirections(response);
+                            }
+                            clearMapMarkers();
+                        });
                     });
                 });
             });
-        });
         });
         // GA code
         var ga = {
@@ -282,172 +285,172 @@
                     }
                 };
                 // Applies crossover to current population and returns population of offspring
-                                  this.crossover = function() {
-                                      // Create offspring population
-                                      var newPopulation = new ga.population();
+                this.crossover = function() {
+                    // Create offspring population
+                    var newPopulation = new ga.population();
                                       
-                                      // Find fittest individual
-                                      var fittestIndex = this.getFittestIndex();
-                                      for (index in this.individuals) {
-                                          // Add unchanged into next generation if this is the elite individual and elitism is enabled
-                                          if (ga.elitism == true && index == fittestIndex) {
-                                              // Replicate individual
-                                              var eliteIndividual = new ga.individual(this.individuals[index].chromosomeLength);
-                                              eliteIndividual.setChromosome(this.individuals[index].chromosome.slice());
-                                              newPopulation.addIndividual(eliteIndividual);
-                                          } else {
-                                              // Select mate
-                                              var parent = this.tournamentSelection();
-                                              // Apply crossover
-                                              this.individuals[index].crossover(parent, newPopulation);
-                                          }
-                                      }
+                    // Find fittest individual
+                    var fittestIndex = this.getFittestIndex();
+                    for (index in this.individuals) {
+                        // Add unchanged into next generation if this is the elite individual and elitism is enabled
+                        if (ga.elitism == true && index == fittestIndex) {
+                            // Replicate individual
+                            var eliteIndividual = new ga.individual(this.individuals[index].chromosomeLength);
+                            eliteIndividual.setChromosome(this.individuals[index].chromosome.slice());
+                            newPopulation.addIndividual(eliteIndividual);
+                        } else {
+                            // Select mate
+                            var parent = this.tournamentSelection();
+                            // Apply crossover
+                            this.individuals[index].crossover(parent, newPopulation);
+                        }
+                    }
                                       
-                                      return newPopulation;
-                                  };
-                                  // Adds an individual to current population
-                                  this.addIndividual = function(individual) {
-                                      this.individuals.push(individual);
-                                  };
-                                  // Selects an individual with tournament selection
-                                  this.tournamentSelection = function() {
-                                      // Randomly order population
-                                      for (var i = 0; i < this.individuals.length; i++) {
-                                          var randomIndex = Math.floor(Math.random() * this.individuals.length);
-                                          var tempIndividual = this.individuals[randomIndex];
-                                          this.individuals[randomIndex] = this.individuals[i];
-                                          this.individuals[i] = tempIndividual;
-                                      }
-                                      // Create tournament population and add individuals
-                                      var tournamentPopulation = new ga.population();
-                                      for (var i = 0; i < ga.tournamentSize; i++) {
-                                          tournamentPopulation.addIndividual(this.individuals[i]);
-                                      }
-                                      return tournamentPopulation.getFittest();
-                                  };
+                    return newPopulation;
+                };
+                // Adds an individual to current population
+                this.addIndividual = function(individual) {
+                    this.individuals.push(individual);
+                };
+                // Selects an individual with tournament selection
+                this.tournamentSelection = function() {
+                    // Randomly order population
+                    for (var i = 0; i < this.individuals.length; i++) {
+                        var randomIndex = Math.floor(Math.random() * this.individuals.length);
+                        var tempIndividual = this.individuals[randomIndex];
+                            this.individuals[randomIndex] = this.individuals[i];
+                            this.individuals[i] = tempIndividual;
+                    }
+                    // Create tournament population and add individuals
+                    var tournamentPopulation = new ga.population();
+                    for (var i = 0; i < ga.tournamentSize; i++) {
+                        tournamentPopulation.addIndividual(this.individuals[i]);
+                    }
+                    return tournamentPopulation.getFittest();
+                };
                                   
-                                  // Return the fittest individual's population index
-                                  this.getFittestIndex = function() {
-                                      var fittestIndex = 0;
-                                      // Loop over population looking for fittest
-                                      for (var i = 1; i < this.individuals.length; i++) {
-                                          if (this.individuals[i].calcFitness() > this.individuals[fittestIndex].calcFitness()) {
-                                              fittestIndex = i;
-                                          }
-                                      }
-                                      return fittestIndex;
-                                  };
-                                  // Return fittest individual
-                                  this.getFittest = function() {
-                                      return this.individuals[this.getFittestIndex()];
-                                  };
-                              },
-                              // Individual class
-                              "individual": function(chromosomeLength) {
-                                  this.chromosomeLength = chromosomeLength;
-                                  this.fitness = null;
-                                  this.chromosome = [];
-                                  // Initialize random individual
-                                  this.initialize = function() {
-                                      this.chromosome = [];
-                                      // Generate random chromosome
-                                      for (var i = 0; i < this.chromosomeLength; i++) {
-                                          this.chromosome.push(i);
-                                      }
-                                      for (var i = 0; i < this.chromosomeLength; i++) {
-                                          var randomIndex = Math.floor(Math.random() * this.chromosomeLength);
-                                          var tempNode = this.chromosome[randomIndex];
-                                          this.chromosome[randomIndex] = this.chromosome[i];
-                                          this.chromosome[i] = tempNode;
-                                      }
-                                  };
+                // Return the fittest individual's population index
+                this.getFittestIndex = function() {
+                    var fittestIndex = 0;
+                    // Loop over population looking for fittest
+                    for (var i = 1; i < this.individuals.length; i++) {
+                        if (this.individuals[i].calcFitness() > this.individuals[fittestIndex].calcFitness()) {
+                            fittestIndex = i;
+                        }
+                    }
+                    return fittestIndex;
+                };
+                // Return fittest individual
+                this.getFittest = function() {
+                    return this.individuals[this.getFittestIndex()];
+                };
+            },
+            // Individual class
+            "individual": function(chromosomeLength) {
+                this.chromosomeLength = chromosomeLength;
+                this.fitness = null;
+                this.chromosome = [];
+                // Initialize random individual
+                this.initialize = function() {
+                    this.chromosome = [];
+                    // Generate random chromosome
+                    for (var i = 0; i < this.chromosomeLength; i++) {
+                        this.chromosome.push(i);
+                    }
+                    for (var i = 0; i < this.chromosomeLength; i++) {
+                        var randomIndex = Math.floor(Math.random() * this.chromosomeLength);
+                        var tempNode = this.chromosome[randomIndex];
+                        this.chromosome[randomIndex] = this.chromosome[i];
+                        this.chromosome[i] = tempNode;
+                    }
+                };
                                   
-                                  // Set individual's chromosome
-                                  this.setChromosome = function(chromosome) {
-                                      this.chromosome = chromosome;
-                                  };
+                // Set individual's chromosome
+                this.setChromosome = function(chromosome) {
+                    this.chromosome = chromosome;
+                };
                                   
-                                  // Mutate individual
-                                  this.mutate = function() {
-                                      this.fitness = null;
-                                      
-                                      // Loop over chromosome making random changes
-                                      for (index in this.chromosome) {
-                                          if (ga.mutationRate > Math.random()) {
-                                              var randomIndex = Math.floor(Math.random() * this.chromosomeLength);
-                                              var tempNode = this.chromosome[randomIndex];
-                                              this.chromosome[randomIndex] = this.chromosome[index];
-                                              this.chromosome[index] = tempNode;
-                                          }
-                                      }
-                                  };
+                // Mutate individual
+                this.mutate = function() {
+                    this.fitness = null;
+                    
+                    // Loop over chromosome making random changes
+                    for (index in this.chromosome) {
+                        if (ga.mutationRate > Math.random()) {
+                            var randomIndex = Math.floor(Math.random() * this.chromosomeLength);
+                            var tempNode = this.chromosome[randomIndex];
+                            this.chromosome[randomIndex] = this.chromosome[index];
+                            this.chromosome[index] = tempNode;
+                        }
+                    }
+                };
                                   
-                                  // Returns individuals route distance
-                                  this.getDistance = function() {
-                                      var totalDistance = 0;
-                                      for (index in this.chromosome) {
-                                          var startNode = this.chromosome[index];
-                                          var endNode = this.chromosome[0];
-                                          if ((parseInt(index) + 1) < this.chromosome.length) {
-                                              endNode = this.chromosome[(parseInt(index) + 1)];
-                                          }
-                                          totalDistance += durations[startNode][endNode];
-                                      }
+                // Returns individuals route distance
+                this.getDistance = function() {
+                    var totalDistance = 0;
+                    for (index in this.chromosome) {
+                        var startNode = this.chromosome[index];
+                        var endNode = this.chromosome[0];
+                        if ((parseInt(index) + 1) < this.chromosome.length) {
+                            endNode = this.chromosome[(parseInt(index) + 1)];
+                        }
+                        totalDistance += durations[startNode][endNode];
+                    }
+                    
+                    totalDistance += durations[startNode][endNode];
                                       
-                                      totalDistance += durations[startNode][endNode];
+                    return totalDistance;
+                };
+                // Calculates individuals fitness value
+                this.calcFitness = function() {
+                    if (this.fitness != null) {
+                        return this.fitness;
+                    }
                                       
-                                      return totalDistance;
-                                  };
-                                  // Calculates individuals fitness value
-                                  this.calcFitness = function() {
-                                      if (this.fitness != null) {
-                                          return this.fitness;
-                                      }
-                                      
-                                      var totalDistance = this.getDistance();
-                                      this.fitness = 1 / totalDistance;
-                                      return this.fitness;
-                                  };
-                                  // Applies crossover to current individual and mate, then adds it's offspring to given population
-                                  this.crossover = function(individual, offspringPopulation) {
-                                      var offspringChromosome = [];
-                                      // Add a random amount of this individual's genetic information to offspring
-                                      var startPos = Math.floor(this.chromosome.length * Math.random());
-                                      var endPos = Math.floor(this.chromosome.length * Math.random());
-                                      var i = startPos;
-                                      while (i != endPos) {
-                                          offspringChromosome[i] = individual.chromosome[i];
-                                          i++
-                                          if (i >= this.chromosome.length) {
-                                              i = 0;
-                                          }
-                                      }
-                                      // Add any remaining genetic information from individual's mate
-                                      for (parentIndex in individual.chromosome) {
-                                          var node = individual.chromosome[parentIndex];
-                                          var nodeFound = false;
-                                          for (offspringIndex in offspringChromosome) {
-                                              if (offspringChromosome[offspringIndex] == node) {
-                                                  nodeFound = true;
-                                                  break;
-                                              }
-                                          }
-                                          if (nodeFound == false) {
-                                              for (var offspringIndex = 0; offspringIndex < individual.chromosome.length; offspringIndex++) {
-                                                  if (offspringChromosome[offspringIndex] == undefined) {
-                                                      offspringChromosome[offspringIndex] = node;
-                                                      break;
-                                                  }
-                                              }
-                                          }
-                                      }
-                                      // Add chromosome to offspring and add offspring to population
-                                      var offspring = new ga.individual(this.chromosomeLength);
-                                      offspring.setChromosome(offspringChromosome);
-                                      offspringPopulation.addIndividual(offspring);
-                                  };
-                              },
-                          };
+                    var totalDistance = this.getDistance();
+                    this.fitness = 1 / totalDistance;
+                    return this.fitness;
+                };
+                // Applies crossover to current individual and mate, then adds it's offspring to given population
+                this.crossover = function(individual, offspringPopulation) {
+                    var offspringChromosome = [];
+                    // Add a random amount of this individual's genetic information to offspring
+                    var startPos = Math.floor(this.chromosome.length * Math.random());
+                    var endPos = Math.floor(this.chromosome.length * Math.random());
+                    var i = startPos;
+                    while (i != endPos) {
+                        offspringChromosome[i] = individual.chromosome[i];
+                        i++
+                        if (i >= this.chromosome.length) {
+                            i = 0;
+                        }
+                    }
+                    // Add any remaining genetic information from individual's mate
+                    for (parentIndex in individual.chromosome) {
+                        var node = individual.chromosome[parentIndex];
+                        var nodeFound = false;
+                        for (offspringIndex in offspringChromosome) {
+                            if (offspringChromosome[offspringIndex] == node) {
+                                nodeFound = true;
+                                break;
+                            }
+                        }
+                        if (nodeFound == false) {
+                            for (var offspringIndex = 0; offspringIndex < individual.chromosome.length; offspringIndex++) {
+                                if (offspringChromosome[offspringIndex] == undefined) {
+                                    offspringChromosome[offspringIndex] = node;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    // Add chromosome to offspring and add offspring to population
+                    var offspring = new ga.individual(this.chromosomeLength);
+                        offspring.setChromosome(offspringChromosome);
+                        offspringPopulation.addIndividual(offspring);
+                };
+            },
+        };
     </script>
     </head>
     <body>
@@ -460,19 +463,19 @@
                         <td colspan="6"><b>Configuration</b></td>
                     </tr>
                     <tr>
-                        <td>Travel Mode: </td>
+                        <td>Mode de Tansport : </td>
                         <td>
                             <select id="travel-type">
-                                <option value="DRIVING">Car</option>
-                                <option value="BICYCLING">Bicycle</option>
-                                <option value="WALKING">Walking</option>
+                                <option value="DRIVING">Voiture</option>
+                                <option value="BICYCLING">Vélo</option>
+                                <option value="WALKING">à Pied</option>
                             </select>
                         </td>
-                        <td>Avoid Highways: </td>
+                        <td>Autoriser les autoroutes : </td>
                         <td>
                             <select id="avoid-highways">
-                                <option value="1">Enabled</option>
-                                <option value="0" selected="selected">Disabled</option>
+                                <option value="1">Non</option>
+                                <option value="0" selected="selected">Oui</option>
                             </select>
                         </td>
                         <td>Population Size: </td>
@@ -537,15 +540,15 @@
                                 <option value="200">200</option>
                             </select>
                         </td>
+                    </tr>
+                    <tr>
                         <td colspan="2"><b>Debug Info</b></td>
                         <td>Destinations Count: </td>
                         <td id="destinations-count">0</td>
-                    </tr>
-                    <tr class="ga-info" style="display:none;">
-                        <td>Generations: </td><td id="generations-passed">0</td>
-                    </tr>
-                    <tr class="ga-info" style="display:none;">
-                        <td>Best Time: </td><td id="best-time">?</td>
+                    <td class="ga-info" style="display:none;">Generations ...
+                    </td><td id="generations-passed">0</td>
+                    <td class="ga-info" style="display:none;">
+                        <Best Time: </td><td id="best-time">?</td>
                     </tr>
                     <tr id="ga-buttons">
                         <td colspan="2"><button id="find-route">Start</button> <button id="clear-map">Clear</button></td>
