@@ -224,7 +224,7 @@
                 ga.mutationRate = parseFloat($('#mutation-rate').val());
                 ga.populationSize = parseInt($('#population-size').val()) || 50;
                 ga.elitism = parseInt($('#elitism').val()) || false;
-                ga.maxGenerations = parseInt($('#maxGenerations').val()) || 50;
+                ga.maxGenerations = parseInt($('#maxGenerations').val()); // || 50;
                 console.log(ga.maxGenerations);
             },
                               
@@ -520,7 +520,7 @@
                                 <option value="1">1.0</option>
                             </select>
                         </td>
-                        <td>Séléction : </td>
+                        <td>Selection : </td>
                         <td>
                             <select id="elitism">
                                 <option value="1" selected="selected">Oui</option>
@@ -531,7 +531,7 @@
                     <tr>
                         <td>Max Generations: </td>
                         <td>
-                            <select id="generations">
+                            <select id="maxGenerations">
                                 <option value="20">20</option>
                                 <option value="30">30</option>
                                 <option value="40">40</option>
