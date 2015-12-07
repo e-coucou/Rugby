@@ -25,7 +25,7 @@
             // Create map click event
             google.maps.event.addListener(map, 'click', function(event) {
                 // Add destination (max 9)
-                if (nodes.length >= 9) {
+                if (nodes.length >= 12) {
                     alert('Max destinations added');
                     return;
                 }
@@ -72,7 +72,7 @@
                 destinations: nodes,
                 travelMode: google.maps.TravelMode[$('#travel-type').val()],
                 avoidHighways: parseInt($('#avoid-highways').val()) > 0 ? true : false,
-                avoidTolls: false,
+                avoidTolls: false
                 }, function(distanceData) {
                     // Create duration data array
                     console.log(distanceData);
@@ -152,7 +152,6 @@
                     ga.getConfig();
                     var pop = new ga.population();
                     pop.initialize(nodes.length);
-                             console.log(nodes);
                     var route = pop.getFittest().chromosome;
                     ga.evolvePopulation(pop, function(update) {
                         $('#generations-passed').html(update.generation);
@@ -225,7 +224,7 @@
                 ga.mutationRate = parseFloat($('#mutation-rate').val());
                 ga.populationSize = parseInt($('#population-size').val()) || 50;
                 ga.elitism = parseInt($('#elitism').val()) || false;
-                ga.maxGenerations = parseInt($('#maxGenerations').val()) || 50;
+                ga.maxGenerations = parseInt($('#maxGenerations').val()); // || 50;
             },
                               
             // Evolves given population
@@ -491,7 +490,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>Mutation Rate: </td>
+                        <td>Pourcentage de Mutations : </td>
                         <td>
                             <select id="mutation-rate">
                                 <option value="0.00">0.00</option>
@@ -504,7 +503,7 @@
                                 <option value="1">1.0</option>
                             </select>
                         </td>
-                        <td>Crossover Rate: </td>
+                        <td>Pourcentage de Croisements : </td>
                         <td>
                             <select id="crossover-rate">
                                 <option value="0.0">0.0</option>
@@ -520,11 +519,11 @@
                                 <option value="1">1.0</option>
                             </select>
                         </td>
-                        <td>Elitism: </td>
+                        <td>Séléction : </td>
                         <td>
                             <select id="elitism">
-                                <option value="1" selected="selected">Enabled</option>
-                                <option value="0">Disabled</option>
+                                <option value="1" selected="selected">Oui</option>
+                                <option value="0">Non</option>
                             </select>
                         </td>
                     </tr>
