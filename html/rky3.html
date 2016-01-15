@@ -1,7 +1,36 @@
-<!DOCTYPE HTML>
-<html>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<!DOCTYPE html>
+<title>RUGBY WORLD CUP</title>
+<meta name="description" content="Interactive visualisation Rugby Ranking IRB.">
+<meta name="author" content="e-Coucou">
+<html class="rky">
+<meta charset="utf-8">
+<title>Ranking evolution</title>
+<link type="text/css" rel="stylesheet" href="../css/colorBrewer.css">
+<style>
+@import url(../css/visu.css);
+
+#chart {
+  margin-left: -40px;
+  height: 506px;
+}
+.entete {
+    position: absolute;
+    height: 30px;
+    margin-top: 12px;
+}
+text {
+  font: 10px sans-serif;
+}
+</style>
+<header>
+  <aside >Janvier, 2016</aside>
+</header>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+	<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script></script>
 <body>
+	<h1>Dashboard de la Poussin's House</h1>
+	<p id="chart"></p>
     <span id="temp"></span><br>
     <span id="tstamp"></span><br>
     <span id="humidite"></span><br>
@@ -17,12 +46,31 @@
     <span id="uptime"></span><br>
     <span id="tstamp"></span>
 
-    <button id="eventbutton" onclick="test()">Connect</button>
+    <button id="eventbutton" onclick="Dashboard()">Connect</button>
 
     <script type="text/javascript">
+// Variables Globales
     var deviceID = prompt("Device ID : ");//"";
     var accessToken = prompt("Token : "); //"";
+// Chart dimensions.
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 1080 - margin.right,
+    height = 550 - margin.top - margin.bottom;
+// Create the SVG container and set the origin.
+var svg = d3.select("#chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .attr("position", 2)
+	.append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+	function Dashboard() {
+	var url = "https://api.spark.io/v1/devices/" + deviceID + "/temperature?access_token=" + accessToken;
+		d3.json(url, function(data){  // event schedule
+           console.log(data);
+		});
+ 	
+	}
     function start(objButton) {
 
         document.getElementById("temp").innerHTML = "Waiting for data...";
