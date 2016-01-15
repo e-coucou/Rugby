@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<body>
+    <span id="temp"></span><br>
+    <span id="tstamp"></span><br>
+    <span id="humidite"></span><br>
+    <span id="tshumidite"></span><br>
+    <span id="luminosite"></span><br>
+    <span id="tsluminosite"></span><br>
+    <span id="accel"></span><br>
+    <span id="tsaccel"></span><br>
+
+    <button id="connectbutton" onclick="start()">Read Temp</button>
+
+	<br><br>
+    <span id="uptime"></span><br>
+    <span id="tstamp"></span>
+
+    <button id="eventbutton" onclick="test()">Connect</button>
+
+    <script type="text/javascript">
+    var deviceID = prompt("Device ID : ");//"";
+    var accessToken = prompt("Token : "); //"";
+
+    function start(objButton) {
+
+        document.getElementById("temp").innerHTML = "Waiting for data...";
+        document.getElementById("tstamp").innerHTML ="";
+        document.getElementById("humidite").innerHTML ="";
+        document.getElementById("luminosite").innerHTML ="";
+        document.getElementById("tshumidite").innerHTML ="";
+        document.getElementById("tsluminosite").innerHTML ="";
+        document.getElementById("accel").innerHTML ="";
+        document.getElementById("tsaccel").innerHTML ="";
+        var varName = "temperature";
+
+        requestURL = "https://api.spark.io/v1/devices/" + deviceID + "/" + varName + "/?access_token=" + accessToken;
+        $.getJSON(requestURL, function(json) {
+                 document.getElementById("temp").innerHTML = json.result + "&deg; C";
+                 document.getElementById("temp").style.fontSize = "28px";
+                 document.getElementById("tstamp").innerHTML = json.coreInfo.last_heard;
+                 });
+        requestURL = "https://api.spark.io/v1/devices/" + deviceID + "/Humidite/?access_token=" + accessToken;
+        $.getJSON(requestURL, function(json) {
+                 document.getElementById("humidite").innerHTML = json.result + " %";
+                 document.getElementById("humidite").style.fontSize = "28px";
+                 document.getElementById("tshumidite").innerHTML = json.coreInfo.last_heard;
+                 });
+        requestURL = "https://api.spark.io/v1/devices/" + deviceID + "/Luminosite/?access_token=" + accessToken;
+        $.getJSON(requestURL, function(json) {
+                 document.getElementById("luminosite").innerHTML = json.result + " %";
+                 document.getElementById("luminosite").style.fontSize = "28px";
+                 document.getElementById("tsluminosite").innerHTML = json.coreInfo.last_heard;
+                 });
+        requestURL = "https://api.particle.io/v1/devices/" + deviceID + "/Power_s/?access_token=" + accessToken;
+        $.getJSON(requestURL, function(json) {
+                 document.getElementById("accel").innerHTML = json.result + " %";
+                 document.getElementById("accel").style.fontSize = "28px";
+                 document.getElementById("tsaccel").innerHTML = json.coreInfo.last_heard;
+                 });
+    }
+	function test(objButton) {
+
+        document.getElementById("uptime").innerHTML = "Waiting for data...";
+        var eventSource = new EventSource("https://api.particle.io/v1/devices/" + deviceID + "/events/?access_token=" + accessToken);
+
+        eventSource.addEventListener('open', function(e) {
+            console.log("Opened!"); },false);
+
+        eventSource.addEventListener('error', function(e) {
+            console.log("Errored!"); },false);
+
+        eventSource.addEventListener('Uptime', function(e) {
+            var rawData = JSON.parse(e.data);
+            var parsedData = JSON.parse(rawData.data);
+            var tempSpan = document.getElementById("uptime");
+            var tsSpan   = document.getElementById("tstamp");
+            tempSpan.innerHTML = "Core: " + rawData.coreid + " JSON Data: " + parsedData.Hours + ", " + parsedData.Minutes + ", " + parsedData.Seconds +
+                     " (" + (parsedData.Seconds + parsedData.Minutes*60 + parsedData.Hours*3600) + " secs)";
+            tempSpan.style.fontSize = "28px";
+            tsSpan.innerHTML = "At timestamp " + rawData.published_at;
+            tsSpan.style.fontSize = "9px";
+        }, false);
+    }
+      </script>
+</body>
+</html>
