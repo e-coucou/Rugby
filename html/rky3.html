@@ -21,6 +21,20 @@
 text {
   font: 10px sans-serif;
 }
+
+.label {
+    fill: #777;
+}
+.temp.label {
+    font: 18px "helvetica neue";
+    fill: #191970;
+}
+select#value_select {
+    position: absolute;
+    right: 20px;
+    top:520px;
+}
+
 </style>
 <header>
   <aside >Janvier, 2016</aside>
@@ -41,17 +55,26 @@ text {
     <span id="tsaccel"></span><br>
 
     <button id="connectbutton" onclick="start()">Read Temp</button>
+    <select id="value_select" class="styledSelect">
+        <optgroup label="Choisissez la mesure.">
+            <option value="temperature">Temperature</option>
+            <option value="Power_s">Batterie</option>
+            <option value="Voltage">Voltage</option>
+            <option value="Luminosite">Luminosite</option>
+            <option value="Humidite">Humidite</option>
+        </optgroup>
+    </select>
 
 	<br><br>
     <span id="uptime"></span><br>
     <span id="tstamp"></span>
 
-    <button id="eventbutton" onclick="Dashboard()">Connect</button>
+    <button id="eventbutton" onclick="test()">Connect</button>
 
     <script type="text/javascript">
 // Variables Globales
-    var deviceID = prompt("Device ID : ");//"";
-    var accessToken = prompt("Token : "); //"";
+    var deviceID = "35001f000347343337373737"; //prompt("Device ID : ");//"";
+    var accessToken = "cbe4f2b1b622f00b0bae110ccc9dd8e731b19616"; //prompt("Token : "); //"";
 // Chart dimensions.
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = 1080 - margin.right,
@@ -63,11 +86,28 @@ var svg = d3.select("#chart").append("svg")
     .attr("position", 2)
 	.append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  
+    // Add the information label for Temperature.
+
+    var temp = svg.append("text")
+    .attr("class", "temp label")
+    .attr("text-anchor", "begin")
+    .attr("y", 39)
+    .attr("x", 24)
+    .text('');
+
+    d3.select("#value_select").on("change", Dashboard);
 
 	function Dashboard() {
-	var url = "https://api.spark.io/v1/devices/" + deviceID + "/temperature?access_token=" + accessToken;
+
+    sel = d3.select("#value_select").property("value");
+
+    temp.text("Waiting for data ...");
+
+	var url = "https://api.spark.io/v1/devices/" + deviceID + "/"+sel + "?access_token=" + accessToken;
 		d3.json(url, function(data){  // event schedule
            console.log(data);
+        temp.text(sel + " : " +Math.round(data.result*10.0)/10.0+ " -x");
 		});
  	
 	}
@@ -111,7 +151,9 @@ var svg = d3.select("#chart").append("svg")
 	function test(objButton) {
 
         document.getElementById("uptime").innerHTML = "Waiting for data...";
-        var eventSource = new EventSource("https://api.particle.io/v1/devices/" + deviceID + "/events/?access_token=" + accessToken);
+        var url_event ="https://api.particle.io/v1/devices/35001f000347343337373737/events?access_token=cbe4f2b1b622f00b0bae110ccc9dd8e731b19616";
+//        var eventSource = new EventSource("https://api.particle.io/v1/devices/" + deviceID + "/events?access_token=" + accessToken);
+        var eventSource = new EventSource(url_event);
 
         eventSource.addEventListener('open', function(e) {
             console.log("Opened!"); },false);
@@ -119,16 +161,23 @@ var svg = d3.select("#chart").append("svg")
         eventSource.addEventListener('error', function(e) {
             console.log("Errored!"); },false);
 
-        eventSource.addEventListener('Uptime', function(e) {
+        eventSource.addEventListener('Rky_L', function(e) {
+            console.log(e.data);
             var rawData = JSON.parse(e.data);
             var parsedData = JSON.parse(rawData.data);
             var tempSpan = document.getElementById("uptime");
             var tsSpan   = document.getElementById("tstamp");
-            tempSpan.innerHTML = "Core: " + rawData.coreid + " JSON Data: " + parsedData.Hours + ", " + parsedData.Minutes + ", " + parsedData.Seconds +
-                     " (" + (parsedData.Seconds + parsedData.Minutes*60 + parsedData.Hours*3600) + " secs)";
-            tempSpan.style.fontSize = "28px";
+                tempSpan.innerHTML = "Temperature = " + rawData.data;
+//            tempSpan.innerHTML = "Core: " + rawData.coreid + " JSON Data: " + parsedData.Hours + ", " + parsedData.Minutes + ", " + parsedData.Seconds +
+//                     " (" + (parsedData.Seconds + parsedData.Minutes*60 + parsedData.Hours*3600) + " secs)";
+//            tempSpan.style.fontSize = "28px";
             tsSpan.innerHTML = "At timestamp " + rawData.published_at;
-            tsSpan.style.fontSize = "9px";
+//            tsSpan.style.fontSize = "9px";
+        }, false);
+        eventSource.addEventListener('Accelerometre', function(e) {
+            var value = JSON.parse(e.data);
+                console.log(value.data);
+            temp.text(JSON.parse(value.data).Ax);
         }, false);
     }
       </script>
