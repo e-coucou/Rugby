@@ -29,6 +29,12 @@ text {
     font: 18px "helvetica neue";
     fill: #191970;
 }
+.liquidFillGaugeText {
+    font-family: Helvetica;
+    font-weight: bold;
+    font-size: 32px;
+}
+
 select#value_select {
     position: absolute;
     right: 20px;
@@ -41,10 +47,18 @@ select#value_select {
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
-	<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script></script>
+	<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+    <script src="liquidFillGauge.js" language="JavaScript"></script>
 <body>
 	<h1>Dashboard de la Poussin's House</h1>
-	<p id="chart"></p>
+
+    <svg id="fillgauge2" width="19%" height="250"></svg>
+    <svg id="fillgauge1" width="19%" height="250"></svg>
+    <svg id="fillgauge00" width="10%" height="250"></svg>
+    <svg id="fillB" width="40%" height="250"></svg>
+    <svg id="fillgauge3" width="19%" height="200"></svg>
+    <svg id="fillgauge4" width="19%" height="200"></svg>
+
     <span id="temp"></span><br>
     <span id="tstamp"></span><br>
     <span id="humidite"></span><br>
@@ -70,6 +84,7 @@ select#value_select {
     <span id="tstamp"></span>
 
     <button id="eventbutton" onclick="test()">Connect</button>
+    <p id="chart"></p>
 
     <script type="text/javascript">
 // Variables Globales
@@ -95,6 +110,66 @@ var svg = d3.select("#chart").append("svg")
     .attr("y", 39)
     .attr("x", 24)
     .text('');
+// la gauge de luminosite
+var config0 = liquidFillGaugeDefaultSettings();
+config0.circleThickness = 0.2;
+var gauge1 = loadLiquidFillGauge("fillgauge1", 0, config0);
+// On/Off mode Eco
+var config00 = liquidFillGaugeDefaultSettings();
+config00.circleThickness = 0.2;
+config00.circleColor = "#3CB371";
+config00.waveColor = "#ADFF2F";
+config00.minValue = 0;
+config00.maxValue = 1;
+config00.displayPercent = false;
+// Température
+var config1 = liquidFillGaugeDefaultSettings();
+config1.circleColor = "#FF7777";
+config1.textColor = "#FF4444";
+config1.waveTextColor = "#FFAAAA";
+config1.waveColor = "#FFDDDD";
+config1.circleThickness = 0.2;
+config1.textVertPosition = 0.5;
+config1.waveAnimateTime = 1000;
+config1.displayPercent = false;
+config1.maxValue=35;
+config1.displaySymbole="°C";
+// charge batterie
+var config2 = liquidFillGaugeDefaultSettings();
+config2.circleColor = "#D4AB6A";
+config2.textColor = "#553300";
+config2.waveTextColor = "#805615";
+config2.waveColor = "#AA7D39";
+config2.circleThickness = 0.1;
+config2.circleFillGap = 0.2;
+config2.textVertPosition = 0.8;
+config2.waveAnimateTime = 2000;
+config2.waveHeight = 0.1;
+config2.waveCount = 3;
+// voltage
+var config3 = liquidFillGaugeDefaultSettings();
+config3.maxValue=5;
+config3.minValue=3;
+config3.displayPercent = false;
+config3.circleThickness = 0.15;
+config3.circleColor = "#808015";
+config3.textColor = "#555500";
+config3.waveTextColor = "#FFFFAA";
+config3.waveColor = "#AAAA39";
+config3.textVertPosition = 0.8;
+config3.waveAnimateTime = 1000;
+config3.waveHeight = 0.05;
+config3.waveAnimate = true;
+config3.waveRise = false;
+config3.waveHeightScaling = false;
+config3.waveOffset = 0.25;
+config3.textSize = 0.75;
+config3.waveCount = 3;
+config3.displaySymbole = "V";
+var gauge2= loadLiquidFillGauge("fillgauge2", 0,config1);
+var gauge3= loadLiquidFillGauge("fillgauge3", 0,config2);
+var gauge4= loadLiquidFillGauge("fillgauge4", 0,config3);
+var gauge00= loadLiquidFillGauge("fillgauge00", 0,config00);
 
     d3.select("#value_select").on("change", Dashboard);
 
@@ -160,7 +235,7 @@ var svg = d3.select("#chart").append("svg")
 
         eventSource.addEventListener('error', function(e) {
             console.log("Errored!"); },false);
-
+/*
         eventSource.addEventListener('Rky_L', function(e) {
             console.log(e.data);
             var rawData = JSON.parse(e.data);
@@ -173,13 +248,26 @@ var svg = d3.select("#chart").append("svg")
 //            tempSpan.style.fontSize = "28px";
             tsSpan.innerHTML = "At timestamp " + rawData.published_at;
 //            tsSpan.style.fontSize = "9px";
+            gauge1.update(rawData.data);
         }, false);
+*/
         eventSource.addEventListener('Accelerometre', function(e) {
-            var value = JSON.parse(e.data);
-                console.log(value.data);
-            temp.text(JSON.parse(value.data).Ax);
+            var value = JSON.parse(JSON.parse(e.data).data);
+//            temp.text(JSON.parse(value.data).Ax);
+                                     console.log(e);
+                gauge1.update(value.Lum);
+                gauge3.update(Math.round(value.Bat));
+                gauge4.update(value.Volt);
+                gauge2.update(value.Temp);
+                gauge00.circleColor = value.Mode ? "FF4500" :"3CB371";
+                gauge00.update(1);
         }, false);
-    }
+/*        eventSource.addEventListener('Rky_T', function(e) {
+                console.log(e.data);
+                var rawData = JSON.parse(e.data);
+                    gauge2.update(rawData.data);
+        }, false);
+*/    }
       </script>
 </body>
 </html>
