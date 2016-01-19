@@ -54,8 +54,9 @@ select#value_select {
 
     <svg id="fillgauge2" width="19%" height="250"></svg>
     <svg id="fillgauge1" width="19%" height="250"></svg>
+    <svg id="fillgauge5" width="19%" height="250"></svg>
     <svg id="fillgauge00" width="10%" height="250"></svg>
-    <svg id="fillB" width="40%" height="250"></svg>
+    <svg id="fillB" width="30%" height="250"></svg>
     <svg id="fillgauge3" width="19%" height="200"></svg>
     <svg id="fillgauge4" width="19%" height="200"></svg>
 
@@ -113,6 +114,8 @@ var svg = d3.select("#chart").append("svg")
 // la gauge de luminosite
 var config0 = liquidFillGaugeDefaultSettings();
 config0.circleThickness = 0.2;
+var config5 = liquidFillGaugeDefaultSettings();
+config5.circleThickness = 0.2;
 var gauge1 = loadLiquidFillGauge("fillgauge1", 0, config0);
 // On/Off mode Eco
 var config00 = liquidFillGaugeDefaultSettings();
@@ -170,6 +173,7 @@ var gauge2= loadLiquidFillGauge("fillgauge2", 0,config1);
 var gauge3= loadLiquidFillGauge("fillgauge3", 0,config2);
 var gauge4= loadLiquidFillGauge("fillgauge4", 0,config3);
 var gauge00= loadLiquidFillGauge("fillgauge00", 0,config00);
+var gauge5= loadLiquidFillGauge("fillgauge5", 0,config5);
 
     d3.select("#value_select").on("change", Dashboard);
 
@@ -254,13 +258,14 @@ var gauge00= loadLiquidFillGauge("fillgauge00", 0,config00);
         eventSource.addEventListener('Accelerometre', function(e) {
             var value = JSON.parse(JSON.parse(e.data).data);
 //            temp.text(JSON.parse(value.data).Ax);
-                                     console.log(e);
+                console.log(e);
                 gauge1.update(value.Lum);
                 gauge3.update(Math.round(value.Bat));
                 gauge4.update(value.Volt);
                 gauge2.update(value.Temp);
-                gauge00.circleColor = value.Mode ? "FF4500" :"3CB371";
-                gauge00.update(1);
+                config00.circleColor = (value.Mode==1) ? "FF4500" :"3CB371";
+                gauge00.update(value.Mode);
+                gauge5.update(value.Gaz);
         }, false);
 /*        eventSource.addEventListener('Rky_T', function(e) {
                 console.log(e.data);
