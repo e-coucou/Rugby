@@ -31,7 +31,7 @@ def get_rk(json,ABB):
 def get_all_csv(base):
     entete()
     oMaj, maj = '', ''
-    for y in range(2003,2016):
+    for y in range(2003,2017):
         for m in range(1,13):
             for dd in range(1,32,6):
                 d = str(y)+'-'+str(m)+'-'+str(dd)
@@ -50,7 +50,7 @@ def get_rank_json(base):
     oMaj,maj = '',''
     js = []
     name = {}
-    for y in range(2003,2016): #2016
+    for y in range(2003,2017): #2016
         for m in range(1,13,1): #1,13
             print str(m)+'/'+str(y)
             for dd in range(1,32,6):
@@ -414,7 +414,7 @@ if __name__ == "__main__":
     #   u = 'http://cmsapi.pulselive.com/rugby/rankings/mru?language=en&client=pulse'
     u = 'http://cmsapi.pulselive.com/rugby/rankings/'+args.source+'?date='
     uu = 'http://cmsapi.pulselive.com/rugby/match?endDate=2015-10-13&startDate=2015-07-12&sort=desc&states=C&pageSize=10&client=pulse'
-    uv = 'http://cmsapi.pulselive.com/rugby/match?startDate=2015-10-12&endDate=2016-01-12&states=U,L&pageSize=10&client=pulse'
+    uv = 'http://cmsapi.pulselive.com/rugby/match?startDate=2015-10-12&endDate=2017-01-12&states=U,L&pageSize=10&client=pulse'
 
     mode = args.mode.lower()
     if args.input <> None : mode = 'input'
