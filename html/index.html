@@ -199,7 +199,7 @@ var margin = {top: 20, right: 20, bottom: 30, left: 40},
 var xScale = d3.scale.linear().domain([0, 100]).range([0, width]),  // vs log
     yScale = d3.scale.linear().domain([0, 110]).range([0,height]),
     radiusScale = d3.scale.sqrt().domain([0, 200]).range([1, 20]),
-	dScale = d3.scale.linear().domain([2003, 2016]).range([0, width]),
+	dScale = d3.scale.linear().domain([2003, 2017]).range([0, width]),
     colorScale = d3.scale.ordinal()
         .range(colorbrewer.Rky[27]);
 
@@ -509,7 +509,7 @@ function trace_team(d,instance) {
   // After the transition finishes, you can mouseover to change the year.
   function enableInteraction() {
     var yearScale = d3.scale.linear()
-        .domain([2003, 2016])
+        .domain([2003, 2017])
 //        .range([box.x + 10, box.x + box.width - 10])
         .range([0, width ])
         .clamp(true);
@@ -550,7 +550,7 @@ function trace_team(d,instance) {
   // Tweens the entire chart by first tweening the year, and then the data.
   // For the interpolated data, the dots and label are redrawn.
   function tweenYear() {
-    var year = d3.interpolateNumber(2003, 2016);
+    var year = d3.interpolateNumber(2003, 2017);
     return function(t) { displayYear(year(t)); };
   }
 
@@ -595,7 +595,7 @@ function trace_team(d,instance) {
   // tracé du parcourt ...
   function parcourt(name) {
 	test.length=0;       //return 
-	for (annee=2003.8 ; annee < 2016.0 ; annee += 0.1) {
+	for (annee=2003.8 ; annee < 2017.0 ; annee += 0.1) {
 		irb.forEach(function(d) {
           if (d.name == name) {
             var l =  test.push( {
