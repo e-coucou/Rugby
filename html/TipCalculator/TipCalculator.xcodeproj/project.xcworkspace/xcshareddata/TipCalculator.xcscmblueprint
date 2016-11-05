@@ -1,0 +1,29 @@
+{
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "AD90421771668F015C7B79433754BD126D911DF9" : 0,
+    "E74C3ACB7F6BB496280C33E543E982DD072D69D7" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "1FCA6811-8E6D-46D3-AE49-91FE9AD21783",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "AD90421771668F015C7B79433754BD126D911DF9" : "..",
+    "E74C3ACB7F6BB496280C33E543E982DD072D69D7" : "..\/.."
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "TipCalculator",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "TipCalculator.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/e-coucou\/Rugby.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "AD90421771668F015C7B79433754BD126D911DF9"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/e-coucou\/Achats.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "E74C3ACB7F6BB496280C33E543E982DD072D69D7"
+    }
+  ]
+}
