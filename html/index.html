@@ -509,7 +509,7 @@ function trace_team(d,instance) {
   // After the transition finishes, you can mouseover to change the year.
   function enableInteraction() {
     var yearScale = d3.scale.linear()
-        .domain([2003, 2017]) //un de moins ?
+        .domain([2003, 2018])
 //        .range([box.x + 10, box.x + box.width - 10])
         .range([0, width ])
         .clamp(true);
@@ -550,7 +550,7 @@ function trace_team(d,instance) {
   // Tweens the entire chart by first tweening the year, and then the data.
   // For the interpolated data, the dots and label are redrawn.
   function tweenYear() {
-    var year = d3.interpolateNumber(2003, 2018);
+    var year = d3.interpolateNumber(2003, 2017);   // un de moins ??
     return function(t) { displayYear(year(t)); };
   }
 
