@@ -199,7 +199,7 @@ var margin = {top: 20, right: 20, bottom: 30, left: 40},
 var xScale = d3.scale.linear().domain([0, 100]).range([0, width]),  // vs log
     yScale = d3.scale.linear().domain([0, 110]).range([0,height]),
     radiusScale = d3.scale.sqrt().domain([0, 200]).range([1, 20]),
-	dScale = d3.scale.linear().domain([2003, 2017]).range([0, width]),
+	dScale = d3.scale.linear().domain([2003, 2018]).range([0, width]),
     colorScale = d3.scale.ordinal()
         .range(colorbrewer.Rky[27]);
 
@@ -509,7 +509,7 @@ function trace_team(d,instance) {
   // After the transition finishes, you can mouseover to change the year.
   function enableInteraction() {
     var yearScale = d3.scale.linear()
-        .domain([2003, 2017])
+        .domain([2003, 2018])
 //        .range([box.x + 10, box.x + box.width - 10])
         .range([0, width ])
         .clamp(true);
@@ -618,7 +618,7 @@ function trace_team(d,instance) {
 //          t = (year - a[0]) / (b[0] - a[0]);
 //      return a[1] * (1 - t) + b[1] * t;
 //    }
-    return a[i];  // previuos 1 ?
+    return a[1];  // previuos 1 ?
   }
 });
 
