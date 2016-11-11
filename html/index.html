@@ -550,7 +550,7 @@ function trace_team(d,instance) {
   // Tweens the entire chart by first tweening the year, and then the data.
   // For the interpolated data, the dots and label are redrawn.
   function tweenYear() {
-    var year = d3.interpolateNumber(2003, 2017);
+    var year = d3.interpolateNumber(2003, 2018);
     return function(t) { displayYear(year(t)); };
   }
 
@@ -595,7 +595,7 @@ function trace_team(d,instance) {
   // tracé du parcourt ...
   function parcourt(name) {
 	test.length=0;       //return 
-	for (annee=2003.8 ; annee < 2017.0 ; annee += 0.1) {
+	for (annee=2003.8 ; annee < 2018.0 ; annee += 0.1) {
 		irb.forEach(function(d) {
           if (d.name == name) {
             var l =  test.push( {
@@ -618,7 +618,7 @@ function trace_team(d,instance) {
 //          t = (year - a[0]) / (b[0] - a[0]);
 //      return a[1] * (1 - t) + b[1] * t;
 //    }
-    return a[1];
+    return a[i];  // previuos 1 ?
   }
 });
 
