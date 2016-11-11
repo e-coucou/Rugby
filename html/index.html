@@ -611,6 +611,8 @@ function trace_team(d,instance) {
 
   // Finds (and possibly interpolates) the value for the specified year.
   function interpolateValues(values, year) {
+    console.log(values);
+    console.log(year);
     var i = bisect.left(values, year, 0, values.length - 1),
         a = values[i];
 //    if (i > 0) {
@@ -619,7 +621,7 @@ function trace_team(d,instance) {
 //      return a[1] * (1 - t) + b[1] * t;
 //    }
 console.log(a);
-    return a[0];  // previuos 1 ?
+    return a[1];  // previuos 1 ?
   }
 });
 
