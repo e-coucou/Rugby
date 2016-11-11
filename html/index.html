@@ -550,7 +550,7 @@ function trace_team(d,instance) {
   // Tweens the entire chart by first tweening the year, and then the data.
   // For the interpolated data, the dots and label are redrawn.
   function tweenYear() {
-    var year = d3.interpolateNumber(2003, 2017);   // un de moins ??
+    var year = d3.interpolateNumber(2003, 2018);
     return function(t) { displayYear(year(t)); };
   }
 
