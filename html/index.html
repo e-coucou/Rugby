@@ -582,7 +582,7 @@ function trace_team(d,instance) {
   // Interpolates the dataset for the given (fractional) year.
   function interpolateData(year,masq) {
     return irb.map(function(d) {
-      console.log(d);
+//      console.log(d);
       return {
         name: d.name,
         id: d.id,
@@ -611,8 +611,6 @@ function trace_team(d,instance) {
 
   // Finds (and possibly interpolates) the value for the specified year.
   function interpolateValues(values, year) {
-    console.log(values);
-    console.log(year);
     var i = bisect.left(values, year, 0, values.length - 1),
         a = values[i];
 //    if (i > 0) {
@@ -620,7 +618,6 @@ function trace_team(d,instance) {
 //          t = (year - a[0]) / (b[0] - a[0]);
 //      return a[1] * (1 - t) + b[1] * t;
 //    }
-console.log(a);
     return a[1];  // previuos 1 ?
   }
 });
