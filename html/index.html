@@ -453,6 +453,7 @@ d3.json("data/ranking.json", function(irb) {
 	.style("fill",d3.rgb(255,255,255))
 	.call(trace_pos);
 
+// affiche l'historique des classement de l'equipe selectionnee
 function trace_team(d,instance) {
 	trace.data(test).exit().remove();
 	parcourt(d.name);
