@@ -582,13 +582,10 @@ function trace_team(d,instance) {
   // Interpolates the dataset for the given (fractional) year.
   function interpolateData(year,masq) {
     return irb.map(function(d) {
-      //console.log(d);
+      console.log(d);
       return {
         name: d.name,
         id: d.id,
-        console.log(d.id);
-        console.log(d.name);
-        console.log(year);
         points: interpolateValues(d.points, year),
         matchs: interpolateValues(d.matchs, year),
         rank: interpolateValues(d.rank, year),
