@@ -50,7 +50,7 @@ def get_rank_json(base):
     oMaj,maj = '',''
     js = []
     name = {}
-    for y in range(2003,2018): #2016
+    for y in range(2003,2018): #2016 to update
         for m in range(1,13,1): #1,13
             print str(m)+'/'+str(y)
             for dd in range(1,32,6):
