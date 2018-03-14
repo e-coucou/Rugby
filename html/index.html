@@ -332,7 +332,9 @@ function update_event(id_liste) {
 		// affichage du résumé
 		rwc.text(data.event.label+ "   ["+data.event.id+"]");
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.8em").attr("x", 24).text("du "+date_s.getDate()+"/"+(date_s.getMonth()+1)+"/"+date_s.getFullYear()+" au "+date_e.getDate()+"/"+(date_e.getMonth()+1)+"/"+date_e.getFullYear());
-		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Fréquentation   : "+data.data.attendance);
+        rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("VAINQUEUR       : "+data.data.winningTeam);
+        rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("# Matchs        : "+data.data.matches);
+        rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Fréquentation   : "+data.data.attendance);
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Points marqués  : "+data.data.points);
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Essais          : "+data.data.tries);
 		rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text("Drops           : "+data.data.dropGoals);
