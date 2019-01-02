@@ -112,9 +112,9 @@ select#color {
 }
 </style>
 <header>
-  <aside >Novembre, 2015 <br>rev 01/2018
+  <aside >Novembre, 2015 <br>rev 01/2019
   <a class="entete" href="index.html" rel="author">e-Coucou</a></aside>
-  <aside><a class="entete" href="wrc.html">Visualisation en graphe des Coupes du Monde</a>
+  <aside><a class="entete" href="wrc.html">Visualisation en graphe des Coupes du Monde de Rugby</a>
   <a class="entete" href="wrc.html" rel="author"><img src="RWC.png" alt="Coupe du Monde" style="width:10px;height:10px;"></a></aside>
   <div id="twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-url="https://rugby.e-coucou.com/index.html" data-via="EricP_">Tweet</a>
       <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
@@ -173,7 +173,7 @@ Sélectionnez différentes compétitions avec le menu déroulant.<br><br></aside
 <p></p>
 <footer>
     <p>Mille et un remerciements à <a href="http://bl.ocks.org/mbostock">Mike Bostock</a> et à <a href="http://alignedleft.com/tutorials/d3/">Scott Murray</a>.</p>
-    <aside>Data : 12 Mars 2018</aside>
+    <aside>Data : 02 Janvier 2019</aside>
     <a href="index.html" rel="author">e-Coucou</a>
 </footer>
 
@@ -199,7 +199,7 @@ var margin = {top: 20, right: 20, bottom: 30, left: 40},
 var xScale = d3.scale.linear().domain([0, 100]).range([0, width]),  // vs log
     yScale = d3.scale.linear().domain([0, 110]).range([0,height]),
     radiusScale = d3.scale.sqrt().domain([0, 200]).range([1, 20]),
-	dScale = d3.scale.linear().domain([2003, 2019]).range([0, width]),
+	dScale = d3.scale.linear().domain([2003, 2020]).range([0, width]),
     colorScale = d3.scale.ordinal()
         .range(colorbrewer.Rky[27]);
 
@@ -296,7 +296,7 @@ var div = d3.select("body").append("div")
 // histo coupe du monde
 function update_event(id_liste) {
 	var teams = [];
-	var rwc_index = [[ "5","952","1023","1238"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1622","1623","1782"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135","1697","1764"],["1577"],["925","957","971","1006","1072","1130","1166","1235","1273","1569","1653","1769"]]; // rwc , six nation , 4 nations , xx , wrc pacific
+	var rwc_index = [[ "5","952","1023","1238"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1622","1623","1782"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135","1697","1764","1807"],["1577"],["925","957","971","1006","1072","1130","1166","1235","1273","1569","1653","1769"]]; // rwc , six nation , 4 nations , xx , wrc pacific
 	d3.selectAll(".abs.label").remove();
 	d3.selectAll(".line").remove();
 
@@ -514,7 +514,7 @@ function trace_team(d,instance) {
   // After the transition finishes, you can mouseover to change the year.
   function enableInteraction() {
     var yearScale = d3.scale.linear()
-        .domain([2003, 2019])
+        .domain([2003, 2020])
 //        .range([box.x + 10, box.x + box.width - 10])
         .range([0, width ])
         .clamp(true);
@@ -555,7 +555,7 @@ function trace_team(d,instance) {
   // Tweens the entire chart by first tweening the year, and then the data.
   // For the interpolated data, the dots and label are redrawn.
   function tweenYear() {
-    var year = d3.interpolateNumber(2003, 2019);
+    var year = d3.interpolateNumber(2003, 2020);
     return function(t) { displayYear(year(t)); };
   }
 
@@ -600,7 +600,7 @@ function trace_team(d,instance) {
   // tracé du parcourt ...
   function parcourt(name) {
 	test.length=0;       //return 
-	for (annee=2003.8 ; annee < 2019.0 ; annee += 0.1) {
+	for (annee=2003.8 ; annee < 2020.0 ; annee += 0.1) {
 		irb.forEach(function(d) {
           if (d.name == name) {
             var l =  test.push( {
