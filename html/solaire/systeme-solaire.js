@@ -690,8 +690,8 @@ require('d3@v5')
     {
       name: "d3tip",
       inputs: ["require"],
-      value: (function(){return(
-import("https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.js")
+      value: (function(require){return(
+require("https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.js")
 )})
     },
     {
