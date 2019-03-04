@@ -19,7 +19,6 @@ html`<h1>Système Solaire</h1>`
       value: (function(width,d3,DOM,planete_origine,d3tip,epAnim,texte)
 { 
   const margin = {left:10, right:15, top:10, bottom:10 };
-  width = width *0.9;
   const height = width*0.5;
   const coef_sat = 1;
   let coef_rot=365.25, trajSample=30,trajFutur=50;
@@ -691,8 +690,8 @@ require('d3@v5')
     {
       name: "d3tip",
       inputs: ["require"],
-      value: (function(require){return(
-require("https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.js")
+      value: (function(){return(
+import("https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.js")
 )})
     },
     {
