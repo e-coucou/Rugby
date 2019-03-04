@@ -19,6 +19,7 @@ html`<h1>Système Solaire</h1>`
       value: (function(width,d3,DOM,planete_origine,d3tip,epAnim,texte)
 { 
   const margin = {left:10, right:15, top:10, bottom:10 };
+  const width = width *0.9;
   const height = width*0.5;
   const coef_sat = 1;
   let coef_rot=365.25, trajSample=30,trajFutur=50;
