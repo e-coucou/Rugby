@@ -1,0 +1,9 @@
+{
+  "name": "systeme-solaire",
+  "main": "systeme-solaire.js",
+  "version": "1450.0.0",
+  "author": {
+    "name": "e-Coucou",
+    "url": "https://observablehq.com/@e-coucou"
+  }
+}
