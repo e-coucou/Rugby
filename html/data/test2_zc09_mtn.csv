@@ -1,192 +1,192 @@
-400101;DL METHIONINE R. FAB CTY ;100;72410P10DIV         ;CP/DIVERS                ;UN             ;1,462;4676,169987;CP
-400101;DL METHIONINE R. FAB CTY ;1000;122001;ANHYDRIDE CARBONIQUE (CO2;KG             ;11;103,000061;MP
-400101;DL METHIONINE R. FAB CTY ;1000;133005;ACIDE SULFURIQUE 96%     ;KG             ;275,832;79;MP
-400101;DL METHIONINE R. FAB CTY ;1000;133301;LESSIVE DE SOUDE 50%     ;KG             ;1225,316;249;Strat
-400101;DL METHIONINE R. FAB CTY ;1000;133401;AMMONIAQUE SOLUTION      ;KG             ;0;178;Strat
-400101;DL METHIONINE R. FAB CTY ;1000;133611;EAU DE JAVEL             ;KG             ;40;119,5;MP
-400101;DL METHIONINE R. FAB CTY ;1000;133630;SULFATE D'ALUMINIUM      ;KG             ;2,3;179,999947;CoP
-400101;DL METHIONINE R. FAB CTY ;1000;166103;GLYCERINE                ;KG             ;0,02;960,019592;Cons
-400101;DL METHIONINE R. FAB CTY ;1000;166203;CHARBON ACTIF            ;KG             ;2,045;3390,000325;Cons
-400101;DL METHIONINE R. FAB CTY ;1000;166413;CARBOXYMETHYLCELLULOSE   ;KG             ;0,95;3050,000161;Cons
-400101;DL METHIONINE R. FAB CTY ;1;199301;TRAITEMENT CHARBON ACTIF ;TO             ;0,011;303,000061;Cons
-400101;DL METHIONINE R. FAB CTY ;1000;199601;GAZ METHANE              ;KWT            ;65;21,170005;Util
-400101;DL METHIONINE R. FAB CTY ;1000;199606;EAU POTABLE              ;M3             ;0;1201,04;Util
-400101;DL METHIONINE R. FAB CTY ;1000;211903;HUILE BLANCHE STANDARD   ;L              ;0,01;1250,045919;Cons
-400101;DL METHIONINE R. FAB CTY ;1000;233905;ANTIMOUSSE               ;KG             ;0,2;4019,999388;Cons
-400101;DL METHIONINE R. FAB CTY ;1000;50052401;ACIDE SULFURIQUE 96% VRAC;KGX            ;455,20128;40,149999;MP
-400101;DL METHIONINE R. FAB CTY ;1000;400301;SULFATE DE SODIUM RC     ;KG             ;-1050;0,010001;CoP
-400101;DL METHIONINE R. FAB CTY ;1000;434506;CYANURE DE SODIUM STOCK  ;KG             ;6,5;0,010079;Stock
-400101;DL METHIONINE R. FAB CTY ;1000;434508;HMTBN 97%                ;KG             ;908,833;665,61;PI
-400101;DL METHIONINE R. FAB CTY ;1000;477001;VAPEUR Distribuée        ;TO             ;6,582;13175,52004;Util
-400101;DL METHIONINE R. FAB CTY ;1000;477002;EAU FILTREE B2           ;M3             ;5;147,020021;Util
-400101;DL METHIONINE R. FAB CTY ;1000;477003;EAU DEMINERALISEE        ;M3             ;2,585;1173,040163;Util
-400101;DL METHIONINE R. FAB CTY ;1000;477004;EAU 26                   ;M3             ;3,75;1704,250128;Util
-400101;DL METHIONINE R. FAB CTY ;1000;477005;Electricité Distribuée   ;KWT            ;310;52,930001;Util
-400101;DL METHIONINE R. FAB CTY ;1000;477006;AIR COMPRIME             ;M3             ;135;10,150003;Util
-400101;DL METHIONINE R. FAB CTY ;1000;477007;EAU FILTREE B12          ;M3             ;3,8;676,440174;Util
-400101;DL METHIONINE R. FAB CTY ;1000;477008;Traitement PEB (DCO + NTK;KG             ;13,391;1277,809984;Env
-400101;DL METHIONINE R. FAB CTY ;1000;477009;AZOTE GAZ                ;M3             ;98;71,919995;Util
-400101;DL METHIONINE R. FAB CTY ;1000;477014;Traitement des E M S     ;TO             ;0,211;26536,42221;Env
-400101;DL METHIONINE R. FAB CTY ;1000;477020;EAU de CHAUDIERE (EDC)   ;M3             ;0;937,08;Util
-400101;DL METHIONINE R. FAB CTY ;10000;488306;Stockage Eaux Mères Secon;TO             ;-0,3;0,102043;Env
-400101;DL METHIONINE R. FAB CTY ;10000;488309;Stockage Eaux Ammoniacale;TO             ;-0,009;0,1;Env
-400102;DL METHIONINE R. FAB RON ;10000;12367P51U07         ;Eau déminéralisé         ;M3             ;0,32;5999,912623;Util
-400102;DL METHIONINE R. FAB RON ;10;12368P52U08         ;Air comprimé             ;M3             ;199,993;0,13;Util
-400102;DL METHIONINE R. FAB RON ;10000;12369P52U09         ;Divers CP                ;UN             ;1000;31,26;CP
-400102;DL METHIONINE R. FAB RON ;10000;12360P52U10         ;Azote Ron                ;M3             ;66,998;700,020017;Util
-400102;DL METHIONINE R. FAB RON ;100;12365P52U15         ;Vapeur Nam Ron           ;TO             ;5,044;2299,919995;Util
-400102;DL METHIONINE R. FAB RON ;10000;12310P52E04         ;Divers effluents         ;UN             ;1000;25,040002;Env
-400102;DL METHIONINE R. FAB RON ;10000;12302P52D01         ;Traitement eau           ;UN             ;1000;6,649999;Env
-400102;DL METHIONINE R. FAB RON ;1;12325P52D29         ;Coûts annexes            ;UN             ;0;0,08;CP
-400102;DL METHIONINE R. FAB RON ;1000;110137;Destructeur d'odeur RON  ;KG             ;0,01;40000;Env
-400102;DL METHIONINE R. FAB RON ;1000;122008;ANHYDRIDE CARBONIQUE RON ;KG             ;88,147;128;MP
-400102;DL METHIONINE R. FAB RON ;1000;133303;LESSIVE DE SOUDE RON Tel ;KG             ;1215;248;MP
-400102;DL METHIONINE R. FAB RON ;1000;133628;SULFATE D'ALUMINIUM      ;KG             ;3;126,500033;MP
-400102;DL METHIONINE R. FAB RON ;1000;133629;EAU DE JAVEL VRAC        ;KG             ;1,1;132,000061;MP
-400102;DL METHIONINE R. FAB RON ;1000;133633;EAU DE JAVEL GRV         ;KG             ;0,6;169,999495;MP
-400102;DL METHIONINE R. FAB RON ;1000;133904;EAU OXYGENEE RON         ;KG             ;0,09;350,001508;MP
-400102;DL METHIONINE R. FAB RON ;1000;166201;CHARBON ACTIF RON        ;KG             ;3,3;2060,000035;Cons
-400102;DL METHIONINE R. FAB RON ;1000;166405;CARBOXYMETHYLCELLULOSE   ;KG             ;0,93;3049,999505;Cons
-400102;DL METHIONINE R. FAB RON ;1000;233905;ANTIMOUSSE               ;KG             ;0,06;4099,997996;Cons
-400102;DL METHIONINE R. FAB RON ;1000;400301;SULFATE DE SODIUM RC     ;KG             ;0;0;CoP
-400102;DL METHIONINE R. FAB RON ;1000;434507;HMTB                     ;KG             ;922;636,27;PI
-400102;DL METHIONINE R. FAB RON ;1000;434560;Acide Sulfurique         ;KGX            ;0;50,74;Strat
-400102;DL METHIONINE R. FAB RON ;10000;12362P52U12         ;Eau brute Ron            ;M3             ;35,999;550,020086;Util
-400102;DL METHIONINE R. FAB RON ;100;12363P52U13         ;Force motrice Ron        ;MGW            ;0,45;5349,669948;Util
-400102;DL METHIONINE R. FAB RON ;10;12374P52U20         ;Destruction Aqueris      ;TO             ;0,205;2440,270006;Env
-434500;MSH Stock                ;1000;133004;MSH Achat                ;KG             ;31,77;1134,999995;Strat
-434500;MSH Stock                ;1000;434501;MSH Production           ;KG             ;968,23;366,22;Stock
-434501;MSH Production           ;1000;12409P52U35         ;Condensats exp CP        ;TO             ;0;1486,84;Util
-434501;MSH Production           ;10000;12300P52D01         ;Traitement eau           ;UN             ;1000;2,019999;Env
-434501;MSH Production           ;1000;110114;Condensats exportés      ;TO             ;-1,9;1486,839999;Util
-434501;MSH Production           ;1000;122603;AZOTE ROC                ;KG             ;3;65,999983;Util
-434501;MSH Production           ;1000;133629;EAU DE JAVEL VRAC        ;KG             ;0,5;162,999914;MP
-434501;MSH Production           ;1000;133633;EAU DE JAVEL GRV         ;KG             ;0,03;170,002772;MP
-434501;MSH Production           ;1000;199024;METHANOL ROC             ;KG             ;682;326;Strat
-434501;MSH Production           ;1000;199609;PROPANE                  ;KG             ;0;653,59;Util
-434501;MSH Production           ;1000;434532;Hydrogène sulfuré        ;KG             ;709;169,69;Strat
-434501;MSH Production           ;1000;434541;GAZ COMBUSTION           ;M3             ;27;231,880006;Util
-434501;MSH Production           ;1000;434542;EAU INDUSTRIELLE         ;M3             ;33;19,090007;Util
-434501;MSH Production           ;1000;434543;ELECTRICITE EDF          ;MGW            ;0,08;58528,53154;Util
-434501;MSH Production           ;1000;434544;ELECTRICITE SECOURS      ;MGW            ;0,045;58529,50408;Util
-434501;MSH Production           ;1000;434545;VAPEUR BP CHAUDIERE CLAYT;TO             ;0,18;19391,64112;Util
-434501;MSH Production           ;1000;434546;EAU DEGAZEE              ;M3             ;0,26;1732,149352;Util
-434501;MSH Production           ;1000;434572;VAPEUR 6B TURBO          ;KG             ;1020;7,62;Util
-434504;MMP DISTILLE             ;10000;12359P52U09         ;Divers CP                ;UN             ;1000;0,51;CP
-434504;MMP DISTILLE             ;10000;12304P52E04         ;Divers effluents         ;UN             ;1000;2,559998;Env
-434504;MMP DISTILLE             ;1000;110407;HYDROQUINONE             ;KG             ;0,03;5150,000808;MP
-434504;MMP DISTILLE             ;1000;122603;AZOTE ROC                ;KG             ;1,7;66,000028;Util
-434504;MMP DISTILLE             ;1000;199024;METHANOL ROC             ;KG             ;0,219;326,000495
-434504;MMP DISTILLE             ;1000;434521;MMP-S                    ;KG             ;462,024;647,4
-434504;MMP DISTILLE             ;1000;434523;MMP-S2                   ;KG             ;553,72;646,38
-434504;MMP DISTILLE             ;1000;434541;GAZ COMBUSTION           ;M3             ;0,86;231,879938
-434504;MMP DISTILLE             ;1000;434542;EAU INDUSTRIELLE         ;M3             ;13;19,089999
-434504;MMP DISTILLE             ;1000;434543;ELECTRICITE EDF          ;MGW            ;0,011;58528,52724
-434504;MMP DISTILLE             ;1000;434544;ELECTRICITE SECOURS      ;MGW            ;0,007;58529,50103
-434504;MMP DISTILLE             ;1000;434547;EAU DEMINEE              ;M3             ;0;343,11
-434504;MMP DISTILLE             ;1000;434548;AIR COMPRIME             ;M3             ;16;7,649991
-434504;MMP DISTILLE             ;1000;434572;VAPEUR 6B TURBO          ;KG             ;320;7,620001
-434504;MMP DISTILLE             ;1000;12307P52E03         ;Dest déchets AMTP Di     ;TO             ;0,000074;1
-434505;ACIDE CYANHYDRIQUE       ;10000;12367P51U07         ;Eau déminéralisé         ;M3             ;5,8;5999,909046
-434505;ACIDE CYANHYDRIQUE       ;10;12368P52U08         ;Air comprimé             ;M3             ;70,004;0,13
-434505;ACIDE CYANHYDRIQUE       ;10000;12360P52U10         ;Azote Ron                ;M3             ;14,001;700,019455
-434505;ACIDE CYANHYDRIQUE       ;100;12365P52U15         ;Vapeur Nam Ron           ;TO             ;2,7;2299,920024
-434505;ACIDE CYANHYDRIQUE       ;1;12371P52U17         ;Vapeur sous-prod hcn     ;TO             ;-13,7;23
-434505;ACIDE CYANHYDRIQUE       ;10000;12302P52D01         ;Traitement eau           ;UN             ;1000;6,650007
-434505;ACIDE CYANHYDRIQUE       ;10000;12370P52D07         ;Catalyseur HCN           ;UN             ;1000;64,319998
-434505;ACIDE CYANHYDRIQUE       ;1000;122203;HYDROGENE                ;M3             ;0,08;1199,99037
-434505;ACIDE CYANHYDRIQUE       ;1000;133303;LESSIVE DE SOUDE RON Tel ;KG             ;135;248,000006
-434505;ACIDE CYANHYDRIQUE       ;1000;144101;METAL RHODIUM            ;G              ;0,025;40000
-434505;ACIDE CYANHYDRIQUE       ;1000;144908;METAL PLATINE            ;KG             ;0,000125;35000000
-434505;ACIDE CYANHYDRIQUE       ;1000;433526;AMMONIAC CONSOMME        ;KG             ;938;415
-434505;ACIDE CYANHYDRIQUE       ;10000;12361P51U11         ;Gaz ferme Ron            ;M3             ;55,003;2318,670146
-434505;ACIDE CYANHYDRIQUE       ;100;12363P52U13         ;Force motrice Ron        ;MGW            ;0,32;5349,669824
-434505;ACIDE CYANHYDRIQUE       ;10000;12364P52U14         ;Gaz procédé Ron          ;M3             ;1159,929;2120,529999
-434507;HMTB                     ;1000;111906;ACIDE CITRIQUE           ;KG             ;3,9;567,999997
-434507;HMTB                     ;1000;434504;MMP DISTILLE             ;KG             ;797,4;661,72
-434507;HMTB                     ;1000;434505;ACIDE CYANHYDRIQUE       ;KG             ;220;463,539999
-434507;HMTB                     ;1000;434560;Acide Sulfurique         ;KGX            ;0;50,74
-434508;HMTBN 97%                ;100;12365P52U15         ;Vapeur Nam Ron           ;TO             ;0,778;2299,919939
-434508;HMTBN 97%                ;1000;133303;LESSIVE DE SOUDE RON Tel ;KG             ;20,5;248,000004
-434508;HMTBN 97%                ;1000;434507;HMTB                     ;KG             ;1010;636,27
-434508;HMTBN 97%                ;1000;434510;CYANURE DE SODIUM SOUS PR;KG             ;0;0
-434521;MMP-S                    ;0;12424P52U38         ;Vapeur sp 6b             ;KG             ;-950;0
-434521;MMP-S                    ;1000;12413P52U35         ;Condensats exp CP        ;TO             ;0;1486,84
-434521;MMP-S                    ;10000;12387P52U25         ;FRIGORIES ELYO fixe      ;UN             ;1000;20,609999
-434521;MMP-S                    ;10000;12391P52D01         ;Traitement eau           ;UN             ;1000;3,21
-434521;MMP-S                    ;10000;110108;ACIDE ACETIQUE 80%       ;G              ;220,000004;5,200007
-434521;MMP-S                    ;1000;110111;DI-ETHYL GLYCOL          ;KG             ;0;1100
-434521;MMP-S                    ;1000;110114;Condensats exportés      ;TO             ;0,9;1486,839809
-434521;MMP-S                    ;1000;110122;ACRYLEX  EC3216A Dispersa;KG             ;0,17;6720,00134
-434521;MMP-S                    ;1000;110138;ACRYLEX  EC3434A         ;KG             ;0,29;5310,001023
-434521;MMP-S                    ;1000;110214;PROPYLENE                ;KG             ;526,1;805
-434521;MMP-S                    ;1000;110407;HYDROQUINONE             ;KG             ;0,041;5150,00496
-434521;MMP-S                    ;1000;111912;N METHYLMORPHOLINE       ;G              ;170;6
-434521;MMP-S                    ;1000;122603;AZOTE ROC                ;KG             ;7;65,999972
-434521;MMP-S                    ;1000;133633;EAU DE JAVEL GRV         ;KG             ;0,1;169,99919
-434521;MMP-S                    ;1000;434500;MSH Stock                ;KG             ;477,8;390,640001
-434521;MMP-S                    ;1000;434541;GAZ COMBUSTION           ;M3             ;75;231,880003
-434521;MMP-S                    ;1000;434542;EAU INDUSTRIELLE         ;M3             ;4,1;19,090003
-434521;MMP-S                    ;1000;434543;ELECTRICITE EDF          ;MGW            ;0,33;58528,52995
-434521;MMP-S                    ;1000;434547;EAU DEMINEE              ;M3             ;0,65;343,110241
-434521;MMP-S                    ;1000;434572;VAPEUR 6B TURBO          ;KG             ;10;7,619987
-434521;MMP-S                    ;10000;12386P52U21         ;FRIGORIES ELYO           ;MGW            ;224;64,31
-434523;MMP-S2                   ;1;12425P52U39         ;Vapeur sp 40b            ;KG             ;-2900;0,0115
-434523;MMP-S2                   ;1000;12409P52U35         ;Condensats exp CP        ;TO             ;0;1486,84
-434523;MMP-S2                   ;10000;12349P52U25         ;FRIGORIES ELYO fixe      ;UN             ;1000;59,55
-434523;MMP-S2                   ;10000;12347P52D01         ;Traitement eau           ;UN             ;1000;2,820001
-434523;MMP-S2                   ;10000;110108;ACIDE ACETIQUE 80%       ;G              ;240;5,200009
-434523;MMP-S2                   ;1000;110111;DI-ETHYL GLYCOL          ;KG             ;0;1100
-434523;MMP-S2                   ;1000;110114;Condensats exportés      ;TO             ;-1,3;1486,839932
-434523;MMP-S2                   ;1000;110122;ACRYLEX  EC3216A Dispersa;KG             ;0,15;6720,000965
-434523;MMP-S2                   ;1000;110138;ACRYLEX  EC3434A         ;KG             ;0,25;5310,001255
-434523;MMP-S2                   ;1000;110214;PROPYLENE                ;KG             ;532,6;805
-434523;MMP-S2                   ;1000;110407;HYDROQUINONE             ;KG             ;0,055;5150,000982
-434523;MMP-S2                   ;1000;111912;N METHYLMORPHOLINE       ;G              ;190;6
-434523;MMP-S2                   ;1000;122603;AZOTE ROC                ;KG             ;7,5;65,999987
-434523;MMP-S2                   ;1000;133633;EAU DE JAVEL GRV         ;KG             ;0,05;169,999362
-434523;MMP-S2                   ;1000;434500;MSH Stock                ;KG             ;474;390,64
-434523;MMP-S2                   ;1000;434541;GAZ COMBUSTION           ;M3             ;67,5;231,880002
-434523;MMP-S2                   ;1000;434542;EAU INDUSTRIELLE         ;M3             ;4,6;19,089962
-434523;MMP-S2                   ;1000;434543;ELECTRICITE EDF          ;MGW            ;0,204;58528,53019
-434523;MMP-S2                   ;1000;434544;ELECTRICITE SECOURS      ;MGW            ;0,162;58529,5005
-434523;MMP-S2                   ;1000;434546;EAU DEGAZEE              ;M3             ;3,3;1732,149991
-434523;MMP-S2                   ;1000;434547;EAU DEMINEE              ;M3             ;0,6;343,109368
-434523;MMP-S2                   ;1000;434572;VAPEUR 6B TURBO          ;KG             ;1620;7,62
-434523;MMP-S2                   ;10000;12348P52U21         ;FRIGORIES ELYO           ;MGW            ;260,03;65,779999
-434532;Hydrogène sulfuré        ;1000;434529;sulfure de carbone/ hydro;KG             ;1000;169,69
-50050401;MMP BURGOS VRAC          ;10000;12116P52D23         ;Entretien Wgs burgos     ;UN             ;1000;12,42
-50050401;MMP BURGOS VRAC          ;10000;12107P52D22         ;Exped. Roc Burgos        ;UN             ;1000;52,24
-50050401;MMP BURGOS VRAC          ;1000;434504;MMP DISTILLE             ;KG             ;1000;661,72
-400200;SULFURIQUE BILBAO        ;1000;110302;ACIDE SULFURIQUE 98%     ;KG             ;1000;43
-400200;SULFURIQUE BILBAO        ;100;B10028    P76U09    ;PRESTACION TEPSA         ;UN             ;1000;0,65
-400201;SULFURICO BURGOS         ;1000;110302;ACIDE SULFURIQUE 98%     ;KG             ;0;120
-400201;SULFURICO BURGOS         ;1000;400200;SULFURIQUE BILBAO        ;KG             ;1000;49,5
-400201;SULFURICO BURGOS         ;100;B10029    P78U10    ;TRANSPORTE SULFURICO     ;UN             ;1000;0,95
-400600;HCN (Acide cyanhydrique) ;1000;110300;AMMONIAC                 ;KG             ;992,207;390,000001
-400600;HCN (Acide cyanhydrique) ;1000;110312;HYDROGENE                ;KG             ;0,008;4450,01243
-400600;HCN (Acide cyanhydrique) ;1000;110313;PEROXIDO DE HIDROGENO 50%;KG             ;33,232;337,000017
-400600;HCN (Acide cyanhydrique) ;1000;110350;Metal Platine            ;G              ;0,13;33000,00564
-400600;HCN (Acide cyanhydrique) ;1000;110351;Metal Rhodium            ;G              ;0,014;28399,92523
-400600;HCN (Acide cyanhydrique) ;1000;400201;SULFURICO BURGOS         ;KG             ;439,616;59
-400600;HCN (Acide cyanhydrique) ;10000;B10020    P78U01    ;AGUA                     ;M3             ;2,501;4431,388517
-400600;HCN (Acide cyanhydrique) ;100;B10021    P78U02    ;ELECTRICIDAD             ;MGW            ;0,519;7459,330073
-400600;HCN (Acide cyanhydrique) ;100;B10022    P78U03    ;GAS HP                   ;MGW            ;13,925;2272,979996
-400600;HCN (Acide cyanhydrique) ;1;B10023    P78U04    ;GAS HP RECUPERADO        ;MGW            ;-7,749;22,73
-400600;HCN (Acide cyanhydrique) ;1000;B10027    P78U08    ;TELA RH/PT CATALIZAD     ;G              ;9352,855;1,01
-400800;AT88 (produit intermediai;1000;110300;AMMONIAC                 ;KG             ;102,872;389,999999
-400800;AT88 (produit intermediai;1000;110303;ACIDE CITRIQUE           ;KG             ;0,952;520,000052
-400800;AT88 (produit intermediai;1000;110304;ACIDE PHOSPHORIQUE       ;KG             ;0,006;900,022155
-400800;AT88 (produit intermediai;1000;110305;AZOTE                    ;KG             ;3,036;464,999972
-400800;AT88 (produit intermediai;1000;110309;HYPOCHLORITE DE SODIUM   ;KG             ;0,256;200,000027
-400800;AT88 (produit intermediai;1000;110311;Sel / CHLORURE DE SODIUM ;KG             ;0,107;200,001593
-400800;AT88 (produit intermediai;1000;133301B;LESSIVE DE SOUDE 50%     ;KG             ;9,536;227,000009
-400800;AT88 (produit intermediai;1000;50050401;MMP BURGOS VRAC          ;KGX            ;622,799;1040,25
-400800;AT88 (produit intermediai;1000;400201;SULFURICO BURGOS         ;KG             ;603,372;59
-400800;AT88 (produit intermediai;1000;400515;SULFATE AMMONIUM FIN     ;KG             ;-675,593;0,01
-400800;AT88 (produit intermediai;1000;400516;SULFATE AMMONIUM GROSSO  ;KG             ;-190,552;0,01
-400800;AT88 (produit intermediai;1000;400600;HCN (Acide cyanhydrique) ;KG             ;163,106;618,47
-400800;AT88 (produit intermediai;10000;B10020    P78U01    ;AGUA                     ;M3             ;4,834;4431,390114
-400800;AT88 (produit intermediai;100;B10021    P78U02    ;ELECTRICIDAD             ;MGW            ;0,127442;7459,329854
-400800;AT88 (produit intermediai;100;B10024    P78U05    ;GAS BP                   ;MGW            ;1,354;2272,980006
-400800;AT88 (produit intermediai;10000;B10025    P78U06    ;DIVERSOS CP              ;UN             ;99,986;53,230003
+400101,DL METHIONINE R. FAB CTY ,100,72410P10DIV         ,CP/DIVERS                ,UN             ,1.462,4676.169987,CP
+400101,DL METHIONINE R. FAB CTY ,1000,122001,ANHYDRIDE CARBONIQUE (CO2,KG             ,11,103.000061,MP
+400101,DL METHIONINE R. FAB CTY ,1000,133005,ACIDE SULFURIQUE 96%     ,KG             ,275.832,79,MP
+400101,DL METHIONINE R. FAB CTY ,1000,133301,LESSIVE DE SOUDE 50%     ,KG             ,1225.316,249,Strat
+400101,DL METHIONINE R. FAB CTY ,1000,133401,AMMONIAQUE SOLUTION      ,KG             ,0,178,Strat
+400101,DL METHIONINE R. FAB CTY ,1000,133611,EAU DE JAVEL             ,KG             ,40,119.5,MP
+400101,DL METHIONINE R. FAB CTY ,1000,133630,SULFATE D'ALUMINIUM      ,KG             ,2.3,179.999947,CoP
+400101,DL METHIONINE R. FAB CTY ,1000,166103,GLYCERINE                ,KG             ,0.02,960.019592,Cons
+400101,DL METHIONINE R. FAB CTY ,1000,166203,CHARBON ACTIF            ,KG             ,2.045,3390.000325,Cons
+400101,DL METHIONINE R. FAB CTY ,1000,166413,CARBOXYMETHYLCELLULOSE   ,KG             ,0.95,3050.000161,Cons
+400101,DL METHIONINE R. FAB CTY ,1,199301,TRAITEMENT CHARBON ACTIF ,TO             ,0.011,303.000061,Cons
+400101,DL METHIONINE R. FAB CTY ,1000,199601,GAZ METHANE              ,KWT            ,65,21.170005,Util
+400101,DL METHIONINE R. FAB CTY ,1000,199606,EAU POTABLE              ,M3             ,0,1201.04,Util
+400101,DL METHIONINE R. FAB CTY ,1000,211903,HUILE BLANCHE STANDARD   ,L              ,0.01,1250.045919,Cons
+400101,DL METHIONINE R. FAB CTY ,1000,233905,ANTIMOUSSE               ,KG             ,0.2,4019.999388,Cons
+400101,DL METHIONINE R. FAB CTY ,1000,50052401,ACIDE SULFURIQUE 96% VRAC,KGX            ,455.20128,40.149999,MP
+400101,DL METHIONINE R. FAB CTY ,1000,400301,SULFATE DE SODIUM RC     ,KG             ,-1050,0.010001,CoP
+400101,DL METHIONINE R. FAB CTY ,1000,434506,CYANURE DE SODIUM STOCK  ,KG             ,6.5,0.010079,Stock
+400101,DL METHIONINE R. FAB CTY ,1000,434508,HMTBN 97%                ,KG             ,908.833,665.61,PI
+400101,DL METHIONINE R. FAB CTY ,1000,477001,VAPEUR Distribuée        ,TO             ,6.582,13175.52004,Util
+400101,DL METHIONINE R. FAB CTY ,1000,477002,EAU FILTREE B2           ,M3             ,5,147.020021,Util
+400101,DL METHIONINE R. FAB CTY ,1000,477003,EAU DEMINERALISEE        ,M3             ,2.585,1173.040163,Util
+400101,DL METHIONINE R. FAB CTY ,1000,477004,EAU 26                   ,M3             ,3.75,1704.250128,Util
+400101,DL METHIONINE R. FAB CTY ,1000,477005,Electricité Distribuée   ,KWT            ,310,52.930001,Util
+400101,DL METHIONINE R. FAB CTY ,1000,477006,AIR COMPRIME             ,M3             ,135,10.150003,Util
+400101,DL METHIONINE R. FAB CTY ,1000,477007,EAU FILTREE B12          ,M3             ,3.8,676.440174,Util
+400101,DL METHIONINE R. FAB CTY ,1000,477008,Traitement PEB (DCO + NTK,KG             ,13.391,1277.809984,Env
+400101,DL METHIONINE R. FAB CTY ,1000,477009,AZOTE GAZ                ,M3             ,98,71.919995,Util
+400101,DL METHIONINE R. FAB CTY ,1000,477014,Traitement des E M S     ,TO             ,0.211,26536.42221,Env
+400101,DL METHIONINE R. FAB CTY ,1000,477020,EAU de CHAUDIERE (EDC)   ,M3             ,0,937.08,Util
+400101,DL METHIONINE R. FAB CTY ,10000,488306,Stockage Eaux Mères Secon,TO             ,-0.3,0.102043,Env
+400101,DL METHIONINE R. FAB CTY ,10000,488309,Stockage Eaux Ammoniacale,TO             ,-0.009,0.1,Env
+400102,DL METHIONINE R. FAB RON ,10000,12367P51U07         ,Eau déminéralisé         ,M3             ,0.32,5999.912623,Util
+400102,DL METHIONINE R. FAB RON ,10,12368P52U08         ,Air comprimé             ,M3             ,199.993,0.13,Util
+400102,DL METHIONINE R. FAB RON ,10000,12369P52U09         ,Divers CP                ,UN             ,1000,31.26,CP
+400102,DL METHIONINE R. FAB RON ,10000,12360P52U10         ,Azote Ron                ,M3             ,66.998,700.020017,Util
+400102,DL METHIONINE R. FAB RON ,100,12365P52U15         ,Vapeur Nam Ron           ,TO             ,5.044,2299.919995,Util
+400102,DL METHIONINE R. FAB RON ,10000,12310P52E04         ,Divers effluents         ,UN             ,1000,25.040002,Env
+400102,DL METHIONINE R. FAB RON ,10000,12302P52D01         ,Traitement eau           ,UN             ,1000,6.649999,Env
+400102,DL METHIONINE R. FAB RON ,1,12325P52D29         ,Coûts annexes            ,UN             ,0,0.08,CP
+400102,DL METHIONINE R. FAB RON ,1000,110137,Destructeur d'odeur RON  ,KG             ,0.01,40000,Env
+400102,DL METHIONINE R. FAB RON ,1000,122008,ANHYDRIDE CARBONIQUE RON ,KG             ,88.147,128,MP
+400102,DL METHIONINE R. FAB RON ,1000,133303,LESSIVE DE SOUDE RON Tel ,KG             ,1215,248,MP
+400102,DL METHIONINE R. FAB RON ,1000,133628,SULFATE D'ALUMINIUM      ,KG             ,3,126.500033,MP
+400102,DL METHIONINE R. FAB RON ,1000,133629,EAU DE JAVEL VRAC        ,KG             ,1.1,132.000061,MP
+400102,DL METHIONINE R. FAB RON ,1000,133633,EAU DE JAVEL GRV         ,KG             ,0.6,169.999495,MP
+400102,DL METHIONINE R. FAB RON ,1000,133904,EAU OXYGENEE RON         ,KG             ,0.09,350.001508,MP
+400102,DL METHIONINE R. FAB RON ,1000,166201,CHARBON ACTIF RON        ,KG             ,3.3,2060.000035,Cons
+400102,DL METHIONINE R. FAB RON ,1000,166405,CARBOXYMETHYLCELLULOSE   ,KG             ,0.93,3049.999505,Cons
+400102,DL METHIONINE R. FAB RON ,1000,233905,ANTIMOUSSE               ,KG             ,0.06,4099.997996,Cons
+400102,DL METHIONINE R. FAB RON ,1000,400301,SULFATE DE SODIUM RC     ,KG             ,0,0,CoP
+400102,DL METHIONINE R. FAB RON ,1000,434507,HMTB                     ,KG             ,922,636.27,PI
+400102,DL METHIONINE R. FAB RON ,1000,434560,Acide Sulfurique         ,KGX            ,0,50.74,Strat
+400102,DL METHIONINE R. FAB RON ,10000,12362P52U12         ,Eau brute Ron            ,M3             ,35.999,550.020086,Util
+400102,DL METHIONINE R. FAB RON ,100,12363P52U13         ,Force motrice Ron        ,MGW            ,0.45,5349.669948,Util
+400102,DL METHIONINE R. FAB RON ,10,12374P52U20         ,Destruction Aqueris      ,TO             ,0.205,2440.270006,Env
+434500,MSH Stock                ,1000,133004,MSH Achat                ,KG             ,31.77,1134.999995,Strat
+434500,MSH Stock                ,1000,434501,MSH Production           ,KG             ,968.23,366.22,Stock
+434501,MSH Production           ,1000,12409P52U35         ,Condensats exp CP        ,TO             ,0,1486.84,Util
+434501,MSH Production           ,10000,12300P52D01         ,Traitement eau           ,UN             ,1000,2.019999,Env
+434501,MSH Production           ,1000,110114,Condensats exportés      ,TO             ,-1.9,1486.839999,Util
+434501,MSH Production           ,1000,122603,AZOTE ROC                ,KG             ,3,65.999983,Util
+434501,MSH Production           ,1000,133629,EAU DE JAVEL VRAC        ,KG             ,0.5,162.999914,MP
+434501,MSH Production           ,1000,133633,EAU DE JAVEL GRV         ,KG             ,0.03,170.002772,MP
+434501,MSH Production           ,1000,199024,METHANOL ROC             ,KG             ,682,326,Strat
+434501,MSH Production           ,1000,199609,PROPANE                  ,KG             ,0,653.59,Util
+434501,MSH Production           ,1000,434532,Hydrogène sulfuré        ,KG             ,709,169.69,Strat
+434501,MSH Production           ,1000,434541,GAZ COMBUSTION           ,M3             ,27,231.880006,Util
+434501,MSH Production           ,1000,434542,EAU INDUSTRIELLE         ,M3             ,33,19.090007,Util
+434501,MSH Production           ,1000,434543,ELECTRICITE EDF          ,MGW            ,0.08,58528.53154,Util
+434501,MSH Production           ,1000,434544,ELECTRICITE SECOURS      ,MGW            ,0.045,58529.50408,Util
+434501,MSH Production           ,1000,434545,VAPEUR BP CHAUDIERE CLAYT,TO             ,0.18,19391.64112,Util
+434501,MSH Production           ,1000,434546,EAU DEGAZEE              ,M3             ,0.26,1732.149352,Util
+434501,MSH Production           ,1000,434572,VAPEUR 6B TURBO          ,KG             ,1020,7.62,Util
+434504,MMP DISTILLE             ,10000,12359P52U09         ,Divers CP                ,UN             ,1000,0.51,CP
+434504,MMP DISTILLE             ,10000,12304P52E04         ,Divers effluents         ,UN             ,1000,2.559998,Env
+434504,MMP DISTILLE             ,1000,110407,HYDROQUINONE             ,KG             ,0.03,5150.000808,MP
+434504,MMP DISTILLE             ,1000,122603,AZOTE ROC                ,KG             ,1.7,66.000028,Util
+434504,MMP DISTILLE             ,1000,199024,METHANOL ROC             ,KG             ,0.219,326.000495
+434504,MMP DISTILLE             ,1000,434521,MMP-S                    ,KG             ,462.024,647.4
+434504,MMP DISTILLE             ,1000,434523,MMP-S2                   ,KG             ,553.72,646.38
+434504,MMP DISTILLE             ,1000,434541,GAZ COMBUSTION           ,M3             ,0.86,231.879938
+434504,MMP DISTILLE             ,1000,434542,EAU INDUSTRIELLE         ,M3             ,13,19.089999
+434504,MMP DISTILLE             ,1000,434543,ELECTRICITE EDF          ,MGW            ,0.011,58528.52724
+434504,MMP DISTILLE             ,1000,434544,ELECTRICITE SECOURS      ,MGW            ,0.007,58529.50103
+434504,MMP DISTILLE             ,1000,434547,EAU DEMINEE              ,M3             ,0,343.11
+434504,MMP DISTILLE             ,1000,434548,AIR COMPRIME             ,M3             ,16,7.649991
+434504,MMP DISTILLE             ,1000,434572,VAPEUR 6B TURBO          ,KG             ,320,7.620001
+434504,MMP DISTILLE             ,1000,12307P52E03         ,Dest déchets AMTP Di     ,TO             ,0.000074,1
+434505,ACIDE CYANHYDRIQUE       ,10000,12367P51U07         ,Eau déminéralisé         ,M3             ,5.8,5999.909046
+434505,ACIDE CYANHYDRIQUE       ,10,12368P52U08         ,Air comprimé             ,M3             ,70.004,0.13
+434505,ACIDE CYANHYDRIQUE       ,10000,12360P52U10         ,Azote Ron                ,M3             ,14.001,700.019455
+434505,ACIDE CYANHYDRIQUE       ,100,12365P52U15         ,Vapeur Nam Ron           ,TO             ,2.7,2299.920024
+434505,ACIDE CYANHYDRIQUE       ,1,12371P52U17         ,Vapeur sous-prod hcn     ,TO             ,-13.7,23
+434505,ACIDE CYANHYDRIQUE       ,10000,12302P52D01         ,Traitement eau           ,UN             ,1000,6.650007
+434505,ACIDE CYANHYDRIQUE       ,10000,12370P52D07         ,Catalyseur HCN           ,UN             ,1000,64.319998
+434505,ACIDE CYANHYDRIQUE       ,1000,122203,HYDROGENE                ,M3             ,0.08,1199.99037
+434505,ACIDE CYANHYDRIQUE       ,1000,133303,LESSIVE DE SOUDE RON Tel ,KG             ,135,248.000006
+434505,ACIDE CYANHYDRIQUE       ,1000,144101,METAL RHODIUM            ,G              ,0.025,40000
+434505,ACIDE CYANHYDRIQUE       ,1000,144908,METAL PLATINE            ,KG             ,0.000125,35000000
+434505,ACIDE CYANHYDRIQUE       ,1000,433526,AMMONIAC CONSOMME        ,KG             ,938,415
+434505,ACIDE CYANHYDRIQUE       ,10000,12361P51U11         ,Gaz ferme Ron            ,M3             ,55.003,2318.670146
+434505,ACIDE CYANHYDRIQUE       ,100,12363P52U13         ,Force motrice Ron        ,MGW            ,0.32,5349.669824
+434505,ACIDE CYANHYDRIQUE       ,10000,12364P52U14         ,Gaz procédé Ron          ,M3             ,1159.929,2120.529999
+434507,HMTB                     ,1000,111906,ACIDE CITRIQUE           ,KG             ,3.9,567.999997
+434507,HMTB                     ,1000,434504,MMP DISTILLE             ,KG             ,797.4,661.72
+434507,HMTB                     ,1000,434505,ACIDE CYANHYDRIQUE       ,KG             ,220,463.539999
+434507,HMTB                     ,1000,434560,Acide Sulfurique         ,KGX            ,0,50.74
+434508,HMTBN 97%                ,100,12365P52U15         ,Vapeur Nam Ron           ,TO             ,0.778,2299.919939
+434508,HMTBN 97%                ,1000,133303,LESSIVE DE SOUDE RON Tel ,KG             ,20.5,248.000004
+434508,HMTBN 97%                ,1000,434507,HMTB                     ,KG             ,1010,636.27
+434508,HMTBN 97%                ,1000,434510,CYANURE DE SODIUM SOUS PR,KG             ,0,0
+434521,MMP-S                    ,0,12424P52U38         ,Vapeur sp 6b             ,KG             ,-950,0
+434521,MMP-S                    ,1000,12413P52U35         ,Condensats exp CP        ,TO             ,0,1486.84
+434521,MMP-S                    ,10000,12387P52U25         ,FRIGORIES ELYO fixe      ,UN             ,1000,20.609999
+434521,MMP-S                    ,10000,12391P52D01         ,Traitement eau           ,UN             ,1000,3.21
+434521,MMP-S                    ,10000,110108,ACIDE ACETIQUE 80%       ,G              ,220.000004,5.200007
+434521,MMP-S                    ,1000,110111,DI-ETHYL GLYCOL          ,KG             ,0,1100
+434521,MMP-S                    ,1000,110114,Condensats exportés      ,TO             ,0.9,1486.839809
+434521,MMP-S                    ,1000,110122,ACRYLEX  EC3216A Dispersa,KG             ,0.17,6720.00134
+434521,MMP-S                    ,1000,110138,ACRYLEX  EC3434A         ,KG             ,0.29,5310.001023
+434521,MMP-S                    ,1000,110214,PROPYLENE                ,KG             ,526.1,805
+434521,MMP-S                    ,1000,110407,HYDROQUINONE             ,KG             ,0.041,5150.00496
+434521,MMP-S                    ,1000,111912,N METHYLMORPHOLINE       ,G              ,170,6
+434521,MMP-S                    ,1000,122603,AZOTE ROC                ,KG             ,7,65.999972
+434521,MMP-S                    ,1000,133633,EAU DE JAVEL GRV         ,KG             ,0.1,169.99919
+434521,MMP-S                    ,1000,434500,MSH Stock                ,KG             ,477.8,390.640001
+434521,MMP-S                    ,1000,434541,GAZ COMBUSTION           ,M3             ,75,231.880003
+434521,MMP-S                    ,1000,434542,EAU INDUSTRIELLE         ,M3             ,4.1,19.090003
+434521,MMP-S                    ,1000,434543,ELECTRICITE EDF          ,MGW            ,0.33,58528.52995
+434521,MMP-S                    ,1000,434547,EAU DEMINEE              ,M3             ,0.65,343.110241
+434521,MMP-S                    ,1000,434572,VAPEUR 6B TURBO          ,KG             ,10,7.619987
+434521,MMP-S                    ,10000,12386P52U21         ,FRIGORIES ELYO           ,MGW            ,224,64.31
+434523,MMP-S2                   ,1,12425P52U39         ,Vapeur sp 40b            ,KG             ,-2900,0.0115
+434523,MMP-S2                   ,1000,12409P52U35         ,Condensats exp CP        ,TO             ,0,1486.84
+434523,MMP-S2                   ,10000,12349P52U25         ,FRIGORIES ELYO fixe      ,UN             ,1000,59.55
+434523,MMP-S2                   ,10000,12347P52D01         ,Traitement eau           ,UN             ,1000,2.820001
+434523,MMP-S2                   ,10000,110108,ACIDE ACETIQUE 80%       ,G              ,240,5.200009
+434523,MMP-S2                   ,1000,110111,DI-ETHYL GLYCOL          ,KG             ,0,1100
+434523,MMP-S2                   ,1000,110114,Condensats exportés      ,TO             ,-1.3,1486.839932
+434523,MMP-S2                   ,1000,110122,ACRYLEX  EC3216A Dispersa,KG             ,0.15,6720.000965
+434523,MMP-S2                   ,1000,110138,ACRYLEX  EC3434A         ,KG             ,0.25,5310.001255
+434523,MMP-S2                   ,1000,110214,PROPYLENE                ,KG             ,532.6,805
+434523,MMP-S2                   ,1000,110407,HYDROQUINONE             ,KG             ,0.055,5150.000982
+434523,MMP-S2                   ,1000,111912,N METHYLMORPHOLINE       ,G              ,190,6
+434523,MMP-S2                   ,1000,122603,AZOTE ROC                ,KG             ,7.5,65.999987
+434523,MMP-S2                   ,1000,133633,EAU DE JAVEL GRV         ,KG             ,0.05,169.999362
+434523,MMP-S2                   ,1000,434500,MSH Stock                ,KG             ,474,390.64
+434523,MMP-S2                   ,1000,434541,GAZ COMBUSTION           ,M3             ,67.5,231.880002
+434523,MMP-S2                   ,1000,434542,EAU INDUSTRIELLE         ,M3             ,4.6,19.089962
+434523,MMP-S2                   ,1000,434543,ELECTRICITE EDF          ,MGW            ,0.204,58528.53019
+434523,MMP-S2                   ,1000,434544,ELECTRICITE SECOURS      ,MGW            ,0.162,58529.5005
+434523,MMP-S2                   ,1000,434546,EAU DEGAZEE              ,M3             ,3.3,1732.149991
+434523,MMP-S2                   ,1000,434547,EAU DEMINEE              ,M3             ,0.6,343.109368
+434523,MMP-S2                   ,1000,434572,VAPEUR 6B TURBO          ,KG             ,1620,7.62
+434523,MMP-S2                   ,10000,12348P52U21         ,FRIGORIES ELYO           ,MGW            ,260.03,65.779999
+434532,Hydrogène sulfuré        ,1000,434529,sulfure de carbone/ hydro,KG             ,1000,169.69
+50050401,MMP BURGOS VRAC          ,10000,12116P52D23         ,Entretien Wgs burgos     ,UN             ,1000,12.42
+50050401,MMP BURGOS VRAC          ,10000,12107P52D22         ,Exped. Roc Burgos        ,UN             ,1000,52.24
+50050401,MMP BURGOS VRAC          ,1000,434504,MMP DISTILLE             ,KG             ,1000,661.72
+400200,SULFURIQUE BILBAO        ,1000,110302,ACIDE SULFURIQUE 98%     ,KG             ,1000,43
+400200,SULFURIQUE BILBAO        ,100,B10028    P76U09    ,PRESTACION TEPSA         ,UN             ,1000,0.65
+400201,SULFURICO BURGOS         ,1000,110302,ACIDE SULFURIQUE 98%     ,KG             ,0,120
+400201,SULFURICO BURGOS         ,1000,400200,SULFURIQUE BILBAO        ,KG             ,1000,49.5
+400201,SULFURICO BURGOS         ,100,B10029    P78U10    ,TRANSPORTE SULFURICO     ,UN             ,1000,0.95
+400600,HCN (Acide cyanhydrique) ,1000,110300,AMMONIAC                 ,KG             ,992.207,390.000001
+400600,HCN (Acide cyanhydrique) ,1000,110312,HYDROGENE                ,KG             ,0.008,4450.01243
+400600,HCN (Acide cyanhydrique) ,1000,110313,PEROXIDO DE HIDROGENO 50%,KG             ,33.232,337.000017
+400600,HCN (Acide cyanhydrique) ,1000,110350,Metal Platine            ,G              ,0.13,33000.00564
+400600,HCN (Acide cyanhydrique) ,1000,110351,Metal Rhodium            ,G              ,0.014,28399.92523
+400600,HCN (Acide cyanhydrique) ,1000,400201,SULFURICO BURGOS         ,KG             ,439.616,59
+400600,HCN (Acide cyanhydrique) ,10000,B10020    P78U01    ,AGUA                     ,M3             ,2.501,4431.388517
+400600,HCN (Acide cyanhydrique) ,100,B10021    P78U02    ,ELECTRICIDAD             ,MGW            ,0.519,7459.330073
+400600,HCN (Acide cyanhydrique) ,100,B10022    P78U03    ,GAS HP                   ,MGW            ,13.925,2272.979996
+400600,HCN (Acide cyanhydrique) ,1,B10023    P78U04    ,GAS HP RECUPERADO        ,MGW            ,-7.749,22.73
+400600,HCN (Acide cyanhydrique) ,1000,B10027    P78U08    ,TELA RH/PT CATALIZAD     ,G              ,9352.855,1.01
+400800,AT88 (produit intermediai,1000,110300,AMMONIAC                 ,KG             ,102.872,389.999999
+400800,AT88 (produit intermediai,1000,110303,ACIDE CITRIQUE           ,KG             ,0.952,520.000052
+400800,AT88 (produit intermediai,1000,110304,ACIDE PHOSPHORIQUE       ,KG             ,0.006,900.022155
+400800,AT88 (produit intermediai,1000,110305,AZOTE                    ,KG             ,3.036,464.999972
+400800,AT88 (produit intermediai,1000,110309,HYPOCHLORITE DE SODIUM   ,KG             ,0.256,200.000027
+400800,AT88 (produit intermediai,1000,110311,Sel / CHLORURE DE SODIUM ,KG             ,0.107,200.001593
+400800,AT88 (produit intermediai,1000,133301B,LESSIVE DE SOUDE 50%     ,KG             ,9.536,227.000009
+400800,AT88 (produit intermediai,1000,50050401,MMP BURGOS VRAC          ,KGX            ,622.799,1040.25
+400800,AT88 (produit intermediai,1000,400201,SULFURICO BURGOS         ,KG             ,603.372,59
+400800,AT88 (produit intermediai,1000,400515,SULFATE AMMONIUM FIN     ,KG             ,-675.593,0.01
+400800,AT88 (produit intermediai,1000,400516,SULFATE AMMONIUM GROSSO  ,KG             ,-190.552,0.01
+400800,AT88 (produit intermediai,1000,400600,HCN (Acide cyanhydrique) ,KG             ,163.106,618.47
+400800,AT88 (produit intermediai,10000,B10020    P78U01    ,AGUA                     ,M3             ,4.834,4431.390114
+400800,AT88 (produit intermediai,100,B10021    P78U02    ,ELECTRICIDAD             ,MGW            ,0.127442,7459.329854
+400800,AT88 (produit intermediai,100,B10024    P78U05    ,GAS BP                   ,MGW            ,1.354,2272.980006
+400800,AT88 (produit intermediai,10000,B10025    P78U06    ,DIVERSOS CP              ,UN             ,99.986,53.230003
