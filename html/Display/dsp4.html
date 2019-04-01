@@ -7,7 +7,7 @@
 <title>Display 4.04</title>
 <link type="text/css" rel="stylesheet" href="../css/colorBrewer.css">
 <style>
-@import url(../Display/css/dsp.css);
+@import url(../css/dsp.css);
 
 #chart {
 	position : relative;
@@ -84,7 +84,9 @@ circle.hidden {
   fill-opacity: .125;
   stroke: #fff;
 }
-input { 
+input#username,
+input#password,
+input#connexion { 
     border: 1px dotted #ccc;
     background: white;
     font-family: monospace;
@@ -95,6 +97,19 @@ input {
 }
 input:focus { 
     background-color:#0cf; outline: none;
+}
+div#label {
+    position:absolute;
+    display: block;
+    font-size: 12px;
+    top:0;
+    padding: 5px 0px;
+    margin: 22px 0px 0px 50px;
+}
+input#from,
+input#to {
+    color: blue;
+    font: 12px "helvetica neue";
 }
 #credentials {
   left: 200px;
@@ -121,6 +136,8 @@ input:focus {
     <select id="value_select" class="styledSelect">
         <optgroup label="Choisissez la variable."></optgroup>
     </select>
+    <div id="label" class="label">From : <input type="date" id="from" name="trip-from" value="2019-01-01">
+    To : <input type="date" id="to" name="trip-from" value="2019-02-28"></div>
     <div id="intervalle"></div>
     <div id="info"></div>
 <!--    <button id="connectbutton" onclick="start()">Read Data</button>  -->
@@ -128,32 +145,27 @@ input:focus {
     <form name="saisie" onSubmit="return credClick()">Username
         <input type="text" id="username" placeholder="Username&hellip;">Password
         <input type="text" id="password" placeholder="Password">
-        <input name="Submit"  type="submit" value="Enter" >
+        <input name="Submit"  type="submit" id="connexion" value="Connexion" >
     </form></div>
     <div id="chart"></div>
     <script type="text/javascript">
 // Variables Globales
     var dataOK=false;
 	var AllData=[],CumulData=[];
-	var username = "Username"
-	var password = "Password"
+	var username = ""
+	var password = ""
     var code = ""; //prompt("Token : "); //"";
-	var refListe = 'RON_QUR_Air_HCN,RON_Cout_Revient_Soude_HCN,RON_Cout_Revient_Ammoniaque_HCN_Convertisseurs,RON_Cout_Revient_Gaz_Procédé_HCN,RON_Cout_Revient_Gaz_Ferme_HCN,RON_PUS_Ammoniaque_HCN,QUR Ammoniaque/HCN (convertisseurs)';
-	console.log(encodeURIComponent('QUR Ammoniaque/HCN (convertisseurs)'));
-	refListe ='RON_Cout_Revient_Soude_HCN,RON_Cout_Revient_Ammoniaque_HCN_Convertisseurs,RON_Cout_Revient_Gaz_Procédé_HCN,RON_Cout_Revient_Gaz_Ferme_HCN,RON_Cout_Revient_Vapeur_HCN,RON_Cout_Revient_ED_HCN,RON_Cout_Revient_Azote_HCN,RON_Cout_Revient_Air_HCN,RON_Rendement_NH3_HCN_Convertisseurs_MMP';
-	var test = 'RON_QUR_Ammoniaque_HCN_Convertisseurs,RON_Rendement_NH3_HCN_Convertisseurs_MMP'
+	var refListe = '';
 	var interval = 'P1D'
 	var urlBase = 'https://cors-anywhere.herokuapp.com/https://oianalytics-100.optimistik.fr/api/optimistik/data/time_values?dataReferenceList=';
 	var urlBaseOld = 'https://oianalytics-100.optimistik.fr/api/optimistik/data/time_values?dataReferenceList=';
     var urlTime = '&from=2019-01-01T00%3A00%3A00.000Z&to=2019-02-28T00%3A00%3A00.000Z';
     var urlRes = '&resolution='+interval;
-    var url = urlBase +refListe+urlTime+urlRes;
+    var url = '';
 	var QUS_EP = 'RON_QUS_Soude_HCN,RON_QUS_Ammoniaque_HCN,RON_QUS_Azote_HCN,RON_QUS_Azote_HCN,RON_QUS_Gaz_Ferme_HCN,RON_QUS_Gaz_Procédé_HCN,RON_QUS_Vapeur_HCN,RON_QUS_ED_HCN,RON_QUS_Air_HCN,RON_QUS_Vapeur_Produite_HCN';
 	var PUS_EP = 'RON_PUS_Soude_HCN,RON_PUS_Ammoniaque_HCN,RON_PUS_Ammoniaque_HCN,RON_PUS_Azote_HCN,RON_PUS_Gaz_Ferme_HCN,RON_PUS_Gaz_Procédé_HCN,RON_PUS_Vapeur_HCN,RON_PUS_ED_HCN,RON_PUS_Air_HCN,RON_PUS_Vapeur_Produite_HCN';
-    var scatter = 'RON_Cout_Revient_Ammoniaque_HCN_Convertisseurs,RON_QUR_Soude_HCN,RON_QUR_Ammoniaque_HCN_Evapo,RON_QUR_Ammoniaque_HCN_Convertisseurs,RON_QUR_Azote_HCN,RON_QUR_Gaz_Ferme_HCN,RON_QUR_Gaz_Procédé_HCN,RON_QUR_Vapeur_HCN,RON_QUR_ED_HCN,RON_QUR_Air_HCN,RON_QUR_Vapeur_Produite_HCN,RON_QUR_Gaz_Procédé_HCN';
-    refListe=scatter;
-    var listeVal = [{nom:'RON_Masse_HCN_Estimation_MMP_Théorique',select:2},
-            {nom:'RON_Cout_Revient_Ammoniaque_HCN_Convertisseurs',select:1},
+    var listeVal = [{nom:'RON_Masse_HCN_Estimation_MMP_Théorique',select:0},
+            {nom:'RON_Cout_Revient_Ammoniaque_HCN_Convertisseurs',select:0},
             {nom:'RON_Cout_Revient_Soude_HCN',select:1},
             {nom:'RON_Cout_Revient_Gaz_Procédé_HCN',select:1},
             {nom:'RON_Cout_Revient_Gaz_Ferme_HCN',select:1},
@@ -161,17 +173,17 @@ input:focus {
             {nom:'RON_Cout_Revient_ED_HCN',select:1},
             {nom:'RON_Cout_Revient_Azote_HCN',select:1},
             {nom:'RON_Cout_Revient_Air_HCN',select:1},
-            {nom:'RON_Rendement_GN_HCN_Convertisseurs_MMP',select:1},
-            {nom:'RON_Rendement_GN_HCN_K82300',select:1},
-            {nom:'RON_Rendement_GN_HCN_K82700',select:1},
+            {nom:'RON_Rendement_GN_HCN_Convertisseurs_MMP',select:0},
+            {nom:'RON_Rendement_GN_HCN_K82300',select:0},
+            {nom:'RON_Rendement_GN_HCN_K82700',select:0},
             {nom:'RON_Rendement_NH3_HCN_Convertisseurs_MMP',select:1},
-            {nom:'RON_Rendement_NH3_HCN_K82300',select:1},
-            {nom:'RON_Rendement_NH3_HCN_K82700',select:1},
-            {nom:'RON_QUR_Soude_HCN',select:2},{nom:'RON_QUR_Ammoniaque_HCN_Evapo',select:2},{nom:'RON_QUR_Ammoniaque_HCN_Convertisseurs',select:2},{nom:'RON_QUR_Azote_HCN',select:2},{nom:'RON_QUR_Gaz_Ferme_HCN',select:2},{nom:'RON_QUR_Gaz_Procédé_HCN',select:2},{nom:'RON_QUR_Vapeur_HCN',select:2},{nom:'RON_QUR_ED_HCN',select:2},{nom:'RON_QUR_Air_HCN',select:2},
-			{nom:'RON_Ratio_Air_GN_K82300_Indication',select:2},
-			{nom:'RON_Ratio_Air_GN_K82700_Indication',select:2},
-			{nom:'RON_Ratio_Air_NH3_K82300_Indication',select:2},
-			{nom:'RON_Ratio_Air_NH3_K82700_Indication',select:2},
+            {nom:'RON_Rendement_NH3_HCN_K82300',select:0},
+            {nom:'RON_Rendement_NH3_HCN_K82700',select:0},
+            {nom:'RON_QUR_Soude_HCN',select:0},{nom:'RON_QUR_Ammoniaque_HCN_Evapo',select:0},{nom:'RON_QUR_Ammoniaque_HCN_Convertisseurs',select:0},{nom:'RON_QUR_Azote_HCN',select:0},{nom:'RON_QUR_Gaz_Ferme_HCN',select:0},{nom:'RON_QUR_Gaz_Procédé_HCN',select:0},{nom:'RON_QUR_Vapeur_HCN',select:0},{nom:'RON_QUR_ED_HCN',select:0},{nom:'RON_QUR_Air_HCN',select:0},
+			{nom:'RON_Ratio_Air_GN_K82300_Indication',select:0},
+			{nom:'RON_Ratio_Air_GN_K82700_Indication',select:0},
+			{nom:'RON_Ratio_Air_NH3_K82300_Indication',select:0},
+			{nom:'RON_Ratio_Air_NH3_K82700_Indication',select:0},
 			{nom:'N-PS82331',select:2},
 			{nom:'N-PXS82363',select:2},
 			{nom:'N-PS82731',select:2},
@@ -192,9 +204,9 @@ input:focus {
 			{nom:'N-US82711',select:2},
 			{nom:'N-TS82701',select:2},
 			{nom:'N-TCS82705',select:2},
-			{nom:'N-TC82708',select:2}
+			{nom:'N-TC82708',select:0}
 			];
-    var refCumul='';
+	var refCumul='';
     let icon = ['eye-slash','thumbs-up','eye'];
 	// Chart dimensions.
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
@@ -286,18 +298,22 @@ function clickMenu(d,i) {
     .text('Appuyez sur <Read Data>');
 */
     d3.select("#value_select").on("change", Dashboard);
+    d3.select("#from").on("change", updateDate);
+    d3.select("#to").on("change", updateDate);
 
   toDate = function (d) { return new Date(d).toLocaleDateString("fr-FR");};
 	//	var t = new Date(AllData[1].values[1].timestamp).toLocaleTimeString("fr-FR") 
   var tip = d3.tip()
 	.attr('class', 'd3-tip')
 	.offset([-40, 0])
-	.html(function(d) {
-		return "<strong>Valeur :</strong> <span style='color:yellow'>" + (d.value>10?Math.round(d.value):Math.round(d.value*100.0)/100) + "</span><br>"+toDate(d.timestamp)+"</span>"; })
+	.html(function(d,i) {
+        ref=AllData[0].values.find(a=>{ return (a.timestamp==d.timestamp)?a:'';}).value;
+		return "<strong>Valeur :</strong> <span style='color:yellow'>" + (d.value>10?Math.round(d.value):Math.round(d.value*100.0)/100) + "</span><br>"+toDate(d.timestamp)+"</span><br><span style='color:white'>"+(ref>100?Math.round(ref):Math.round(ref*100)/100)+"</span>"; })
 
 	let graph=svg.append('g').attr('id','graphe')
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+    updateListe();
     selGraphique();
 //
 //---
@@ -455,6 +471,13 @@ graph.append('g').append("text")
         graph.selectAll('g').remove();
         graphe(v);
 	}
+    function updateDate() {
+        let from = new Date(d3.select("#from").property('value'));
+        let to = new Date(d3.select("#to").property('value'));
+        let t = new Date(from);
+        urlTime = '&from='+encodeURIComponent(from.toISOString())+'&to='+encodeURIComponent(to.toISOString());
+//        console.log(urlTime);
+    }
 //---------------------------------------------------------
 // -- Get Data from Optimistik
 //
@@ -476,10 +499,12 @@ graph.append('g').append("text")
             if (cumul) {
                 CumulData = data;
                 cumulCompute();
+                selGraphique();
             } else {
                 AllData = data;
-                selGraphe=0;
-    			selGraphique();
+                url2 = urlBase+refCumul+urlTime+urlRes;
+                console.log(' ... data de Cumul!');
+                start(url2,true);
             }
 		})
 		.catch(err => {
@@ -674,13 +699,13 @@ function cumulCompute() {
             data.values[j].value += b.value;
         } 
         ;}); });
-    console.log(data);
+//    console.log('données de base : ',data);
     dataOK=true;
     var dataOut=[];
     dataOut.push(data);
     AllData.forEach(a=>dataOut.push(a));
     AllData=[];
-    console.log(dataOut);
+//    console.log(dataOut);
     AllData=dataOut;
 //- les select ...
     var options = d3.select("#value_select")
@@ -718,7 +743,7 @@ function param() {
     graph.selectAll('g').remove();
     // on ajuste le svg
     size = 30;
-    console.log(listeVal.length,size);
+//    console.log(listeVal.length,size);
     svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+((listeVal.length+1)*size))
     
     let paramG = graph.selectAll('g').data(listeVal).enter()
@@ -742,7 +767,7 @@ function param() {
         .attr('width',150).attr('height',35).attr('fill','#8cF');
     button.append('text')//.attr('x',10).attr('y',10)
         .attr('dx',width/2+175).attr('y',174).style('fill','#275').style('text-anchor','middle')
-        .text('Enregistrer').style('font-size','20px');
+        .text('Modifier Liste').style('font-size','20px');
 
     let buttonCumul = graph.append('g').on('click',loadCumul)
         .on('mouseover',function(d,i){ buttonCumul.select('rect').attr('fill','#FE6F5E');})
@@ -762,13 +787,7 @@ function param() {
     param();
   }
   function saveListe(d,i,n) {
-    let red = '',cumul='';
-    listeVal.forEach((a)=>{ 
-        if (a.select==2) (red += (red==''?'':',')+a.nom);
-        if (a.select==1) (cumul += (cumul==''?'':',')+a.nom);  });
-    refListe=encodeURIComponent(red);
-    refCumul=encodeURIComponent(cumul);
-//    console.log(red);
+    updateListe();
     button.select('rect').attr('fill','green');
     button.select('text').style('fill','white');
   }
@@ -778,6 +797,14 @@ function param() {
     buttonCumul.select('rect').attr('fill','green');
     buttonCumul.select('text').style('fill','white');    
   }
+}
+function updateListe() {
+    let red = '',cumul='';
+    listeVal.forEach((a)=>{ 
+        if (a.select==2) (red += (red==''?'':',')+a.nom);
+        if (a.select==1) (cumul += (cumul==''?'':',')+a.nom);  });
+    refListe=encodeURIComponent(red);
+    refCumul=encodeURIComponent(cumul);
 }
 //
 //----------------------------------------------------------------
@@ -830,7 +857,7 @@ function credClick() {
           case 3:
             param();break;
           case -1:
-            cred();
+            cred();break;
           default:
             console.log('Désole !');
         }
