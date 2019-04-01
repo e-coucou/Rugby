@@ -778,6 +778,7 @@ function credClick() {
     val = d3.select('#username').property('value');
     if (val!='') password=val;
     code =btoa(username+':'+password);
+	console.log(code);
     return false;
 }
 //----------------------------------------------------------------
