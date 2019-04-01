@@ -1,0 +1,219 @@
+/* by e-coucou */
+
+@import url(//fonts.googleapis.com/css?family=PT+Serif|PT+Serif:b|PT+Serif:i|PT+Sans|PT+Sans:b);
+
+html {
+  min-width: 640px;
+}
+.rky body {
+  background: #f5fffa;
+  color: #789;
+  font-family: "PT Serif", serif;
+  margin: 1em auto 4em auto;
+  position: relative;
+  width: 100%; 
+  top:15px;
+}
+/* define header,footer, aside ...*/
+.rky header {
+    position: fixed;
+    top:0px;
+    left:0px;
+    width:100%;
+    height: 42px;
+    z-index: 10;
+    background: #FE6F5E;/*#b0c4de; /*add8e6; /*f0f8FF;*/
+}
+.rky header,
+.rky footer,
+.rky aside,
+.rky h1,
+.rky #h1{
+  font-family: "helvetica neue", sans-serif;
+}
+.rky button {
+	margin-left : 50px;
+}
+.rky header aside {
+    margin-left: 50px;
+}
+.rky h1 {
+  color: #191970;
+}
+.rky header,
+.rky footer {
+  color: white; /*#2f4f4f;*/
+}
+.rky aside {
+  font-size: 8px;
+}
+.rky h1 {
+  font-size: 32px;
+  font-weight: 100;
+  letter-spacing: 3px;
+  margin-left: 50px;
+  margin-bottom: 10px;
+  text-rendering: optimizeLegibility;
+}
+#h1 {
+  font-size: 32px;
+  font-weight: 200;
+  letter-spacing: 3px;
+  margin-left: 150px;
+  margin-top: 0px;
+  position: absolute;
+  text-rendering: optimizeLegibility;
+}
+.difference {
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0px;
+  fill: #fff;
+  text-anchor: middle;
+}
+.rky aside,
+.rky footer {
+  font-size: 11px;
+  float: left;
+  margin-right: 0.8em;
+  padding-top: .5em;
+}
+.rky header aside:after,
+.rky footer aside:after {
+  padding-left: .5em;
+  content: "|";
+}
+.rky footer {
+  margin-top: 1em;
+}
+h1 ~ aside {
+  font-size: small;
+  right: 0;
+  position: absolute;
+  width: 200px;
+}
+.attribution {
+  font-size: small;
+  margin-bottom: 0em;
+}
+body > p, li > p {
+  line-height: 1.5em;
+}
+blockquote q {
+  display: block;
+  font-style: oblique;
+}
+.rky a {
+    color: #4169E1;
+}
+.rky a:not(:hover) {
+  text-decoration: none;
+}
+pre, code, textarea {
+  font-family: "Menlo", monospace;
+}
+code {
+  line-height: 1em;
+}
+textarea {
+  font-size: 100%;
+}
+body > pre {
+  border-left: solid 2px #ccc;
+  padding-left: 18px;
+  margin: 2em 0 2em -20px;
+}
+.html .value,
+.javascript .string,
+.javascript .regexp {
+  color: #756bb1;
+}
+.html .tag,
+.css .tag,
+.javascript .keyword {
+  color: #3182bd;
+}
+.comment {
+  color: #636363;
+}
+.html .doctype,
+.javascript .number {
+  color: #31a354;
+}
+.html .attribute,
+.css .attribute,
+.javascript .class,
+.javascript .special {
+  color: #e6550d;
+}
+svg {
+  font: 11px "helvetic neue";
+}
+.svg-contenair {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    vertical-align: top;
+    overflow: hidden;
+}
+.svg-content {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.axis path, .axis line {
+  fill: none;
+  stroke: #191970;
+  shape-rendering: crispEdges;
+}
+rectan:hover {
+  fill:#FE6F5E;/*#35f;*/
+}
+#twitter {
+    position: absolute;
+    right: 80px;
+    top: 15px;
+}
+.grid path {
+  stroke-width: 0;
+}
+
+.grid .tick line {
+  stroke: #9FAAAE;
+  stroke-opacity: 0.3;
+}
+line#limit {
+  stroke: #7FFF00; /*#66D9ff;*/
+  stroke-width: 2;
+  stroke-dasharray: 2 6;
+}
+.d3-tip {
+  position: absolute;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 10px;
+    line-height: 1.42857143;
+    color: #333;
+    background-color: #fff;
+  font-weight: bold;
+  padding: 10px;
+  background: rgba(0, 0, 80, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  position: absolute;
+  text-align: center;
+}
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
