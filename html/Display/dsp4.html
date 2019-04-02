@@ -759,7 +759,7 @@ function param() {
         .attr('class',(d)=>{return ('icon fas fa-'+icon[d.select]);}).style('color',d=>{return couleur[d.select];});
     paramG.append('circle').attr('cx',15).attr('cy',size/2).style('r',size/3).style('fill','#fff')
         .on('click',selectVal).style('opacity',0.1);
-
+/*
     let button = graph.append('g').on('click',saveListe)
         .on('mouseover',function(d,i){ button.select('rect').attr('fill','#FE6F5E');})
         .on('mouseout', function(d,i){ button.select('rect').attr('fill','#8cF');});
@@ -777,13 +777,15 @@ function param() {
     buttonCumul.append('text')//.attr('x',10).attr('y',10)
         .attr('dx',width/2+175).attr('y',274).style('fill','#275').style('text-anchor','middle')
         .text('Charger Cumul').style('font-size','20px');
-
+*/
   function selectVal(d,i,n) {
 //    console.log(n);
     listeVal[i].select = (listeVal[i].select + 1) % 3;
-    sel='#sel'+i;
-//    d3.select(sel).attr('class',(d)=>{return ('icon fas fa-'+icon[d.select]);}).style('color','blue');
+//    sel='#sel'+i;
+//    d3.select(this).attr('class',(d)=>{return ('icon fas fa-'+icon[d.select]);}).style('color','red');
+//    d3.select(sel).attr('class',(d)=>{return ('icon fas fa-'+icon[d.select]);}).style('color','red');
 //    console.log(i);
+	updateListe();
     param();
   }
   function saveListe(d,i,n) {
