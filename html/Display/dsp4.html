@@ -123,7 +123,7 @@ input#to {
 </style>
 <header>
   <div id='h1'>Dashboard Display 4.0</div>
-  <aside >Mars, 2019</aside><br><aside>by e-Coucou</aside>
+  <aside >Avril, 2019</aside><br><aside>by e-Coucou</aside><br><aside>y2kJ</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -184,29 +184,30 @@ input#to {
 			{nom:'RON_Ratio_Air_NH3_K82300_Indication',select:0},
 			{nom:'RON_Ratio_Air_NH3_K82700_Indication',select:0},
 			{nom:'N-PS82331',select:2},
-			{nom:'N-PXS82363',select:2},
-			{nom:'N-PS82731',select:2},
-			{nom:'N-PXS82763',select:2},
-			{nom:'N-F82102',select:2},
-			{nom:'N-F82502',select:2},
-			{nom:'5A-CH4-GAZ',select:2},
+			{nom:'N-PXS82363',select:0},
+			{nom:'N-PS82731',select:0},
+			{nom:'N-PXS82763',select:0},
+			{nom:'N-F82102',select:0},
+			{nom:'N-F82502',select:0},
+			{nom:'5A-CH4-GAZ',select:0},
 			{nom:'N-TYS82302',select:2},
-			{nom:'N-TYS82303',select:2},
-			{nom:'N-TYS82304',select:2},
-			{nom:'N-US82311',select:2},
-			{nom:'N-TS82301',select:2},
-			{nom:'N-T82305-1',select:2},
-			{nom:'N-TC82308',select:2},
-			{nom:'N-TYS82702',select:2},
-			{nom:'N-TYS82703',select:2},
-			{nom:'N-TYS82704',select:2},
-			{nom:'N-US82711',select:2},
-			{nom:'N-TS82701',select:2},
-			{nom:'N-TCS82705',select:2},
+			{nom:'N-TYS82303',select:0},
+			{nom:'N-TYS82304',select:0},
+			{nom:'N-US82311',select:0},
+			{nom:'N-TS82301',select:0},
+			{nom:'N-T82305-1',select:0},
+			{nom:'N-TC82308',select:0},
+			{nom:'N-TYS82702',select:0},
+			{nom:'N-TYS82703',select:0},
+			{nom:'N-TYS82704',select:0},
+			{nom:'N-US82711',select:0},
+			{nom:'N-TS82701',select:0},
+			{nom:'N-TCS82705',select:0},
 			{nom:'N-TC82708',select:0}
 			];
 
 	var refCumul='';
+    var unSelect = [];
     let icon = ['eye-slash','plus','eye','divide'];
 	// Chart dimensions.
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
@@ -401,7 +402,10 @@ graph.append('g').append("text")
 	
 //    AllData.each(d=> {d.values.each(a=>{console.log(a.value);})});
     bar.append("rect")
-      .style("fill", "steelblue")
+//      .style("fill", "steelblue")
+      .attr('opacity', 1).style("fill", 
+        (d)=> { //console.log(d, unSelect);
+              return (unSelect.find(a=>{return d.timestamp==a;}) == undefined)? "steelblue":"black";})
       .attr("x", d =>  x(toDate(d.timestamp)))
       .attr("y", d => d.value<0?y(0):y(d.value))
       .attr("height", d =>{ return Math.abs(y(0) - y(d.value));})
@@ -454,9 +458,19 @@ graph.append('g').append("text")
             d3.select(this)
                 .transition()
                 .duration(300)
-                .attr('opacity', 1).style("fill", "steelblue")
+                .attr('opacity', 1).style("fill", 
+                    (d)=> { //console.log(d, unSelect);
+                    return (unSelect.find(a=>{return d.timestamp==a;}) == undefined)? "steelblue":"black";})
                 .attr('width', x.bandwidth());
-        });
+        })
+        .on('click',function (d,i) {
+            if (unSelect.find((a)=>{return d.timestamp===a;}) == undefined)  {
+                unSelect.push(d.timestamp);
+            }else{
+                unSelect = unSelect.filter((a)=>{return d.timestamp!==a;});
+            }
+          }
+        );
       bar.append('text')
           .attr('class', 'value')
           .attr('opacity',1)
@@ -472,7 +486,7 @@ graph.append('g').append("text")
 		let v = d3.select("#value_select").property('value');
 		var d = new Date(AllData[1].values[1].timestamp).toLocaleDateString("fr-FR")
 		var t = new Date(AllData[1].values[1].timestamp).toLocaleTimeString("fr-FR") 
-		infoG.select('text').text(AllData[v].dataReference+" ["+AllData[v].unit+"]");
+//		infoG.select('text').text(AllData[v].dataReference+" ["+AllData[v].unit+"]");
         graph.selectAll('g').remove();
         graphe(v);
 	}
@@ -490,8 +504,13 @@ graph.append('g').append("text")
 		console.log('Read DATA ...');
 //        console.log(refListe);
 //        console.log(url);
-		infoG.select('text').text("Lectures des données en cours ...");
-        infoG.select('circle').attr('fill','red');
+        if (cumul) {
+            infoG.select('text').text("Lectures et calcul des cumuls ...");
+            infoG.select('circle').attr('fill','cyan');
+        }else{
+    		infoG.select('text').text("Lectures des données en cours ...");
+            infoG.select('circle').attr('fill','red');
+        }
 		var opt = fetch(urldata, {method: 'GET',headers: new Headers({'Access-Control-Allow-Origin':'*','Accept':'application/json','credentials':'includes','Authorization':'basic '+code})}).then(response => {
 		return response.json();
 		})
@@ -577,15 +596,19 @@ graph.append('g').append("text")
 			//traits = d3.keys(data[0]).filter(function(d) { return d !== "species"; }),
 		AllData.forEach(function(d,i){ if (i!=0) {
 			traits.push(d.dataReference);
-			yMax = Math.max.apply(Math, AllData[i].values.map(function(o) { return o.value; }));
-			yMin = Math.min.apply(Math, AllData[i].values.map(function(o) { return o.value; }));
+			yMax = Math.max.apply(Math, AllData[i].values.map(function(o) { 
+                    return (unSelect.find(a=>{return o.timestamp==a;}) == undefined)? o.value:-Infinity;
+            }));
+			yMin = Math.min.apply(Math, AllData[i].values.map(function(o) { 
+                    return (unSelect.find(a=>{return o.timestamp==a;}) == undefined)? o.value:Infinity;
+            }));
 			domainByTrait[d.dataReference]=[];
 			domainByTrait[d.dataReference].push(yMin,yMax);
 			}
 		});
 		n = traits.length;
         // on ajuste le svg
-        svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+(n*(size+padding)))
+        svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+((n+1)*(size+padding)))
 
 		xAxis.tickSize(size * n);
 		yAxis.tickSize(-size * n);
@@ -712,13 +735,7 @@ function cumulCompute() {
     AllData=[];
 //    console.log(dataOut);
     AllData=dataOut;
-//- les select ...
-    var options = d3.select("#value_select")
-       .selectAll('option')
-       .data(AllData).enter()
-       .append('option')
-       .text(function (d,i) { return d.dataReference; })
-       .attr('value',function (d,i) { return i; });
+    unSelect = [];
 }
 //
 //----------------------------------------------------------------
