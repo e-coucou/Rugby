@@ -5,7 +5,6 @@
 <html class="rky">
 <meta charset="utf-8">
 <title>Display 4.04</title>
-<link type="text/css" rel="stylesheet" href="../css/colorBrewer.css">
 <style>
 @import url(../css/dsp.css);
 
@@ -164,7 +163,7 @@ input#to {
     var url = '';
 	var QUS_EP = 'RON_QUS_Soude_HCN,RON_QUS_Ammoniaque_HCN,RON_QUS_Azote_HCN,RON_QUS_Azote_HCN,RON_QUS_Gaz_Ferme_HCN,RON_QUS_Gaz_Procédé_HCN,RON_QUS_Vapeur_HCN,RON_QUS_ED_HCN,RON_QUS_Air_HCN,RON_QUS_Vapeur_Produite_HCN';
 	var PUS_EP = 'RON_PUS_Soude_HCN,RON_PUS_Ammoniaque_HCN,RON_PUS_Ammoniaque_HCN,RON_PUS_Azote_HCN,RON_PUS_Gaz_Ferme_HCN,RON_PUS_Gaz_Procédé_HCN,RON_PUS_Vapeur_HCN,RON_PUS_ED_HCN,RON_PUS_Air_HCN,RON_PUS_Vapeur_Produite_HCN';
-    var listeVal = [{nom:'RON_Masse_HCN_Estimation_MMP_Théorique',select:0},
+    var listeVal = [{nom:'RON_Masse_HCN_Estimation_MMP_Théorique',select:3},
             {nom:'RON_Cout_Revient_Ammoniaque_HCN_Convertisseurs',select:0},
             {nom:'RON_Cout_Revient_Soude_HCN',select:1},
             {nom:'RON_Cout_Revient_Gaz_Procédé_HCN',select:1},
@@ -206,8 +205,9 @@ input#to {
 			{nom:'N-TCS82705',select:2},
 			{nom:'N-TC82708',select:0}
 			];
+
 	var refCumul='';
-    let icon = ['eye-slash','thumbs-up','eye'];
+    let icon = ['eye-slash','plus','eye','divide'];
 	// Chart dimensions.
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
     width = window.innerWidth - margin.right-margin.left,
@@ -312,6 +312,11 @@ function clickMenu(d,i) {
 
 	let graph=svg.append('g').attr('id','graphe')
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    d3.json('listeRef.json', function(error,donnees) {
+        if (error) {console.log('eereur');}
+        console.log(donnees);
+        console.log('je charge les data non ?');});
 
     updateListe();
     selGraphique();
