@@ -111,11 +111,11 @@ input#to {
     font: 12px "helvetica neue";
 }
 #credentials {
-  left: 200px;
+  left: 34%;
   top: 100px;
   margin: 10px;
   padding: 10px;
-  width: 300px;
+  width: 32%;
   position: absolute;
   border: 3px solid #ff7788;
 }
@@ -840,7 +840,7 @@ function cred() {
                 {name: 'password', type: 'text', display: 'Password'},
                 {name: 'submit', type: 'submit', display: 'Username'}
             ];
-    let size={l:300,h:200};
+    let size={l:400,h:200};
     let credG = graph.append('g')
         .append('foreignObject').attr('x',10).attr('y',10).attr('width',100).attr('height',150);
     credG.append('rect').attr('x',width/2-size.l/2+margin.left).attr('y',80)
