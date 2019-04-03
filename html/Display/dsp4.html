@@ -153,11 +153,11 @@ input#to {
     <script type="text/javascript">
 // Variables Globales
     var dataOK=false;
-	var AllData=[],CumulData=[];
+	var AllData=[],CumulData=[], DivData=[];
 	var username = "Username"
 	var password = "Password"
     var code = ""; //prompt("Token : "); //"";
-	var refListe = '';
+	var refListe = '', refDiviseur='', refCumul='';
 	var interval = 'P1D'
 	var urlBase = 'https://cors-anywhere.herokuapp.com/https://oianalytics-100.optimistik.fr/api/optimistik/data/time_values?dataReferenceList=';
 	var urlBaseOld = 'https://oianalytics-100.optimistik.fr/api/optimistik/data/time_values?dataReferenceList=';
@@ -208,8 +208,6 @@ input#to {
 			{nom:'N-TCS82705',select:0},
 			{nom:'N-TC82708',select:0}
 			];
-
-	var refCumul='';
     var unSelect = [];
     let icon = ['eye-slash','plus','eye','code'];
 	// Chart dimensions.
@@ -339,7 +337,7 @@ function click(d,i) {
     urlRes = '&resolution='+d.v;
     url = urlBase+refListe +urlTime+urlRes;
 //    console.log('avant: ',url);
-    start(url,false);
+    start(url,0); //0-variable 1-cumul 2-diviseur
 }
 function maxVal(array,values) {
 	return Math.max(Math.max.apply(Math, array[values].map(function(o) { return o.value; })),0);
@@ -507,16 +505,23 @@ graph.append('g').append("text")
 //---------------------------------------------------------
 // -- Get Data from Optimistik
 //
-	function start(urldata,cumul=false) {
+	function start(urldata,cumul=0) {   //0-variable 1-cumul 2-diviseur
 		console.log('Read DATA ...');
 //        console.log(refListe);
 //        console.log(url);
-        if (cumul) {
+        switch (cumul) {
+		case 2:
+            infoG.select('text').text("Cacul du diviseur ...");
+            infoG.select('circle').attr('fill','violet');
+			break;
+		case 1:
             infoG.select('text').text("Lectures et calcul des cumuls ...");
             infoG.select('circle').attr('fill','cyan');
-        }else{
+			break;
+        case 0:
     		infoG.select('text').text("Lectures des données en cours ...");
             infoG.select('circle').attr('fill','red');
+			break;
         }
 		var opt = fetch(urldata, {method: 'GET',headers: new Headers({'Access-Control-Allow-Origin':'*','Accept':'application/json','credentials':'includes','Authorization':'basic '+code})}).then(response => {
 		return response.json();
@@ -527,16 +532,30 @@ graph.append('g').append("text")
 		    infoG.select('text').text("Données disponibles !");
             infoG.select('circle').attr('fill','#03C03C');
             dataOK=true;
-            if (cumul) {
+			switch(cumul) {
+            case 2:
+				DivData = data;
+				divCompute();
+				selGraphe=0;
+				selGraphique();
+				break;
+            case 1:
                 CumulData = data;
                 cumulCompute();
-                selGraphique();
-            } else {
+                url3 = urlBase+refDiviseur+urlTime+urlRes;
+				if (refDiviseur !='') { start(url3,2);    //0-variable 1-cumul 2-diviseur
+				} else { 
+					selGraphe=0;
+	                selGraphique();
+				}
+				break;
+            case 0:
                 AllData = data;
                 url2 = urlBase+refCumul+urlTime+urlRes;
                 console.log(' ... data de Cumul!');
-                start(url2,true);
-            }
+                start(url2,1);    //0-variable 1-cumul 2-diviseur
+				break;
+			}
 		})
 		.catch(err => {
 		// Do something for an error here
@@ -753,6 +772,12 @@ function cumulCompute() {
     AllData=dataOut;
     unSelect = [];
 }
+//----------------------------------------------------------------
+// Divise la somme des cumuls
+//
+function divCompute() {
+	console.log('diviseur');
+}
 //
 //----------------------------------------------------------------
 // GUASSIENNE
@@ -837,18 +862,20 @@ function param() {
   }
   function loadCumul(d,i,n) {
     url2 = urlBase+refCumul+urlTime+urlRes;
-    start(url2,true);
+    start(url2,1);
     buttonCumul.select('rect').attr('fill','green');
     buttonCumul.select('text').style('fill','white');    
   }
 }
 function updateListe() {
-    let red = '',cumul='';
+    let red = '',cumul='', div ='';
     listeVal.forEach((a)=>{ 
+        if (a.select==3) (div += (div==''?'':',')+a.nom);
         if (a.select==2) (red += (red==''?'':',')+a.nom);
         if (a.select==1) (cumul += (cumul==''?'':',')+a.nom);  });
     refListe=encodeURIComponent(red);
     refCumul=encodeURIComponent(cumul);
+    refDiviseur=encodeURIComponent(div);
 }
 //
 //----------------------------------------------------------------
