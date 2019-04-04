@@ -776,7 +776,10 @@ function cumulCompute() {
 // Divise la somme des cumuls
 //
 function divCompute() {
-	console.log('diviseur');
+    AllData[0].values.forEach((a,i)=> {
+        a.value = (a.value / (DivData[0].values[i].value )*1000.0);
+    });
+    unSelect=[];
 }
 //
 //----------------------------------------------------------------
