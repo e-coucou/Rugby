@@ -123,7 +123,7 @@ input#to {
 </style>
 <header>
   <div id='h1'>Dashboard Display 4.0</div>
-  <aside >Avril, 2019<br>| v a.0</aside>
+  <aside >Avril, 2019<br>| v 1.b</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -363,8 +363,13 @@ function graphe(v=0) {
         .padding(0.1);
 //ep      var xScale = d3.scaleTime().domain([minDate, maxDate]).range([margin.left, width-margin.right]);
 
-	yMax = Math.max(Math.max.apply(Math, AllData[v].values.map(function(o) { return o.value; })),0);
-	yMin = Math.min(Math.min.apply(Math, AllData[v].values.map(function(o) { return o.value; })),0);
+//	yMax = Math.max(Math.max.apply(Math, AllData[v].values.map(function(o) { return o.value; })),0);
+//	yMin = Math.min(Math.min.apply(Math, AllData[v].values.map(function(o) { return o.value; })),0);
+    yMax = Math.max.apply(Math, AllData[v].values.map(function(o) { 
+             return (unSelect.find(a=>{return o.timestamp==a;}) == undefined)? o.value:-Infinity; }));
+    yMin = Math.min.apply(Math, AllData[v].values.map(function(o) { 
+             return (unSelect.find(a=>{return o.timestamp==a;}) == undefined)? o.value:Infinity; }));
+
 //	console.log(yMin,yMax);
     y = d3.scaleLinear()
         .domain([yMin, yMax]).nice()
@@ -392,14 +397,6 @@ graph.append('g').append("text")
       .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text('unité : '+AllData[v].unit);
-
-//- les select ...
-	var options = d3.select("#value_select")
-	   .selectAll('option')
-	   .data(AllData).enter()
-	   .append('option')
-	   .text(function (d,i) { return d.dataReference; })
-	   .attr('value',function (d,i) { return i; });
 	
 //	console.log(AllData[v].values);
 	var dta = AllData[v].values;
@@ -407,6 +404,7 @@ graph.append('g').append("text")
             .data(dta).enter()
         .append("g");
 	
+//    console.log(y.domain()[0],y.domain()[1]);
 //    AllData.each(d=> {d.values.each(a=>{console.log(a.value);})});
     bar.append("rect")
 //      .style("fill", "steelblue")
@@ -414,22 +412,22 @@ graph.append('g').append("text")
         (d)=> { //console.log(d, unSelect);
               return (unSelect.find(a=>{return d.timestamp==a;}) == undefined)? "steelblue":"black";})
       .attr("x", d =>  x(toDate(d.timestamp)))
-      .attr("y", d => d.value<0?y(0):y(d.value))
-      .attr("height", d =>{ return Math.abs(y(0) - y(d.value));})
+      .attr("y", d => d.value<0?y(y.domain()[1]):y(d.value))  //xxxx
+      .attr("height", d =>{ return Math.abs( y(y.domain()[0]) - y(d.value));})
       .attr("width", x.bandwidth())
         .on("mouseover", function(d,i,n) {
-            div.transition()        
-                .duration(200)      
-                .style("opacity", .6);
+//            div.transition()        
+//                .duration(200)      
+//                .style("opacity", .6);
 //            div.html("Valeur : "+AllData[indexCumul].dataReference+' ' + d.value)
 //                .style("left", (d3.event.pageX + 10) + "px")     
 //                .style("top", (d3.event.pageY - 50) + "px");
 			tip.show(d,n[i]);
         })
         .on("mouseout", function(d) {
-            div.transition()
-                .duration(500)
-                .style("opacity", 0).style("fill", "steelblue");
+//            div.transition()
+ //               .duration(500)
+          div      .style("opacity", 0).style("fill", "steelblue");
 			tip.hide(d,this);
         })
         .on("mouseenter", function (d,i) {
@@ -437,8 +435,8 @@ graph.append('g').append("text")
                 .attr('opacity', 0)
             const h = y(d.value);
             d3.select(this)
-                .transition()
-                .duration(300)
+//                .transition()
+//                .duration(300)
                 .attr('opacity', 0.9).style('fill','#FE6F5E')
                 .attr('width', x.bandwidth() );
             bar.append('line')
@@ -804,7 +802,6 @@ function divCompute() {
 function dataCompute() {
 	infoG.select('text').text("Maj des Statistiques");
     infoG.select('circle').attr('fill','Orange');
-    let val = [], carre=[], indexCode = [];
 	//functions globales
 	let average = (array) => array.reduce((a, b) => { return a + b; }) / array.length;
 	let code = (a) => inRange(a,moyenne-3*stDev,stDev)
@@ -815,17 +812,21 @@ function dataCompute() {
                          +inRange(a,moyenne+2*stDev,stDev)*6
                          +inRange(a,moyenne+3*stDev,stDev)*7;
 	// calcul  des stats ...
-	for (i=0; i<AllData.length; i++) {
-		AllData[i].values.forEach(function(a) {
-			if (unSelect.find(b=>{return a.timestamp==b;}) == undefined) val.push(a.value) ;} );
-		let moyenne = average(val);
-		val.forEach((a)=>carre.push( (a-moyenne)*(a-moyenne) ));
-		let stDev = Math.sqrt(average(carre));
-		if (i==0) {
-			val.forEach((a)=>indexCode.push(code(a)));
-		}else{
-		}
-	}
+    listeVal.forEach((a,i)=>{
+      if(a.select != 0)
+      {
+        let val = [], carre=[], indexCode = [];
+        a.values.forEach( (c,j)=> {
+          if (unSelect.find(b=>{return c.timestamp==b;}) == undefined) val.push(c.value) ;} );
+        a['moyenne']=valFormat(average(val));
+        val.forEach((f)=>carre.push( (f-a.moyenne)*(f-a.moyenne) ));
+        a['stDev'] = valFormat(Math.sqrt(average(carre)));
+        a['max'] = valFormat(Math.max.apply(Math, a.values.map(function(o) { return o.value; })));  //xx  ajouter timestamp select
+        a['min'] = valFormat(Math.min.apply(Math, a.values.map(function(o) { return o.value; })));
+        //maxVal(a.values,'value');
+//        val.forEach((a)=>indexCode.push(code(a)));
+      }
+    });
 }
 //----------------------------------------------------------------
 // GUASSIENNE
@@ -854,20 +855,25 @@ function gaussienne() {
 //
 function param() {
 	selGraphe=3;
+    const size = 30, padding=2;
+    const tab = [ size, width/2, 40, 60, 60, 60, 60],
+        t_nom = [ 'select','nom','unit','min','max','moyenne','stDev'];
     menuG.selectAll('circle').style('fill',(d,i)=>(d.n==selGraphe)?'red':'#FE6F5E');
     graph.selectAll('g').remove();
     // on ajuste le svg
-    size = 30;
 //    console.log(listeVal.length,size);
     svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+((listeVal.length+1)*size))
     
     let paramG = graph.selectAll('g').data(listeVal).enter()
-        .append('g').attr('transform',(d,i)=>{return ('translate('+(2)+','+(i*size+1)+')');});
-    paramG.append('rect')//.attr('x',10).attr('y',10)
-        .attr('width',width/2).attr('height',size*0.9).style('fill','#caeeb0');
-    paramG.append('text')//.attr('x',10).attr('y',10)
-        .attr('dx',30).attr('y',size/2).style('fill','#275')
-        .text((d)=>d.nom).style('font-size','11px');
+        .append('g').attr('transform',(d,i)=>{return ('translate('+(2)+','+(i*size+padding/2)+')');});
+    for (let t in tab) {
+        const xRect = tab.reduce((a,c,i)=>{return (i<t)?(a+c):a;},0);
+        paramG.append('rect').attr('x',xRect)//.attr('y',10)
+            .attr('width',tab[t]-padding).attr('height',size*0.9).style('fill','#caeeb0');
+        paramG.append('text').attr('x',xRect) //.attr('y',10)
+            .attr('dx',padding*3).attr('y',size/2+padding).style('fill','#275')
+            .text((d)=>d[t_nom[t]]).style('font-size','11px');
+    }
     paramG.append('circle').attr('cx',15).attr('cy',size/2).style('r',size/3).style('fill','#fff');
     paramG.append('svg').attr('width',size/2).attr('height',size/2)
         .attr('x',size/4).attr('y',size/4).attr('id',(d,i)=>{ return ('sel'+i);})
@@ -967,10 +973,24 @@ function selGraphique() {
 	d3.select('#credentials').style('display','none');
 	graph.selectAll('g').remove();
     svg.selectAll('circle').remove();
-	console.log(listeVal);
+	if (dataOK) {
+        console.log(listeVal);
+        dataCompute();
+    }
     switch (selGraphe) {
           case 0:
-            if (dataOK) graphe(0);
+            if (dataOK) {
+                 //- les select ...
+                d3.select("#value_select")
+       .selectAll('option').remove();
+    d3.select("#value_select")
+       .selectAll('option')
+       .data(AllData).enter()
+       .append('option')
+       .text(function (d,i) { return d.dataReference; })
+       .attr('value',function (d,i) { return i; });
+             graphe(indexRef);   
+            }
             break;
           case 1:
             if (dataOK) matrix();
