@@ -89,13 +89,15 @@ input#connexion {
     border: 1px dotted #ccc;
     background: white;
     font-family: monospace;
-    padding: 10px 20px;
+    padding: 2% 2%;
     font-size: 18px;
-    margin: 20px 10px 20px 0;
+    margin: 2% 2% 2% 5%;
+    width : 85%;
+    height: 40%;
     color: red;
 }
 input:focus { 
-    background-color:#0cf; outline: none;
+    background-color:#0cf; color: red; outline: none;
 }
 div#label {
     position:absolute;
@@ -111,25 +113,26 @@ input#to {
     font: 12px "helvetica neue";
 }
 #credentials {
-  left: 34%;
+  left: 30%;
   top: 100px;
   margin: 10px;
   padding: 10px;
-  width: 32%;
+  width: 40%;
   position: absolute;
   border: 3px solid #ff7788;
 }
 
 </style>
 <header>
-  <div id='h1'>Dashboard Display 4.0</div>
-  <aside >Avril, 2019<br>| v 1.b</aside>
+  <div id='h1'>Display 4.0</div>
+  <aside >Avril, 2019<br>| v 1.01</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.js" charset="utf-8"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.0.12/js/all.js" integrity="sha384-Voup2lBiiyZYkRto2XWqbzxHXwzcm4A5RfdfG6466bu5LqjwwrjXCMBQBLMWh7qR" crossorigin="anonymous"></script><body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <h1>-</h1>
 <!--	<h1>Dashboard Display 4.0</h1> -->
     <select id="value_select" class="styledSelect">
@@ -141,10 +144,10 @@ input#to {
     <div id="info"></div>
 <!--    <button id="connectbutton" onclick="start()">Read Data</button>  -->
     <div id="credentials">
-    <form name="saisie" onSubmit="return credClick()">Username
-        <input type="text" id="username">Password
+    <form name="saisie" onSubmit="return credClick()">
+        <input type="text" id="username"><br>
         <input type="text" id="password">
-        <input name="Submit"  type="submit" id="connexion" value="Connexion" >
+<!--        <input name="Submit"  type="submit" id="connexion" value="Connexion" > -->
     </form></div>
     <div id="chart"></div>
 <footer>
@@ -162,7 +165,7 @@ input#to {
 	var interval = 'P1D'
 	var urlBase = 'https://cors-anywhere.herokuapp.com/https://oianalytics-100.optimistik.fr/api/optimistik/data/time_values?dataReferenceList=';
 	var urlBaseOld = 'https://oianalytics-100.optimistik.fr/api/optimistik/data/time_values?dataReferenceList=';
-    var urlTime = '&from=2019-01-01T00%3A00%3A00.000Z&to=2019-02-28T00%3A00%3A00.000Z';
+    var urlTime = '&from=2019-02-01T00%3A00%3A00.000Z&to=2019-02-28T00%3A00%3A00.000Z';
     var urlRes = '&resolution='+interval;
     var url = '';
 	var QUS_EP = 'RON_QUS_Soude_HCN,RON_QUS_Ammoniaque_HCN,RON_QUS_Azote_HCN,RON_QUS_Azote_HCN,RON_QUS_Gaz_Ferme_HCN,RON_QUS_Gaz_Procédé_HCN,RON_QUS_Vapeur_HCN,RON_QUS_ED_HCN,RON_QUS_Air_HCN,RON_QUS_Vapeur_Produite_HCN';
@@ -229,7 +232,11 @@ var svg = d3.select("#chart").append("svg")
     .style("opacity", 0);
  
     // Functions globales ...
-	let valFormat = (a) => (a>100) ? Math.round(a) : ( (a>1)? Math.round(a*100.0)/100 : Math.round(a*1000.0)/1000);
+	let valFormat = (a) => { 
+        let r = (a>100) ? Math.round(a) : ( (a>1)? Math.round(a*100.0)/100 : Math.round(a*1000.0)/1000);
+        return String(r).replace(/(.)(?=(\d{3})+$)/g,'$1 ');
+//        return r;
+        }
 
 // Menu Graphique 
 let selGraphe=-1; //credentials
@@ -412,31 +419,21 @@ graph.append('g').append("text")
         (d)=> { //console.log(d, unSelect);
               return (unSelect.find(a=>{return d.timestamp==a;}) == undefined)? "steelblue":"black";})
       .attr("x", d =>  x(toDate(d.timestamp)))
-      .attr("y", d => d.value<0?y(y.domain()[1]):y(d.value))  //xxxx
-      .attr("height", d =>{ return Math.abs( y(y.domain()[0]) - y(d.value));})
+      .attr("y", d => d.value<0?y(y.domain()[1]):y(d.value)) 
+      .attr("height", d =>{ return (d.value<0)?(y(d.value)-y(y.domain()[1])):(Math.abs( y(y.domain()[0]) - y(d.value)));})
       .attr("width", x.bandwidth())
         .on("mouseover", function(d,i,n) {
-//            div.transition()        
-//                .duration(200)      
-//                .style("opacity", .6);
-//            div.html("Valeur : "+AllData[indexCumul].dataReference+' ' + d.value)
-//                .style("left", (d3.event.pageX + 10) + "px")     
-//                .style("top", (d3.event.pageY - 50) + "px");
 			tip.show(d,n[i]);
         })
         .on("mouseout", function(d) {
-//            div.transition()
- //               .duration(500)
-          div      .style("opacity", 0).style("fill", "steelblue");
+            div.style("opacity", 0).style("fill", "steelblue");
 			tip.hide(d,this);
         })
         .on("mouseenter", function (d,i) {
             d3.selectAll('.value')
                 .attr('opacity', 0)
-            const h = y(d.value);
+            const h = d.value<0?(y(d.value)):y(d.value);
             d3.select(this)
-//                .transition()
-//                .duration(300)
                 .attr('opacity', 0.9).style('fill','#FE6F5E')
                 .attr('width', x.bandwidth() );
             bar.append('line')
@@ -449,7 +446,7 @@ graph.append('g').append("text")
             bar.append('text')
                 .attr('class','difference')
                 .attr('x', (d) => x(toDate(d.timestamp)) + x.bandwidth() / 2)
-                .attr('y', (d) => y(d.value) + (d.value<0?-25:25))
+                .attr('y', (d) => (d.value<0?(y(d.value)-25):(25+y(d.value))))
                 .attr('text-anchor', 'middle')
                 .text((a,k)=>{
                     const v=a.value-d.value;
@@ -461,8 +458,6 @@ graph.append('g').append("text")
             bar.select(".difference").remove();
             bar.select('.value').attr('opacity',1);
             d3.select(this)
-                .transition()
-                .duration(300)
                 .attr('opacity', 1).style("fill", 
                     (d)=> { //console.log(d, unSelect);
                     return (unSelect.find(a=>{return d.timestamp==a;}) == undefined)? "steelblue":"black";})
@@ -480,7 +475,7 @@ graph.append('g').append("text")
           .attr('class', 'value')
           .attr('opacity',1)
           .attr('x', (d) => x(toDate(d.timestamp)) + x.bandwidth() / 2)
-          .attr('y', (d) => y(d.value) + (d.value<0?-25:25))
+          .attr('y', (d) =>  (d.value<0?(y(d.value)-25):(25+y(d.value))))
           .attr('fill', 'white')
           .attr('text-anchor', 'middle')
           .text(d=>{return valFormat(d.value);});
@@ -578,6 +573,9 @@ graph.append('g').append("text")
 //   SCATTER PLOT MATRIX
 //
 //
+
+    // le tootip !
+
     function matrix() {
 		selGraphe=1;
 		menuG.selectAll('circle').style('fill',(d,i)=>(d.n==selGraphe)?'red':'#FE6F5E');
@@ -629,12 +627,10 @@ graph.append('g').append("text")
                          +inRange(a,moyenne+2*stDev,stDev)*6
                          +inRange(a,moyenne+3*stDev,stDev)*7;
         val.forEach((a)=>indexCouleur.push(couleur[code(a)]));
-//xx		let valFormat = (a) => (a>100) ? Math.round(a) : Math.round(a*100.0)/100;
 
         infoG.select('text').text("Moyenne: ["+valFormat(moyenne)+'] StDev: ['+valFormat(stDev)+']');
 
-			//traits = d3.keys(data[0]).filter(function(d) { return d !== "species"; }),
-		AllData.forEach(function(d,i){ if (i!=indexRef) {    //xxxxx
+		AllData.forEach(function(d,i){ if (i!=indexRef) {   
 			traits.push(d.dataReference);
 			yMax = Math.max.apply(Math, AllData[i].values.map(function(o) { 
                     return (unSelect.find(a=>{return o.timestamp==a;}) == undefined)? o.value:-Infinity;
@@ -653,15 +649,23 @@ graph.append('g').append("text")
 		xAxis.tickSize(size * n);
 		yAxis.tickSize(-size * n);
 //		console.log(traits,domainByTrait,n);
-	// les axess ......
+
+// les axess ......
     let x_axe = graph.selectAll(".x.axis")
             .data(traits)
             .enter().append("g")
             .attr("class", "x axis")
             .attr("transform", function(d, i) { return "translate(" + (n - i - 1) * size + ",0)"; })
-            .each(function(d) { x.domain(domainByTrait[d]); d3.select(this).call(xAxis); });
-
-//        x_axe.selectAll('text').attr("transform", "rotate(65)");
+            .each(function(d) { 
+                x.domain(domainByTrait[d]);
+                d3.select(this).call(xAxis)
+                  .selectAll('text')
+                    .attr('y',0)
+                    .attr("dx", "-.35em")
+                    .attr("dy", ".35em")
+                    .attr("transform", "translate(0,"+(n*size)+")rotate(-90)")
+                    .style("text-anchor", "end");
+                ; });
 
     graph.selectAll(".y.axis")
             .data(traits)
@@ -700,18 +704,19 @@ graph.append('g').append("text")
         .attr("class", "frame")
         .attr("x", padding / 2)
         .attr("y", padding / 2)
+        .style("pointer-events", "none")
         .attr("width", size - padding)
         .attr("height", size - padding);
-      cell.selectAll("circle")
+      var circles = cell.selectAll("circle")
         .data(AllData[indexRef].values)
         .enter().append("circle")
-        .attr("cx", function(d,i) { return x(AllData[p.i].values[i].value); })   //xx +1
-        .attr("cy", function(d,i) { return y(AllData[p.j].values[i].value); })   //xx +1
+        .attr("cx", function(d,i) { return (unSelect.find(a=>{return d.timestamp==a;}) == undefined)?x(AllData[p.i].values[i].value):0; })   //xx +1
+        .attr("cy", function(d,i) { return (unSelect.find(a=>{return d.timestamp==a;}) == undefined)?y(AllData[p.j].values[i].value):0; })   //xx +1
         .attr("r", 3)
         .style("fill", function(d,i) {
-                    return (unSelect.find(a=>{return d.timestamp==a;}) == undefined)? indexCouleur[i]:'';
-					//return indexCouleur[i]; 
-		});
+                    return (unSelect.find(a=>{return d.timestamp==a;}) == undefined)? indexCouleur[i]:'white';});
+      circles.on('mousedown', function () {
+        });
     }
 
     var brushCell;
@@ -735,8 +740,8 @@ graph.append('g').append("text")
         return !e
         ? false
             : (
-                e[0][0] > x(AllData[p.i+1].values[i%n].value) || x(AllData[p.i+1].values[i%n].value) > e[1][0]
-                || e[0][1] > y(AllData[p.j+1].values[i%n].value) || y(AllData[p.j+1].values[i%n].value) > e[1][1]
+                e[0][0] > x(AllData[p.i+0].values[i%n].value) || x(AllData[p.i+0].values[i%n].value) > e[1][0]
+                || e[0][1] > y(AllData[p.j+0].values[i%n].value) || y(AllData[p.j+0].values[i%n].value) > e[1][1]
             );
         });
     }
@@ -776,7 +781,12 @@ function cumulCompute() {
 	indexCumul = AllData.length - 1;
 	indexRef = indexCumul;
     unSelect = [];
-	listeVal.push(dataIn);
+    let dc = (listeVal.find(a=>{return a.nom == 'Données cumulées';}));
+    if (dc==undefined) {
+    	listeVal.push(dataIn);
+    }else{
+        dc.values = dataIn.values;
+    }
 }
 //----------------------------------------------------------------
 // Divise la somme des cumuls
@@ -790,10 +800,16 @@ function divCompute() {
         dataIn.values.push({timestamp:a.timestamp, value:t});
     });
     unSelect=[];
-	AllData.push(dataIn);
+    AllData.push(DivData[0]);
+    AllData.push(dataIn);
 	indexQuotient = AllData.length - 1;
 	indexRef = indexQuotient;
-	listeVal.push(dataIn);
+    let dc = (listeVal.find(a=>{return a.nom == 'Quotient';}));
+    if (dc==undefined) {
+        listeVal.push(dataIn);
+    }else{
+        dc.values = dataIn.values;
+    }
 }
 //
 //----------------------------------------------------------------
@@ -811,6 +827,9 @@ function dataCompute() {
                          +inRange(a,moyenne+stDev,stDev)*5
                          +inRange(a,moyenne+2*stDev,stDev)*6
                          +inRange(a,moyenne+3*stDev,stDev)*7;
+    //
+    // calcul des stats pour la Reférence
+
 	// calcul  des stats ...
     listeVal.forEach((a,i)=>{
       if(a.select != 0)
@@ -818,11 +837,11 @@ function dataCompute() {
         let val = [], carre=[], indexCode = [];
         a.values.forEach( (c,j)=> {
           if (unSelect.find(b=>{return c.timestamp==b;}) == undefined) val.push(c.value) ;} );
-        a['moyenne']=valFormat(average(val));
+        a['moyenne']=(average(val));
         val.forEach((f)=>carre.push( (f-a.moyenne)*(f-a.moyenne) ));
-        a['stDev'] = valFormat(Math.sqrt(average(carre)));
-        a['max'] = valFormat(Math.max.apply(Math, a.values.map(function(o) { return o.value; })));  //xx  ajouter timestamp select
-        a['min'] = valFormat(Math.min.apply(Math, a.values.map(function(o) { return o.value; })));
+        a['stDev'] = (Math.sqrt(average(carre)));
+        a['max'] = (Math.max.apply(Math, a.values.map(function(o) { return (unSelect.find(b=>{return o.timestamp==b;}) == undefined)?o.value:-Infinity; })));  //xx  ajouter timestamp select
+        a['min'] = (Math.min.apply(Math, a.values.map(function(o) { return (unSelect.find(b=>{return o.timestamp==b;}) == undefined)?o.value:Infinity; })));
         //maxVal(a.values,'value');
 //        val.forEach((a)=>indexCode.push(code(a)));
       }
@@ -856,7 +875,7 @@ function gaussienne() {
 function param() {
 	selGraphe=3;
     const size = 30, padding=2;
-    const tab = [ size, width/2, 40, 60, 60, 60, 60],
+    const tab = [ size, width/2.4, 40, 65, 65, 65, 65],
         t_nom = [ 'select','nom','unit','min','max','moyenne','stDev'];
     menuG.selectAll('circle').style('fill',(d,i)=>(d.n==selGraphe)?'red':'#FE6F5E');
     graph.selectAll('g').remove();
@@ -872,7 +891,7 @@ function param() {
             .attr('width',tab[t]-padding).attr('height',size*0.9).style('fill','#caeeb0');
         paramG.append('text').attr('x',xRect) //.attr('y',10)
             .attr('dx',padding*3).attr('y',size/2+padding).style('fill','#275')
-            .text((d)=>d[t_nom[t]]).style('font-size','11px');
+            .text((d)=>((t>2 & d.select!=0)?valFormat(d[t_nom[t]]):d[t_nom[t]])).style('font-size','11px');
     }
     paramG.append('circle').attr('cx',15).attr('cy',size/2).style('r',size/3).style('fill','#fff');
     paramG.append('svg').attr('width',size/2).attr('height',size/2)
