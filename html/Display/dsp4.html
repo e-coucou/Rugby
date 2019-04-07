@@ -121,11 +121,17 @@ input#to {
   position: absolute;
   border: 3px solid #ff7788;
 }
-
+#loadjson {
+    left: 30%;
+    top: 270px;
+    position: absolute;
+    font-family: monospace;
+    font-size: 14px;
+}
 </style>
 <header>
   <div id='h1'>Display 4.0</div>
-  <aside >Avril, 2019<br>| v 1.01</aside>
+  <aside >Avril, 2019<br>| v 1.03</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -133,6 +139,7 @@ input#to {
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.js" charset="utf-8"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.0.12/js/all.js" integrity="sha384-Voup2lBiiyZYkRto2XWqbzxHXwzcm4A5RfdfG6466bu5LqjwwrjXCMBQBLMWh7qR" crossorigin="anonymous"></script><body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script type="text/javascript" src="./arbre.js"></script>
 <h1>-</h1>
 <!--	<h1>Dashboard Display 4.0</h1> -->
     <select id="value_select" class="styledSelect">
@@ -149,6 +156,12 @@ input#to {
         <input type="text" id="password">
 <!--        <input name="Submit"  type="submit" id="connexion" value="Connexion" > -->
     </form></div>
+    <form id="loadjson" method="post" enctype="multipart/form-data">
+    <div>
+        <label for="profile_pic">Sélectionnez le fichier à utiliser de configuration</label><br><br>
+        <input type="file" id="refJson" name="refJson" accept=".json">
+    </div>
+    </form>
     <div id="chart"></div>
 <footer>
 <aside>(c) e-Coucou | y2kJ | Mars, 2019</aside>
@@ -237,6 +250,10 @@ var svg = d3.select("#chart").append("svg")
         return String(r).replace(/(.)(?=(\d{3})+$)/g,'$1 ');
 //        return r;
         }
+//  regenerate(svg,true);
+    var seed = {i: 0, x: 35, y:(height +margin.top+margin.bottom), a: 0, l: 13, d:1}; // a = angle, l = length, d = depth {i: 0, x: 420, y: 600, a: 0, l: 130, d:0};
+    var arbre = new Arbre(svg,seed);
+    arbre.regenerate(true);
 
 // Menu Graphique 
 let selGraphe=-1; //credentials
@@ -324,10 +341,6 @@ function clickMenu(d,i) {
 	let graph=svg.append('g').attr('id','graphe')
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    d3.json('listeRef.json', function(error,donnees) {
-        if (error) {console.log('eereur');}
-        console.log(donnees);
-        console.log('je charge les data non ?');});
 
     updateListe();
     selGraphique();
@@ -364,6 +377,8 @@ function graphe(v=0) {
 
 	// on ajuste le viewbox
     svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+(height + margin.top + margin.bottom))
+    seed.y = height+margin.top+margin.bottom;
+    arbre.regenerate(false);
     x = d3.scaleBand()
         .domain(AllData[v].values.map(d => toDate(d.timestamp)))
         .range([margin.left, width - margin.right])
@@ -555,7 +570,7 @@ graph.append('g').append("text")
             case 0:
                 AllData = data.slice();
                 let url2 = urlBase+refCumul+urlTime+urlRes;
-                console.log(' ... data de Cumul!');
+//                console.log(' ... data de Cumul!');
                 start(url2,1);    //0-variable 1-cumul 2-diviseur
 				break;
 			}
@@ -645,6 +660,8 @@ graph.append('g').append("text")
 		n = traits.length;
         // on ajuste le svg
         svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+((n)*(size+padding)+30))
+        seed.y = ((n)*(size+padding));
+        arbre.regenerate(false);
 
 		xAxis.tickSize(size * n);
 		yAxis.tickSize(-size * n);
@@ -881,7 +898,9 @@ function param() {
     graph.selectAll('g').remove();
     // on ajuste le svg
 //    console.log(listeVal.length,size);
-    svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+((listeVal.length+1)*size))
+    svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+((listeVal.length+1)*size));
+    seed.y = ((listeVal.length+1)*size)-20;
+    arbre.regenerate(false);
     
     let paramG = graph.selectAll('g').data(listeVal).enter()
         .append('g').attr('transform',(d,i)=>{return ('translate('+(2)+','+(i*size+padding/2)+')');});
@@ -956,6 +975,9 @@ function updateListe() {
 //
 function cred() {
 	selGraphe=-1;
+    svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+(height + margin.top + margin.bottom))
+    seed.y = height+margin.top+margin.bottom;
+    arbre.regenerate(false);
     menuG.selectAll('circle').style('fill',(d,i)=>(d.n==selGraphe)?'red':'#FE6F5E');
     var credential = [
                 {name: 'username', type: 'text', display: 'Username'},
@@ -971,6 +993,8 @@ function cred() {
         d3.select('#credentials').attr('width',300).style('display','inline').raise();
         d3.select('#username').attr('placeholder',username).on('change',credClick);
         d3.select('#password').attr('placeholder',password).on('change',credClick);
+        var itemJson = d3.select('#loadjson').style('display','inline').on('input',loadjson).raise();
+
 /*    d3.select('#chart').append('form').attr('name','credentials').selectAll('input').data(credential).enter()
         .append('input').attr('id',d=>d.name)
         .attr('type',d=> d.type)
@@ -984,12 +1008,41 @@ function credClick() {
     if (val!='') password=val;
     code =btoa(username+':'+password);
 	d3.select('#connexion').style('background',"yellow");
-	console.log(code);
+//	console.log(code);
     return false;
+}
+function loadjson() {
+    // Check for the various File API support.
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+    // Great success! All the File APIs are supported.
+    } else {
+        alert('The File APIs are not fully supported in this browser.');
+    }
+    var f = event.target.files[0]; // FileList object
+    var reader = new FileReader();
+
+    reader.onload = function(event) {
+        load_d3(event.target.result)
+    };
+    // Read in the file as a data URL.
+    reader.readAsDataURL(f);
+}
+function load_d3(fileHandler) {
+    d3.json(fileHandler).then(function(json) {
+        //do stuff
+//        console.log(json);
+    listeVal=[];
+    listeVal=json;
+    unSelect=[];
+    dataOK=false;
+    infoG.select('text').text("Chargement fichier");
+    infoG.select('circle').attr('fill','#d49');
+    });
 }
 //----------------------------------------------------------------
 function selGraphique() {
 	d3.select('#credentials').style('display','none');
+    d3.select('#loadjson').style('display','none');
 	graph.selectAll('g').remove();
     svg.selectAll('circle').remove();
 	if (dataOK) {
