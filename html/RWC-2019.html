@@ -26,7 +26,7 @@ text {
 </style>
 <header>
   <div id='h1'>Rugby World Cup 2019 - JAPAN</div>
-  <aside >Septembre, 2019<br><br> | v 0.01</aside>
+  <aside >Septembre, 2019<br><br> | v 1.00</aside>
 </header>
 <body>
 	<script src="https://unpkg.com/d3@5.7.0/dist/d3.min.js" charset="utf-8"></script>
@@ -61,11 +61,11 @@ text {
 // Affichage de la liste des matches
 //
 	color_status = { U:'#ffffff', C:'#aaaaaa',L1:'#ff0fff',L2:'#0fffff' }
-	color_pool = { "Pool A":'#be0ff1', "Pool B":'#0ff1be',"Pool C":'#0fb3f1',"Pool D":'#0f42f1',"Quarter-Finals":'#5588cc',"Semi-Finals":'#555588',"Bronze Final": '#aaaaaa',"Final":'#f1c40f' }
+	color_pool = { "Pool A":'#4078D3', "Pool B":'#2E5697',"Pool C":'#3767B5',"Pool D":'#4989F1',"Quarter-Finals":'#12223C',"Semi-Finals":'#555588',"Bronze Final": '#aaaaaa',"Final":'#f1c40f' }
 	function affListe() {
 	console.log('la liste');
 //    svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+((listeVal.length+1)*size));
-	let size = 25,padding=5, largeur=200;
+	let size = 26,padding=2, largeur=170, space=0.9,centre=1.6;
 	var jour = new Date();	console.log(jour.getTimezoneOffset(), jour);
 	let graph=svg.append('g').attr('id','graphe')
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -74,40 +74,43 @@ text {
         .append('g').attr('transform',(d,i)=>{return ('translate('+(2)+','+(i*size+padding/2)+')');});
 
         listeG.append('rect').attr('x',0).attr('id','stat')
-            .attr('width',largeur).attr('height',size*0.8).style('fill', d=>color_pool[d.eventPhase]); //'#0a88ff');
+            .attr('width',largeur).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]); //'#0a88ff');
         listeG.append('text').attr('x',padding) //.attr('y',10)
-            .attr('dx',(largeur-padding)/2).attr('y',size/1.82).style('fill','#fff').style('text-anchor', 'middle')
-            .text((d)=>(d['teams'][0]['name'])).style('font-size','11px');
+            .attr('dx',(largeur-padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
+            .text((d)=>(d['teams'][0]['name'])).style('font-size','14px');
 
         listeG.append('rect').attr('x',largeur*2).attr('id','stat')
-            .attr('width',largeur).attr('height',size*0.8).style('fill', d=>color_pool[d.eventPhase]);
+            .attr('width',largeur).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]);
         listeG.append('text').attr('x',padding) //.attr('y',10)
-            .attr('dx',2*largeur+(largeur-padding)/2).attr('y',size/1.82).style('fill','#fff').style('text-anchor', 'middle')
-            .text((d)=>(d['teams'][1]['name'])).style('font-size','11px');
+            .attr('dx',2*largeur+(largeur-padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
+            .text((d)=>(d['teams'][1]['name'])).style('font-size','14px');
 
         listeG.append('rect').attr('x',largeur+padding).attr('id','stat')
-            .attr('width',largeur/3).attr('height',size*0.8).style('fill',d=>color_pool[d.eventPhase]);
+            .attr('width',largeur/3).attr('height',size*space).style('fill',d=>color_pool[d.eventPhase]);
         listeG.append('text').attr('x',padding) //.attr('y',10)
-            .attr('dx',largeur+(largeur/3-padding)/2).attr('y',size/1.82).style('fill','#fff').style('text-anchor', 'middle')
-            .text((d)=>(d['scores'][0])).style('font-size','11px');
+            .attr('dx',largeur+(largeur/3-padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
+            .text((d)=>(d['scores'][0])).style('font-size','14px');
 
         listeG.append('rect').attr('x',5*largeur/3-padding).attr('id','stat')
-            .attr('width',largeur/3).attr('height',size*0.8).style('fill',d=>color_pool[d.eventPhase]);
+            .attr('width',largeur/3).attr('height',size*space).style('fill',d=>color_pool[d.eventPhase]);
         listeG.append('text').attr('x',padding) //.attr('y',10)
-            .attr('dx',5*largeur/3+(largeur/3-3*padding)/2).attr('y',size/1.82).style('fill','#fff').style('text-anchor', 'middle')
-            .text((d)=>(d['scores'][1])).style('font-size','11px');
+            .attr('dx',5*largeur/3+(largeur/3-3*padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
+            .text((d)=>(d['scores'][1])).style('font-size','14px');
 
         listeG.append('rect').attr('x',4*largeur/3+2*padding).attr('id','stat')
-            .attr('width',largeur/3-4*padding).attr('height',size*0.8).style('fill',(d)=>{return color_status[d.status];});
+            .attr('width',largeur/3-4*padding).attr('height',size*space).style('fill',(d)=>{return d.status=='C'?color_pool[d.eventPhase]:color_status[d.status];});
 
         listeG.append('rect').attr('x',3*largeur+padding).attr('id','stat')
-            .attr('width',largeur).attr('height',size*0.8).style('fill', d=>color_pool[d.eventPhase]); //'#0a88ff');
+            .attr('width',largeur).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]); //'#0a88ff');
         listeG.append('text').attr('x',3*largeur +padding) //.attr('y',10)
-            .attr('dx',(largeur-padding)/2).attr('y',size/1.82).style('fill','#fff').style('text-anchor', 'middle')
-//            .text((d)=>{ jour.setDate(d.time.label); return jour.toISOString();}).style('font-size','11px');
-            .text((d)=>{ jour.setTime(d.time.millis); return jour.toISOString();}).style('font-size','11px');
-//            .text((d)=>{ jour.setTime(d.time.millis - d.time.gmtOffset*3600000 + 120*60*1000); return jour.toISOString();}).style('font-size','11px');
-//            .text((d)=>(new Date(d.time.millis/1000.0).toString())).style('font-size','11px');
+            .attr('dx',(largeur-padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
+            .text((d)=>{ jour.setTime(d.time.millis); return jour.toLocaleDateString()+' / '+jour.toLocaleTimeString();}).style('font-size','11px');
+
+        listeG.append('rect').attr('x',4*largeur+2*padding).attr('id','stat')
+            .attr('width',largeur*3).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]); //'#0a88ff');
+        listeG.append('text').attr('x',4*largeur +4*padding) //.attr('y',10)
+            .attr('dx',padding).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'start')
+            .text((d)=>{ return d.venue.name+' ('+d.venue.city+'/'+d.venue.country+' )';}).style('font-size','11px');
 
 			
 /*    paramG.append('circle').attr('cx',15).attr('cy',size/2).style('r',size/3).style('fill','#fff');
