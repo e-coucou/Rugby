@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<title>RWC</title>
+<meta name="description" content="Suivi de match Rugby World Cup 2019.">
+<meta name="author" content="e-Coucou">
+<html class="rky">
+<meta charset="utf-8">
+<title>RWC 2019 - JAPON</title>
+<style>
+@import url(../css/dsp.css);
+
+#chart {
+	position : relative;
+}
+.entete {
+    position: absolute;
+    height: 30px;
+    margin-top: 12px;
+}
+text {
+  font: 10px sans-serif;
+}
+
+.label {
+    fill: #777;
+}
+</style>
+<header>
+  <div id='h1'>Rugby World Cup 2019 - JAPAN</div>
+  <aside >Septembre, 2019<br><br> | v 0.01</aside>
+</header>
+<body>
+	<script src="https://unpkg.com/d3@5.7.0/dist/d3.min.js" charset="utf-8"></script>
+    <div id="chart"></div>
+<footer>
+<aside>(c) e-Coucou | y2kJ | Mars, 2019</aside>
+    <div id="info"></div>
+</footer>
+  <script type="text/javascript">
+	var codeCup = 1558;
+    var urlRWC = 'http://cmsapi.pulselive.com/rugby/event/'+codeCup+'/schedule';
+    var url = '';
+	// Chart dimensions.
+	var margin = {top: 20, right: 20, bottom: 30, left: 50},
+		width = window.innerWidth - margin.right-margin.left,
+		height = 1300 - margin.top - margin.bottom;
+	// Create the SVG container and set the origin.
+	var svg = d3.select("#chart").style('top','10px')
+		.append("svg")
+		.attr('class','svg-contenair')
+	//	.attr("preserveAspectRatio", "xMinYMin meet")
+		.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+(height + margin.top + margin.bottom))
+		.attr("position", 0)
+		.classed("svg-content", true);
+	var dispatch = d3.dispatch('load','change','partial','dashboard','update');
+    dispatch.on('load',affListe);
+	
+	var listeMatchs=[];
+	
+	getData(urlRWC,0);
+//--------------
+// Affichage de la liste des matches
+//
+	color_status = { U:'#ffffff', C:'#aaaaaa',L1:'#ff0fff',L2:'#0fffff' }
+	color_pool = { "Pool A":'#be0ff1', "Pool B":'#0ff1be',"Pool C":'#0fb3f1',"Pool D":'#0f42f1',"Quarter-Finals":'#5588cc',"Semi-Finals":'#555588',"Bronze Final": '#aaaaaa',"Final":'#f1c40f' }
+	function affListe() {
+	console.log('la liste');
+//    svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+((listeVal.length+1)*size));
+	let size = 25,padding=5, largeur=200;
+	var jour = new Date();	console.log(jour.getTimezoneOffset(), jour);
+	let graph=svg.append('g').attr('id','graphe')
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	let listeG = graph.selectAll('g').data(listeMatchs.matches).enter()
+        .append('g').attr('transform',(d,i)=>{return ('translate('+(2)+','+(i*size+padding/2)+')');});
+
+        listeG.append('rect').attr('x',0).attr('id','stat')
+            .attr('width',largeur).attr('height',size*0.8).style('fill', d=>color_pool[d.eventPhase]); //'#0a88ff');
+        listeG.append('text').attr('x',padding) //.attr('y',10)
+            .attr('dx',(largeur-padding)/2).attr('y',size/1.82).style('fill','#fff').style('text-anchor', 'middle')
+            .text((d)=>(d['teams'][0]['name'])).style('font-size','11px');
+
+        listeG.append('rect').attr('x',largeur*2).attr('id','stat')
+            .attr('width',largeur).attr('height',size*0.8).style('fill', d=>color_pool[d.eventPhase]);
+        listeG.append('text').attr('x',padding) //.attr('y',10)
+            .attr('dx',2*largeur+(largeur-padding)/2).attr('y',size/1.82).style('fill','#fff').style('text-anchor', 'middle')
+            .text((d)=>(d['teams'][1]['name'])).style('font-size','11px');
+
+        listeG.append('rect').attr('x',largeur+padding).attr('id','stat')
+            .attr('width',largeur/3).attr('height',size*0.8).style('fill',d=>color_pool[d.eventPhase]);
+        listeG.append('text').attr('x',padding) //.attr('y',10)
+            .attr('dx',largeur+(largeur/3-padding)/2).attr('y',size/1.82).style('fill','#fff').style('text-anchor', 'middle')
+            .text((d)=>(d['scores'][0])).style('font-size','11px');
+
+        listeG.append('rect').attr('x',5*largeur/3-padding).attr('id','stat')
+            .attr('width',largeur/3).attr('height',size*0.8).style('fill',d=>color_pool[d.eventPhase]);
+        listeG.append('text').attr('x',padding) //.attr('y',10)
+            .attr('dx',5*largeur/3+(largeur/3-3*padding)/2).attr('y',size/1.82).style('fill','#fff').style('text-anchor', 'middle')
+            .text((d)=>(d['scores'][1])).style('font-size','11px');
+
+        listeG.append('rect').attr('x',4*largeur/3+2*padding).attr('id','stat')
+            .attr('width',largeur/3-4*padding).attr('height',size*0.8).style('fill',(d)=>{return color_status[d.status];});
+
+        listeG.append('rect').attr('x',3*largeur+padding).attr('id','stat')
+            .attr('width',largeur).attr('height',size*0.8).style('fill', d=>color_pool[d.eventPhase]); //'#0a88ff');
+        listeG.append('text').attr('x',3*largeur +padding) //.attr('y',10)
+            .attr('dx',(largeur-padding)/2).attr('y',size/1.82).style('fill','#fff').style('text-anchor', 'middle')
+//            .text((d)=>{ jour.setDate(d.time.label); return jour.toISOString();}).style('font-size','11px');
+            .text((d)=>{ jour.setTime(d.time.millis); return jour.toISOString();}).style('font-size','11px');
+//            .text((d)=>{ jour.setTime(d.time.millis - d.time.gmtOffset*3600000 + 120*60*1000); return jour.toISOString();}).style('font-size','11px');
+//            .text((d)=>(new Date(d.time.millis/1000.0).toString())).style('font-size','11px');
+
+			
+/*    paramG.append('circle').attr('cx',15).attr('cy',size/2).style('r',size/3).style('fill','#fff');
+    paramG.append('svg').attr('width',size/2).attr('height',size/2)
+        .attr('x',size/4).attr('y',size/4).attr('id',(d,i)=>{ return ('sel'+i);})
+        .attr('class',(d)=>{return ('icon fas fa-'+icon[d.select]);}).style('color',d=>{return couleur[d.select];});
+    paramG.append('circle').attr('cx',15).attr('cy',size/2).style('r',size/3).style('fill','#fff')
+        .on('click',selectVal).style('opacity',0.1);
+*/	}
+//--------------
+// Get Data from url
+//
+	function getData(url, type) {
+		console.log(url);
+		var opt = fetch(url, {method: 'GET',headers: new Headers({'Access-Control-Allow-Origin':'*','Accept':'application/json',})})
+		.then(response => { return response.json();})
+		.then(data => {
+		// JSON Data
+			console.log(data); listeMatchs = data;
+			dispatch.call('load');
+/*			listeVal.forEach( (a,i) => {
+				let o = data.find( f => { return (f.dataReference == a.nom);});
+				if (o != undefined) {
+					listeVal[i]['unit']= o.unit;
+					listeVal[i]['values']= o.values;
+				}
+			});
+		    infoG.select('text').text("Données disponibles !");
+            infoG.select('circle').attr('fill','#03C03C');
+            config.dataOK=true;
+			switch(cumul) {
+            case 2:
+				DivData = data.slice();
+				divCompute();
+                dataCompute(); //couleurCompute();
+				selGraphe=0;
+				dispatch.call('load');
+				break;
+            case 1:
+                CumulData = data.slice();
+                cumulCompute();
+				}
+				break;
+            case 0:
+                AllData = data.slice();
+                start(url2,1);    //0-variable 1-cumul 2-diviseur
+				break;
+			}
+*/		})
+		.catch(err => {
+		// Do something for an error here
+			console.log(err);
+		});
+	}
+	
+  </script>
+</body>
+</html>
