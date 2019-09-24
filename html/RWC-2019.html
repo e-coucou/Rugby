@@ -19,24 +19,27 @@
 text {
   font: 10px sans-serif;
 }
-
 .label {
     fill: #777;
 }
 </style>
-<header>
-  <div id='h1'>Rugby World Cup 2019 - JAPAN</div>
-  <aside >Septembre, 2019<br><br> | v 1.01</aside>
-</header>
 <body>
-	<script src="https://unpkg.com/d3@5.7.0/dist/d3.min.js" charset="utf-8"></script>
-    <div id="chart"></div>
+<header>
+  <div id='h1'>Rugby World Cup</div>
+  <aside >Septembre, 2019<br><br> | v 2.00</aside>
+  <div id='menu'></div>
+</header>
 <footer>
 <aside>(c) e-Coucou | y2kJ | Mars, 2019</aside>
     <div id="info"></div>
 </footer>
+	<script src="https://unpkg.com/d3@5.7.0/dist/d3.min.js" charset="utf-8"></script>
+	<script src="../js/menu.js" charset="utf-8"></script>
+	<script defer src="../js/all.js"></script>
+    <div id="chart"></div>
   <script type="text/javascript">
-	var codeCup = 1558;
+	var rwc_index = [[ "5","952","1023","1238","1558"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1622","1623","1782","1783"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135","1697","1764","1807"],["1577"],["925","957","971","1006","1072","1130","1166","1235","1273","1569","1653","1769"]]; // rwc , six nation , 4 nations , xx , wrc pacific
+	var codeCup = rwc_index[0][4]; //[1][17];
     var urlRWC = 'http://cmsapi.pulselive.com/rugby/event/'+codeCup+'/schedule';
     var url = '';
 	// Chart dimensions.
@@ -56,24 +59,23 @@ text {
     dispatch.on('load',affListe);
 	
 	var listeMatchs=[];
-	
+	menu(0);
 	getData(urlRWC,0);
 //--------------
 // Affichage de la liste des matches
 //
-	color_status = { U:'#ffffff', C:'#aaaaaa',L1:'#ff0fff',L2:'#0fffff' }
-	color_pool = { "Pool A":'#4078D3', "Pool B":'#2E5697',"Pool C":'#3767B5',"Pool D":'#4989F1',"Quarter-Finals":'#12223C',"Semi-Finals":'#555588',"Bronze Final": '#aaaaaa',"Final":'#f1c40f' }
 	function affListe() {
-	console.log('la liste');
+		color_status = { U:'#ffffff', C:'#aaaaaa',L1:'#ff0fff',L2:'#0fffff' }
+		color_pool = { "Pool A":'#4078D3', "Pool B":'#2E5697',"Pool C":'#3767B5',"Pool D":'#4989F1',"Quarter-Finals":'#12223C',"Semi-Finals":'#555588',"Bronze Final": '#aaaaaa',"Final":'#f1c40f' }
 //    svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+((listeVal.length+1)*size));
-	let size = 26,padding=2, largeur=110, space=0.9,centre=1.6;
-    largeur = (width-margin.left-margin.right) /6; console.log(largeur,width);
-	var jour = new Date();	console.log(jour.getTimezoneOffset(), jour);
-	let graph=svg.append('g').attr('id','graphe')
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		let size = 26,padding=2, largeur=110, space=0.9,centre=1.6;
+		largeur = (width-margin.left-margin.right) /6; console.log(largeur,width);
+		var jour = new Date();	console.log(jour.getTimezoneOffset(), jour);
+		let graph=svg.append('g').attr('id','graphe')
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	let listeG = graph.selectAll('g').data(listeMatchs.matches).enter()
-        .append('g').attr('transform',(d,i)=>{return ('translate('+(2)+','+(i*size+padding/2)+')');});
+		let listeG = graph.selectAll('g').data(listeMatchs.matches).enter()
+			.append('g').attr('transform',(d,i)=>{return ('translate('+(2)+','+(i*size+padding/2)+')');});
 
         listeG.append('rect').attr('x',0).attr('id','stat')
             .attr('width',largeur).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]); //'#0a88ff');
@@ -167,7 +169,7 @@ text {
 			console.log(err);
 		});
 	}
-	
+
   </script>
 </body>
 </html>
