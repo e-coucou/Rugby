@@ -48,19 +48,19 @@ html {
   font-size: 8px;
 }
 .rky h1 {
-  font-size: 32px;
-  font-weight: 100;
-  letter-spacing: 3px;
+  font-size: 28px;
+  font-weight: 120;
+  letter-spacing: 2px;
   margin-left: 50px;
   margin-bottom: 10px;
   text-rendering: optimizeLegibility;
 }
 #h1 {
-  font-size: 32px;
-  font-weight: 200;
-  letter-spacing: 3px;
+  font-size: 28px;
+  font-weight: 250;
+  letter-spacing: 2px;
   margin-left: 150px;
-  margin-top: 0px;
+  margin-top: 5px;
   position: absolute;
   text-rendering: optimizeLegibility;
 }

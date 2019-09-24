@@ -16,6 +16,11 @@
     height: 30px;
     margin-top: 12px;
 }
+#intervalle {
+    position: absolute;
+    top: 25px;
+    right: 30px;
+}
 text {
   font: 10px sans-serif;
 }
@@ -26,7 +31,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br> | v 2.00</aside>
+  <aside >Septembre, 2019<br><br> | v 3.01</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -37,17 +42,17 @@ text {
 	<script src="../js/menu.js" charset="utf-8"></script>
 	<script defer src="../js/all.js"></script>
     <div id="chart"></div>
+    <div id='intervalle'></div>
   <script type="text/javascript">
-	var rwc_index = [[ "5","952","1023","1238","1558"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1622","1623","1782","1783"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135","1697","1764","1807"],["1577"],["925","957","971","1006","1072","1130","1166","1235","1273","1569","1653","1769"]]; // rwc , six nation , 4 nations , xx , wrc pacific
-	var codeCup = rwc_index[0][4]; //[1][17];
-    var urlRWC = 'http://cmsapi.pulselive.com/rugby/event/'+codeCup+'/schedule';
+	var rwc_index = [[ "1","2","3","4","5","952","1023","1238","1558"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1622","1623","1782","1783"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135","1697","1764","1807"],["1577"],["925","957","971","1006","1072","1130","1166","1235","1273","1569","1653","1769"]]; // rwc , six nation , 4 nations , xx , wrc pacific
+    var idComp=0, nbComp=rwc_index[idComp].length, iComp=nbComp-1;
     var url = '';
 	// Chart dimensions.
 	var margin = {top: 20, right: 20, bottom: 30, left: 50},
 		width = window.innerWidth; // - margin.right-margin.left,
 		height = 1300 - margin.top - margin.bottom;
 	// Create the SVG container and set the origin.
-	var svg = d3.select("#chart").style('top','10px')
+	var svg = d3.select("#chart").style('top','25px')
 		.append("svg")
 		.attr('class','svg-contenair')
 	//	.attr("preserveAspectRatio", "xMinYMin meet")
@@ -59,57 +64,123 @@ text {
     dispatch.on('load',affListe);
 	
 	var listeMatchs=[];
-	menu(0);
-	getData(urlRWC,0);
+    var t = d3.timer(cycle,30000);
+    t.stop();
+	menu(0);changeComp();
+    updateComp(1);
+//	getData(urlRWC,0);
+
+//--------------
+// cycle
+function cycle() {
+    updateComp(0);
+}
+//--------------
+// update Compétition
+    function updateComp(id) {
+        if (id==undefined) iComp = (iComp+1) % nbComp;
+        if (iComp==(nbComp-1)) t.restart(cycle,30000)
+            else t.stop();
+        var codeCup = rwc_index[idComp][iComp]; //[1][17];
+        console.log(id,idComp,iComp);
+        var urlRWC = 'http://cmsapi.pulselive.com/rugby/event/'+codeCup+'/schedule';
+        listeMatchs=[];
+        getData(urlRWC);
+    }
+//--------------
+// change comp
+    function changeComp() {
+
+    var svgInt = d3.select("#intervalle").append("svg")
+    .attr('width',50).attr('height',30)
+    .attr("position", 1)
+    .append("g").raise()
+    .attr('transform',function (d,i){ return ('translate('+ (30)+','+10+')');});
+
+//var interG = svgInt.selectAll('g').data(IntervalData).enter()
+//    .append('g')
+//    .attr('transform',function (d,i){ return ('translate('+ (intWidth-20-i*25)+','+11+')');})
+//    .on('click',click);
+        
+    svgInt.append('circle').attr('fill','#2E2D88')
+        .attr('r',10)
+        .on('click',updateComp)
+        .on('mouseover',function(d,i){ d3.select(this).attr('fill','#FE6F5E');})
+        .on('mouseout',function(d,i){ d3.select(this).attr('fill','#2E2D88');});
+//        .on('mouseout',function(d,i){ d3.select(this).attr('fill',(a)=>{return (i==selInter)?'red':'#2E2D88';});});
+ //.attr('cx',(d,i)=>{return width-i*25;}).attr('cy',15)
+//    interG.append('text').attr('fill','white').style('text-anchor','middle')
+//        .attr('dy','0.3em').text(d=>d.t).raise();
+}
 //--------------
 // Affichage de la liste des matches
 //
 	function affListe() {
+        let titre = listeMatchs.event.label;
+        if (listeMatchs.event.winningTeam!=null) titre += '/' + listeMatchs.event.winningTeam.name;
+        d3.select("#h1").text(titre);
 		color_status = { U:'#ffffff', C:'#aaaaaa',L1:'#ff0fff',L2:'#0fffff' }
-		color_pool = { "Pool A":'#4078D3', "Pool B":'#2E5697',"Pool C":'#3767B5',"Pool D":'#4989F1',"Quarter-Finals":'#12223C',"Semi-Finals":'#555588',"Bronze Final": '#aaaaaa',"Final":'#f1c40f' }
+		color_pool = { "Pool A":'#4078D3',"Pool 1":'#4078D3', "Pool B":'#2E5697',"Pool 2":'#2E5697',
+        "Pool C":'#3767B5',"Pool 3":'#3767B5',"Pool D":'#4989F1','Poule 4':'#4989F1',"Pool 4":'#4989F1',"Pool E":'#5999F1',"Quarter-Finals":'#12223C',"Semi-Finals":'#555588',"Bronze Final": '#999','3rd Place Play-Off':'#999',"Final":'#c1a40e' }
 //    svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+((listeVal.length+1)*size));
 		let size = 26,padding=2, largeur=110, space=0.9,centre=1.6;
-		largeur = (width-margin.left-margin.right) /6; console.log(largeur,width);
-		var jour = new Date();	console.log(jour.getTimezoneOffset(), jour);
+		largeur = (width-margin.left-margin.right) /6; //console.log(largeur,width);
+		var jour = new Date();	//console.log(jour.getTimezoneOffset(), jour);
+        d3.select('#graphe').remove();
 		let graph=svg.append('g').attr('id','graphe')
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 		let listeG = graph.selectAll('g').data(listeMatchs.matches).enter()
 			.append('g').attr('transform',(d,i)=>{return ('translate('+(2)+','+(i*size+padding/2)+')');});
 
+        //equ 0 - nom
         listeG.append('rect').attr('x',0).attr('id','stat')
             .attr('width',largeur).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]); //'#0a88ff');
         listeG.append('text').attr('x',padding) //.attr('y',10)
-            .attr('dx',(largeur-padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
+            .attr('dx',(largeur-padding)/2).attr('y',size/centre)
+            .style('fill', (d) => { return d.scores[0]>d.scores[1]?'#fff':'ccc';}).style('text-anchor', 'middle')
+            .style('font-weight', (d) => { return d.scores[0]>d.scores[1]?'bold':'normal';})
             .text((d)=>(d['teams'][0]['name'])).style('font-size','11px');
-
+        //equ 1 - nom
         listeG.append('rect').attr('x',largeur*2).attr('id','stat')
             .attr('width',largeur).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]);
         listeG.append('text').attr('x',padding) //.attr('y',10)
             .attr('dx',2*largeur+(largeur-padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
+            .style('fill', (d) => { return d.scores[1]>d.scores[0]?'#fff':'ccc';})
+            .style('font-weight', (d) => { return d.scores[1]>d.scores[0]?'bold':'normal';})
             .text((d)=>(d['teams'][1]['name'])).style('font-size','12px');
-
+        //equ 0 : score
         listeG.append('rect').attr('x',largeur+padding).attr('id','stat')
             .attr('width',largeur/3).attr('height',size*space).style('fill',d=>color_pool[d.eventPhase]);
         listeG.append('text').attr('x',padding) //.attr('y',10)
             .attr('dx',largeur+(largeur/3-padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
+            .style('fill', (d) => { return d.scores[0]>d.scores[1]?'#fff':'ccc';})
+            .style('font-weight', (d) => { return d.scores[0]>d.scores[1]?'bold':'normal';})
             .text((d)=>(d['scores'][0])).style('font-size','12px');
-
+        //equ 1 : score
         listeG.append('rect').attr('x',5*largeur/3-padding).attr('id','stat')
             .attr('width',largeur/3).attr('height',size*space).style('fill',d=>color_pool[d.eventPhase]);
         listeG.append('text').attr('x',padding) //.attr('y',10)
             .attr('dx',5*largeur/3+(largeur/3-3*padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
+            .style('fill', (d) => { return d.scores[1]>d.scores[0]?'#fff':'ccc';})
+            .style('font-weight', (d) => { return d.scores[1]>d.scores[0]?'bold':'normal';})
             .text((d)=>(d['scores'][1])).style('font-size','12px');
-
+        //en cours ?
         listeG.append('rect').attr('x',4*largeur/3+2*padding).attr('id','stat')
             .attr('width',largeur/3-4*padding).attr('height',size*space).style('fill',(d)=>{return d.status=='C'?color_pool[d.eventPhase]:color_status[d.status];});
+        listeG.append('text').attr('x',padding) //.attr('y',10)
+            .attr('dx',5*largeur/3+(largeur/3-3*padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
+            .style('fill', '#fff').style('font-weight','bold')
+            .text((d)=>(d.clock)).style('font-size','12px');
 
+        //date/heure
         listeG.append('rect').attr('x',3*largeur+padding).attr('id','stat')
             .attr('width',largeur).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]); //'#0a88ff');
         listeG.append('text').attr('x',3*largeur +padding) //.attr('y',10)
             .attr('dx',(largeur-padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
             .text((d)=>{ jour.setTime(d.time.millis); return jour.toLocaleDateString()+' / '+jour.toLocaleTimeString();}).style('font-size','11px');
 
+        //lieu
         listeG.append('rect').attr('x',4*largeur+2*padding).attr('id','stat')
             .attr('width',largeur*3).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]); //'#0a88ff');
         listeG.append('text').attr('x',4*largeur +4*padding) //.attr('y',10)

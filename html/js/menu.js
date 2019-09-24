@@ -3,11 +3,11 @@ function menu(selGraphe) {
 var data_menu = [
         { n:0, x:-240, m:'th', a:'Live',http:'RWC-2019.html'},
         { n:1, x:-240, m:'chart-line', a:'Ranking', http:'index.html'},
-        { n:2, x:-240, m:'project-diagram', a:'Graphe', http:'wrc.html'},
+        { n:2, x:-240, m:'project-diagram', a:'Graphe', http:'wrc.html'}
 //        { n:3, x:-240, m:'cogs', a:'Parametre'},
 //        { n:4, x:-240, m:'filter', a:'Selection'},
 //        { n:5, x:-240, m:'diagnoses', a:'Dashboard'},
-        { n:-1, x:-240, m:'user-secret', a:'credential'}
+//        { n:-1, x:-240, m:'user-secret', a:'credential'}
     ];
 var svgMenu = d3.select("#menu").append("svg")
     .attr('width',45*data_menu.length).attr('height',40);
