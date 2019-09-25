@@ -31,7 +31,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br> | v 3.01</aside>
+  <aside >Septembre, 2019<br><br> | v 3.02</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -46,6 +46,7 @@ text {
   <script type="text/javascript">
 	var rwc_index = [[ "1","2","3","4","5","952","1023","1238","1558"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1622","1623","1782","1783"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135","1697","1764","1807"],["1577"],["925","957","971","1006","1072","1130","1166","1235","1273","1569","1653","1769"]]; // rwc , six nation , 4 nations , xx , wrc pacific
     var idComp=0, nbComp=rwc_index[idComp].length, iComp=nbComp-1;
+	var idLive=0;
     var url = '';
 	// Chart dimensions.
 	var margin = {top: 20, right: 20, bottom: 30, left: 50},
@@ -64,11 +65,10 @@ text {
     dispatch.on('load',affListe);
 	
 	var listeMatchs=[];
-    var t = d3.timer(cycle,30000);
+    var t = d3.timer(cycle,60000);
     t.stop();
 	menu(0);changeComp();
     updateComp(1);
-//	getData(urlRWC,0);
 
 //--------------
 // cycle
@@ -79,13 +79,18 @@ function cycle() {
 // update Compétition
     function updateComp(id) {
         if (id==undefined) iComp = (iComp+1) % nbComp;
-        if (iComp==(nbComp-1)) t.restart(cycle,30000)
+        if (idLive!=0) t.restart(cycle,30000)
             else t.stop();
         var codeCup = rwc_index[idComp][iComp]; //[1][17];
         console.log(id,idComp,iComp);
         var urlRWC = 'http://cmsapi.pulselive.com/rugby/event/'+codeCup+'/schedule';
         listeMatchs=[];
-        getData(urlRWC);
+        getData(urlRWC,1);
+		if (idLive != 0) {
+			var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+idLive+'/summary';
+			infoMatch=[];
+			getData(urlMatch,2);
+		}
     }
 //--------------
 // change comp
@@ -117,9 +122,17 @@ function cycle() {
 //
 	function affListe() {
         let titre = listeMatchs.event.label;
+		idLive=0;
+		for (m in listeMatchs.matches) {
+			if (listeMatchs.matches[m].status != 'U' && listeMatchs.matches[m].status !='C') {
+//				console.log(m);
+				idLive = listeMatchs.matches[m].matchId;
+			}
+		}
+			//console.log(idLive);
         if (listeMatchs.event.winningTeam!=null) titre += '/' + listeMatchs.event.winningTeam.name;
         d3.select("#h1").text(titre);
-		color_status = { U:'#ffffff', C:'#aaaaaa',L1:'#ff0fff',L2:'#0fffff' }
+		color_status = { U:'#ffffff', C:'#aaaaaa',L1:'#ff0fff',L2:'#0fffff', LHT:'#cccccc' }
 		color_pool = { "Pool A":'#4078D3',"Pool 1":'#4078D3', "Pool B":'#2E5697',"Pool 2":'#2E5697',
         "Pool C":'#3767B5',"Pool 3":'#3767B5',"Pool D":'#4989F1','Poule 4':'#4989F1',"Pool 4":'#4989F1',"Pool E":'#5999F1',"Quarter-Finals":'#12223C',"Semi-Finals":'#555588',"Bronze Final": '#999','3rd Place Play-Off':'#999',"Final":'#c1a40e' }
 //    svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+((listeVal.length+1)*size));
@@ -167,7 +180,8 @@ function cycle() {
             .text((d)=>(d['scores'][1])).style('font-size','12px');
         //en cours ?
         listeG.append('rect').attr('x',4*largeur/3+2*padding).attr('id','stat')
-            .attr('width',largeur/3-4*padding).attr('height',size*space).style('fill',(d)=>{return d.status=='C'?color_pool[d.eventPhase]:color_status[d.status];});
+            .attr('width',largeur/3-4*padding).attr('height',size*space).style('fill',(d)=>{return d.status=='C'?color_pool[d.eventPhase]:color_status[d.status];})
+			.on('click',getInfo);
         listeG.append('text').attr('x',padding) //.attr('y',10)
             .attr('dx',5*largeur/3+(largeur/3-3*padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
             .style('fill', '#fff').style('font-weight','bold')
@@ -196,6 +210,11 @@ function cycle() {
         .on('click',selectVal).style('opacity',0.1);
 */	}
 //--------------
+// Get Info
+	function getInfo(d,i) {
+		console.log(d.matchId);
+	}
+//--------------
 // Get Data from url
 //
 	function getData(url, type) {
@@ -204,8 +223,15 @@ function cycle() {
 		.then(response => { return response.json();})
 		.then(data => {
 		// JSON Data
-			console.log(data); listeMatchs = data;
-			dispatch.call('load');
+			console.log(data);
+			switch (type) {
+				case 1: listeMatchs = data;
+						dispatch.call('load');
+						break;
+				case 2: infoMatch = data;
+						dispatch.call('load');
+						break;
+			}
 /*			listeVal.forEach( (a,i) => {
 				let o = data.find( f => { return (f.dataReference == a.nom);});
 				if (o != undefined) {
