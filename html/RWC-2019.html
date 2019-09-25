@@ -27,15 +27,18 @@ text {
 .label {
     fill: #777;
 }
+.rky header {
+    background: #1e3F5E;/*#b0c4de; /*add8e6; /*f0f8FF;*/
+}
 </style>
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br> | v 3.02</aside>
+  <aside >| 09/2019 |<br><br>| v 4.00</aside>
   <div id='menu'></div>
 </header>
 <footer>
-<aside>(c) e-Coucou | y2kJ | Mars, 2019</aside>
+    <aside>(c) e-Coucou | y2kJ | Mars, 2019</aside>
     <div id="info"></div>
 </footer>
 	<script src="https://unpkg.com/d3@5.7.0/dist/d3.min.js" charset="utf-8"></script>
@@ -46,7 +49,7 @@ text {
   <script type="text/javascript">
 	var rwc_index = [[ "1","2","3","4","5","952","1023","1238","1558"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1622","1623","1782","1783"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135","1697","1764","1807"],["1577"],["925","957","971","1006","1072","1130","1166","1235","1273","1569","1653","1769"]]; // rwc , six nation , 4 nations , xx , wrc pacific
     var idComp=0, nbComp=rwc_index[idComp].length, iComp=nbComp-1;
-	var idLive=0;
+	var idLive=0, clock='';
     var url = '';
 	// Chart dimensions.
 	var margin = {top: 20, right: 20, bottom: 30, left: 50},
@@ -61,10 +64,12 @@ text {
         .attr("padding-bottom", 0)
 		.attr("position", 0)
 		.classed("svg-content", true);
-	var dispatch = d3.dispatch('load','change','partial','dashboard','update');
+	var dispatch = d3.dispatch('load','match','live','dashboard','update');
     dispatch.on('load',affListe);
+    dispatch.on('match',affInfo);
+    dispatch.on('live',affLive);
 	
-	var listeMatchs=[];
+	var listeMatchs=[],dataInfo=[];
     var t = d3.timer(cycle,60000);
     t.stop();
 	menu(0);changeComp();
@@ -182,10 +187,11 @@ function cycle() {
         listeG.append('rect').attr('x',4*largeur/3+2*padding).attr('id','stat')
             .attr('width',largeur/3-4*padding).attr('height',size*space).style('fill',(d)=>{return d.status=='C'?color_pool[d.eventPhase]:color_status[d.status];})
 			.on('click',getInfo);
-        listeG.append('text').attr('x',padding) //.attr('y',10)
-            .attr('dx',5*largeur/3+(largeur/3-3*padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
-            .style('fill', '#fff').style('font-weight','bold')
-            .text((d)=>(d.clock)).style('font-size','12px');
+        listeG.append('text').attr('x',padding).attr('id',(d)=>{return ('m'+d.matchId);}) //.attr('y',10)
+            .attr('dx',4*largeur/3+(largeur/3-3*padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
+            .style('fill', '#fff').style('font-weight','normal')
+//            .text('00:00').style('font-size','10px');
+            .text((d)=>(d.clock)).style('font-size','10px');
 
         //date/heure
         listeG.append('rect').attr('x',3*largeur+padding).attr('id','stat')
@@ -212,8 +218,23 @@ function cycle() {
 //--------------
 // Get Info
 	function getInfo(d,i) {
-		console.log(d.matchId);
+        var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+d.matchId+'/summary';
+        dataInfo=[];
+        getData(urlMatch,3);
+
 	}
+    function affInfo() {
+        clock=dataInfo.match.clock.label;
+        let mId = '#m'+dataInfo.match.matchId;
+        console.log(clock,mId);
+        d3.select(mId).text(clock);
+    }
+    function affLive() {
+        clock=dataLive.match.clock.label;
+        let mId = '#m'+dataLive.match.matchId;
+        console.log(clock,mId);
+        d3.select(mId).text(clock);
+    }
 //--------------
 // Get Data from url
 //
@@ -228,9 +249,12 @@ function cycle() {
 				case 1: listeMatchs = data;
 						dispatch.call('load');
 						break;
-				case 2: infoMatch = data;
-						dispatch.call('load');
+				case 2: dataLive = data;
+						dispatch.call('live');
 						break;
+                case 3: dataInfo = data;
+                        dispatch.call('match');
+                        break;
 			}
 /*			listeVal.forEach( (a,i) => {
 				let o = data.find( f => { return (f.dataReference == a.nom);});

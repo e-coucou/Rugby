@@ -16,10 +16,10 @@ var menuG = svgMenu.selectAll('g').data(data_menu).enter()
         .attr('transform',(d,i)=>{return 'translate('+(i*40+20)+',10)';})
         .on('click',clickMenu);
 var menuCircle=false;
-    menuG.append('rect').style('fill',(d,i)=>(d.n==selGraphe)?'#9C143C':'red').attr('id','menuRect')
+    menuG.append('rect').style('fill',(d,i)=>(d.n==selGraphe)?'#2C14dC':'#00007f').attr('id','menuRect')
         .attr('r',17).attr('width',38).attr('height',39).attr('x',-8).attr('y',-9)
-        .on('mouseover',function(d) {d3.select(this).style('fill','#FE8F7E')})
-        .on('mouseout',function(d){d3.select(this).style('fill',(d,i)=>(d.n==selGraphe)?'#9C143C':'red')});
+        .on('mouseover',function(d) {d3.select(this).style('fill','blue')})
+        .on('mouseout',function(d){d3.select(this).style('fill',(d,i)=>(d.n==selGraphe)?'#2C14dC':'#00007f')});
     if (menuCircle) {
         menuG.append('circle').style('fill',(d,i)=>(d.n==selGraphe)?'red':'#FE6FcE')
             .attr('r',17).attr('cx',(d,i)=>{return 10;}).attr('cy',10);

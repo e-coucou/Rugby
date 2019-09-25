@@ -22,7 +22,7 @@ html {
     width:100%;
     height: 50px;
     z-index: 10;
-    background: #FE6F5E;/*#b0c4de; /*add8e6; /*f0f8FF;*/
+    background: #1e3F5E; /*#FE6F5E;/*#b0c4de; /*add8e6; /*f0f8FF;*/
 }
 .rky header,
 .rky footer,
@@ -71,12 +71,26 @@ html {
   fill: #fff;
   text-anchor: middle;
 }
-.rky aside,
-.rky footer {
+.rky aside{
+    left:20px;
+    width:100%;
+    height: 20px;
   font-size: 11px;
   float: left;
   margin-right: 0.8em;
   padding-top: .5em;
+}
+.rky footer {
+  position: fixed;
+  bottom: 0px;
+    left:0px;
+    width:100%;
+    height: 20px;
+  font-size: 11px;
+  float: left;
+  margin-right: 0.8em;
+  padding-top: .5em;
+    background: #1e3F5E; /*#FE6F5E;/*#b0c4de; /*add8e6; /*f0f8FF;*/
 }
 .rky header aside:after,
 .rky footer aside:after {
@@ -84,7 +98,7 @@ html {
   content: "|";
 }
 .rky footer {
-  margin-top: 1em;
+  margin-top: 0.1em;
 }
 h1 ~ aside {
   font-size: small;

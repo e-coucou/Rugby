@@ -7,10 +7,12 @@
 <title>Ranking evolution</title>
 <link type="text/css" rel="stylesheet" href="../css/colorBrewer.css">
 <style>
-@import url(../css/visu.css);
+@import url(../css/dsp.css);
 
 #chart {
-  margin-left: -40px;
+  margin-left: 0px;
+  margin-right: 20px;
+  margin-top: 35px;
   height: 506px;
 }
 .entete {
@@ -196,7 +198,7 @@ function key(d) { return d.name; }
 
 // Chart dimensions.
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 1080 - margin.right,
+    width = window.innerWidth - margin.right -margin.left,
     height = 550 - margin.top - margin.bottom;
 
 // Various scales. These domains make assumptions of data, naturally.
