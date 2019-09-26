@@ -34,7 +34,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >| 09/2019 |<br><br>| v 4.00</aside>
+  <aside >| 09/2019 |<br><br>| v 4.01</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -132,12 +132,13 @@ function cycle() {
 			if (listeMatchs.matches[m].status != 'U' && listeMatchs.matches[m].status !='C') {
 //				console.log(m);
 				idLive = listeMatchs.matches[m].matchId;
+				t.restart(cycle,30000);
 			}
 		}
 			//console.log(idLive);
         if (listeMatchs.event.winningTeam!=null) titre += '/' + listeMatchs.event.winningTeam.name;
         d3.select("#h1").text(titre);
-		color_status = { U:'#ffffff', C:'#aaaaaa',L1:'#ff0fff',L2:'#0fffff', LHT:'#cccccc' }
+		color_status = { U:'#ffffff', C:'#aaaaaa',L1:'#004',L2:'#000', LHT:'#cccccc' }
 		color_pool = { "Pool A":'#4078D3',"Pool 1":'#4078D3', "Pool B":'#2E5697',"Pool 2":'#2E5697',
         "Pool C":'#3767B5',"Pool 3":'#3767B5',"Pool D":'#4989F1','Poule 4':'#4989F1',"Pool 4":'#4989F1',"Pool E":'#5999F1',"Quarter-Finals":'#12223C',"Semi-Finals":'#555588',"Bronze Final": '#999','3rd Place Play-Off':'#999',"Final":'#c1a40e' }
 //    svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+((listeVal.length+1)*size));
