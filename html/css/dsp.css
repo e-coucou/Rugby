@@ -34,7 +34,7 @@ html {
 .rky button {
 	margin-left : 50px;
 }
-.rky header aside {
+.rky aside {
     margin-left: 50px;
 }
 .rky h1 {
@@ -71,14 +71,42 @@ html {
   fill: #fff;
   text-anchor: middle;
 }
-.rky aside{
+.rky header aside{
     left:20px;
     width:100%;
     height: 20px;
   font-size: 11px;
   float: left;
   margin-right: 0.8em;
+  padding-top: .2em;
+  color: #fff;
+}
+.rky footer aside{
+    left:20px;
+    width:100%;
+    height: 20px;
+  font-size: 11px;
+  float: left;
+  margin-right: 0.8em;
+  padding-top: .2em;
+  color: #fff;
+}
+.rky aside
+ {
+  width: 30%;
+  font-size: 11px;
+/*  float: left;*/
+  margin-right: 0.8em;
   padding-top: .5em;
+    padding-left: .5rem;
+    margin-left: .5rem;
+    float: right;
+    box-shadow: inset 5px 0 5px -5px #29627e;
+    font-style: italic;
+    color: #29627e;
+}
+.rky aside > p {
+    margin: .5rem;
 }
 .rky footer {
   position: fixed;

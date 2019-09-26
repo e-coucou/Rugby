@@ -123,7 +123,7 @@ select#color {
   <div id="twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-url="https://rugby.e-coucou.com/index.html" data-via="EricP_">Tweet</a>
       <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
   
-<!--  <a>   | </a><script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script>
+  <a>   | </a><script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script>
       <script type="IN/Share" data-url="http://rugby.e-coucou.com" data-counter="right"></script> 
   </div>-->
 </header>
@@ -165,18 +165,16 @@ select#color {
 </select>
 <p id="chart"></p>
 <br><br>
-<aside>Passez la souris au dessus de l'axe des abscisses pour vous déplacer dans le temps.<br><br>
+<p class="attribution">Source: <a href="https://github.com/e-coucou/Rugby">e-Coucou</a>, <a href="http://www.pulselive.com">PulseLive</a>.
+<aside><p>Passez la souris au dessus de l'axe des abscisses pour vous déplacer dans le temps.<br><br>
 Cliquez sur les pastilles des Pays pour voir l'évolution des classements.<br><br>
 Passez la souris sur les dates de Coupes du Monde pour voir les statistiques.<br><br>
 Cliquez sur les compétions pour découvrir les matches. En passant la souris sur les matchs vous découvrirez les détails des joueurs, arbitres, stades ...<br><br>
-Sélectionnez différentes compétitions avec le menu déroulant.<br><br></aside>
-<p class="attribution">Source: <a href="https://github.com/e-coucou/Rugby">e-Coucou</a>, <a href="http://www.pulselive.com">PulseLive</a>.
-
+Sélectionnez différentes compétitions avec le menu déroulant.<br><br></p></aside>
 <p>Petite visualisation utilisant la bibliothèque <a href="http://d3js.org/">D3</a>. Elle montre l'évolution des classements IRB. Les données sur le Rugby sont collectées par <a href="http://www.pulselive.com/">Puslive</a>. L'IRB classe les équipes de Rugby depuis 2003, chaque rencontre permet l'attribution de points en fonction de l'enjeux et de l'écart du score (pour info en Coupe du Mande les points comptent double). Le maximum de points est 100.</p>
-<p>Les abscisses (<i>x</i>) représentent le nombre de points, en ordonnée (<i>y</i>) le classement et le nombre de matches disputés par an est représenté par la taille de la pastille (rayon). Les Pays sont coloriés aléatoirement. En passant la souris sur les pastilles vous pourrez découvrir les noms, points et classement.
-<p></p>
-<footer>
+<p>Les abscisses (<i>x</i>) représentent le nombre de points, en ordonnée (<i>y</i>) le classement et le nombre de matches disputés par an est représenté par la taille de la pastille (rayon). Les Pays sont coloriés aléatoirement. En passant la souris sur les pastilles vous pourrez découvrir les noms, points et classement.</p>
     <p>Mille et un remerciements à <a href="http://bl.ocks.org/mbostock">Mike Bostock</a> et à <a href="http://alignedleft.com/tutorials/d3/">Scott Murray</a>.</p>
+<footer>
 	<aside>(c) e-Coucou | y2kJ | Data septembre 2019</aside>
     <div id="info"></div>
     <a href="index.html" rel="author">e-Coucou</a>
