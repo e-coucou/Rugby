@@ -34,7 +34,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >| 09/2019 |<br><br>| v 4.02</aside>
+  <aside >| 09/2019 |<br><br>| v 4.03</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -78,7 +78,10 @@ text {
 //--------------
 // cycle
 function cycle() {
-    updateComp(0);
+//    updateComp(0);
+			var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+idLive+'/summary';
+			infoMatch=[];
+			getData(urlMatch,2);
 }
 //--------------
 // update Compétition
