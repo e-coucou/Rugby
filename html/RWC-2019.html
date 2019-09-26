@@ -136,6 +136,7 @@ function cycle() {
 //				console.log(m);
 				idLive = listeMatchs.matches[m].matchId;
 				t.restart(cycle,30000);
+				cycle();
 			}
 		}
 			//console.log(idLive);
@@ -174,7 +175,7 @@ function cycle() {
         //equ 0 : score
         listeG.append('rect').attr('x',largeur+padding).attr('id','stat')
             .attr('width',largeur/3).attr('height',size*space).style('fill',d=>color_pool[d.eventPhase]);
-        listeG.append('text').attr('x',padding) //.attr('y',10)
+        listeG.append('text').attr('x',padding).attr('id',(d)=>{return ('e0_'+d.matchId);}) //.attr('y',10)
             .attr('dx',largeur+(largeur/3-padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
             .style('fill', (d) => { return d.scores[0]>d.scores[1]?'#fff':'ccc';})
             .style('font-weight', (d) => { return d.scores[0]>d.scores[1]?'bold':'normal';})
@@ -182,7 +183,7 @@ function cycle() {
         //equ 1 : score
         listeG.append('rect').attr('x',5*largeur/3-padding).attr('id','stat')
             .attr('width',largeur/3).attr('height',size*space).style('fill',d=>color_pool[d.eventPhase]);
-        listeG.append('text').attr('x',padding) //.attr('y',10)
+        listeG.append('text').attr('x',padding).attr('id',(d)=>{return ('e1_'+d.matchId);}) //.attr('y',10)
             .attr('dx',5*largeur/3+(largeur/3-3*padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
             .style('fill', (d) => { return d.scores[1]>d.scores[0]?'#fff':'ccc';})
             .style('font-weight', (d) => { return d.scores[1]>d.scores[0]?'bold':'normal';})
@@ -239,6 +240,13 @@ function cycle() {
         let mId = '#m'+dataLive.match.matchId;
         console.log(clock,mId);
         d3.select(mId).text(clock);
+		if (dataLive.match.status =='C') {
+			idLive = 0;
+			t.stop();
+		}
+        let e0Id = '#e0_'+dataLive.match.matchId, e1Id = '#e1_'+dataLive.match.matchId;
+        d3.select(e0_Id).text(dataLive.match.scores[0]);
+        d3.select(e1_Id).text(dataLive.match.scores[1]);
     }
 //--------------
 // Get Data from url
