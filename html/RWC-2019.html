@@ -16,6 +16,14 @@
     top: 25px;
     right: 30px;
 }
+#infoLive {
+    position: absolute;
+    top: 25px;
+    font: 10px sans-serif;
+    left: 20px;
+    font-family: "helvetica neue", sans-serif;
+    color: #191970;
+}
 text {
   font: 10px sans-serif;
 }
@@ -29,7 +37,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 4.04</aside>
+  <aside >Septembre, 2019<br><br>| v 4.05</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -40,6 +48,7 @@ text {
 	<script src="../js/menu.js" charset="utf-8"></script>
 	<script defer src="../js/all.js"></script>
     <div id="chart"></div>
+    <div id="infoLive">Coucou</div>
     <div id='intervalle'></div>
   <script type="text/javascript">
 	var rwc_index = [[ "1","2","3","4","5","952","1023","1238","1558"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1622","1623","1782","1783"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135","1697","1764","1807"],["1577"],["925","957","971","1006","1072","1130","1166","1235","1273","1569","1653","1769"]]; // rwc , six nation , 4 nations , xx , wrc pacific
@@ -65,8 +74,8 @@ text {
     dispatch.on('live',affLive);
 	
 	var listeMatchs=[],dataInfo=[];
-    var t = d3.timer(cycle,60000);
-    t.stop();
+    var t = setInterval(cycle,60000);
+    clearInterval(t);
 	menu(0);changeComp();
     updateComp(1);
 
@@ -82,8 +91,8 @@ function cycle() {
 // update Compétition
     function updateComp(id) {
         if (id==undefined) iComp = (iComp+1) % nbComp;
-        if (idLive!=0) t.restart(cycle,30000)
-            else t.stop();
+//        if (idLive!=0) t.restart(cycle,60000)
+//            else t.stop();
         var codeCup = rwc_index[idComp][iComp]; //[1][17];
         console.log(id,idComp,iComp);
         var urlRWC = 'http://cmsapi.pulselive.com/rugby/event/'+codeCup+'/schedule';
@@ -125,12 +134,13 @@ function cycle() {
 //
 	function affListe() {
         let titre = listeMatchs.event.label;
+        console.log('affListe');
 		idLive=0;
 		for (m in listeMatchs.matches) {
 			if (listeMatchs.matches[m].status != 'U' && listeMatchs.matches[m].status !='C') {
 //				console.log(m);
 				idLive = listeMatchs.matches[m].matchId;
-				t.restart(cycle,30000);
+				t = setInterval(cycle,60000);
 				cycle();
 			}
 		}
@@ -155,7 +165,7 @@ function cycle() {
         listeG.append('rect').attr('x',0).attr('id','stat')
             .attr('width',largeur).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]); //'#0a88ff');
         listeG.append('text').attr('x',padding) //.attr('y',10)
-            .attr('dx',(largeur-padding)/2).attr('y',size/centre)
+            .attr('dx',(largeur-padding)/2).attr('y',size/centre).attr('id',(d)=>{return ('en0_'+d.matchId);})
             .style('fill', (d) => { return d.scores[0]>d.scores[1]?'#fff':'ccc';}).style('text-anchor', 'middle')
             .style('font-weight', (d) => { return d.scores[0]>d.scores[1]?'bold':'normal';})
             .text((d)=>(d['teams'][0]['name'])).style('font-size','11px');
@@ -163,8 +173,8 @@ function cycle() {
         listeG.append('rect').attr('x',largeur*2).attr('id','stat')
             .attr('width',largeur).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]);
         listeG.append('text').attr('x',padding) //.attr('y',10)
-            .attr('dx',2*largeur+(largeur-padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
-            .style('fill', (d) => { return d.scores[1]>d.scores[0]?'#fff':'ccc';})
+            .attr('dx',2*largeur+(largeur-padding)/2).attr('y',size/centre).attr('id',(d)=>{return ('en1_'+d.matchId);})
+            .style('fill','#fff').style('text-anchor', 'middle').style('fill', (d) => { return d.scores[1]>d.scores[0]?'#fff':'ccc';})
             .style('font-weight', (d) => { return d.scores[1]>d.scores[0]?'bold':'normal';})
             .text((d)=>(d['teams'][1]['name'])).style('font-size','12px');
         //equ 0 : score
@@ -237,11 +247,21 @@ function cycle() {
         d3.select(mId).text(clock);
 		if (dataLive.match.status =='C') {
 			idLive = 0;
-			t.stop();
+			clearInterval(t);
 		}
+        let nTry0 = 0, nTry1=0;
+        try { nTry0 = dataLive.teams[0].scoring.Con.length; }
+        catch(e) {nTry0=0;}
+
+        try { nTry1 = dataLive.teams[1].scoring.Con.length; }
+        catch(e) {nTry1=0;}
+        console.log(nTry0,nTry1);
         let e0Id = '#e0_'+dataLive.match.matchId, e1Id = '#e1_'+dataLive.match.matchId;
-        d3.select(e0_Id).text(dataLive.match.scores[0]);
-        d3.select(e1_Id).text(dataLive.match.scores[1]);
+        d3.select(e0Id).text(dataLive.match.scores[0]);
+        d3.select(e1Id).text(dataLive.match.scores[1]);
+        let en0Id = '#en0_'+dataLive.match.matchId, en1Id = '#en1_'+dataLive.match.matchId;
+        d3.select(en0Id).text(dataLive.match.teams[0].name+' ['+nTry0+']');
+        d3.select(en1Id).text(dataLive.match.teams[1].name+' ['+nTry1+']');
     }
 //--------------
 // Get Data from url
