@@ -37,7 +37,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 4.05</aside>
+  <aside >Septembre, 2019<br><br>| v 4.06</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -48,7 +48,7 @@ text {
 	<script src="../js/menu.js" charset="utf-8"></script>
 	<script defer src="../js/all.js"></script>
     <div id="chart"></div>
-    <div id="infoLive">Coucou</div>
+    <div id="infoLive">Live info ...</div>
     <div id='intervalle'></div>
   <script type="text/javascript">
 	var rwc_index = [[ "1","2","3","4","5","952","1023","1238","1558"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1622","1623","1782","1783"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135","1697","1764","1807"],["1577"],["925","957","971","1006","1072","1130","1166","1235","1273","1569","1653","1769"]]; // rwc , six nation , 4 nations , xx , wrc pacific
@@ -239,6 +239,25 @@ function cycle() {
         let mId = '#m'+dataInfo.match.matchId;
         console.log(clock,mId);
         d3.select(mId).text(clock);
+        affInfoLive(dataInfo);
+    }
+    function affInfoLive(data) {
+        let nTry0 = 0, nTry1=0;
+        try { nTry0 = data.teams[0].scoring.Try.length; } catch(e) {nTry0=0;}
+        try { nTry1 = data.teams[1].scoring.Try.length; } catch(e) {nTry1=0;}
+        let nPen0 = 0, nPen1=0;
+        try { nPen0 = data.teams[0].scoring.Pen.length; } catch(e) {nPen0=0;}
+        try { nPen1 = data.teams[1].scoring.Pen.length; } catch(e) {nPen1=0;}
+        let nDG0 = 0, nDG1=0;
+        try { nDG0 = data.teams[0].scoring.DG.length; } catch(e) {nDG0=0;}
+        try { nDG1 = data.teams[1].scoring.DG.length; } catch(e) {nDG1=0;}
+
+        let infoStr=data.match.eventPhase+': '+data.officials[0].official.name.display+' - '
+            +data.match.teams[0].name+' ['+nTry0+']'+' ['+nPen0+']'+' ['+nDG0+']'
+            +' / '
+            +data.match.teams[1].name+' ['+nTry1+']'+' ['+nPen1+']'+' ['+nDG1+']'
+            +'  ...        ([Try][Pen][Drop])'
+        d3.select('#infoLive').text(infoStr);
     }
     function affLive() {
         clock=dataLive.match.clock.label;
@@ -262,6 +281,7 @@ function cycle() {
         let en0Id = '#en0_'+dataLive.match.matchId, en1Id = '#en1_'+dataLive.match.matchId;
         d3.select(en0Id).text(dataLive.match.teams[0].name+' ['+nTry0+']');
         d3.select(en1Id).text(dataLive.match.teams[1].name+' ['+nTry1+']');
+        affInfoLive(dataLive);
     }
 //--------------
 // Get Data from url
