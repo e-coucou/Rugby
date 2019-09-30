@@ -37,7 +37,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 4.10</aside>
+  <aside >Septembre, 2019<br><br>| v 4.20</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -139,23 +139,28 @@ function cycle() {
 // ---------
 	function livePage() {
 		let size = 26,padding=2, largeur=110, space=0.9,centre=1.6;
-		largeur = (width-margin.left-margin.right) /6; //console.log(largeur,width);
+		largeur = (width-margin.left-margin.right-2*padding); //console.log(largeur,width);
 		var jour = new Date();	//console.log(jour.getTimezoneOffset(), jour);
         d3.select('#graphe').remove();
 		let graph=svg.append('g').attr('id','graphe')
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-		let listeG = graph.selectAll('g').data(dataInfo.match.teams).enter()   /// a changer EP
-			.append('g').attr('transform',(d,i)=>{return ('translate('+(2)+','+(i*size+padding/2)+')');});
+		let listeG = graph.selectAll('g').data(dataLive.match.scores).enter()   /// a changer EP
+			.append('g').attr('transform',(d,i)=>{return ('translate('+(i*largeur/2+padding)+','+(20)+')');});
 console.log('live page ...');
         //equ 0 - nom
         listeG.append('rect').attr('x',0)
-            .attr('width',largeur/2).attr('height',300).style('fill', '#0a88ff');
+            .attr('width',largeur/2).attr('height',120).style('fill', '#0a88ff');
         listeG.append('text').attr('x',padding) //.attr('y',10)
-            .attr('dx',(largeur-padding)/2).attr('y',size/centre).attr('id',(d)=>{return ('en0_'+d.matchId);})
-            .style('fill', (d) => { return d.scores[0]>d.scores[1]?'#fff':'ccc';}).style('text-anchor', 'middle')
-            .style('font-weight', (d) => { return d.scores[0]>d.scores[1]?'bold':'normal';})
-            .text((d)=>(d['teams'][0]['name'])).style('font-size','11px');
+            .attr('dx',largeur/4).attr('y',45) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
+            .style('fill', (d) => { return d[0]>d[1]?'#fff':'ccc';}).style('text-anchor', 'middle')
+            .style('font-weight', (d) => { return d[0]>d[1]?'bold':'normal';})
+            .text((d,i)=>(dataLive['match']['teams'][i]['name'])).style('font-size','34px');
+        listeG.append('text').attr('x',padding) //.attr('y',10)
+            .attr('dx',largeur/4).attr('y',95) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
+            .style('fill', '#fff').style('text-anchor', 'middle')
+            .style('font-weight', 'bold')
+            .text(d=>d).style('font-size','54px');
 		
 	}
 //--------------
