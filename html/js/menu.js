@@ -3,8 +3,9 @@ function menu(selGraphe) {
 var data_menu = [
         { n:0, x:-240, m:'th', a:'Live',http:'RWC-2019.html'},
         { n:1, x:-240, m:'chart-line', a:'Ranking', http:'index.html'},
-        { n:2, x:-240, m:'project-diagram', a:'Graphe', http:'wrc.html'}
-//        { n:3, x:-240, m:'cogs', a:'Parametre'},
+        { n:2, x:-240, m:'project-diagram', a:'Graphe', http:'wrc.html'},
+        { n:3, x:-240, m:'headset', a:'Live'}
+//        { n:3, x:-240, m:'cogs', a:'Parametre'}
 //        { n:4, x:-240, m:'filter', a:'Selection'},
 //        { n:5, x:-240, m:'diagnoses', a:'Dashboard'},
 //        { n:-1, x:-240, m:'user-secret', a:'credential'}
@@ -30,7 +31,12 @@ var menuCircle=false;
     .attr('class',(d)=>{return ('icon fas fa-'+d.m);}).style('color','white');
 
 	function clickMenu(d,i) {
-		console.log(d.http); window.location.href=d.http;
+		if (d.http != null) {
+			console.log(d.http); window.location.href=d.http;
+		} else {
+			console.log(d.n);
+			selPage(d.n);
+		}
 		//    doGraphe(d.n);
 		//    selGraphique();
 	}
