@@ -37,7 +37,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 4.20</aside>
+  <aside >Septembre, 2019<br><br>| v 4.30</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -141,9 +141,10 @@ function cycle() {
 	}
 // ---------
 	function livePage() {
-		let size = 26,padding=5, space=0.9,centre=1.6, margeH = 20;
+		let size = 26,padding=4, space=0.9,centre=1.6, margeH = 20;
 		largeur = (width-margin.left-margin.right-100); //console.log(largeur,width);
-		let timeSize=30, scoreSize = 90;
+		let timeSize=25, scoreSize = 95;
+        d3.select('#intervalle').remove();
 
         d3.select('#graphe').remove();
 		let graph=svg.append('g').attr('id','graphe')
@@ -159,7 +160,7 @@ console.log('live page ...');
             .attr('dx',(d,i)=>{ return (largeur/2+(2*i-1)*scoreSize)/2;}).attr('y',(timeSize+scoreSize+padding)/centre) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
             .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'ccc';}).style('text-anchor', 'middle')
             .style('font-weight', 'bold')
-            .text((d,i)=>(dataLive['match']['teams'][i]['name'])).style('font-size','54px');
+            .text((d,i)=>(dataLive['match']['teams'][i]['name'])).style('font-size','4vw');
 		
 		// scores
 		let scoreG = listeG.append('g') //.data(dataLive.match.scores).enter()   /// a changer EP
@@ -170,7 +171,7 @@ console.log('live page ...');
             .attr('dx',scoreSize/2).attr('y',scoreSize/2*centre) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
             .style('fill', '#fff').style('text-anchor', 'middle')
             .style('font-weight', 'bold')
-            .text(d=>d).style('font-size','54px');
+            .text(d=>d).style('font-size','6vw');
 
         //time
 		let time = graph.append('g').attr("transform","translate("+(largeur/2-scoreSize)+","+(margeH)+")");
@@ -179,16 +180,20 @@ console.log('live page ...');
             .attr('width',scoreSize*2+padding).attr('height',timeSize).style('fill', '#fff').raise();
         time.append('text').attr('x',0) //.attr('y',10)
             .attr('dx',scoreSize+padding/2).attr('y',timeSize/2*centre).style('fill','#002').style('text-anchor', 'middle')
-            .text((d)=>{ return min+':'+(sec<9?'0':'')+sec;}).style('font-size','22px');
+            .text((d)=>{ return min+' : '+(sec<9?'0':'')+sec;}).style('font-size','2vw');
 			
 		// les Essai Try
-		let tryG = listeG.append('g') //.data(dataLive.match.scores).enter()   /// a changer EP
-			.attr('transform',(d,i)=>{console.log('ici '+d,i+' fin');return ('translate('+(i==0?(largeur/2-scoreSize-3*padding):(scoreSize+padding))+','+(timeSize+2*padding)+')');});
-        let nTry=[0,0];
-		for (t in nTry) {
-			try { nTry[t] = dataLive.teams[t].scoring.Try.length; } catch(e) {nTry[t]=0;}
-		}
-		console.log(nTry);
+		let tryG = listeG.append('g')
+			.attr('transform',(d,i)=>{return ('translate('+(i==0?(largeur/2-scoreSize):(padding))+','+(timeSize+scoreSize+2*padding)+')');});
+        tryG.selectAll('g').data((d,i)=> {try { v=(dataLive.teams[i].scoring.Try[0]);return (dataLive.teams[i].scoring.Try);} catch(e){return [];};})
+            .enter().append('g').each(function (a,c) {d3.select(this)
+            .append('rect').attr('x',(d,j)=>{ return (2*(c+3)*padding);}) //.attr('ry',2*padding)
+            .attr('width',padding*2-1).attr('height',padding*2).style('fill', (d,i)=> { return c>3?'#259':'000';}).raise();});
+        tryG.append('text').attr('x',0) //.attr('y',10)
+            .attr('dx',0).attr('y',padding*centre)
+            .style('fill', '#000').style('text-anchor', 'left').style('font-weight', 'normal')
+            .text('Try').style('font-size','1vw');
+            
 /*        let nPen0 = 0, nPen1=0;
         try { nPen0 = data.teams[0].scoring.Pen.length; } catch(e) {nPen0=0;}
         try { nPen1 = data.teams[1].scoring.Pen.length; } catch(e) {nPen1=0;}
@@ -196,15 +201,40 @@ console.log('live page ...');
         try { nDG0 = data.teams[0].scoring.DG.length; } catch(e) {nDG0=0;}
         try { nDG1 = data.teams[1].scoring.DG.length; } catch(e) {nDG1=0;}
 */		
-        tryG.selectAll('rect').data.enter().each(function (d) {d3.select(this)
-			.append('rect').attr('x',(d,i)=>{ return ((2*i-1)*2*padding);}) //.attr('ry',2*padding)
-            .attr('width',padding*2).attr('height',padding*2).style('fill', '#ff0000').raise();});
-/*        scoreG.append('text').attr('x',0) //.attr('y',10)
-            .attr('dx',scoreSize/2).attr('y',scoreSize/2*centre) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
-            .style('fill', '#fff').style('text-anchor', 'middle')
-            .style('font-weight', 'bold')
-            .text(d=>d).style('font-size','54px');
-			*/
+        // les Essai Drop
+        let DrGG = listeG.append('g') 
+            .attr('transform',(d,i)=>{return ('translate('+(i==0?(largeur/2-scoreSize):(padding))+','+(scoreSize+timeSize+5*padding)+')');});
+        DrGG.selectAll('g').data((d,i)=> {try {console.log(dataLive.teams[i].scoring.DG[0]);return (dataLive.teams[i].scoring.DG);} catch(e){return [];};})
+            .enter().append('g').each(function (a,c) {d3.select(this)
+            .append('rect').attr('x',(d,j)=>{ return (2*(c+3)*padding);}) //.attr('ry',2*padding)
+            .attr('width',padding*2-1).attr('height',padding*2).style('fill', '#000').raise();});
+        DrGG.append('text').attr('x',0) //.attr('y',10)
+            .attr('dx',0).attr('y',padding*centre)
+            .style('fill', '#000').style('text-anchor', 'left').style('font-weight', 'normal')
+            .text('Drop').style('font-size','1vw');
+        // les Pénélités
+        let PenG = listeG.append('g') 
+            .attr('transform',(d,i)=>{return ('translate('+(i==0?(largeur/2-scoreSize):(padding))+','+(scoreSize+timeSize+8*padding)+')');});
+        PenG.selectAll('g').data((d,i)=> {try {console.log(dataLive.teams[i].scoring.Pen[0]);return (dataLive.teams[i].scoring.Pen);} catch(e){return [];};})
+            .enter().append('g').each(function (a,c,i) {d3.select(this)
+            .append('rect').attr('x',(d,j)=>{ return (2*(c+3)*padding);}) //.attr('ry',2*padding)
+            .attr('width',padding*2-1).attr('height',padding*2).style('fill', '#000').raise();});
+        PenG.append('text').attr('x',0) //.attr('y',10)
+            .attr('dx',0).attr('y',padding*centre)
+            .style('fill', '#000').style('text-anchor', 'left').style('font-weight', 'normal')
+            .text('Pen').style('font-size','1vw');
+
+        let stadeG = graph.append('g').attr('transform',(d,i)=>{return ('translate('+(0)+','+(scoreSize+timeSize+16*padding)+')');});
+      
+        stadeG.append('rect').attr('width',largeur/10).attr('height',largeur/2)
+            .style('fill','#192');
+        stadeG.append('rect').attr('x',largeur/10+1).attr('width',largeur/10*4-1).attr('height',largeur/2)
+            .style('fill','#192');
+        stadeG.append('rect').attr('x',largeur/2+1).attr('width',largeur/10*4-1).attr('height',largeur/2)
+            .style('fill','#192');
+        stadeG.append('rect').attr('x',largeur/10*9+1).attr('width',largeur/10).attr('height',largeur/2)
+            .style('fill','#192');
+
 	}
 //--------------
 // Affichage de la liste des matches
