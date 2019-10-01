@@ -37,7 +37,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 4.40</aside>
+  <aside >Septembre, 2019<br><br>| v 4.41</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -178,7 +178,10 @@ function cycle() {
 
         //time
 		let time = graph.append('g').attr("transform","translate("+(largeur/2-scoreSize)+","+(margeH)+")");
-		let min= Math.trunc((dataLive.match.clock.secs)/60), sec=(dataLive.match.clock.secs)%60;
+		let min=0,sec=0;
+		try {
+			min= Math.trunc((dataLive.match.clock.secs)/60); sec=(dataLive.match.clock.secs)%60;
+		} catch(e) {}
         time.append('rect').attr('rx',padding).attr('ry',padding)
             .attr('width',scoreSize*2+padding).attr('height',timeSize).style('fill', '#fff').raise();
         time.append('text').attr('x',0) //.attr('y',10)
@@ -215,7 +218,7 @@ function cycle() {
             .attr('dx',0).attr('y',padding*centre)
             .style('fill', '#000').style('text-anchor', 'left').style('font-weight', 'normal')
             .text('Drop').style('font-size','0.6vw');
-        // les Pénélités
+        // les Pénalités
         let PenG = listeG.append('g') 
             .attr('transform',(d,i)=>{return ('translate('+(i==0?(largeur/2-scoreSize):(padding))+','+(scoreSize+timeSize+8*padding)+')');});
         PenG.selectAll('g').data((d,i)=> {try {console.log(dataLive.teams[i].scoring.Pen[0]);return (dataLive.teams[i].scoring.Pen);} catch(e){return [];};})
@@ -259,7 +262,7 @@ function cycle() {
 		
 		let officialG = stadeG.append('g').attr('transform',(d)=>{ return 'translate('+(stadeSize/2)+','+stadeLargeur*1.5+')';});
 		officialG.selectAll('g').data(dataLive.officials).enter()
-			.append('text').attr('x',0).attr('y',(d,i)=>i*largeur/60).style('text-anchor','middle').style('fill','#501').text((d)=>{return d.official.name.display+' - '+d.position;}).style('font-size','1vw');
+			.append('text').attr('x',0).attr('y',(d,i)=>i*largeur/60).style('text-anchor','middle').style('fill','#501').text((d)=>{return d.official.name.display+' - '+d.position+' ['+d.official.country+']';}).style('font-size','1vw');
 		
 		//-----------------------
 		// on affiche les essai ?
@@ -280,7 +283,8 @@ function cycle() {
 		}
 		//on affiche les joueurs ...
         let teamG = graph.append('g').attr('transform',(d,i)=>{return ('translate('+(0)+','+(scoreSize+timeSize+16*padding)+')');});
-		let motm = dataLive.motm.motm.id;
+		let motm=0;
+		try { motm = dataLive.motm.motm.id; } catch(e) {}
 		for (t in [0,1]) {
 			let captain = dataLive.teams[t].teamList.captainId;
 			teamG.selectAll('g').data(dataLive.teams[t].teamList.list).enter()
@@ -363,7 +367,7 @@ function cycle() {
             .attr('width',largeur/3-4*padding).attr('height',size*space).style('fill',(d)=>{return d.status=='C'?color_pool[d.eventPhase]:color_status[d.status];})
 			.on('click',getInfo)
 			.on('mouseover',function(d,i){ d3.select(this).style('fill','#FE6F5E');})
-			.on('mouseout',function(d,i){ d3.select(this).style('fill',d=>color_pool[d.eventPhase]);});
+			.on('mouseout',function(d,i){ d3.select(this).style('fill',(d)=>{return d.status=='C'?color_pool[d.eventPhase]:color_status[d.status];});});
 
         listeG.append('text').attr('x',padding).attr('id',(d)=>{return ('m'+d.matchId);}) //.attr('y',10)
             .attr('dx',4*largeur/3+(largeur/3-3*padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
@@ -403,9 +407,9 @@ function cycle() {
 
 	}
     function affInfo() {
-        clock=dataInfo.match.clock.label;
+        try { clock=dataInfo.match.clock.label; } catch(e) {clock='00:00';}
         let mId = '#m'+dataInfo.match.matchId;
-        console.log(clock,mId);
+        //console.log(clock,mId);
         d3.select(mId).text(clock);
         affInfoLive(dataInfo);
     }
