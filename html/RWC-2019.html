@@ -37,7 +37,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 4.41</aside>
+  <aside >Septembre, 2019<br><br>| v 4.42</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -182,8 +182,8 @@ function cycle() {
 		try {
 			min= Math.trunc((dataLive.match.clock.secs)/60); sec=(dataLive.match.clock.secs)%60;
 		} catch(e) {}
-        time.append('rect').attr('rx',padding).attr('ry',padding)
-            .attr('width',scoreSize*2+padding).attr('height',timeSize).style('fill', '#fff').raise();
+        time.append('rect').attr('rx',padding).attr('ry',padding).attr('y',2)
+            .attr('width',scoreSize*2+padding).attr('height',timeSize-3).style('fill', '#fff').raise();
         time.append('text').attr('x',0) //.attr('y',10)
             .attr('dx',scoreSize+padding/2).attr('y',timeSize/2*centre).style('fill','#002').style('text-anchor', 'middle')
             .text((d)=>{ return min+' : '+(sec<9?'0':'')+sec;}).style('font-size','1.2vw');
@@ -282,7 +282,7 @@ function cycle() {
 			} catch(e) {}
 		}
 		//on affiche les joueurs ...
-        let teamG = graph.append('g').attr('transform',(d,i)=>{return ('translate('+(0)+','+(scoreSize+timeSize+16*padding)+')');});
+        let teamG = graph.append('g').attr('transform',(d,i)=>{return ('translate('+(0)+','+(scoreSize+timeSize+5*padding)+')');});
 		let motm=0;
 		try { motm = dataLive.motm.motm.id; } catch(e) {}
 		for (t in [0,1]) {
