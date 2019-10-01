@@ -1,7 +1,7 @@
 // Menu Header
 function menu(selGraphe) {
 var data_menu = [
-        { n:0, x:-240, m:'th', a:'Live',http:'RWC-2019.html'},
+        { n:0, x:-240, m:'trophy', a:'Live',http:'RWC-2019.html'},  //th
         { n:1, x:-240, m:'chart-line', a:'Ranking', http:'index.html'},
         { n:2, x:-240, m:'project-diagram', a:'Graphe', http:'wrc.html'},
         { n:3, x:-240, m:'headset', a:'Live'}

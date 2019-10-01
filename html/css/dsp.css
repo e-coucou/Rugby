@@ -194,8 +194,9 @@ svg {
 .svg-contenair {
     display: inline-block;
     position: relative;
-    width: 99%;
+    width: 59%;
     padding-bottom: 0%;
+    padding-right: 0%;
     vertical-align: top;
     overflow: hidden;
 }
