@@ -37,7 +37,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 4.30</aside>
+  <aside >Septembre, 2019<br><br>| v 4.40</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -141,10 +141,12 @@ function cycle() {
 	}
 // ---------
 	function livePage() {
-		let size = 26,padding=4, space=0.9,centre=1.6, margeH = 20;
+		let size = 26,padding=4, space=0.9,centre=1.6, margeH = 5;
 		largeur = (width-margin.left-margin.right-100); //console.log(largeur,width);
 		let timeSize=25, scoreSize = 95;
+		let teamColor=['#006','#0bc'];
         d3.select('#intervalle').remove();
+        d3.select('#infoLive').remove();
 
         d3.select('#graphe').remove();
 		let graph=svg.append('g').attr('id','graphe')
@@ -152,15 +154,16 @@ function cycle() {
 
 		let listeG = graph.selectAll('g').data(dataLive.match.scores).enter()   /// a changer EP
 			.append('g').attr('transform',(d,i)=>{return ('translate('+(i*(largeur/2+padding))+','+(margeH)+')');});
-console.log('live page ...');
+		//--------------------------------------
+		console.log('live page ...');
         //nom des équipes
         listeG.append('rect').attr('rx',3*padding).attr('ry',3*padding)
-            .attr('width',largeur/2).attr('height',timeSize+scoreSize+padding).style('fill', '#0a88ff');
+            .attr('width',largeur/2).attr('height',timeSize+scoreSize+padding).style('fill', (d,i)=>teamColor[i]); //'#0a88ff');
         listeG.append('text').attr('x',0) //.attr('y',10)
             .attr('dx',(d,i)=>{ return (largeur/2+(2*i-1)*scoreSize)/2;}).attr('y',(timeSize+scoreSize+padding)/centre) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
             .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'ccc';}).style('text-anchor', 'middle')
             .style('font-weight', 'bold')
-            .text((d,i)=>(dataLive['match']['teams'][i]['name'])).style('font-size','4vw');
+            .text((d,i)=>(dataLive['match']['teams'][i]['name'])).style('font-size','3.5vw');
 		
 		// scores
 		let scoreG = listeG.append('g') //.data(dataLive.match.scores).enter()   /// a changer EP
@@ -171,7 +174,7 @@ console.log('live page ...');
             .attr('dx',scoreSize/2).attr('y',scoreSize/2*centre) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
             .style('fill', '#fff').style('text-anchor', 'middle')
             .style('font-weight', 'bold')
-            .text(d=>d).style('font-size','6vw');
+            .text(d=>d).style('font-size','4vw');
 
         //time
 		let time = graph.append('g').attr("transform","translate("+(largeur/2-scoreSize)+","+(margeH)+")");
@@ -180,7 +183,7 @@ console.log('live page ...');
             .attr('width',scoreSize*2+padding).attr('height',timeSize).style('fill', '#fff').raise();
         time.append('text').attr('x',0) //.attr('y',10)
             .attr('dx',scoreSize+padding/2).attr('y',timeSize/2*centre).style('fill','#002').style('text-anchor', 'middle')
-            .text((d)=>{ return min+' : '+(sec<9?'0':'')+sec;}).style('font-size','2vw');
+            .text((d)=>{ return min+' : '+(sec<9?'0':'')+sec;}).style('font-size','1.2vw');
 			
 		// les Essai Try
 		let tryG = listeG.append('g')
@@ -192,7 +195,7 @@ console.log('live page ...');
         tryG.append('text').attr('x',0) //.attr('y',10)
             .attr('dx',0).attr('y',padding*centre)
             .style('fill', '#000').style('text-anchor', 'left').style('font-weight', 'normal')
-            .text('Try').style('font-size','1vw');
+            .text('Try').style('font-size','0.6vw');
             
 /*        let nPen0 = 0, nPen1=0;
         try { nPen0 = data.teams[0].scoring.Pen.length; } catch(e) {nPen0=0;}
@@ -211,7 +214,7 @@ console.log('live page ...');
         DrGG.append('text').attr('x',0) //.attr('y',10)
             .attr('dx',0).attr('y',padding*centre)
             .style('fill', '#000').style('text-anchor', 'left').style('font-weight', 'normal')
-            .text('Drop').style('font-size','1vw');
+            .text('Drop').style('font-size','0.6vw');
         // les Pénélités
         let PenG = listeG.append('g') 
             .attr('transform',(d,i)=>{return ('translate('+(i==0?(largeur/2-scoreSize):(padding))+','+(scoreSize+timeSize+8*padding)+')');});
@@ -222,19 +225,74 @@ console.log('live page ...');
         PenG.append('text').attr('x',0) //.attr('y',10)
             .attr('dx',0).attr('y',padding*centre)
             .style('fill', '#000').style('text-anchor', 'left').style('font-weight', 'normal')
-            .text('Pen').style('font-size','1vw');
+            .text('Pen').style('font-size','0.6vw');
+		//-----------------------------
+		// le stade !
+		let stadeSize = largeur/3, poteau
+		var x = d3.scaleLinear()
+			.domain([-10, 110]).nice()
+			.range([0, stadeSize]);
+		let stadeLargeur = (x(100)-x(0))*.7;
+		var y = d3.scaleLinear()
+			.domain([0, 70]).nice()
+			.range([0, stadeLargeur]);
+		let lineDash = ['','4,1','3,1,3'];
+		let stadeLine = [[22,0,22,70,0],[78,0,78,70,0],[40,0,40,70,1],[60,0,60,70,1],[0,5,100,5,2],[0,65,100,65,2],[0,15,100,15,2],[0,55,100,55,2]],
+			stadePoteau = [[0,35-2.8],[0,35+2.8],[100,35-2.8],[100,35+2.8]];
 
-        let stadeG = graph.append('g').attr('transform',(d,i)=>{return ('translate('+(0)+','+(scoreSize+timeSize+16*padding)+')');});
-      
-        stadeG.append('rect').attr('width',largeur/10).attr('height',largeur/2)
+        let stadeG = graph.append('g').attr('transform',(d,i)=>{return ('translate('+((largeur-stadeSize)/2)+','+(scoreSize+timeSize+16*padding)+')');});
+        stadeG.append('rect').attr('width',x(0)).attr('height',stadeLargeur)
+            .style('fill','#071');
+        stadeG.append('rect').attr('x',x(0)+1).attr('width',x(40)-1).attr('height',stadeLargeur)
             .style('fill','#192');
-        stadeG.append('rect').attr('x',largeur/10+1).attr('width',largeur/10*4-1).attr('height',largeur/2)
+        stadeG.append('rect').attr('x',x(50)+1).attr('width',x(40)-1).attr('height',stadeLargeur)
             .style('fill','#192');
-        stadeG.append('rect').attr('x',largeur/2+1).attr('width',largeur/10*4-1).attr('height',largeur/2)
-            .style('fill','#192');
-        stadeG.append('rect').attr('x',largeur/10*9+1).attr('width',largeur/10).attr('height',largeur/2)
-            .style('fill','#192');
+        stadeG.append('rect').attr('x',x(100)+1).attr('width',x(0)-1).attr('height',stadeLargeur)
+            .style('fill','#071');
+		stadeG.selectAll('g').data(stadePoteau).enter()
+			.append('circle').attr('cx',d=>x(d[0])).attr('cy',d=>y(d[1])).attr('r',3).style('fill','#fff');
+		stadeG.selectAll('g').data(stadeLine).enter()
+			.append('line').attr('x1',d=>x(d[0])).attr('y1',d=>y(d[1])).attr('x2',d=>x(d[2])).attr('y2',d=>y(d[3])).style('stroke','#fff').style('stroke-dasharray',d=>lineDash[d[4]]);
+			
+		stadeG.append('text').attr('x',stadeSize/2).attr('y',stadeLargeur*1.14).style('text-anchor','middle').style('fill','#005').text(dataLive.match.venue.name).style('font-size','2.5vw').style('font-weight','bold');
+		stadeG.append('text').attr('x',stadeSize/2).attr('y',stadeLargeur*1.3).style('text-anchor','middle').style('fill','#005').text(dataLive.match.attendance+' spectateurs').style('font-size','1.5vw');
+		
+		let officialG = stadeG.append('g').attr('transform',(d)=>{ return 'translate('+(stadeSize/2)+','+stadeLargeur*1.5+')';});
+		officialG.selectAll('g').data(dataLive.officials).enter()
+			.append('text').attr('x',0).attr('y',(d,i)=>i*largeur/60).style('text-anchor','middle').style('fill','#501').text((d)=>{return d.official.name.display+' - '+d.position;}).style('font-size','1vw');
+		
+		//-----------------------
+		// on affiche les essai ?
+		
+		for (t in [0,1]) {
+			try {
+				stadeG.selectAll('g').data(dataLive.teams[t].scoring.Try).enter()
+					.append('ellipse').attr('cx',d=>x(d.position.x)).attr('cy',d=>y(d.position.y*.7)).attr('rx',5).attr('ry',3).style('fill',teamColor[t]);
+			} catch(e) {}
+			try {
+				stadeG.selectAll('g').data(dataLive.teams[t].scoring.Pen).enter()
+					.append('ellipse').attr('cx',d=>x(d.position.x)).attr('cy',d=>y(d.position.y*.7)).attr('rx',5).attr('ry',3).style('fill',teamColor[t]);
+			} catch(e) {}
+			try {
+				stadeG.selectAll('g').data(dataLive.teams[t].scoring.DG).enter()
+					.append('ellipse').attr('cx',d=>x(d.position.x)).attr('cy',d=>y(d.position.y*.7)).attr('rx',5).attr('ry',3).style('fill',teamColor[t]);
+			} catch(e) {}
+		}
+		//on affiche les joueurs ...
+        let teamG = graph.append('g').attr('transform',(d,i)=>{return ('translate('+(0)+','+(scoreSize+timeSize+16*padding)+')');});
+		let motm = dataLive.motm.motm.id;
+		for (t in [0,1]) {
+			let captain = dataLive.teams[t].teamList.captainId;
+			teamG.selectAll('g').data(dataLive.teams[t].teamList.list).enter()
+				.append('text').attr('x',t*(largeur))
+				.attr('dy',(d,i)=> {return (i*largeur/60);}).attr('y','0.5em')
+				.style('fill', (d)=>{return d.player.id==motm?'#d00':'#000';})
+				.style('text-anchor', t==1?'end':'begin').style('font-weight', (d)=>{return ((d.player.id==captain)||(d.player.id==motm))?'bold':'normal';})
+				.text((d)=>{return (t==0?((Number(d.number)>9?'':'0')+d.number+' '):'')+d.player.name.display+'  - '+d.positionLabel+' ('+d.player.age.years+' ans)'+(t==1?((Number(d.number)>9?' ':' 0')+d.number+' '):'');})
+				.style('font-size','1vw');
+		}
 
+		//arbitres
 	}
 //--------------
 // Affichage de la liste des matches
@@ -303,7 +361,10 @@ console.log('live page ...');
         //en cours ?
         listeG.append('rect').attr('x',4*largeur/3+2*padding).attr('rx',2*padding).attr('ry',2*padding)
             .attr('width',largeur/3-4*padding).attr('height',size*space).style('fill',(d)=>{return d.status=='C'?color_pool[d.eventPhase]:color_status[d.status];})
-			.on('click',getInfo);
+			.on('click',getInfo)
+			.on('mouseover',function(d,i){ d3.select(this).style('fill','#FE6F5E');})
+			.on('mouseout',function(d,i){ d3.select(this).style('fill',d=>color_pool[d.eventPhase]);});
+
         listeG.append('text').attr('x',padding).attr('id',(d)=>{return ('m'+d.matchId);}) //.attr('y',10)
             .attr('dx',4*largeur/3+(largeur/3-3*padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
             .style('fill', '#fff').style('font-weight','normal')
@@ -313,7 +374,7 @@ console.log('live page ...');
 
         //date/heure
         listeG.append('rect').attr('x',3*largeur+padding).attr('id','stat')
-            .attr('width',largeur).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]); //'#0a88ff');
+            .attr('width',largeur).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]);
         listeG.append('text').attr('x',3*largeur +padding) //.attr('y',10)
             .attr('dx',(largeur-padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
             .text((d)=>{ jour.setTime(d.time.millis); return jour.toLocaleDateString()+' / '+jour.toLocaleTimeString();}).style('font-size','11px');
@@ -412,35 +473,7 @@ console.log('live page ...');
                         dispatch.call('match');
                         break;
 			}
-/*			listeVal.forEach( (a,i) => {
-				let o = data.find( f => { return (f.dataReference == a.nom);});
-				if (o != undefined) {
-					listeVal[i]['unit']= o.unit;
-					listeVal[i]['values']= o.values;
-				}
-			});
-		    infoG.select('text').text("Données disponibles !");
-            infoG.select('circle').attr('fill','#03C03C');
-            config.dataOK=true;
-			switch(cumul) {
-            case 2:
-				DivData = data.slice();
-				divCompute();
-                dataCompute(); //couleurCompute();
-				selGraphe=0;
-				dispatch.call('load');
-				break;
-            case 1:
-                CumulData = data.slice();
-                cumulCompute();
-				}
-				break;
-            case 0:
-                AllData = data.slice();
-                start(url2,1);    //0-variable 1-cumul 2-diviseur
-				break;
-			}
-*/		})
+		})
 		.catch(err => {
 		// Do something for an error here
 			console.log(err);
