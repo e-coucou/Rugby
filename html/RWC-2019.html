@@ -37,7 +37,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 4.44</aside>
+  <aside >Septembre, 2019<br><br>| v 4.50</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -54,7 +54,7 @@ text {
 	var rwc_index = [[ "1","2","3","4","5","952","1023","1238","1558"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1622","1623","1782","1783"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135","1697","1764","1807"],["1577"],["925","957","971","1006","1072","1130","1166","1235","1273","1569","1653","1769"]]; // rwc , six nation , 4 nations , xx , wrc pacific
     var idComp=0, nbComp=rwc_index[idComp].length, iComp=nbComp-1;
 	var idLive=0, clock='', selMenu=0;
-	var teams = [], idRank=0, dataRank=[],teamsInfo=[];
+	var teams = [], idRank=0, dataRank=[],teamsInfo=[], nbTeams=-1;
     var url = '';
     // format ...
     let valFormat = (a) => { 
@@ -63,12 +63,12 @@ text {
 //        return r;
         }
 	// Chart dimensions.
-	var margin = {top: 20, right: 20, bottom: 30, left: 50},
+	var margin = {top: 20, right: 20, bottom: 50, left: 50},
 		width = window.innerWidth; // - margin.right-margin.left,
-		height = 1300 - margin.top - margin.bottom;
+		height = 1350 - margin.top - margin.bottom;
 	// Create the SVG container and set the origin.
     var svg = d3.select("#chart").append("svg")
-        .attr("width", width ) //+ margin.left + margin.right)
+        .attr("width", width -5) //+ margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .attr("position", 2);
 //        .append("g")
@@ -153,7 +153,7 @@ function cycle() {
 		selMenu=idPage;
 		switch (idPage) {
 		  case 3 : 
-	  		try { console.log(dataLive); } catch { dataLive = dataInfo; } /// a enlever !!!
+	  		try { console.log('live!',dataLive); } catch(e) { console.log('no live!'); dataLive = dataInfo; } /// a enlever !!!
 			livePage();		break;
 		}
 	}
@@ -201,7 +201,7 @@ function cycle() {
 		let scoreG = listeG.append('g') //.data(dataLive.match.scores).enter()   /// a changer EP
 			.attr('transform',(d,i)=>{return ('translate('+((i+1)%2*(largeur/2-scoreSize))+','+(timeSize)+')');});
         scoreG.append('rect').attr('rx',2*padding).attr('ry',2*padding)
-            .attr('width',scoreSize).attr('height',scoreSize+padding).style('fill', '#2255ff').raise();
+            .attr('width',scoreSize).attr('height',scoreSize).style('fill', '#2255ff').raise();
         scoreG.append('text').attr('x',0) //.attr('y',10)
             .attr('dx',scoreSize/2).attr('y',scoreSize/2) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
             .style('fill', '#fff').style('text-anchor', 'middle').style('dominant-baseline','middle')
@@ -209,15 +209,15 @@ function cycle() {
             .text(d=>d).style('font-size','4vw');
 
         //time
-		let time = graph.append('g').attr("transform","translate("+(largeur/2-scoreSize)+","+(margeH)+")");
+		let time = graph.append('g').attr("transform","translate("+(largeur/2-scoreSize/2)+","+(margeH)+")");
 		let min=0,sec=0;
 		try {
 			min= Math.trunc((dataLive.match.clock.secs)/60); sec=(dataLive.match.clock.secs)%60;
 		} catch(e) {}
         time.append('rect').attr('rx',padding).attr('ry',padding).attr('y',2)
-            .attr('width',scoreSize*2+padding).attr('height',timeSize-3).style('fill', '#fff').raise();
+            .attr('width',scoreSize+padding).attr('height',timeSize-3).style('fill', '#fff').raise();
         time.append('text').attr('x',0).style('dominant-baseline','middle')
-            .attr('dx',scoreSize+padding/2).attr('y',timeSize/2).style('fill','#002').style('text-anchor', 'middle')
+            .attr('dx',scoreSize/2+padding/2).attr('y',timeSize/2).style('fill','#002').style('text-anchor', 'middle')
             .text((d)=>{ return min+' : '+(sec<9?'0':'')+sec;}).style('font-size','1.2vw');
 			
 		// les Essai Try
@@ -254,6 +254,20 @@ function cycle() {
             .attr('dx',0).attr('y',padding*centre)
             .style('fill', '#000').style('text-anchor', 'left').style('font-weight', 'normal')
             .text('Pen').style('font-size','0.6vw');
+        // les Sanctions
+        let YCG = listeG.append('g') 
+            .attr('transform',(d,i)=>{return ('translate('+(i==0?(largeur/2-scoreSize):(padding))+','+(scoreSize+timeSize-2*padding)+')');});
+        YCG.selectAll('g').data((d,i)=> {try {console.log(dataLive.teams[i].disciplinary.YC[0]);return (dataLive.teams[i].disciplinary.YC);} catch(e){return [];};})
+            .enter().append('g').each(function (a,c,i) {d3.select(this)
+            .append('rect').attr('x',(d,j)=>{ return (2*(c+3)*padding);}) //.attr('ry',2*padding)
+            .attr('width',padding*2-1).attr('height',padding*2).style('fill', '#ff0').raise();});
+        let RCG = listeG.append('g') 
+            .attr('transform',(d,i)=>{return ('translate('+(i==0?(largeur/2-scoreSize):(padding))+','+(scoreSize+timeSize-4*padding)+')');});
+        YCG.selectAll('g').data((d,i)=> {try {console.log(dataLive.teams[i].disciplinary.RC[0]);return (dataLive.teams[i].disciplinary.RC);} catch(e){return [];};})
+            .enter().append('g').each(function (a,c,i) {d3.select(this)
+            .append('rect').attr('x',(d,j)=>{ return (2*(c+3)*padding);}) //.attr('ry',2*padding)
+            .attr('width',padding*2-1).attr('height',padding*2).style('fill', '#f00').raise();});
+
 		//-----------------------------
 		// le stade !
 		let stadeSize = largeur/3, poteau
@@ -268,7 +282,7 @@ function cycle() {
 		let stadeLine = [[22,0,22,70,0],[78,0,78,70,0],[40,0,40,70,1],[60,0,60,70,1],[0,5,100,5,2],[0,65,100,65,2],[0,15,100,15,2],[0,55,100,55,2]],
 			stadePoteau = [[0,35-2.8],[0,35+2.8],[100,35-2.8],[100,35+2.8]];
 
-        let stadeG = graph.append('g').attr('transform',(d,i)=>{return ('translate('+((largeur-stadeSize)/2)+','+(scoreSize+timeSize+16*padding)+')');});
+        let stadeG = graph.append('g').attr('transform',(d,i)=>{return ('translate('+((largeur-stadeSize)/2)+','+(scoreSize+timeSize+13*padding)+')');});
         stadeG.append('rect').attr('width',x(0)).attr('height',stadeLargeur)
             .style('fill','#071');
         stadeG.append('rect').attr('x',x(0)+1).attr('width',x(40)-1).attr('height',stadeLargeur)
@@ -324,7 +338,11 @@ function cycle() {
 	}
   	function updateRank() {
         teamsInfo[dataRank.team.id]=dataRank;
+        nbTeams--;
+        if (nbTeams==0) computeScore();
         //console.log(teamsInfo);
+    }
+    function computeScore() {
     }
 //--------------
 // Affichage de la liste des matches
@@ -342,11 +360,12 @@ function cycle() {
 			}
 		}
 		teams=[];
-        teamsInfo=[];
+        teamsInfo=[]; nbTeams=0;
         listeMatchs.matches.forEach((v)=>{
                 if (teams.find((a)=>{ return v.teams[0].id===a;}) == undefined)  { teams.push(v.teams[0].id);   }
                 if (teams.find((a)=>{ return v.teams[1].id===a;}) == undefined)  { teams.push(v.teams[1].id);   }
-		  }); console.log(teams);
+		  }); //console.log(teams);
+        nbTeams=teams.length-1;
 		teams.forEach((t)=>{
             if (t!=0) {
                 let urlRank='http://cmsapi.pulselive.com/rugby/team/'+t+'/ranking';
@@ -365,7 +384,7 @@ function cycle() {
 		var jour = new Date();	//console.log(jour.getTimezoneOffset(), jour);
         d3.select('#graphe').remove();
 		var graph=svg.append('g').attr('id','graphe')
-			.attr("transform", "translate(" + 0 + "," + margin.top + ")");
+			.attr("transform", "translate(" + 0 + "," + (margin.top+30) + ")");
 
 		let listeG = graph.selectAll('g').data(listeMatchs.matches).enter()
 			.append('g').attr('transform',(d,i)=>{return ('translate('+(2)+','+(i*size+padding/2)+')');});
