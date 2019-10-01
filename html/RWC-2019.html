@@ -54,6 +54,7 @@ text {
 	var rwc_index = [[ "1","2","3","4","5","952","1023","1238","1558"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1622","1623","1782","1783"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135","1697","1764","1807"],["1577"],["925","957","971","1006","1072","1130","1166","1235","1273","1569","1653","1769"]]; // rwc , six nation , 4 nations , xx , wrc pacific
     var idComp=0, nbComp=rwc_index[idComp].length, iComp=nbComp-1;
 	var idLive=0, clock='', selMenu=0;
+	var teams = [], idRank=0, dataRank=[];
     var url = '';
 	// Chart dimensions.
 	var margin = {top: 20, right: 20, bottom: 30, left: 50},
@@ -68,10 +69,11 @@ text {
         .attr("padding-bottom", 0)
 		.attr("position", 0)
 		.classed("svg-content", true);
-	var dispatch = d3.dispatch('load','match','live','dashboard','update');
+	var dispatch = d3.dispatch('load','match','live','rank','update');
     dispatch.on('load',affListe);
     dispatch.on('match',affInfo);
     dispatch.on('live',affLive);
+    dispatch.on('rank',updateRank);
 	
 	var listeMatchs=[],dataInfo=[];
     var t = setInterval(cycle,60000);
@@ -298,6 +300,7 @@ function cycle() {
 
 		//arbitres
 	}
+	function updateRank() {}
 //--------------
 // Affichage de la liste des matches
 //
@@ -313,6 +316,11 @@ function cycle() {
 				cycle();
 			}
 		}
+		teams=[];
+        listeMatchs.matches.forEach((v)=>{
+				if (teams.find((a)=>{ console.log(v.teams[0]);return v.teams[0].matchId===a;}) == undefined)  { teams.push(v.teams[0].matchId);	}
+		  }); console.log(teams);
+		
 			//console.log(idLive);
         if (listeMatchs.event.winningTeam!=null) titre += '/' + listeMatchs.event.winningTeam.name;
         d3.select("#h1").text(titre);
@@ -476,6 +484,9 @@ function cycle() {
                 case 3: dataInfo = data;
                         dispatch.call('match');
                         break;
+                case 4: dataRank = data;
+                        dispatch.call('rank');
+                        break;
 			}
 		})
 		.catch(err => {
@@ -484,6 +495,15 @@ function cycle() {
 		});
 	}
 
+  </script>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+     
+     ga('create', 'UA-69988969-1', 'auto');
+     ga('send', 'pageview');
   </script>
 </body>
 </html>
