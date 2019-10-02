@@ -37,7 +37,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 4.52</aside>
+  <aside >Septembre, 2019<br><br>| v 4.60</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -56,6 +56,7 @@ text {
 	var idLive=0, clock='', selMenu=0;
 	var teams = [], idRank=0, dataRank=[],teamsInfo=[], nbTeams=-1;
     var url = '';
+	var dataTimeline=[];
     // format ...
     let valFormat = (a) => { 
         let r = (a>100) ? Math.round(a) : ( (a>1)? Math.round(a*100.0)/100 : Math.round(a*1000.0)/1000);
@@ -85,14 +86,15 @@ text {
 		.attr("position", 0)
 		.classed("svg-content", true);
 */
-	var dispatch = d3.dispatch('load','match','live','rank','update');
+	var dispatch = d3.dispatch('load','match','live','rank','timeline');
     dispatch.on('load',affListe);
     dispatch.on('match',affInfo);
     dispatch.on('live',affLive);
     dispatch.on('rank',updateRank);
+    dispatch.on('timeline',affTimeline);
 	
 	var listeMatchs=[],dataInfo=[];
-    var t = setInterval(cycle,60000), t_veille = setInterval(veille,300000);
+    var t = setInterval(cycle,5000), t_veille = setInterval(veille,300000);
     clearInterval(t);
 	menu(selMenu);changeComp();
     updateComp(1);
@@ -103,8 +105,9 @@ function cycle() {
 //    updateComp(0);
 			clearInterval(t_veille);
 			var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+idLive+'/summary';
-			infoMatch=[];
+			//infoMatch=[];
 			getData(urlMatch,2);
+			timeline();
 }
 // veille
 function veille() {
@@ -113,16 +116,25 @@ function veille() {
 		getData(urlRWC,1);
 		console.log('veille....');
 }
+// timeline
+function timeline() {
+	var urlTimeline = 'http://cmsapi.pulselive.com/rugby/match/'+idLive+'/timeline';
+	getData(urlTimeline,5);
+}
+function affTimeline() {
+	try {
+		let l=dataTimeline.timeline.length;
+		//console.log(dataTimeline.timeline[l-1]);
+	} catch(e) {console.log('timeline out');}
+}
 //--------------
 // update Compétition
     function updateComp(id) {
         if (id==undefined) iComp = (iComp+1) % nbComp;
-//        if (idLive!=0) t.restart(cycle,60000)
-//            else t.stop();
         var codeCup = rwc_index[idComp][iComp]; //[1][17];
         console.log(id,idComp,iComp);
         var urlRWC = 'http://cmsapi.pulselive.com/rugby/event/'+codeCup+'/schedule';
-        listeMatchs=[];
+        //listeMatchs=[];
         getData(urlRWC,1);
 		if (idLive != 0) {
 			var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+idLive+'/summary';
@@ -157,12 +169,14 @@ function veille() {
 }
 //----------
 	function selPage(idPage) {
-		console.log('Page : '+idPage);
+		//console.log('Page : '+idPage);
 		selMenu=idPage;
 		switch (idPage) {
 		  case 3 : 
+//		  click(); //epxxx
 	  		try { console.log('live!',dataLive); } catch(e) { console.log('no live!'); dataLive = dataInfo; } /// a enlever !!!
-			livePage();		break;
+			livePage();
+			break;
 		}
 	}
 // ---------
@@ -285,7 +299,7 @@ function veille() {
 		let stadeLargeur = (x(100)-x(0))*.7;
 		var y = d3.scaleLinear()
 			.domain([0, 70]).nice()
-			.range([0, stadeLargeur]);
+			.range([stadeLargeur, 0]);
 		let lineDash = ['','4,1','12,5'];
 		let stadeLine = [[22,0,22,70,0],[78,0,78,70,0],[40,0,40,70,1],[60,0,60,70,1],[0,5,100,5,2],[0,65,100,65,2],[0,15,100,15,2],[0,55,100,55,2]],
 			stadePoteau = [[0,35-2.8],[0,35+2.8],[100,35-2.8],[100,35+2.8]];
@@ -342,7 +356,14 @@ function veille() {
 				.text((d)=>{return (t==0?((Number(d.number)>9?'':'0')+d.number+' '):'')+d.player.name.display+'  - '+d.positionLabel+' ('+d.player.age.years+' ans)'+(t==1?((Number(d.number)>9?' ':' 0')+d.number+' '):'');})
 				.style('font-size','1vw');
 		}
-
+		// on affiche le live
+		try {
+			let l=dataTimeline.timeline.length;
+			console.log(dataTimeline.timeline[l-1]);
+			stadeG.append('g')//.selectAll('circle').data(dataTimeline.timeline[l-1]).enter()
+					.append('circle').attr('cx',x(dataTimeline.timeline[l-1].position.x)).attr('cy',y(dataTimeline.timeline[l-1].position.y*.7)).attr('r',5).style('fill','red');
+		} catch(e) {console.log('aff timeline out');}
+	
 	}
   	function updateRank() {
         teamsInfo[dataRank.team.id]=dataRank;
@@ -351,6 +372,24 @@ function veille() {
         //console.log(teamsInfo);
     }
     function computeScore() {
+		console.log(teamsInfo);
+//		Object.keys(teamsInfo).forEach(t=>{listeMatchs.matches.find(m=>{};)});
+//		const r = listeMatchs.matches.filter(v=>{v.teams[0].id==33 ||v.teams[1].id==33});
+		teamsCup= [];
+        listeMatchs.matches.forEach((v)=>{
+                if (teamsCup.find((a)=>{ return v.teams[0].id===a.id;}) == undefined)  { teamsCup.push({id:v.teams[0].id, pt:0, po:0, co:0});   }
+                if (teamsCup.find((a)=>{ return v.teams[1].id===a.id;}) == undefined)  { teamsCup.push({id:v.teams[1].id, pt:0, po:0, co:0});   }
+				if (v.status ==  'C') {
+				for (i=0;i<2;i++) {
+					let f = teamsCup.filter(d=>d.id==v.teams[i].id);
+					f[0].po = f[0].po + v.scores[i] ;
+					f[0].co = f[0].co + v.scores[(i+1)%2] ;
+					if (v.scores[i] > v.scores[(i+1)%2]) {f[0].pt = f[0].pt + 4;}
+					if (v.scores[i] == v.scores[(i+1)%2]) {f[0].pt = f[0].pt + 2;}
+					if (v.scores[i] < v.scores[(i+1)%2] && (v.scores[(i+1)%2]-v.scores[i])<7) f[0].pt = f[0].pt + 1;
+					console.log(f[0].id,f[0].pt, v.scores[i], v.scores[(i+1)%2],i,(i+1)%2);
+				}}
+		  }); console.log(teamsCup);
     }
 //--------------
 // Affichage de la liste des matches
@@ -363,7 +402,7 @@ function veille() {
 			if (listeMatchs.matches[m].status != 'U' && listeMatchs.matches[m].status !='C') {
 //				console.log(m);
 				idLive = listeMatchs.matches[m].matchId;
-				t = setInterval(cycle,60000);
+				t = setInterval(cycle,5000);
 				cycle();
 			}
 		}
@@ -502,7 +541,7 @@ function veille() {
     function affLive() {
         clock=dataLive.match.clock.label;
         let mId = '#m'+dataLive.match.matchId;
-        console.log(clock,mId);
+        console.log(clock,mId,dataLive);
         d3.select(mId).text(clock);
 		if (dataLive.match.status =='C') {
 			idLive = 0;
@@ -535,10 +574,12 @@ function veille() {
 		// JSON Data
 			//console.log(data);
 			switch (type) {
-				case 1: listeMatchs = data;
+				case 1: listeMatchs = [];
+						listeMatchs = data;
 						dispatch.call('load');
 						break;
-				case 2: dataLive = data;
+				case 2: dataLive=[];
+						dataLive = data;
 						dispatch.call('live');
 						break;
                 case 3: dataInfo = data;
@@ -546,6 +587,10 @@ function veille() {
                         break;
                 case 4: dataRank = data;
                         dispatch.call('rank');
+                        break;
+                case 5: dataTimeline=[];
+						dataTimeline = data;
+                        dispatch.call('timeline');
                         break;
 			}
 		})

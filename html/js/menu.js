@@ -34,7 +34,7 @@ var menuCircle=false;
 		if (d.http != null) {
 			console.log(d.http); window.location.href=d.http;
 		} else {
-			console.log(d.n);
+			//console.log(d.n);
 			selPage(d.n);
 		}
 		//    doGraphe(d.n);
