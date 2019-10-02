@@ -37,7 +37,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 4.50</aside>
+  <aside >Septembre, 2019<br><br>| v 4.52</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -92,7 +92,7 @@ text {
     dispatch.on('rank',updateRank);
 	
 	var listeMatchs=[],dataInfo=[];
-    var t = setInterval(cycle,60000);
+    var t = setInterval(cycle,60000), t_veille = setInterval(veille,300000);
     clearInterval(t);
 	menu(selMenu);changeComp();
     updateComp(1);
@@ -101,9 +101,17 @@ text {
 // cycle
 function cycle() {
 //    updateComp(0);
+			clearInterval(t_veille);
 			var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+idLive+'/summary';
 			infoMatch=[];
 			getData(urlMatch,2);
+}
+// veille
+function veille() {
+        var urlRWC = 'http://cmsapi.pulselive.com/rugby/event/'+rwc_index[idComp][iComp]+'/schedule';
+		infoMatch=[];
+		getData(urlRWC,1);
+		console.log('veille....');
 }
 //--------------
 // update Compétition
@@ -228,7 +236,7 @@ function cycle() {
             .append('rect').attr('x',(d,j)=>{ return (2*(c+3)*padding);}) //.attr('ry',2*padding)
             .attr('width',padding*2-1).attr('height',padding*2).style('fill', (d,i)=> { return c>3?'#259':'000';}).raise();});
         tryG.append('text').attr('x',0) //.attr('y',10)
-            .attr('dx',0).attr('y',padding*centre)
+            .attr('dx',0).attr('y',padding).style('dominant-baseline','middle')
             .style('fill', '#000').style('text-anchor', 'left').style('font-weight', 'normal')
             .text('Try').style('font-size','0.6vw');
             
@@ -240,7 +248,7 @@ function cycle() {
             .append('rect').attr('x',(d,j)=>{ return (2*(c+3)*padding);}) //.attr('ry',2*padding)
             .attr('width',padding*2-1).attr('height',padding*2).style('fill', '#000').raise();});
         DrGG.append('text').attr('x',0) //.attr('y',10)
-            .attr('dx',0).attr('y',padding*centre)
+            .attr('dx',0).attr('y',padding).style('dominant-baseline','middle')
             .style('fill', '#000').style('text-anchor', 'left').style('font-weight', 'normal')
             .text('Drop').style('font-size','0.6vw');
         // les Pénalités
@@ -251,7 +259,7 @@ function cycle() {
             .append('rect').attr('x',(d,j)=>{ return (2*(c+3)*padding);}) //.attr('ry',2*padding)
             .attr('width',padding*2-1).attr('height',padding*2).style('fill', '#000').raise();});
         PenG.append('text').attr('x',0) //.attr('y',10)
-            .attr('dx',0).attr('y',padding*centre)
+            .attr('dx',0).attr('y',padding).style('dominant-baseline','middle')
             .style('fill', '#000').style('text-anchor', 'left').style('font-weight', 'normal')
             .text('Pen').style('font-size','0.6vw');
         // les Sanctions
@@ -525,7 +533,7 @@ function cycle() {
 		.then(response => { return response.json();})
 		.then(data => {
 		// JSON Data
-			console.log(data);
+			//console.log(data);
 			switch (type) {
 				case 1: listeMatchs = data;
 						dispatch.call('load');
