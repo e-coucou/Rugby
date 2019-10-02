@@ -37,7 +37,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 4.60</aside>
+  <aside >Septembre, 2019<br><br>| v 4.70</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -54,7 +54,7 @@ text {
 	var rwc_index = [[ "1","2","3","4","5","952","1023","1238","1558"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1622","1623","1782","1783"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135","1697","1764","1807"],["1577"],["925","957","971","1006","1072","1130","1166","1235","1273","1569","1653","1769"]]; // rwc , six nation , 4 nations , xx , wrc pacific
     var idComp=0, nbComp=rwc_index[idComp].length, iComp=nbComp-1;
 	var idLive=0, clock='', selMenu=0;
-	var teams = [], idRank=0, dataRank=[],teamsInfo=[], nbTeams=-1;
+	var teams = [], idRank=0, dataRank=[],teamsInfo=[], nbTeams=-1, dataStandings=[];
     var url = '';
 	var dataTimeline=[];
     // format ...
@@ -112,9 +112,13 @@ function cycle() {
 // veille
 function veille() {
         var urlRWC = 'http://cmsapi.pulselive.com/rugby/event/'+rwc_index[idComp][iComp]+'/schedule';
-		infoMatch=[];
 		getData(urlRWC,1);
 		console.log('veille....');
+}
+// standings
+function standings() {
+    var urlStandings = 'http://cmsapi.pulselive.com/rugby/event/'+rwc_index[idComp][iComp]+'/standings';
+    getData(urlStandings,6);
 }
 // timeline
 function timeline() {
@@ -134,8 +138,8 @@ function affTimeline() {
         var codeCup = rwc_index[idComp][iComp]; //[1][17];
         console.log(id,idComp,iComp);
         var urlRWC = 'http://cmsapi.pulselive.com/rugby/event/'+codeCup+'/schedule';
-        //listeMatchs=[];
         getData(urlRWC,1);
+        standings();
 		if (idLive != 0) {
 			var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+idLive+'/summary';
 			infoMatch=[];
@@ -166,6 +170,7 @@ function affTimeline() {
  //.attr('cx',(d,i)=>{return width-i*25;}).attr('cy',15)
 //    interG.append('text').attr('fill','white').style('text-anchor','middle')
 //        .attr('dy','0.3em').text(d=>d.t).raise();
+
 }
 //----------
 	function selPage(idPage) {
@@ -356,6 +361,13 @@ function affTimeline() {
 				.text((d)=>{return (t==0?((Number(d.number)>9?'':'0')+d.number+' '):'')+d.player.name.display+'  - '+d.positionLabel+' ('+d.player.age.years+' ans)'+(t==1?((Number(d.number)>9?' ':' 0')+d.number+' '):'');})
 				.style('font-size','1vw');
 		}
+        // ranking de la poule ..
+        let pool = dataLive.match.eventPhase;
+        let f = dataStandings.tables.find(v=>v.label==pool);
+        let poolG = stadeG.append('g').attr('transform',(d)=>{ return 'translate('+(0)+','+(stadeLargeur*2)+')';});
+        poolG.selectAll('g').data(f.entries).enter()
+            .append('text').attr('x',0).attr('y',(d,i)=>i*largeur/50).style('text-anchor','begin').style('fill','#004').style('font-weight','bold')
+            .text((d)=>{return d.team.name+' - '+d.points+' ['+d.won+'/'+d.lost+'/'+d.drawn+']';}).style('font-size','2vw');
 		// on affiche le live
 		try {
 			let l=dataTimeline.timeline.length;
@@ -375,7 +387,7 @@ function affTimeline() {
 		console.log(teamsInfo);
 //		Object.keys(teamsInfo).forEach(t=>{listeMatchs.matches.find(m=>{};)});
 //		const r = listeMatchs.matches.filter(v=>{v.teams[0].id==33 ||v.teams[1].id==33});
-		teamsCup= [];
+/*		teamsCup= [];
         listeMatchs.matches.forEach((v)=>{
                 if (teamsCup.find((a)=>{ return v.teams[0].id===a.id;}) == undefined)  { teamsCup.push({id:v.teams[0].id, pt:0, po:0, co:0});   }
                 if (teamsCup.find((a)=>{ return v.teams[1].id===a.id;}) == undefined)  { teamsCup.push({id:v.teams[1].id, pt:0, po:0, co:0});   }
@@ -390,7 +402,7 @@ function affTimeline() {
 					console.log(f[0].id,f[0].pt, v.scores[i], v.scores[(i+1)%2],i,(i+1)%2);
 				}}
 		  }); console.log(teamsCup);
-    }
+  */  }
 //--------------
 // Affichage de la liste des matches
 //
@@ -591,6 +603,11 @@ function affTimeline() {
                 case 5: dataTimeline=[];
 						dataTimeline = data;
                         dispatch.call('timeline');
+                        break;
+                case 6: dataStandings=[];
+                        dataStandings = data;
+                        console.log(dataStandings);
+                        dispatch.call('load');
                         break;
 			}
 		})
