@@ -37,7 +37,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 4.70</aside>
+  <aside >Septembre, 2019<br><br>| v 4.71</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -353,7 +353,7 @@ function affTimeline() {
 		try { motm = dataLive.motm.motm.id; } catch(e) {}
 		for (t in [0,1]) {
 			let captain = dataLive.teams[t].teamList.captainId;
-			teamG.selectAll('g').data(dataLive.teams[t].teamList.list).enter()
+			teamG.selectAll('g').data(dataLive.teams[t].teamList.list.sort((a, b) => (Number(a.number) > Number(b.number)) ? 1 : -1)).enter()
 				.append('text').attr('x',t*(largeur))
 				.attr('dy',(d,i)=> {return (i*largeur/60);}).attr('y','0.5em')
 				.style('fill', (d)=>{return d.player.id==motm?'#d00':'#000';})
