@@ -37,7 +37,7 @@ text {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 4.71</aside>
+  <aside >Septembre, 2019<br><br>| v 4.90</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -324,9 +324,9 @@ function affTimeline() {
 			.append('line').attr('x1',d=>x(d[0])).attr('y1',d=>y(d[1])).attr('x2',d=>x(d[2])).attr('y2',d=>y(d[3])).style('stroke','#fff').style('stroke-dasharray',d=>lineDash[d[4]]);
 			
 		stadeG.append('text').attr('x',stadeSize/2).attr('y',stadeLargeur*1.14).style('text-anchor','middle').style('fill','#005').text(dataLive.match.venue.name).style('font-size','2.5vw').style('font-weight','bold');
-		stadeG.append('text').attr('x',stadeSize/2).attr('y',stadeLargeur*1.3).style('text-anchor','middle').style('fill','#005').text(dataLive.match.attendance+' spectateurs').style('font-size','1.5vw');
+		stadeG.append('text').attr('x',stadeSize/2).attr('y',stadeLargeur*1.22).style('text-anchor','middle').style('fill','#005').text(dataLive.match.attendance+' spectateurs').style('font-size','1.5vw');
 		
-		let officialG = stadeG.append('g').attr('transform',(d)=>{ return 'translate('+(stadeSize/2)+','+stadeLargeur*1.5+')';});
+		let officialG = stadeG.append('g').attr('transform',(d)=>{ return 'translate('+(stadeSize/2)+','+(stadeLargeur*1.33)+')';});
 		officialG.selectAll('g').data(dataLive.officials).enter()
 			.append('text').attr('x',0).attr('y',(d,i)=>i*largeur/60).style('text-anchor','middle').style('fill','#501').text((d)=>{return d.official.name.display+' - '+d.position+' ['+d.official.country+']';}).style('font-size','1vw');
 		
@@ -364,10 +364,38 @@ function affTimeline() {
         // ranking de la poule ..
         let pool = dataLive.match.eventPhase;
         let f = dataStandings.tables.find(v=>v.label==pool);
+        /*
         let poolG = stadeG.append('g').attr('transform',(d)=>{ return 'translate('+(0)+','+(stadeLargeur*2)+')';});
         poolG.selectAll('g').data(f.entries).enter()
             .append('text').attr('x',0).attr('y',(d,i)=>i*largeur/50).style('text-anchor','begin').style('fill','#004').style('font-weight','bold')
             .text((d)=>{return d.team.name+' - '+d.points+' ['+d.won+'/'+d.lost+'/'+d.drawn+']';}).style('font-size','2vw');
+        */
+        // tableau de Pool !
+        let poolH = ['R','Equipe','Play','Win','Lost','Nul','Pour','Contre','Try','Against','Bonus','Points'];
+        var table =  stadeG.append('g').style('fill','black').attr('transform',(d)=>{ return 'translate('+(-100)+','+(stadeLargeur*1.9)+')';})
+            .append("foreignObject")
+            .attr("width", stadeSize+200)
+            .attr("height", '12vw')
+            .style('background-color','#007')
+            .append("xhtml:table");
+
+        let thead = table.style('font-size','1vw').style('width','100%').style('height','100%').append('thead');
+            thead.append('tr').style('background-color','black').style('color','white').selectAll('th').data(poolH).enter()
+                .append('th').text((d)=>{return d;}).style('padding-right','7px').style('padding-left','7px');
+        let tbody = table.append('tbody');
+        let tr = tbody.selectAll('tr').data(f.entries).enter().append('tr').style('background-color','#cbf').style('color','black');
+            tr.append('th').text((d)=>{return d.positionLabel;});
+            tr.append('th').text((d)=>{return d.team.name;}).style('font-size','1.3vw').style('text-align','left');
+            tr.append('th').text((d)=>{return d.played;});
+            tr.append('th').text((d)=>{return d.won;});
+            tr.append('th').text((d)=>{return d.lost;});
+            tr.append('th').text((d)=>{return d.drawn;});
+            tr.append('th').text((d)=>{return d.pointsFor;});
+            tr.append('th').text((d)=>{return d.pointsAgainst;});
+            tr.append('th').text((d)=>{return d.triesFor;});
+            tr.append('th').text((d)=>{return d.triesAgainst;});
+            tr.append('th').text((d)=>{return d.bonusPoints;});
+            tr.append('th').text((d)=>{return d.points;}).style('font-size','1.3vw');
 		// on affiche le live
 		try {
 			let l=dataTimeline.timeline.length;
