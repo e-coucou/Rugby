@@ -10,6 +10,7 @@
 
 #chart {
 	position : absolute;
+	background-color : lightcyan;
 }
 #intervalle {
     position: absolute;
@@ -33,11 +34,14 @@ text {
 .rky header {
     background: #1e3F5E;
 }
+table {
+    font-family: "helvetica neue", sans-serif;
+}
 </style>
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 4.90</aside>
+  <aside >Septembre, 2019<br><br>| v 4.91</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -372,20 +376,20 @@ function affTimeline() {
         */
         // tableau de Pool !
         let poolH = ['R','Equipe','Play','Win','Lost','Nul','Pour','Contre','Try','Against','Bonus','Points'];
-        var table =  stadeG.append('g').style('fill','black').attr('transform',(d)=>{ return 'translate('+(-100)+','+(stadeLargeur*1.9)+')';})
+        var table =  stadeG.append('g').style('fill','black').attr('transform',(d)=>{ return 'translate('+(stadeSize*(-0.2))+','+(stadeLargeur*1.9)+')';})
             .append("foreignObject")
-            .attr("width", stadeSize+200)
+            .attr("width", stadeSize*1.4)
             .attr("height", '12vw')
             .style('background-color','#007')
             .append("xhtml:table");
 
-        let thead = table.style('font-size','1vw').style('width','100%').style('height','100%').append('thead');
+        let thead = table.style('font-size','0.9vw').style('width','100%').style('height','100%').append('thead');
             thead.append('tr').style('background-color','black').style('color','white').selectAll('th').data(poolH).enter()
                 .append('th').text((d)=>{return d;}).style('padding-right','7px').style('padding-left','7px');
         let tbody = table.append('tbody');
         let tr = tbody.selectAll('tr').data(f.entries).enter().append('tr').style('background-color','#cbf').style('color','black');
             tr.append('th').text((d)=>{return d.positionLabel;});
-            tr.append('th').text((d)=>{return d.team.name;}).style('font-size','1.3vw').style('text-align','left');
+            tr.append('th').text((d)=>{return d.team.name;}).style('font-size','1.1vw').style('text-align','left');
             tr.append('th').text((d)=>{return d.played;});
             tr.append('th').text((d)=>{return d.won;});
             tr.append('th').text((d)=>{return d.lost;});
@@ -395,7 +399,7 @@ function affTimeline() {
             tr.append('th').text((d)=>{return d.triesFor;});
             tr.append('th').text((d)=>{return d.triesAgainst;});
             tr.append('th').text((d)=>{return d.bonusPoints;});
-            tr.append('th').text((d)=>{return d.points;}).style('font-size','1.3vw');
+            tr.append('th').text((d)=>{return d.points;}).style('font-size','1.1vw');
 		// on affiche le live
 		try {
 			let l=dataTimeline.timeline.length;
