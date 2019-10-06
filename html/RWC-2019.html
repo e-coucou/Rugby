@@ -41,7 +41,7 @@ table {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 4.91</aside>
+  <aside >Septembre, 2019<br><br>| v 5.00</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -144,6 +144,7 @@ function affTimeline() {
         var urlRWC = 'http://cmsapi.pulselive.com/rugby/event/'+codeCup+'/schedule';
         getData(urlRWC,1);
         standings();
+        timeline();
 		if (idLive != 0) {
 			var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+idLive+'/summary';
 			infoMatch=[];
@@ -313,7 +314,7 @@ function affTimeline() {
 		let stadeLine = [[22,0,22,70,0],[78,0,78,70,0],[40,0,40,70,1],[60,0,60,70,1],[0,5,100,5,2],[0,65,100,65,2],[0,15,100,15,2],[0,55,100,55,2]],
 			stadePoteau = [[0,35-2.8],[0,35+2.8],[100,35-2.8],[100,35+2.8]];
 
-        let stadeG = graph.append('g').attr('transform',(d,i)=>{return ('translate('+((largeur-stadeSize)/2)+','+(scoreSize+timeSize+13*padding)+')');});
+        let stadeG = graph.append('g').attr('transform',(d,i)=>{return ('translate('+((largeur-stadeSize)/2)+','+(scoreSize+timeSize+25*padding)+')');});
         stadeG.append('rect').attr('width',x(0)).attr('height',stadeLargeur)
             .style('fill','#071');
         stadeG.append('rect').attr('x',x(0)+1).attr('width',x(40)-1).attr('height',stadeLargeur)
@@ -401,8 +402,14 @@ function affTimeline() {
             tr.append('th').text((d)=>{return d.bonusPoints;});
             tr.append('th').text((d)=>{return d.points;}).style('font-size','1.1vw');
 		// on affiche le live
+       let infoG = stadeG.append('g').attr('transform','translate(0,-35)');
+            infoG.append('rect').attr('width',stadeSize).attr('height',30).style('fill','#259');
+            infoG.append('text').text('Timeline to come').style('fill','white').style('dominant-baseline','middle').style('text-anchor','start')
+                .attr('y','10px').attr('x','10px').style('font-size','1.5vw)');
+//            console.log(dataTimeline.timeline[l-1]);
+            let l=dataTimeline.timeline.length;
+            infoG.text(dataTimeline.timeline[l-1].time.label);
 		try {
-			let l=dataTimeline.timeline.length;
 			console.log(dataTimeline.timeline[l-1]);
 			stadeG.append('g')//.selectAll('circle').data(dataTimeline.timeline[l-1]).enter()
 					.append('circle').attr('cx',x(dataTimeline.timeline[l-1].position.x)).attr('cy',y(dataTimeline.timeline[l-1].position.y*.7)).attr('r',5).style('fill','red');
