@@ -41,13 +41,14 @@ table {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 5.00</aside>
+  <aside >Septembre, 2019<br><br>| v 5.10</aside>
   <div id='menu'></div>
 </header>
 <footer>
     <aside>(c) e-Coucou | y2kJ | Live Data</aside>
     <div id="info"></div>
 </footer>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script src="https://unpkg.com/d3@5.7.0/dist/d3.min.js" charset="utf-8"></script>
 	<script src="../js/menu.js" charset="utf-8"></script>
 	<script defer src="../js/all.js"></script>
@@ -111,7 +112,7 @@ function cycle() {
 			var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+idLive+'/summary';
 			//infoMatch=[];
 			getData(urlMatch,2);
-			timeline();
+			timeline(idLive);
 }
 // veille
 function veille() {
@@ -125,14 +126,15 @@ function standings() {
     getData(urlStandings,6);
 }
 // timeline
-function timeline() {
-	var urlTimeline = 'http://cmsapi.pulselive.com/rugby/match/'+idLive+'/timeline';
+function timeline(id) {
+	console.log('get Timeline ...', id);
+	var urlTimeline = 'http://cmsapi.pulselive.com/rugby/match/'+id+'/timeline';
 	getData(urlTimeline,5);
 }
 function affTimeline() {
 	try {
 		let l=dataTimeline.timeline.length;
-		//console.log(dataTimeline.timeline[l-1]);
+		console.log('time line : ',dataTimeline);
 	} catch(e) {console.log('timeline out');}
 }
 //--------------
@@ -144,7 +146,7 @@ function affTimeline() {
         var urlRWC = 'http://cmsapi.pulselive.com/rugby/event/'+codeCup+'/schedule';
         getData(urlRWC,1);
         standings();
-        timeline();
+        //timeline();
 		if (idLive != 0) {
 			var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+idLive+'/summary';
 			infoMatch=[];
@@ -203,7 +205,7 @@ function affTimeline() {
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 		let listeG = graph.selectAll('g').data(dataLive.match.scores).enter()   /// a changer EP
-			.append('g').attr('transform',(d,i)=>{return ('translate('+(i*(largeur/2+padding))+','+(margeH)+')');});
+			.append('g').attr('transform',(d,i)=>{return ('translate('+(i*(largeur/2+padding))+','+(margeH)+')');}).attr('class','cScores');
 		//--------------------------------------
 		console.log('live page ...');
         //nom des équipes
@@ -302,7 +304,9 @@ function affTimeline() {
 
 		//-----------------------------
 		// le stade !
-		let stadeSize = largeur/3, poteau
+		let stadeSize = largeur/3, poteau, tlSpace = 60;
+		let hScores = $('.cScores')[0].getBBox().height;
+		//console.log('la taille des scores ... : ',$('.cScores')[0].getBBox().height);
 		var x = d3.scaleLinear()
 			.domain([-10, 110]).nice()
 			.range([0, stadeSize]);
@@ -314,7 +318,7 @@ function affTimeline() {
 		let stadeLine = [[22,0,22,70,0],[78,0,78,70,0],[40,0,40,70,1],[60,0,60,70,1],[0,5,100,5,2],[0,65,100,65,2],[0,15,100,15,2],[0,55,100,55,2]],
 			stadePoteau = [[0,35-2.8],[0,35+2.8],[100,35-2.8],[100,35+2.8]];
 
-        let stadeG = graph.append('g').attr('transform',(d,i)=>{return ('translate('+((largeur-stadeSize)/2)+','+(scoreSize+timeSize+25*padding)+')');});
+        let stadeG = graph.append('g').attr('transform',(d,i)=>{return ('translate('+((largeur-stadeSize)/2)+','+(hScores + tlSpace + padding)+')');});//(scoreSize+timeSize+25*padding)+')');});
         stadeG.append('rect').attr('width',x(0)).attr('height',stadeLargeur)
             .style('fill','#071');
         stadeG.append('rect').attr('x',x(0)+1).attr('width',x(40)-1).attr('height',stadeLargeur)
@@ -402,17 +406,18 @@ function affTimeline() {
             tr.append('th').text((d)=>{return d.bonusPoints;});
             tr.append('th').text((d)=>{return d.points;}).style('font-size','1.1vw');
 		// on affiche le live
-       let infoG = stadeG.append('g').attr('transform','translate(0,-35)');
-            infoG.append('rect').attr('width',stadeSize).attr('height',30).style('fill','#259');
-            infoG.append('text').text('Timeline to come').style('fill','white').style('dominant-baseline','middle').style('text-anchor','start')
+       let infoG = stadeG.append('g').attr('transform','translate(0,'+(-tlSpace+padding)+')');
+            infoG.append('rect').attr('width',stadeSize).attr('height',tlSpace*0.9-padding).style('fill','#259');
+            infoG.append('text').text('Timeline to come').attr('id','infoTimeline')
+				.style('fill','white').style('dominant-baseline','middle').style('text-anchor','start')
                 .attr('y','10px').attr('x','10px').style('font-size','1.5vw)');
 //            console.log(dataTimeline.timeline[l-1]);
-            let l=dataTimeline.timeline.length;
-            infoG.text(dataTimeline.timeline[l-1].time.label);
 		try {
-			console.log(dataTimeline.timeline[l-1]);
-			stadeG.append('g')//.selectAll('circle').data(dataTimeline.timeline[l-1]).enter()
-					.append('circle').attr('cx',x(dataTimeline.timeline[l-1].position.x)).attr('cy',y(dataTimeline.timeline[l-1].position.y*.7)).attr('r',5).style('fill','red');
+            let l=dataTimeline.timeline.length;
+			console.log('timeline',l,dataTimeline.timeline[l-1].type,dataTimeline.timeline[l-1].typeLabel);
+			d3.select('#infoTimeline').text(dataTimeline.timeline[l-1].time.label+' / '+dataTimeline.timeline[l-1].typeLabel);
+//			stadeG.append('g')//.selectAll('circle').data(dataTimeline.timeline[l-1]).enter()
+//					.append('circle').attr('cx',x(dataTimeline.timeline[l-1].position.x)).attr('cy',y(dataTimeline.timeline[l-1].position.y*.7)).attr('r',5).style('fill','red');
 		} catch(e) {console.log('aff timeline out');}
 	
 	}
@@ -446,8 +451,8 @@ function affTimeline() {
 // Affichage de la liste des matches
 //
 	function affListe() {
-        let titre = listeMatchs.event.label;
         console.log('affListe');
+        let titre = listeMatchs.event.label;
 		idLive=0;
 		for (m in listeMatchs.matches) {
 			if (listeMatchs.matches[m].status != 'U' && listeMatchs.matches[m].status !='C') {
@@ -561,7 +566,7 @@ function affTimeline() {
         var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+d.matchId+'/summary';
         dataInfo=[];
         getData(urlMatch,3);
-
+		timeline(d.matchId);
 	}
     function affInfo() {
         try { clock=dataInfo.match.clock.label; } catch(e) {clock='00:00';}
