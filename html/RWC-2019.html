@@ -41,7 +41,7 @@ table {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 5.11</aside>
+  <aside >Septembre, 2019<br><br>| v 5.30</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -77,20 +77,7 @@ table {
         .attr("width", width -5) //+ margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .attr("position", 2);
-//        .append("g")
-//        .attr("transform", "translate(" + 0 + "," + margin.top + ")");
-/*
-	var svg = d3.select("#chart").style('top','25px')
-		.append("svg")
-//		.attr('class','svg-contenair')
-	//	.attr("preserveAspectRatio", "xMinYMin meet")
-        .attr("viewBox", "0 0 "+(width)+" "+(height + margin.top + margin.bottom))
-//        .attr("viewBox", "0 0 "+(width - margin.left - margin.right)+" "+(height + margin.top + margin.bottom))
-        .attr("padding-bottom", 0)
-        .attr("padding-right", 0)
-		.attr("position", 0)
-		.classed("svg-content", true);
-*/
+
 	var dispatch = d3.dispatch('load','match','live','rank','timeline');
     dispatch.on('load',affListe);
     dispatch.on('match',affInfo);
@@ -107,13 +94,13 @@ table {
 
 //--------------
 // cycle
-function cycle() {
+async function cycle() {
 //    updateComp(0);
-			clearInterval(t_veille);
-			var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+idLive+'/summary';
+	clearInterval(t_veille);
+	var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+idLive+'/summary';
 			//infoMatch=[];
-			getData(urlMatch,2);
-			timeline(idLive);
+	getData(urlMatch,2);
+	await timeline(idLive);
 }
 // veille
 function veille() {
@@ -127,7 +114,7 @@ function standings() {
     getData(urlStandings,6);
 }
 // timeline
-function timeline(id) {
+async function timeline(id) {
 	console.log('get Timeline ...', id);
 	var urlTimeline = 'http://cmsapi.pulselive.com/rugby/match/'+id+'/timeline';
 	getData(urlTimeline,5);
@@ -136,6 +123,7 @@ function affTimeline() {
 	try {
 		let l=dataTimeline.timeline.length;
 		console.log('time line : ',dataTimeline);
+//        selPage(3);
 	} catch(e) {console.log('timeline out');}
 }
 //--------------
@@ -192,9 +180,9 @@ function affTimeline() {
 	}
 // ---------
 	function livePage() {
-		let size = 26,padding=4, space=0.9,centre=1.6, margeH = 5;
+		let padding=width/420, space=0.9,centre=1.6, margeH = 5;
 		var largeur = (width-margin.left-margin.right); //console.log(largeur,width);
-		let timeSize=25, scoreSize = 95;
+		let timeSize=width/40, scoreSize = width/15; //25 - 95;
 		let teamColor=['#006','#0bc'];
         d3.select('#intervalle').remove();
         d3.select('#infoLive').remove();
@@ -217,7 +205,7 @@ function affTimeline() {
             .text((d,i)=>(dataLive['match']['teams'][i]['name'])).style('font-size','3.5vw');
         // rank
         listeG.append('text').attr('x',0) //.attr('y',10)
-            .attr('dx',(d,i)=>{ return (i*largeur/2-2*(2*i-1)*padding)}).attr('y',(timeSize+scoreSize-padding))
+            .attr('dx',(d,i)=>{ return (i*largeur/2-2*(2*i-1)*padding)}).attr('y',(timeSize+scoreSize)).attr('dy','-0.76em')
             .style('fill', '#fff').style('text-anchor', (d,i)=> i==0?'begin':'end')
             .style('font-weight', 'normal')
             .text((d,i)=>{ id=dataLive.match.teams[i].id;
@@ -225,7 +213,7 @@ function affTimeline() {
             .style('font-size','1vw');
         // POOL
         listeG.append('text').attr('x',0) //.attr('y',10)
-            .attr('dx',(d,i)=>{ return (i*largeur/2-2*(2*i-1)*padding)}).attr('y',(3*padding))
+            .attr('dx',(d,i)=>{ return (i*largeur/2-2*(2*i-1)*padding)}).attr('y', '1.5em') //(3*padding))
             .style('fill', '#fff').style('text-anchor', (d,i)=> i==0?'begin':'end')
             .style('font-weight', 'normal').text((d,i)=> dataLive.match.eventPhase )
             .style('font-size','1vw');
@@ -297,7 +285,7 @@ function affTimeline() {
         ConG.append('text').attr('x',0) //.attr('y',10)
             .attr('dx',0).attr('y',padding).style('dominant-baseline','middle')
             .style('fill', '#000').style('text-anchor', 'left').style('font-weight', 'normal')
-            .text('Pen').style('font-size','0.6vw');
+            .text('Con').style('font-size','0.6vw');
         // les Sanctions
         let YCG = listeG.append('g') 
             .attr('transform',(d,i)=>{return ('translate('+(i==0?(largeur/2-scoreSize):(padding))+','+(scoreSize+timeSize-2*padding)+')');});
@@ -314,7 +302,7 @@ function affTimeline() {
 
 		//-----------------------------
 		// le stade !
-		let stadeSize = largeur/3, poteau, tlSpace = 60;
+		let stadeSize = largeur/3, poteau, tlSpace = width/14;
 		let hScores = $('.cScores')[0].getBBox().height;
 		//console.log('la taille des scores ... : ',$('.cScores')[0].getBBox().height);
 		var x = d3.scaleLinear()
@@ -328,7 +316,7 @@ function affTimeline() {
 		let stadeLine = [[22,0,22,70,0],[78,0,78,70,0],[40,0,40,70,1],[60,0,60,70,1],[0,5,100,5,2],[0,65,100,65,2],[0,15,100,15,2],[0,55,100,55,2]],
 			stadePoteau = [[0,35-2.8],[0,35+2.8],[100,35-2.8],[100,35+2.8]];
 
-        let stadeG = graph.append('g').attr('transform',(d,i)=>{return ('translate('+((largeur-stadeSize)/2)+','+(hScores + tlSpace + padding)+')');});//(scoreSize+timeSize+25*padding)+')');});
+        let stadeG = graph.append('g').attr('transform',(d,i)=>{return ('translate('+((largeur-stadeSize)/2)+','+(hScores + tlSpace + 1*padding )+')');});//(scoreSize+timeSize+25*padding)+')');});
         stadeG.append('rect').attr('width',x(0)).attr('height',stadeLargeur)
             .style('fill','#071');
         stadeG.append('rect').attr('x',x(0)+1).attr('width',x(40)-1).attr('height',stadeLargeur)
@@ -341,9 +329,9 @@ function affTimeline() {
 			.append('circle').attr('cx',d=>x(d[0])).attr('cy',d=>y(d[1])).attr('r',3).style('fill','#fff');
 		stadeG.selectAll('g').data(stadeLine).enter()
 			.append('line').attr('x1',d=>x(d[0])).attr('y1',d=>y(d[1])).attr('x2',d=>x(d[2])).attr('y2',d=>y(d[3])).style('stroke','#fff').style('stroke-dasharray',d=>lineDash[d[4]]);
-			
-		stadeG.append('text').attr('x',stadeSize/2).attr('y',stadeLargeur*1.14).style('text-anchor','middle').style('fill','#005').text(dataLive.match.venue.name).style('font-size','2.5vw').style('font-weight','bold');
-		stadeG.append('text').attr('x',stadeSize/2).attr('y',stadeLargeur*1.22).style('text-anchor','middle').style('fill','#005').text(dataLive.match.attendance+' spectateurs').style('font-size','1.5vw');
+		//les infos sur le stade 	
+		stadeG.append('text').attr('x',stadeSize/2).attr('y',stadeLargeur).attr('dy','1em').style('text-anchor','middle').style('fill','#005').text(dataLive.match.venue.name).style('font-size','2.5vw').style('font-weight','bold');
+		stadeG.append('text').attr('x',stadeSize/2).attr('y',stadeLargeur).attr('dy','3em').style('text-anchor','middle').style('fill','#005').text(dataLive.match.attendance+' spectateurs').style('font-size','1.5vw');
 		
 		let officialG = stadeG.append('g').attr('transform',(d)=>{ return 'translate('+(stadeSize/2)+','+(stadeLargeur*1.33)+')';});
 		officialG.selectAll('g').data(dataLive.officials).enter()
@@ -417,14 +405,15 @@ function affTimeline() {
             tr.append('th').text((d)=>{return d.points;}).style('font-size','1.1vw');
 		// on affiche le live
 		try {
-            let l=dataTimeline.timeline.length, nbTL = 3;
+            let l=dataTimeline.timeline.length, nbTL = Math.trunc(tlSpace/10-0.5);
 			var tlFilter = dataTimeline.timeline.filter((x,i)=>{ return (i>= (l-nbTL-1) && (i!=(l-1)));});
 			console.log(tlFilter);
-			let infoG = stadeG.append('g').attr('transform','translate(0,'+(-tlSpace+padding)+')').selectAll('g').data(tlFilter).enter();
-				infoG.append('rect').attr('width',stadeSize).attr('height',tlSpace*0.9-padding).style('fill','#259');
+			let infoG = stadeG.append('g').attr('transform','translate(0,'+(-tlSpace+padding)+')')
+                    .selectAll('g').data(tlFilter.sort((a, b) => (Number(a.time.secs) > Number(b.time.secs)) ? -1 : 1)).enter();
+				infoG.append('rect').attr('width',stadeSize).attr('height',tlSpace-2*padding).style('fill','#259');
 				infoG.append('text').text((d)=> {console.log(d.type); return (d.time.label+' ['+dataInfo.match.teams[d.teamIndex].name+'] '+d.typeLabel+' - '+d.info);}).attr('id','infoTimeline')
 					.style('fill','white').style('dominant-baseline','middle').style('text-anchor','start')
-					.attr('y',(d,i)=>{ return ((i+.9))+'vw';}).attr('x','10px').style('font-size','1.5vw)');
+					.attr('y',(d,i)=>{ return ((i+1))+'em';}).attr('x','10px').style('font-size','1.5vw)');
 			stadeG.append('g')//.selectAll('circle').data(dataTimeline.timeline[l-1]).enter()
 				.append('circle').attr('cx',x(tlFilter[nbTL-1].position.x)).attr('cy',y(tlFilter[nbTL-1].position.y*.7)).attr('r',5).style('fill','red');
 			}
@@ -555,17 +544,19 @@ function affTimeline() {
 */	}
 //--------------
 // Get Info
-	function getInfo(d,i) {
+async function getInfo(d,i) {
+        console.log('getInfo');
+        await timeline(d.matchId);
         var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+d.matchId+'/summary';
         dataInfo=[];
         getData(urlMatch,3);
-		timeline(d.matchId);
 	}
-    function affInfo() {
+async function affInfo() {
         try { clock=dataInfo.match.clock.label; } catch(e) {clock='00:00';}
         let mId = '#m'+dataInfo.match.matchId;
         //console.log(clock,mId);
         d3.select(mId).text(clock);
+        await timeline(dataInfo.match.matchId);
         affInfoLive(dataInfo);
         selPage(3);
     }
