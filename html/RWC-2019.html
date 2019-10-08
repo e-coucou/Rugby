@@ -41,7 +41,7 @@ table {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 5.30</aside>
+  <aside >Septembre, 2019<br><br>| v 5.41</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -440,6 +440,7 @@ function affTimeline() {
 			if (listeMatchs.matches[m].status != 'U' && listeMatchs.matches[m].status !='C') {
 //				console.log(m);
 				idLive = listeMatchs.matches[m].matchId;
+				getMatch(idLive);
 				t = setInterval(cycle,5000);
 				cycle();
 			}
@@ -547,10 +548,13 @@ function affTimeline() {
 async function getInfo(d,i) {
         console.log('getInfo');
         await timeline(d.matchId);
-        var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+d.matchId+'/summary';
-        dataInfo=[];
-        getData(urlMatch,3);
+		await getMatch(d.matchId);
 	}
+async function getMatch(id) {
+    var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+id+'/summary';
+    dataInfo=[];
+    getData(urlMatch,3);
+}
 async function affInfo() {
         try { clock=dataInfo.match.clock.label; } catch(e) {clock='00:00';}
         let mId = '#m'+dataInfo.match.matchId;
