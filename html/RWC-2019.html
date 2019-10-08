@@ -41,7 +41,7 @@ table {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 6.00</aside>
+  <aside >Septembre, 2019<br><br>| v 6.01</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -230,7 +230,8 @@ function affTimeline() {
                          return (teamsInfo[id].current.pos); })//+' ('+valFormat(teamsInfo[id].current.pts)+') (#'+teamsInfo[id].matches+')');})
             .style('font-size','2vw');
         // on affiche le Stade !
-        let ret = affStade(largeur,graph,padding);
+        let  tlSpace = width/14;
+        let ret = affStade(largeur,graph,padding,0);
 
      }
 // ---------
@@ -354,7 +355,8 @@ function affTimeline() {
             .append('rect').attr('x',(d,j)=>{ return (2*(c+3)*padding);}) //.attr('ry',2*padding)
             .attr('width',padding*2-1).attr('height',padding*2).style('fill', '#f00').raise();});
 
-        let ret = affStade(largeur,graph,padding);
+        let  tlSpace = width/14;
+        let ret = affStade(largeur,graph,padding,tlSpace);
         let stadeSize=ret[1], stadeG = ret[0] , stadeLargeur = ret[2];
         console.log(stadeSize,stadeLargeur);
 		//on affiche les joueurs ...
@@ -613,10 +615,10 @@ async function affInfo() {
     }
 //---------
 // on affiche le Stade
-function affStade(largeur,graph,padding) {
+function affStade(largeur,graph,padding,tlSpace) {
         //-----------------------------
         // le stade !
-        let stadeSize = largeur/3, poteau, tlSpace = width/14;
+        let stadeSize = largeur/3, poteau;
         let hScores = $('.cScores')[0].getBBox().height;
         //console.log('la taille des scores ... : ',$('.cScores')[0].getBBox().height);
         let x = d3.scaleLinear()
