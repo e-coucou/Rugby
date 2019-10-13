@@ -41,7 +41,7 @@ table {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 6.01</aside>
+  <aside >Septembre, 2019<br><br>| v 6.03</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -409,20 +409,27 @@ function affTimeline() {
             tr.append('th').text((d)=>{return d.bonusPoints;});
             tr.append('th').text((d)=>{return d.points;}).style('font-size','1.1vw');
 		// on affiche le live
+        let x = d3.scaleLinear()
+            .domain([-10, 110]).nice()
+            .range([0, stadeSize]);
+        let y = d3.scaleLinear()
+            .domain([0, 70]).nice()
+            .range([stadeLargeur, 0]);
 		try {
             let l=dataTimeline.timeline.length, nbTL = Math.trunc(tlSpace/10-0.5);
 			var tlFilter = dataTimeline.timeline.filter((x,i)=>{ return (i>= (l-nbTL-1) && (i!=(l-1)));});
-			console.log(tlFilter);
+			//console.log(tlFilter);
 			let infoG = stadeG.append('g').attr('transform','translate(0,'+(-tlSpace+padding)+')')
                     .selectAll('g').data(tlFilter.sort((a, b) => (Number(a.time.secs) > Number(b.time.secs)) ? -1 : 1)).enter();
 				infoG.append('rect').attr('width',stadeSize).attr('height',tlSpace-2*padding).style('fill','#259');
-				infoG.append('text').text((d)=> {console.log(d.type); return (d.time.label+' ['+dataInfo.match.teams[d.teamIndex].name+'] '+d.typeLabel+' - '+d.info);}).attr('id','infoTimeline')
+				infoG.append('text').text((d)=> {/*console.log(d.type); */return (d.time.label+' ['+dataInfo.match.teams[d.teamIndex].name+'] '+d.typeLabel+' - '+d.info);}).attr('id','infoTimeline')
 					.style('fill','white').style('dominant-baseline','middle').style('text-anchor','start')
 					.attr('y',(d,i)=>{ return ((i+1))+'em';}).attr('x','10px').style('font-size','1.5vw)');
+            console.log(tlFilter[nbTL-1]);
 			stadeG.append('g')//.selectAll('circle').data(dataTimeline.timeline[l-1]).enter()
 				.append('circle').attr('cx',x(tlFilter[nbTL-1].position.x)).attr('cy',y(tlFilter[nbTL-1].position.y*.7)).attr('r',5).style('fill','red');
 			}
-		catch(e) {console.log('aff timeline out');}
+		catch(e) {console.log('aff timeline out : erreur ->',e);}
 	
 	}
   	function updateRank() {
