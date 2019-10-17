@@ -358,7 +358,7 @@ function affTimeline() {
         let  tlSpace = width/14;
         let ret = affStade(largeur,graph,padding,tlSpace);
         let stadeSize=ret[1], stadeG = ret[0] , stadeLargeur = ret[2];
-        console.log(stadeSize,stadeLargeur);
+        //console.log(stadeSize,stadeLargeur);
 		//on affiche les joueurs ...
         let teamG = graph.append('g').attr('transform',(d,i)=>{return ('translate('+(0)+','+(scoreSize+timeSize+5*padding)+')');});
 		let motm=0;
