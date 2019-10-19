@@ -449,6 +449,8 @@ function affTimeline() {
 	function affListe() {
         console.log('affListe');
         let titre = listeMatchs.event.label;
+        //------
+        // s'il ya un match en cours on pass au LIVE !
 		idLive=0;
 		for (m in listeMatchs.matches) {
 			if (listeMatchs.matches[m].status != 'U' && listeMatchs.matches[m].status !='C') {
@@ -486,7 +488,9 @@ function affTimeline() {
 		var graph=svg.append('g').attr('id','graphe')
 			.attr("transform", "translate(" + 0 + "," + (margin.top+30) + ")");
 
-		let listeG = graph.selectAll('g').data(listeMatchs.matches).enter()
+        // on tri les match dans l'ordre UP/DOWN
+        let UP=-1;
+		let listeG = graph.selectAll('g').data(listeMatchs.matches.sort((a, b) => (Number(a.time.millis) > Number(b.time.millis)) ? UP : (-1*UP))).enter()
 			.append('g').attr('transform',(d,i)=>{return ('translate('+(2)+','+(i*size+padding/2)+')');});
 
         //equ 0 - nom
@@ -494,32 +498,32 @@ function affTimeline() {
             .attr('width',largeur).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]); //'#0a88ff');
         listeG.append('text').attr('x',padding) //.attr('y',10)
             .attr('dx',(largeur-padding)/2).attr('y',size/centre).attr('id',(d)=>{return ('en0_'+d.matchId);})
-            .style('fill', (d) => { return d.scores[0]>d.scores[1]?'#fff':'ccc';}).style('text-anchor', 'middle')
-            .style('font-weight', (d) => { return d.scores[0]>d.scores[1]?'bold':'normal';})
+            .style('fill', (d) => { return d.scores[0]>=d.scores[1]?'#fff':'ccc';}).style('text-anchor', 'middle')
+            .style('font-weight', (d) => { return d.scores[0]>=d.scores[1]?'bold':'normal';})
             .text((d)=>(d['teams'][0]['name'])).style('font-size','11px');
         //equ 1 - nom
         listeG.append('rect').attr('x',largeur*2).attr('id','stat')
             .attr('width',largeur).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]);
         listeG.append('text').attr('x',padding) //.attr('y',10)
             .attr('dx',2*largeur+(largeur-padding)/2).attr('y',size/centre).attr('id',(d)=>{return ('en1_'+d.matchId);})
-            .style('fill','#fff').style('text-anchor', 'middle').style('fill', (d) => { return d.scores[1]>d.scores[0]?'#fff':'ccc';})
-            .style('font-weight', (d) => { return d.scores[1]>d.scores[0]?'bold':'normal';})
+            .style('fill','#fff').style('text-anchor', 'middle').style('fill', (d) => { return d.scores[1]>=d.scores[0]?'#fff':'ccc';})
+            .style('font-weight', (d) => { return d.scores[1]>=d.scores[0]?'bold':'normal';})
             .text((d)=>(d['teams'][1]['name'])).style('font-size','12px');
         //equ 0 : score
         listeG.append('rect').attr('x',largeur+padding).attr('id','stat')
             .attr('width',largeur/3).attr('height',size*space).style('fill',d=>color_pool[d.eventPhase]);
         listeG.append('text').attr('x',padding).attr('id',(d)=>{return ('e0_'+d.matchId);}) //.attr('y',10)
             .attr('dx',largeur+(largeur/3-padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
-            .style('fill', (d) => { return d.scores[0]>d.scores[1]?'#fff':'ccc';})
-            .style('font-weight', (d) => { return d.scores[0]>d.scores[1]?'bold':'normal';})
+            .style('fill', (d) => { return d.scores[0]>=d.scores[1]?'#fff':'ccc';})
+            .style('font-weight', (d) => { return d.scores[0]>=d.scores[1]?'bold':'normal';})
             .text((d)=>(d['scores'][0])).style('font-size','12px');
         //equ 1 : score
         listeG.append('rect').attr('x',5*largeur/3-padding).attr('id','stat')
             .attr('width',largeur/3).attr('height',size*space).style('fill',d=>color_pool[d.eventPhase]);
         listeG.append('text').attr('x',padding).attr('id',(d)=>{return ('e1_'+d.matchId);}) //.attr('y',10)
             .attr('dx',5*largeur/3+(largeur/3-3*padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
-            .style('fill', (d) => { return d.scores[1]>d.scores[0]?'#fff':'ccc';})
-            .style('font-weight', (d) => { return d.scores[1]>d.scores[0]?'bold':'normal';})
+            .style('fill', (d) => { return d.scores[1]>=d.scores[0]?'#fff':'ccc';})
+            .style('font-weight', (d) => { return d.scores[1]>=d.scores[0]?'bold':'normal';})
             .text((d)=>(d['scores'][1])).style('font-size','12px');
         //en cours ?
         listeG.append('rect').attr('x',4*largeur/3+2*padding).attr('rx',2*padding).attr('ry',2*padding)
