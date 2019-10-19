@@ -41,7 +41,7 @@ table {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 6.04</aside>
+  <aside >Septembre, 2019<br><br>| v 6.06</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -374,7 +374,7 @@ function affTimeline() {
 				.style('font-size','1vw');
 		}
         // ranking de la poule ..
-        let pool = dataLive.match.eventPhase;
+        let pool = dataLive.match.eventPhase; console.log(pool);
         let f = dataStandings.tables.find(v=>v.label==pool);
         /*
         let poolG = stadeG.append('g').attr('transform',(d)=>{ return 'translate('+(0)+','+(stadeLargeur*2)+')';});
@@ -383,6 +383,7 @@ function affTimeline() {
             .text((d)=>{return d.team.name+' - '+d.points+' ['+d.won+'/'+d.lost+'/'+d.drawn+']';}).style('font-size','2vw');
         */
         // tableau de Pool !
+        if (pool != 'Quarter-Finals') {
         let poolH = ['R','Equipe','Play','Win','Lost','Nul','Pour','Contre','Try','Against','Bonus','Points'];
         var table =  stadeG.append('g').style('fill','black').attr('transform',(d)=>{ return 'translate('+(stadeSize*(-0.2))+','+(stadeLargeur*1.9)+')';})
             .append("foreignObject")
@@ -408,6 +409,7 @@ function affTimeline() {
             tr.append('th').text((d)=>{return d.triesAgainst;});
             tr.append('th').text((d)=>{return d.bonusPoints;});
             tr.append('th').text((d)=>{return d.points;}).style('font-size','1.1vw');
+        }
 		// on affiche le live
         let x = d3.scaleLinear()
             .domain([-10, 110]).nice()
