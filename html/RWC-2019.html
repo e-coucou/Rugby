@@ -41,7 +41,7 @@ table {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 6.06</aside>
+  <aside >Septembre, 2019<br><br>| v 6.10</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -63,6 +63,7 @@ table {
     var url = '';
 	var dataTimeline=[];
     var teamColor=['#006','#0bc'];
+    var UP = 1;
     // format ...
     let valFormat = (a) => { 
         let r = (a>100) ? Math.round(a) : ( (a>1)? Math.round(a*100.0)/100 : Math.round(a*1000.0)/1000);
@@ -85,7 +86,9 @@ table {
     dispatch.on('live',affLive);
     dispatch.on('rank',updateRank);
     dispatch.on('timeline',affTimeline);
-	
+
+	var UPtriange = [ 'M -20 -10 L -10 10 L -30 10 L -20 -10', 'M -20 10 L -10 -10 L -30 -10 L -20 10'];
+
 	var listeMatchs=[],dataInfo=[];
     var t = setInterval(cycle,5000), t_veille = setInterval(veille,300000);
     clearInterval(t);
@@ -151,15 +154,21 @@ function affTimeline() {
 			getData(urlMatch,2);
 		}
     }
+function inverseSORT() {
+    UP = -UP;
+    d3.select('#updw').attr('fill','red')
+        .attr('d',UPtriange[(1+UP)/2])
+    updateComp(-1);
+}
 //--------------
 // change comp
     function changeComp() {
 
     var svgInt = d3.select("#intervalle").append("svg")
-    .attr('width',50).attr('height',30)
-    .attr("position", 1)
-    .append("g").raise()
-    .attr('transform',function (d,i){ return ('translate('+ (30)+','+10+')');});
+        .attr('width',50).attr('height',30)
+        .attr("position", 1)
+        .append("g").raise()
+        .attr('transform',function (d,i){ return ('translate('+ (30)+','+10+')');});
 
 //var interG = svgInt.selectAll('g').data(IntervalData).enter()
 //    .append('g')
@@ -171,6 +180,15 @@ function affTimeline() {
         .on('click',updateComp)
         .on('mouseover',function(d,i){ d3.select(this).attr('fill','#FE6F5E');})
         .on('mouseout',function(d,i){ d3.select(this).attr('fill','#2E2D88');});
+
+//    svgInt.append('circle').attr('fill','#2E2D88')
+//        .attr('r',10).attr('cx',-25)
+    svgInt.append('path').attr('fill','#2E2D88').attr('id','updw')
+        .attr('d',UPtriange[(1+UP)/2])
+        .on('click',inverseSORT)
+        .on('mouseover',function(d,i){ d3.select(this).attr('fill','#FE6F5E');})
+        .on('mouseout',function(d,i){ d3.select(this).attr('fill','#2E2D88');});
+
 //        .on('mouseout',function(d,i){ d3.select(this).attr('fill',(a)=>{return (i==selInter)?'red':'#2E2D88';});});
  //.attr('cx',(d,i)=>{return width-i*25;}).attr('cy',15)
 //    interG.append('text').attr('fill','white').style('text-anchor','middle')
@@ -489,7 +507,6 @@ function affTimeline() {
 			.attr("transform", "translate(" + 0 + "," + (margin.top+30) + ")");
 
         // on tri les match dans l'ordre UP/DOWN
-        let UP=-1;
 		let listeG = graph.selectAll('g').data(listeMatchs.matches.sort((a, b) => (Number(a.time.millis) > Number(b.time.millis)) ? UP : (-1*UP))).enter()
 			.append('g').attr('transform',(d,i)=>{return ('translate('+(2)+','+(i*size+padding/2)+')');});
 
