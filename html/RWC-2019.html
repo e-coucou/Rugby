@@ -41,7 +41,7 @@ table {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 6.10</aside>
+  <aside >Septembre, 2019<br><br>| v 6.11</aside>
   <div id='menu'></div>
 </header>
 <footer>
@@ -465,13 +465,13 @@ function inverseSORT() {
 // Affichage de la liste des matches
 //
 	function affListe() {
-        console.log('affListe');
+        console.log('affListe : ',listeMatchs);
         let titre = listeMatchs.event.label;
         //------
         // s'il ya un match en cours on pass au LIVE !
 		idLive=0;
 		for (m in listeMatchs.matches) {
-			if (listeMatchs.matches[m].status != 'U' && listeMatchs.matches[m].status !='C') {
+			if (listeMatchs.matches[m].status != 'U' && listeMatchs.matches[m].status !='C'&& listeMatchs.matches[m].status !='CC') {
 //				console.log(m);
 				idLive = listeMatchs.matches[m].matchId;
 				getMatch(idLive);
