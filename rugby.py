@@ -31,7 +31,7 @@ def get_rk(json,ABB):
 def get_all_csv(base):
     entete()
     oMaj, maj = '', ''
-    for y in range(2003,2020):
+    for y in range(2003,2021):
         for m in range(1,13):
             for dd in range(1,32,6):
                 d = str(y)+'-'+str(m)+'-'+str(dd)
@@ -50,7 +50,7 @@ def get_rank_json(base):
     oMaj,maj = '',''
     js = []
     name = {}
-    for y in range(2003,2020): #2016 to update
+    for y in range(2003,2021): #2016 to update
     	print y
         for m in range(1,13,1): #1,13
             print str(m)+'/'+str(y)
