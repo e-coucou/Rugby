@@ -115,7 +115,7 @@ select#color {
 </style>
 <header>
   <div id='h1'>Classement RWC depuis 2003</div>
-  <aside >Novembre, 2015<br><br> | rev 09/19</aside>
+  <aside >Novembre, 2015<br><br> | rev 02/20</aside>
   <div id='menu'></div>
 <!--  <aside >Novembre, 2015 <br>rev 09/2019 <a class="entete" href="index.html" rel="author">e-Coucou</a></aside>
   <aside><a class="entete" href="wrc.html">Visualisation en graphe des Coupes du Monde de Rugby</a>
@@ -203,7 +203,7 @@ var margin = {top: 20, right: 20, bottom: 30, left: 40},
 var xScale = d3.scale.linear().domain([0, 100]).range([0, width]),  // vs log
     yScale = d3.scale.linear().domain([0, 110]).range([0,height]),
     radiusScale = d3.scale.sqrt().domain([0, 200]).range([1, 20]),
-	dScale = d3.scale.linear().domain([2003, 2020]).range([0, width]),
+	dScale = d3.scale.linear().domain([2003, 2021]).range([0, width]),
     colorScale = d3.scale.ordinal()
         .range(colorbrewer.Rky[27]);
 
@@ -518,7 +518,7 @@ function trace_team(d,instance) {
   // After the transition finishes, you can mouseover to change the year.
   function enableInteraction() {
     var yearScale = d3.scale.linear()
-        .domain([2003, 2020])
+        .domain([2003, 2021])
 //        .range([box.x + 10, box.x + box.width - 10])
         .range([0, width ])
         .clamp(true);
@@ -559,7 +559,7 @@ function trace_team(d,instance) {
   // Tweens the entire chart by first tweening the year, and then the data.
   // For the interpolated data, the dots and label are redrawn.
   function tweenYear() {
-    var year = d3.interpolateNumber(2003, 2020);
+    var year = d3.interpolateNumber(2003, 2021);
     return function(t) { displayYear(year(t)); };
   }
 
@@ -604,7 +604,7 @@ function trace_team(d,instance) {
   // tracé du parcourt ...
   function parcourt(name) {
 	test.length=0;       //return 
-	for (annee=2003.8 ; annee < 2020.0 ; annee += 0.1) {
+	for (annee=2003.8 ; annee < 2021.0 ; annee += 0.1) {
 		irb.forEach(function(d) {
           if (d.name == name) {
             var l =  test.push( {
