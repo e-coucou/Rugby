@@ -1,0 +1,20 @@
+{"regions":[{"84":{"id":0,"nom":"Auvergne-Rhône-Alpes"}},
+{"27":{"id":1,"nom":"Bourgogne-Franche-Comté"}},
+{"53":{"id":2,"nom":"Bretagne"}},
+{"24":{"id":3,"nom":"Centre-Val de Loire"}},
+{"94":{"id":4,"nom":"Corse"}},
+{"44":{"id":5,"nom":"Grand Est"}},
+{"32":{"id":6,"nom":"Hauts-de-France"}},
+{"11":{"id":7,"nom":"Ile-de-France"}},
+{"28":{"id":8,"nom":"Normandie"}},
+{"75":{"id":9,"nom":"Nouvelle-Aquitaine"}},
+{"76":{"id":10,"nom":"Occitanie"}},
+{"52":{"id":11,"nom":"Pays de la Loire"}},
+{"93":{"id":12,"nom":"Provence-Alpes-Côte d’Azur"}}
+],
+"value":[
+1014,696,297,157,162,2643,700,3384,241,280,444,160,693,45,3,4,15,32,6,19],
+"historique":[858,593,273,128,152,2163,665,2693,208,237,371,128,574,33,3,4,11,23,3,14],
+"population":[
+8032377,2783039,3340379,2559073,344679,5511747,5962662,12278210,3303500,5999982,5924858,3801797,5055651]
+}

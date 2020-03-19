@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<title>COVID-19 0.01</title>
+<meta name="description" content="Interactive visualisation COVID-19 Data.">
+<meta name="author" content="e-Coucou">
+<html class="rky">
+<meta charset="utf-8">
+<title>COVID-19</title>
+<style>
+@import url(../css/dsp.css);
+
+#chart {
+	position : relative;
+}
+</style>
+<header>
+  <div id='h1'>COVID-19</div>
+  <aside >Mars, 2020<br><br> | v 0.01</aside>
+  <div id='menu'></div>
+</header>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<!--	<script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script> 
+	<script src="https://unpkg.com/d3@5.7.0/dist/d3.min.js" charset="utf-8"></script> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.3.0/d3.min.js"></script>  -->
+	<script src="https://d3js.org/d3.v5.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.js" charset="utf-8"></script>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/numjs/0.16.0/numjs.js"></script>
+    <script defer src="../js/all.js"></script>
+	<script type="text/javascript" src="ekseerg-tooltip.js"></script>
+	<link rel="stylesheet" href="ekseerg-tooltip.css">
+    <div id="chart"></div>
+    <div id="tooltipDiv"></div>
+<footer>
+<aside>(c) e-Coucou | y2K | Mars, 2020</aside>
+    <div id="info"></div>
+</footer>
+    <script type="text/javascript">
+// Variables Globales
+    var timeStart=0,timeStop=0;
+	
+	var couleur = ['black','green','violet','cyan','blue','orange','yellow','red'];
+	let margin = {top: 10, right: 20, bottom: 30, left: 50},
+    width = window.innerWidth - margin.right-margin.left,
+    height = 550 ;
+//	const colors = d3[`scheme${'Sinebow'}`];	
+    const interpolate = d3[`interpolate${'Reds'}`];
+    colors = [];
+    const n=12;
+    dark = d3.lab(interpolate(0)).l < 50;
+    for (let i = 0; i < n; ++i) {
+      colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
+    }
+ 
+	const path = d3.geoPath();
+	const projection = d3.geoConicConformal()
+	    .center([2.454071, 46.279229])
+    	.scale(2600)
+    	.translate([width / 2, height / 2]);
+
+    path.projection(projection);
+
+	const svg = d3.select('#chart').append("svg")
+    	.attr("id", "svg")
+    	.attr("width", width+margin.right+margin.left)
+    	.attr("height", height);
+
+	const deps = svg.append("g");
+
+	let fichier = ['covid.json'];
+	let promises = [];
+	fichier.forEach(function(url) {
+        promises.push(d3.json(url))});
+	
+	Promise.all(promises).then(function(values) {
+		console.log(values[0]);
+	})
+	.catch(error => { console.log(error);});
+
+	d3.json('regions.geojson').then(function(geojson) {
+
+		d3.json('covid.json').then( function(dataRegion) {
+
+	var quantile = d3.scaleQuantile()
+    	.domain([ 0,d3.max(dataRegion.value, function(e) { return +e; })])//.domain([0, 100])
+    	.range(d3.range(13));
+
+//			console.log(dataRegion.deps.find(d=>{ return d['84']!='undefined';}));
+    	deps.selectAll("path")
+        	.data(geojson.features)
+        	.enter()
+        	.append("path")
+			.attr('id', function(d) {return "d" + d.properties.code;})
+        	.attr("d", path).style('opacity',1)
+        	.style('fill',function(d,i) {
+        		let nid = id(d.properties.code); let val = quantile(dataRegion.value[nid]); //console.log(val);
+        		return colors[val];})
+        	.style('stroke','blue').style('stroke-width',1)
+        	.on('mouseover', function(d) { 
+        		//let find = dataRegion.regions.find(f=>{ return f[d.properties.code]!=undefined;});
+        		//let id = find[d.properties.code].id;
+        		let nid = id(d.properties.code);
+    			eetooltip.addDataBlock("-", d.properties.nom);
+    			eetooltip.addDataBlock("code", d.properties.code);
+    			eetooltip.addDataBlock("malades",
+    				(j) => {  //console.log(find); 
+    					return dataRegion.value[nid]; });
+    			eetooltip.addDataBlock("population",dataRegion.population[nid]);
+//    			eetooltip.addDataBlock("height", this.getBBox().height);
+//    			eetooltip.addDataBlock("x", this.getBBox().x);
+    			eetooltip.show();
+        		return d3.select(this).style('stroke-width',2);})
+        	.on('mouseout', function(d) { 
+    			eetooltip.hide();
+    			eetooltip.removeAllDataBlocks();
+				return d3.select(this).style('stroke-width',1);})
+        	;
+	var legend = svg.append('g')
+    	.attr('transform', function(d) { return 'translate('+(width-2*margin.right)+', 150)';})
+    	.attr('id', 'legend');
+	
+	legend.selectAll('.colorbar')
+    	.data(d3.range(13))
+    	.enter().append('svg:rect')
+        	.attr('y', function(d) { return d * 20 + 'px'; })
+        	.attr('height', '20px')
+        	.attr('width', '20px')
+        	.attr('x', '0px')
+        	.attr('fill',function(d,i) { return colors[i];});
+//        	.attr("class", function(d) { return "q" + d + "-9"; });
+
+	var legendScale = d3.scaleLinear()
+    	.domain([0, d3.max(dataRegion.value, function(e) { return +e; })])
+    	//.domain([0, 100])
+    	.range([0, 13 * 20]);
+    var legendAxis = svg.append("g")
+    	.attr('transform', function(d) {return 'translate('+(width-margin.right)+', 150)';})
+    	.call(d3.axisRight(legendScale).ticks(10));
+
+    function id(code) {
+		let find = dataRegion.regions.find(f=>{ return f[code]!=undefined;});
+		return find[code].id;
+    }
+    // on ajoute un tooltip
+    const eetooltip = new EETooltip({
+    	'svgId': 'svg', 
+    	'tooltipId': 'tooltipDiv',
+    	'headerText': "Information",
+    	'footerText': "Data e-Coucou 2020",
+    	//'keepInSVG': false
+	})
+  });
+});
+   
+   </script>
+
+   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"crossorigin="anonymous"></script>
+	<script id="dsq-count-scr" src="//ekseerg.disqus.com/count.js" async=""></script>
+</body>
+</html>
