@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>COVID-19 0.01</title>
+<title>COVID-19</title>
 <meta name="description" content="Interactive visualisation COVID-19 Data.">
 <meta name="author" content="e-Coucou">
 <html class="rky">
@@ -57,7 +57,7 @@
 </style>
 <header>
   <div id='h1'>COVID-19</div>
-  <aside >Mars, 2020<br><br> | v 0.03</aside>
+  <aside >Mars, 2020<br><br> | v 0.2</aside>
   <div id='menu'></div>
 </header>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -85,7 +85,7 @@
 	let cumul = (array) => array.reduce((a, b) => { return a + b; }); // / array.length;
 	let average = (array) => array.reduce((a, b) => { return a + b; }) / array.length;
 	
-	var couleur = ['black','green','violet','cyan','blue','orange','yellow','red'];
+	var couleur = ['aquamarine','green','violet','cyan','blue','orange','yellow','red','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod'];
 	let margin = {top: 10, right: 20, bottom: 30, left: 50},
     width = window.innerWidth - margin.right-margin.left,
     height = window.innerHeight - margin.top-margin.bottom -50;
@@ -139,12 +139,12 @@
         	.append("path")
 			.attr('id', function(d) {return "d" + d.properties.code;})
         	.attr("d", path).style('opacity',1)
-        	.style('fill',function(d,i) {
+        	.style('fill',function(d) {
         		let nid = id(d.properties.code); let val = quantile(dataRegion.value[nid]); //console.log(val);
         		return colors[val];})
         	.style('stroke','blue').style('stroke-width',1)
         	.on('mouseover', function(d) { 
-        		let nid = id(d.properties.code);
+        		let nid = id(d.properties.code), lid="#l"+nid; //console.log(lid);
     			eetooltip.addDataBlock("", d.properties.nom);
     			eetooltip.addDataBlock("code", d.properties.code);
     			eetooltip.addDataBlock("malades",
@@ -154,11 +154,18 @@
 //    			eetooltip.addDataBlock("height", this.getBBox().height);
 //    			eetooltip.addDataBlock("x", this.getBBox().x);
     			eetooltip.show();
-        		return d3.select(this).style('stroke-width',2);})
+//    			d3.select((d)=>{ console.log(nid); return "#"+nid;}).style("stroke-width",4);
+    			d3.select(lid).style("stroke-width",4);
+        		return d3.select(this).style('stroke-width',2)
+        			.style("fill",(d)=>{c=id(d.properties.code); return couleur[c];});})
         	.on('mouseout', function(d) { 
+        		let nid = id(d.properties.code), lid="#l"+nid; //console.log(lid);
     			eetooltip.hide();
     			eetooltip.removeAllDataBlocks();
-				return d3.select(this).style('stroke-width',1);})
+    			d3.select(lid).style("stroke-width",1);
+				return d3.select(this).style('stroke-width',1).style("fill",(d)=> {
+        		let nid = id(d.properties.code); let val = quantile(dataRegion.value[nid]); //console.log(val);
+        		return colors[val];})})
         	;
 	var legend = svg.append('g')
     	.attr('transform', function(d) { return 'translate('+(margin.left)+','+(5*margin.top)+')';})
@@ -187,7 +194,7 @@
 //
 	const parseTime = d3.timeParse("%d/%m/%Y");
 
-	let w_g=400,h_g=height/3;
+	let w_g=400,h_g=height/3*2;
 	const x = d3.scaleTime()
     	.range([0, w_g]);
 	const y = d3.scaleLinear()
@@ -266,9 +273,10 @@ console.log(dMult);
 
     g_lines.append("path")
         .attr("class", "line")
+        .attr("id",(d,i)=>{return "l"+i;})
         .attr("d", (d)=>{return line(d.values);})
         .style("stroke", function(d,i) {
-      return couleur[i%10];});
+      return couleur[i];});
     // curseur
 var mouseG = g_line.append("g")
   .attr("class", "mouse-over-effects");

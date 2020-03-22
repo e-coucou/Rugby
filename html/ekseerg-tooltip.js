@@ -57,7 +57,7 @@ EETooltip.prototype.initialize = function() {
 		
 		// Standard position
 		var tooltipLeft = d3.event.pageX - tooltipWidth / 2;
-		var tooltipTop = d3.event.pageY - tooltipHeight - 10;
+		var tooltipTop = d3.event.pageY - tooltipHeight - 60; //10 ep
 		var	tooltipArrowLeft = tooltipWidth / 2;
 
 		// by default
@@ -75,7 +75,7 @@ EETooltip.prototype.initialize = function() {
 		
 		// Correct vertical position to keep tooltip in svg
 		if (keepInSVG && tooltipTop < svgTop) {
-			tooltipTop = d3.event.pageY + 10;
+			tooltipTop = d3.event.pageY - 0; //ep 5
 			eetooltipArrow.style("bottom", "auto");
 			eetooltipArrow.style("top", "-5px");
 		} else if ((tooltipTop + tooltipHeight) > svgBottom) {
