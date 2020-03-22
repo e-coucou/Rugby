@@ -57,7 +57,7 @@
 </style>
 <header>
   <div id='h1'>COVID-19</div>
-  <aside >Mars, 2020<br><br> | v 0.2</aside>
+  <aside >Mars, 2020<br><br> | v 1.0</aside>
   <div id='menu'></div>
 </header>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -89,6 +89,8 @@
 	let margin = {top: 10, right: 20, bottom: 30, left: 50},
     width = window.innerWidth - margin.right-margin.left,
     height = window.innerHeight - margin.top-margin.bottom -50;
+    let orientation=0;
+    if (width>height) orientation=1;
 //	const colors = d3[`scheme${'Sinebow'}`];	
     const interpolate = d3[`interpolate${'Blues'}`];
     var colors = [];
@@ -97,13 +99,16 @@
     for (let i = 0; i < n; ++i) {
       colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
     }
-    let scale=Math.min(width,height); console.log(scale);
+    let scale=0;
+    if (orientation) {scale=height} else {scale=width}
+//    let scale=Math.min(width,height);
+console.log(scale,orientation);
 // console.log(width,height);
 	const path = d3.geoPath();
 	const projection = d3.geoConicConformal()
 	    .center([2.454071, 46.279229])
-    	.scale(5*scale)
-    	.translate([scale/2+2*margin.left, height / 2]);
+    	.scale(4.0*scale)
+    	.translate([scale/2+1*margin.left, scale / 2]);
 
     path.projection(projection);
 
@@ -194,7 +199,8 @@
 //
 	const parseTime = d3.timeParse("%d/%m/%Y");
 
-	let w_g=400,h_g=height/3*2;
+	let w_g=0,h_g=scale/3*2,dec=1;
+	if (orientation) {w_g=width-scale-margin.right-margin.left; dec=2;} else {w_g=scale-margin.left-margin.right; dec=1.4;} //
 	const x = d3.scaleTime()
     	.range([0, w_g]);
 	const y = d3.scaleLinear()
@@ -206,7 +212,7 @@
 
 	const g_line = svg
 	    .append("g")
-    	.attr("transform", "translate(" + (width-w_g-margin.right) + "," + (height/2-h_g/2+margin.top) + ")");
+    	.attr("transform", "translate(" + (width-w_g) + "," + (height/dec-h_g/2+margin.top) + ")");
 
     var dHist = [], dMult = [];
     dataRegion.historique.forEach(function(d) {
