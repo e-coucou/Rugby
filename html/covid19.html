@@ -110,9 +110,9 @@ select#color {
         <option value="Turbo">Turbo</option>
     </optgroup>
 </select>
-	<div id="cumul">
-  		<input type="checkbox" id="cumul_c" name="cumul" value="cumul">
-  		<label for="cumul_c">France Entière</label>
+	<div id="cumul" >
+  		<input id="cumul_i" type="checkbox" value="cumul" checked="checked" class="checkbox">
+  		<label for="cumul_i">France Entière</label>
 	</div>
     <div id="tooltipDiv"></div>
 <footer>
@@ -289,7 +289,7 @@ console.log(scale,orientation);
     		})
     	dMult.push({name,values});
     });
-//    dMult.push({'name':'france','values':dHist});
+    dMult.push({'name':'france','values':dHist});
 console.log(dMult);
 
     x.domain(d3.extent(dHist, function(d) { return d.date; }));
@@ -440,9 +440,12 @@ mouseG.append('svg:rect')
         console.log(colors);
 
     });
-    d3.select("#cumul").on("change", function() {
-    	console.log('ici : ',d3.select("#cumul").property("value"));
-    });
+    d3.select("#cumul").on("change", check);
+
+    function check() {
+    	cb = d3.select("#cumul_i");
+		console.log('ici : ',cb,cb._groups[0][0].checked);
+    }
 
     // on ajoute un tooltip
     const eetooltip = new EETooltip({
