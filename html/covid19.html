@@ -73,7 +73,7 @@ select#color {
 </style>
 <header>
   <div id='h1'>COVID-19</div>
-  <aside >Mars, 2020<br><br id="version"> | v 1.11</aside>
+  <aside >Mars, 2020</aside><br><div id="version"></div>
   <div id='menu'></div>
 </header>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -111,7 +111,7 @@ select#color {
     </optgroup>
 </select>
 	<div id="cumul" >
-  		<input id="cumul_i" type="checkbox" value="cumul" checked="checked" class="checkbox">
+  		<input id="cumul_i" type="checkbox" value="cumul" class="checkbox">
   		<label for="cumul_i">France Entière</label>
 	</div>
     <div id="tooltipDiv"></div>
@@ -132,7 +132,7 @@ let valFormat = (a) => {
 	let cumul = (array) => array.reduce((a, b) => { return a + b; }); // / array.length;
 	let average = (array) => array.reduce((a, b) => { return a + b; }) / array.length;
 	
-	var couleur = ['aquamarine','green','violet','cyan','blue','orange','yellow','red','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod'];
+	var couleur = ['aquamarine','green','violet','cyan','blue','orange','yellow','red','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
 	let margin = {top: 10, right: 20, bottom: 30, left: 50},
     width = window.innerWidth - margin.right-margin.left,
     height = window.innerHeight - margin.top-margin.bottom -50;
@@ -141,7 +141,7 @@ let valFormat = (a) => {
 //	const colors = d3[`scheme${'Sinebow'}`];	
     var interpolate = d3[`interpolate${'Blues'}`];
     var colors = [];
-    const n=13;
+    const n=14;
     dark = d3.lab(interpolate(0)).l < 50;
     for (let i = 0; i < n; ++i) {
       colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
@@ -175,11 +175,14 @@ console.log(scale,orientation);
 		console.log(values[0]);
 	})
 	.catch(error => { console.log(error);});
-
+//-----------
+//START ...
+//
 	d3.json('regions.geojson').then(function(geojson) {
 
 		d3.json('covid.json').then( function(dataRegion) {
 
+d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version).attr("class","rky aside");
 	var quantile = d3.scaleQuantile()
     	.domain([ 0,d3.max(dataRegion.value, function(e) { return +e; })])//.domain([0, 100])
     	.range(d3.range(13));
@@ -256,6 +259,7 @@ console.log(scale,orientation);
 //
 	const parseTime = d3.timeParse("%d/%m/%Y");
 
+
 	let w_g=0,h_g=scale/3*2,dec=1;
 	if (orientation) {w_g=width-scale-margin.right-margin.left; dec=2;} else {w_g=scale-margin.left-margin.right; dec=1.4;} //
 	const x = d3.scaleTime()
@@ -267,11 +271,8 @@ console.log(scale,orientation);
     	.y(function(d) { return y(d.value); })
     	.curve(d3.curveCardinal);
 
-	const g_line = svg
-	    .append("g")
-    	.attr("transform", "translate(" + (width-w_g) + "," + (height/dec-h_g/2+margin.top) + ")");
+    var dHist = [], dReg = [];
 
-    var dHist = [], dMult = [];
     dataRegion.historique.forEach(function(d) {
         date = parseTime(d.date);
         value = cumul(d.series);
@@ -287,18 +288,30 @@ console.log(scale,orientation);
     			value=h.series[i];
     			values.push({date,value})
     		})
-    	dMult.push({name,values});
+    	dReg.push({name,values});
     });
-    dMult.push({'name':'france','values':dHist});
-console.log(dMult);
 
+    update_line();
+
+    //// end -----------
+
+
+function update_line() {
+	let dMult = [];
+	dMult = (dReg.slice()) ; //console.log(dMult);
+	let cb = d3.select("#cumul_i");
+		console.log('ici : ',cb,cb._groups[0][0].checked);
+	if (cb._groups[0][0].checked) dMult.push({'name':'france','values':dHist});
     x.domain(d3.extent(dHist, function(d) { return d.date; }));
-//    y.domain(d3.extent(dHist, function(d) { return d.value; }));
-//	y.domain([0, d3.max(dHist, function(d) { return d.value; })]);
 	y.domain([0, d3.max(dMult, function(c) {
       	return d3.max(c.values, function(v) {
-        return v.value;
-      	});})]);
+        return v.value; });})]);
+	// on efface ...
+	d3.selectAll(".g_line").remove();
+	const g_line = svg
+	    .append("g")
+	    .attr("class","g_line")
+    	.attr("transform", "translate(" + (width-w_g) + "," + (height/dec-h_g/2+margin.top) + ")");
     // Ajout de l'axe X
     g_line.append("g")
         .attr("transform", "translate(0," + h_g + ")")
@@ -342,75 +355,70 @@ console.log(dMult);
         .style("stroke", function(d,i) {
       return couleur[i];});
     // curseur
-var mouseG = g_line.append("g")
-  .attr("class", "mouse-over-effects");
+	var mouseG = g_line.append("g")
+  		.attr("class", "mouse-over-effects");
 
-mouseG.append("path")
-  .attr("class", "mouse-line")
-  .style("stroke", "grey")
-  .style("stroke-width", "1px").style("stroke-dasharray",2)
-  .style("opacity", "0");
+	mouseG.append("path")
+		.attr("class", "mouse-line")
+		.style("stroke", "grey")
+		.style("stroke-width", "1px").style("stroke-dasharray",2)
+		.style("opacity", "0");
 
-var mousePerLine = mouseG.selectAll('.mouse-per-line')
-  .data(dMult).enter()
-  .append("g").attr("class", "mouse-per-line");
+	var mousePerLine = mouseG.selectAll('.mouse-per-line')
+		.data(dMult).enter()
+ 		.append("g").attr("class", "mouse-per-line");
 
 // reperage du point d'intersection curseur/courbe
-mousePerLine.append("circle")
-  .attr("r", 3)
-  .style("stroke", function (d,i) { return couleur[i];})
-  .style("fill", "none").style("stroke-width", "2px").style("opacity", "0");
-mousePerLine.append("text")
-    .attr("class", "hover-text")
-    .attr("dy", "-1em")
-    .attr("transform", "translate(10,3)");
+	mousePerLine.append("circle")
+		.attr("r", 3)
+		.style("stroke", function (d,i) { return couleur[i];})
+		.style("fill", "none").style("stroke-width", "2px").style("opacity", "0");
+	mousePerLine.append("text")
+    	.attr("class", "hover-text")
+    	.attr("dy", "-1em")
+    	.attr("transform", "translate(10,3)");
 //on ajoute un titre au graphique
-g_line.append('text')
-  .attr('x', (w_g / 2)).attr('y', 0 - (margin.top / 3))
-  .attr('text-anchor', 'middle')
-  .attr("class","titleLine")
-  .style('font-size', '12px') 
-  .text('Mise à jour ARS au '+dataRegion.proprietes.data_version);
+	g_line.append('text')
+		.attr('x', (w_g / 2)).attr('y', 0 - (margin.top / 3))
+		.attr('text-anchor', 'middle')
+		.attr("class","titleLine")
+		.style('font-size', '12px') 
+		.text('Mise à jour ARS au '+dataRegion.proprietes.data_version);
 
 // Append a rect to catch mouse movements on canvas
-mouseG.append('svg:rect') 
-  .attr('width', w_g) .attr('height', h_g)
-  .attr('fill', 'none')
-  .attr('pointer-events', 'all')
-  .on('mouseout', function () { // on mouse out hide line, circles and text
-  	d3.select(".mouse-line").style("opacity", "0");
-    d3.selectAll(".mouse-per-line circle").style("opacity", "0");
-    d3.selectAll(".mouse-per-line text").style("opacity", "0");
-  })
-  .on('mouseover', function () { // on mouse in show line, circles and text
-    d3.select(".mouse-line").style("opacity", "1");
-    d3.selectAll(".mouse-per-line circle").style("opacity", "1");
-    d3.selectAll(".mouse-per-line text").style("opacity", "1");
-  })
-  .on('mousemove', function () { // mouse moving over canvas
-    var mouse = d3.mouse(this);
+	mouseG.append('svg:rect') 
+		.attr('width', w_g) .attr('height', h_g)
+		.attr('fill', 'none')
+		.attr('pointer-events', 'all')
+		.on('mouseout', function () { // on mouse out hide line, circles and text
+  			d3.select(".mouse-line").style("opacity", "0");
+			d3.selectAll(".mouse-per-line circle").style("opacity", "0");
+			d3.selectAll(".mouse-per-line text").style("opacity", "0");
+			})
+		.on('mouseover', function () { // on mouse in show line, circles and text
+			d3.select(".mouse-line").style("opacity", "1");
+			d3.selectAll(".mouse-per-line circle").style("opacity", "1");
+			d3.selectAll(".mouse-per-line text").style("opacity", "1");
+  			})
+		.on('mousemove', function () { // mouse moving over canvas
+			var mouse = d3.mouse(this);
+				d3.selectAll(".mouse-per-line")
+      				.attr("transform", function (d, i) {
+						var xDate = x.invert(mouse[0]),
+							bisect = d3.bisector(function (d) { return d.date; }).left;
+							idx = bisect(d.values, xDate);
+							d3.select(this).select('text')
+								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(0)));
+							d3.select(".mouse-line")
+								.attr("d", function () {
+									var data = "M" + x(d.values[idx].date) + "," + h_g;
+										data += " " + x(d.values[idx].date) + "," + 0;
+									return data; });
+					return "translate(" + x(d.values[idx].date) + "," + y(d.values[idx].value) + ")";
+				});
+  			});
 
-    d3.selectAll(".mouse-per-line")
-      .attr("transform", function (d, i) {
-
-        var xDate = x.invert(mouse[0]),
-          bisect = d3.bisector(function (d) { return d.date; }).left;
-        idx = bisect(d.values, xDate);
-
-        d3.select(this).select('text')
-          .text(valFormat(y.invert(y(d.values[idx].value)).toFixed(0)));
-
-        d3.select(".mouse-line")
-          .attr("d", function () {
-            var data = "M" + x(d.values[idx].date) + "," + h_g;
-            data += " " + x(d.values[idx].date) + "," + 0;
-            return data;
-          });
-        return "translate(" + x(d.values[idx].date) + "," + y(d.values[idx].value) + ")";
-      });
-  });
-
-
+}
     //-----
     function id(code) {
 		let find = dataRegion.regions.find(f=>{ return f[code]!=undefined;});
@@ -440,12 +448,7 @@ mouseG.append('svg:rect')
         console.log(colors);
 
     });
-    d3.select("#cumul").on("change", check);
-
-    function check() {
-    	cb = d3.select("#cumul_i");
-		console.log('ici : ',cb,cb._groups[0][0].checked);
-    }
+    d3.select("#cumul").on("change", update_line);
 
     // on ajoute un tooltip
     const eetooltip = new EETooltip({
