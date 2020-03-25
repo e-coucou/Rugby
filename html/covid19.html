@@ -68,7 +68,14 @@ select#color {
 #cumul {
     position: absolute;
     right: 50px;
-    top:80px;
+    top:45px;
+    font-size: 11px;
+}
+#log {
+    position: absolute;
+    right: 50px;
+    top:60px;
+    font-size: 11px;
 }
 </style>
 <header>
@@ -93,12 +100,12 @@ select#color {
 <select id="color" class="styleSelect">
     <optgroup label="Colors by Cynthia Brewer.">
         <option value="Spectral">Spectral</option>
-        <option value="Purples">Purples</option>
-        <option value="Blues" selected="">Blues</option>
+        <option value="Purples">Violets</option>
+        <option value="Blues" selected="">Bleus</option>
         <option value="Oranges">Oranges</option>
-        <option value="Greens">Greens</option>
-        <option value="Reds">Reds</option>
-        <option value="Greys">Greys</option>
+        <option value="Greens">Verts</option>
+        <option value="Reds">Rouges</option>
+        <option value="Greys">Gris</option>
         <option value="BrBG">BrBG</option>
         <option value="PiYG">PiYG</option>
         <option value="PRGn">PRGn</option>
@@ -108,12 +115,16 @@ select#color {
         <option value="RdYlBu">RdYlBu</option>
         <option value="RdYlGn">RdYlGn</option>
         <option value="Turbo">Turbo</option>
+        <option value="Plasma">Plasma</option>
+        <option value="Magma">Magma</option>
     </optgroup>
 </select>
 	<div id="cumul" >
   		<input id="cumul_i" type="checkbox" value="cumul" class="checkbox">
-  		<label for="cumul_i">France Entière</label>
-	</div>
+  		<label for="cumul_i">France Entière</label></div>
+	<div id="log" >
+  		<input id="log_i" type="checkbox" value="log" class="checkbox">
+  		<label for="log_i">Echelle Log</label></div>
     <div id="tooltipDiv"></div>
 <footer>
 <aside>(c) e-Coucou | y2K | Mars, 2020</aside>
@@ -132,7 +143,7 @@ let valFormat = (a) => {
 	let cumul = (array) => array.reduce((a, b) => { return a + b; }); // / array.length;
 	let average = (array) => array.reduce((a, b) => { return a + b; }) / array.length;
 	
-	var couleur = ['aquamarine','green','violet','cyan','blue','orange','yellow','red','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
+	var couleur = ['blueviolet','forestgreen','RebeccaPurple','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
 	let margin = {top: 10, right: 20, bottom: 30, left: 50},
     width = window.innerWidth - margin.right-margin.left,
     height = window.innerHeight - margin.top-margin.bottom -50;
@@ -199,7 +210,7 @@ d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version).a
         		return colors[val];})
         	.style('stroke','blue').style('stroke-width',1)
         	.on('mouseover', function(d) { 
-        		let nid = id(d.properties.code), lid="#l"+nid; //console.log(lid);
+        		let nid = id(d.properties.code), lid="#l"+nid,rid="#r_"+d.properties.code; //console.log(lid,rid);
     			eetooltip.addDataBlock("", d.properties.nom);
     			eetooltip.addDataBlock("code", d.properties.code);
     			eetooltip.addDataBlock("malades",
@@ -210,26 +221,31 @@ d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version).a
     			eetooltip.show();
 //    			d3.select((d)=>{ console.log(nid); return "#"+nid;}).style("stroke-width",4);
     			d3.select(lid).style("stroke-width",4);
+    			let cRGB = convertToHexColor(couleur[nid]);
+    			let cHex=convertRGBDecimalToHex(cRGB);console.log(cHex,cRGB);
+   			let c=getOpositeColor(cRGB);console.log(cHex,nid,couleur[nid],c);
+    			d3.select(rid).style("fill",c);
         		return d3.select(this).style('stroke-width',2)
         			.style("fill",(d)=>{c=id(d.properties.code); return couleur[c];});})
         	.on('mouseout', function(d) { 
-        		let nid = id(d.properties.code), lid="#l"+nid; //console.log(lid);
+        		let nid = id(d.properties.code), lid="#l"+nid,rid="#r_"+d.properties.code; //console.log(lid,rid);
     			eetooltip.hide();
     			eetooltip.removeAllDataBlocks();
     			d3.select(lid).style("stroke-width",1);
 				return d3.select(this).style('stroke-width',1).style("fill",(d)=> {
         		let nid = id(d.properties.code); let val = quantile(dataRegion.value[nid]); //console.log(val);
-        		return colors[val];})})
-        	;
-        	deps.selectAll("text")
-				.data(geojson.features)
-				.enter()
-				.append("text")
-				.attr("class","regionsName")
-				.text(function(d){ return d.properties.nom;})
-				.attr("x", function(d){return path.centroid(d)[0];})
-				.attr("y", function(d){return  path.centroid(d)[1];})
-				.attr("text-anchor","middle");
+        		return colors[val];})});
+
+        deps.selectAll("text")
+			.data(geojson.features)
+			.enter()
+			.append("text")
+			.attr("class","regionsName")
+			.attr("id",(d,i)=>{return "r_"+d.properties.code})
+			.text(function(d){ return d.properties.nom;})
+			.attr("x", function(d){return path.centroid(d)[0];})
+			.attr("y", function(d){return  path.centroid(d)[1];})
+			.attr("text-anchor","middle");
 
 	var legend = svg.append('g')
     	.attr('transform', function(d) { return 'translate('+(margin.left)+','+(5*margin.top)+')';})
@@ -265,10 +281,12 @@ d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version).a
 	const x = d3.scaleTime()
     	.range([0, w_g]);
 	const y = d3.scaleLinear()
-    	.range([h_g, 0]);
+    	.range([h_g,0]);
+	const yL = d3.scaleSymlog()
+    	.range([h_g,0]);
 	const line = d3.line()
     	.x(function(d) { return x(d.date); }) //vep
-    	.y(function(d) { return y(d.value); })
+    	.y(function(d) { return (d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
     	.curve(d3.curveCardinal);
 
     var dHist = [], dReg = [];
@@ -306,6 +324,9 @@ function update_line() {
 	y.domain([0, d3.max(dMult, function(c) {
       	return d3.max(c.values, function(v) {
         return v.value; });})]);
+	yL.domain([0, d3.max(dMult, function(c) {
+      	return d3.max(c.values, function(v) {
+        return v.value; });})]);
 	// on efface ...
 	d3.selectAll(".g_line").remove();
 	const g_line = svg
@@ -315,7 +336,7 @@ function update_line() {
     // Ajout de l'axe X
     g_line.append("g")
         .attr("transform", "translate(0," + h_g + ")")
-        .call(d3.axisBottom(x).ticks(10))
+        .call(d3.axisBottom(x).ticks(dHist.length-1).tickFormat(d3.timeFormat("%a %d/%m")))
         .selectAll("text")	
         	.style("text-anchor", "end")
         	.attr("dx", "-.8em")
@@ -324,7 +345,7 @@ function update_line() {
     
     // Ajout de l'axe Y et du texte associé pour la légende
     g_line.append("g")
-        .call(d3.axisLeft(y))
+        .call((d3.select("#log_i")._groups[0][0].checked) ? d3.axisLeft(yL) : d3.axisLeft(y))
         .append("text")
             .attr("fill", "#000")
             .attr("transform", "rotate(-90)")
@@ -340,8 +361,8 @@ function update_line() {
         .attr("class", "horizontalGrid")
         .attr("x1", 0)
         .attr("x2", w_g)
-        .attr("y1", function(d){ return y(d);})
-        .attr("y2", function(d){ return y(d);});
+        .attr("y1", function(d){ return (d3.select("#log_i")._groups[0][0].checked) ? yL(d) : y(d);})
+        .attr("y2", function(d){ return (d3.select("#log_i")._groups[0][0].checked) ? yL(d) : y(d);});
    
    // on trace toutes les courbes
     var g_lines = g_line.selectAll(".currency")
@@ -350,10 +371,9 @@ function update_line() {
 
     g_lines.append("path")
         .attr("class", "line")
-        .attr("id",(d,i)=>{return "l"+i;})
+        .attr("id",(d,i)=>{return "l"+i;}).transition().duration(2000)
         .attr("d", (d)=>{return line(d.values);})
-        .style("stroke", function(d,i) {
-      return couleur[i];});
+        .style("stroke", function(d,i) { return couleur[i];});
     // curseur
 	var mouseG = g_line.append("g")
   		.attr("class", "mouse-over-effects");
@@ -414,7 +434,7 @@ function update_line() {
 									var data = "M" + x(d.values[idx].date) + "," + h_g;
 										data += " " + x(d.values[idx].date) + "," + 0;
 									return data; });
-					return "translate(" + x(d.values[idx].date) + "," + y(d.values[idx].value) + ")";
+					return "translate(" + x(d.values[idx].date) + "," + ((d3.select("#log_i")._groups[0][0].checked)?yL(d.values[idx].value):y(d.values[idx].value)) + ")";
 				});
   			});
 
@@ -436,19 +456,22 @@ function update_line() {
       	colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
     	};
 
-		d3.selectAll(".regs")
+		d3.selectAll(".regs").transition().duration(3000)
         	.style('fill',function(d) {
         		let nid = id(d.properties.code); let val = quantile(dataRegion.value[nid]); //console.log(val);
         		return colors[val];});
 
-        d3.selectAll(".legend")
+        d3.selectAll(".legend").transition().duration(2000)
         	.style('fill',function(d,i) { return colors[i];});
 
+        d3.select("header").transition().duration(2000).style("background-color",colors[colors.length-2]);
+        d3.select("footer").transition().duration(2000).style("background-color",colors[colors.length-2]);
 
         console.log(colors);
 
     });
     d3.select("#cumul").on("change", update_line);
+    d3.select("#log").on("change", update_line);
 
     // on ajoute un tooltip
     const eetooltip = new EETooltip({
@@ -458,6 +481,66 @@ function update_line() {
     	'footerText': "Data e-Coucou 2020",
     	'keepInSVG': true
 	})
+
+	function getOpositeColor(rgb) { // Like this : rgb(0, 0, 0);
+		console.log(rgb);
+    var regex = /rgb *\( *([0-9]{1,3}) *, *([0-9]{1,3}) *, *([0-9]{1,3}) *\)/;
+    var values = regex.exec(rgb);
+    if(values.length != 4)
+    {
+        return rgb; // fall back to what was given.              
+    }
+    var r = Math.round(parseFloat(values[1]));
+    var g = Math.round(parseFloat(values[2]));
+    var b = Math.round(parseFloat(values[3]));
+/*    	while (rgb.indexOf(' ') != -1) rgb = rgb.replace(' ', '');
+    //Check if is formatted as RGB
+    	if ((x = /([0-9]{0,3}),([0-9]{0,3}),([0-9]{0,3})/.exec(rgb))) {
+        //Extract colors
+        	color = {
+        	'r': parseInt(x[1]),
+            'g': parseInt(x[2]),
+            'b': parseInt(x[3])
+        	};
+  */      //If is this operation be <= 128 return white, others else return black
+        	OpositeColor = ((0.3 * (color['r'])) + (0.59 * (color['g'])) + (0.11 * (color['b'])) <= 128) ? '#FFF' : '#000';
+        	return OpositeColor;
+ //   	}
+//    	return -1;
+	}
+function convertToHexColor(englishColor) {
+
+    // create a temporary div. 
+    var div = $('<div></div>').appendTo("body").css('background-color', englishColor);
+    var computedStyle = window.getComputedStyle(div[0]);
+
+    // get computed color.
+    var computedColor = computedStyle.backgroundColor;
+
+    // cleanup temporary div.
+    div.remove();
+
+    // done.
+    return computedColor;
+
+    // The above returns "rgb(R, G, B)" on IE9/Chrome20/Firefox13.
+}
+function convertRGBDecimalToHex(rgb)
+{
+    var regex = /rgb *\( *([0-9]{1,3}) *, *([0-9]{1,3}) *, *([0-9]{1,3}) *\)/;
+    var values = regex.exec(rgb);
+    if(values.length != 4)
+    {
+        return rgb; // fall back to what was given.              
+    }
+    var r = Math.round(parseFloat(values[1]));
+    var g = Math.round(parseFloat(values[2]));
+    var b = Math.round(parseFloat(values[3]));
+    return "#" 
+        + (r + 0x10000).toString(16).substring(3).toUpperCase() 
+        + (g + 0x10000).toString(16).substring(3).toUpperCase()
+        + (b + 0x10000).toString(16).substring(3).toUpperCase();
+}
   });
 });
    
