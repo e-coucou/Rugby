@@ -222,8 +222,8 @@ d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version).a
 //    			d3.select((d)=>{ console.log(nid); return "#"+nid;}).style("stroke-width",4);
     			d3.select(lid).style("stroke-width",4);
     			let cRGB = convertToHexColor(couleur[nid]);
-    			let cHex=convertRGBDecimalToHex(cRGB);console.log(cHex,cRGB);
-   			let c=getOpositeColor(cRGB);console.log(cHex,nid,couleur[nid],c);
+//    			let cHex=convertRGBDecimalToHex(cRGB);console.log(cHex,cRGB);
+   				let c=getOpositeColor(cRGB); //console.log(cHex,nid,couleur[nid],c);
     			d3.select(rid).style("fill",c);
         		return d3.select(this).style('stroke-width',2)
         			.style("fill",(d)=>{c=id(d.properties.code); return couleur[c];});})
@@ -232,6 +232,7 @@ d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version).a
     			eetooltip.hide();
     			eetooltip.removeAllDataBlocks();
     			d3.select(lid).style("stroke-width",1);
+    			d3.select(rid).style("fill","#000");
 				return d3.select(this).style('stroke-width',1).style("fill",(d)=> {
         		let nid = id(d.properties.code); let val = quantile(dataRegion.value[nid]); //console.log(val);
         		return colors[val];})});
@@ -483,7 +484,7 @@ function update_line() {
 	})
 
 	function getOpositeColor(rgb) { // Like this : rgb(0, 0, 0);
-		console.log(rgb);
+	//	console.log(rgb);
     var regex = /rgb *\( *([0-9]{1,3}) *, *([0-9]{1,3}) *, *([0-9]{1,3}) *\)/;
     var values = regex.exec(rgb);
     if(values.length != 4)
@@ -493,17 +494,9 @@ function update_line() {
     var r = Math.round(parseFloat(values[1]));
     var g = Math.round(parseFloat(values[2]));
     var b = Math.round(parseFloat(values[3]));
-/*    	while (rgb.indexOf(' ') != -1) rgb = rgb.replace(' ', '');
-    //Check if is formatted as RGB
-    	if ((x = /([0-9]{0,3}),([0-9]{0,3}),([0-9]{0,3})/.exec(rgb))) {
-        //Extract colors
-        	color = {
-        	'r': parseInt(x[1]),
-            'g': parseInt(x[2]),
-            'b': parseInt(x[3])
-        	};
-  */      //If is this operation be <= 128 return white, others else return black
-        	OpositeColor = ((0.3 * (color['r'])) + (0.59 * (color['g'])) + (0.11 * (color['b'])) <= 128) ? '#FFF' : '#000';
+    //If is this operation be <= 128 return white, others else return black
+//        	OpositeColor = ((0.3 * (color['r'])) + (0.59 * (color['g'])) + (0.11 * (color['b'])) <= 128) ? '#FFF' : '#000';
+        	OpositeColor = ((0.3 * (r)) + (0.59 * (g)) + (0.11 * (b)) <= 128) ? '#FFF' : '#000';
         	return OpositeColor;
  //   	}
 //    	return -1;
