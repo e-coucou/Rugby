@@ -207,6 +207,7 @@ d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version).a
         	.attr("d", path).style('opacity',1).attr("class","regs")
         	.style('fill',function(d) {
         		let nid = id(d.properties.code); let val = quantile(dataRegion.value[nid]); //console.log(val);
+        		//console.log(colors[val],getOpositeColor(colors[val])); 
         		return colors[val];})
         	.style('stroke','blue').style('stroke-width',1)
         	.on('mouseover', function(d) { 
@@ -215,6 +216,8 @@ d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version).a
     			eetooltip.addDataBlock("code", d.properties.code);
     			eetooltip.addDataBlock("malades",
     				(j) => { return valFormat(dataRegion.value[nid]); });
+    			eetooltip.addDataBlock("cas/100000",
+    				(j) => { return valFormat(dataRegion.value[nid]/dataRegion.population[nid]*100000); });
     			eetooltip.addDataBlock("population",valFormat(dataRegion.population[nid]));
 //    			eetooltip.addDataBlock("height", this.getBBox().height);
 //    			eetooltip.addDataBlock("x", this.getBBox().x);
