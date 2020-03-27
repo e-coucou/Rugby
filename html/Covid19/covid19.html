@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <title>COVID-19</title>
 <meta name="description" content="Interactive visualisation COVID-19 Data.">
 <meta name="author" content="e-Coucou">
@@ -94,8 +94,8 @@ select#color {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/numjs/0.16.0/numjs.js"></script>
     <script defer src="../js/all.js"></script>
-	<script type="text/javascript" src="ekseerg-tooltip.js"></script>
-	<link rel="stylesheet" href="ekseerg-tooltip.css">
+	<script type="text/javascript" src="../js/ekseerg-tooltip.js"></script>
+	<link rel="stylesheet" href="../css/ekseerg-tooltip.css">
     <div id="chart"></div>
 <select id="color" class="styleSelect">
     <optgroup label="Colors by Cynthia Brewer.">
@@ -189,9 +189,9 @@ console.log(scale,orientation);
 //-----------
 //START ...
 //
-	d3.json('regions.geojson').then(function(geojson) {
+	d3.json('../data/regions.geojson').then(function(geojson) {
 
-		d3.json('covid.json').then( function(dataRegion) {
+		d3.json('../data/covid.json').then( function(dataRegion) {
 
 d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version).attr("class","rky aside");
 	var quantile = d3.scaleQuantile()
