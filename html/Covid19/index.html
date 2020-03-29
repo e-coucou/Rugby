@@ -63,6 +63,11 @@
 select#color {
     position: absolute;
     left: 110px;
+    top:35px;
+}
+select#dataS {
+    position: absolute;
+    left: 110px;
     top:55px;
 }
 #cumul {
@@ -86,7 +91,7 @@ select#color {
 </style>
 <header>
   <div id='h1'>COVID-19</div>
-  <aside >Mars, 2020</aside><br><div id="version"></div>
+  <aside >Mars, 2020</aside><div id="version"></div>
   <div id='menu'></div>
 </header>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -106,7 +111,7 @@ select#color {
 	<link rel="stylesheet" href="../css/ekseerg-tooltip.css">
     <div id="chart"></div>
 <select id="color" class="styleSelect">
-    <optgroup label="Colors by Cynthia Brewer.">
+    <optgroup label="Couleurs by e-Coucou">
         <option value="Spectral">Spectral</option>
         <option value="Purples">Violets</option>
         <option value="Blues" selected="">Bleus</option>
@@ -125,8 +130,15 @@ select#color {
         <option value="Turbo">Turbo</option>
         <option value="Plasma">Plasma</option>
         <option value="Magma">Magma</option>
-    </optgroup>
-</select>
+    </optgroup></select>
+<select id="dataS" class="styleSelect">
+    <optgroup label="Type de données">
+        <option value="regions">by régions</option>
+        <option value="hosp" selected="" >Hospitalisations</option>
+        <option value="rea">Réanimations</option>
+        <option value="dc">Décédées</option>
+        <option value="rad">Guéris</option>
+    </optgroup></select>
 	<div id="cumul" >
   		<input id="cumul_i" type="checkbox" value="cumul" class="checkbox">
   		<label for="cumul_i">France Entière</label></div>
@@ -241,7 +253,7 @@ var allGoogle = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKlM0rqtd30g3t
 
         dataRegion.value.forEach((d,i)=> { return (data_value.push(d*100000/dataRegion.population[i]));});
 
-    d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version).attr("class","rky aside");
+    d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version+"| "+dataRegion.proprietes.ARS).attr("class","rky aside");
     var quantile = d3.scaleQuantile()
         .domain([ 0,d3.max(data_value, function(e) { return +e; })])//.domain([0, 100])
         .range(d3.range(13));
@@ -294,7 +306,8 @@ function updateMap() {
     				(j) => { return valFormat(data_value[nid]); });
     			eetooltip.addDataBlock("cas/100000",
     				(j) => { return valFormat(dataRegion.value[nid]*100000.0/dataRegion.population[nid]); });
-    			eetooltip.addDataBlock("population",valFormat(dataRegion.population[nid]));
+                eetooltip.addDataBlock("population",valFormat(dataRegion.population[nid]));
+                eetooltip.addDataBlock("valeur",valFormat(data_value[nid]));
 //    			eetooltip.addDataBlock("height", this.getBBox().height);
 //    			eetooltip.addDataBlock("x", this.getBBox().x);
     			eetooltip.show();
@@ -512,21 +525,58 @@ function update_line() {
 
     function updateData() {
         data_value =[];
+        selectValue = d3.select("#dataS").property('value');
+        data_value = getDataARS(selectValue,0);
+        if (selectValue == "regions") {data_value = dataRegion.value;};
 
         if ((d3.select("#by100k_i")._groups[0][0].checked)) {
-            dataRegion.value.forEach((d,i)=> { return (data_value.push(d*100000/dataRegion.population[i]));});
-        } else {
-            dataRegion.value.forEach((d)=> { return (data_value.push(d));});
-        }
+            data_value.forEach((d,i,t)=> { return (t[i] = (d*100000/dataRegion.population[i]));});}
+
         quantile.domain([ 0,d3.max(data_value, function(e) { return +e; })]);
         legendScale.domain([0, d3.max(data_value, function(e) { return +e; })])
         legendAxis.call(d3.axisRight(legendScale).ticks(10));
 
+
+        d3.selectAll(".regs").transition().duration(3000)
+            .style('fill',function(d) {
+                let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
+                return colors[val];});
+
+//        d3.selectAll(".legend").transition().duration(2000)
+ //           .style('fill',function(d,i) { return colors[i];});
+
         //test
-        hopital.reduce((d,a)=>{ console.log(d);});
+        console.log(getDataARS('hosp',0));
+        console.log(getDataARS('rea',0));
+        console.log(getDataARS('rad',0));
+        console.log(getDataARS('dc',0));
     }
 
+    function getDataARS(item,sexe) {
+        let cumR = 0, data =[];
+        dataRegion.regions_deps.forEach((l,j)=> {
+          cumR=0;
+          dataRegion.regions_deps[j].forEach((r,i)=>{
+
+            let cum = hopital.reduce((a,d)=>{ let v=0;
+            if (d.dep == r && d.jour == dataRegion.proprietes.ARS && d.sexe == sexe) {
+                v= Number(d[item]); //console.log(r,a,v);
+            }
+            return (a+v); },0); //console.log(cum);
+            cumR+= cum;
+          });
+          data.push(cumR);
+        });
+        return data;
+    };
+
     // customs couleurs des pastilles   thanks to Cynthia Brewer@
+    d3.select("#dataS").on("change", function() {
+        selectValue = d3.select("#dataS").property('value');
+        console.log(selectValue);
+        //console.log(getDataARS(selectValue,0));
+        updateData();
+    });
 
     d3.select("#color").on("change", function() {
         updateData();
