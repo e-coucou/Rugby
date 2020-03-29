@@ -171,7 +171,7 @@ let valFormat = (a) => {
     let scale=0;
     if (orientation) {scale=height} else {scale=width}
 //    let scale=Math.min(width,height);
-console.log(scale,orientation);
+// console.log(scale,orientation);
 // console.log(width,height);
 
 var public_spreadsheet_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKlM0rqtd30g3tiboIRwjal2KElonjOP2HhoZUanZCFPDd0yeAvaQy18qAkKQxz2_OW6hN36HV9fcE/pubhtml";
@@ -182,8 +182,7 @@ var allGoogle = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKlM0rqtd30g3t
   d3.csv(allGoogle, function (data) { 
 //      if (data != '') { d_Confirmed.push(Number(data['Confirmed'])); }
 //  console.log(d_Confirmed,cumul(d_Confirmed));
-console.log(Number(data.FR_death));
-
+    //console.log(Number(data.FR_death));
   });
 
 
@@ -202,35 +201,79 @@ console.log(Number(data.FR_death));
 
 	const deps = svg.append("g");
 
-	let fichier = ['../data/covid.json'];
-	let promises = [];
+	var fichier = '../data/covid_data.csv';
+    var regionsDeps = [[1,3,7,15,26,38,42,43,63,69,73,74],
+[21,25,39,58,70,71,89,90],
+[22,29,35,56],
+[18,28,36,37,41,45],
+["2A","2B"],
+[8,10,51,52,54,55,57,67,68,88],
+[2,59,60,62,80],
+[75,77,78,91,92,93,94,95],
+[14,27,50,61,76],
+[16,17,19,23,24,33,40,47,64,79,86,87],
+[9,11,12,30,31,32,34,46,48,65,66,81,82],
+[44,49,53,72,85],
+[4,5,6,13,83,84]];
+    /*
 	fichier.forEach(function(url) {
-        promises.push(d3.json(url))});
+        promises.push(d3.csv(url))});
 	
 	Promise.all(promises).then(function(values) {
-		console.log(values[0]);
+		console.log(values);
 	})
 	.catch(error => { console.log(error);});
-//-----------
-//START ...
-//
-	d3.json('../data/regions.geojson').then(function(geojson) {
+*/
+    var regionsDeps2 = [];
+    var promises = [];
+    var data_value =[];
+//        d3.json("https://d3js.org/us-10m.v1.json"),
+//        d3.tsv("unemployment.tsv", function(d) { unemployment.set(d.id, +d.rate); })
+    promises.push(d3.json('../data/covid.json')); // function(d,i) {console.log(d); return regionsDeps2.push(d.regions_deps[i]);}),
+    promises.push(d3.csv('../data/covid_data.csv'));
+    promises.push( d3.json('../data/regions.geojson'));
 
-		d3.json('../data/covid.json').then( function(dataRegion) {
+    Promise.all(promises).then(function(values) {
+        console.log(values);
+        var geojson = values[2],
+            hopital = values[1],
+            dataRegion = values[0];
+
+        dataRegion.value.forEach((d,i)=> { return (data_value.push(d*100000/dataRegion.population[i]));});
 
     d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version).attr("class","rky aside");
     var quantile = d3.scaleQuantile()
-        .domain([ 0,d3.max(dataRegion.value, function(e) { return +e; })])//.domain([0, 100])
+        .domain([ 0,d3.max(data_value, function(e) { return +e; })])//.domain([0, 100])
         .range(d3.range(13));
 
+    var legend = svg.append('g')
+        .attr('transform', function(d) { return 'translate('+(margin.left)+','+(5*margin.top)+')';})
+        .attr('id', 'legend');
+    
+    legend.selectAll('.colorbar')
+        .data(d3.range(13))
+        .enter().append('svg:rect')
+            .attr('class','legend')
+            .attr('y', function(d) { return d * 20 + 'px'; })
+            .attr('height', '20px')
+            .attr('width', '20px')
+            .attr('x', '0px')
+            .style('fill',function(d,i) { return colors[i];});
+//          .attr("class", function(d) { return "q" + d + "-9"; });
+    var legendScale = d3.scaleLinear()
+        .domain([0, d3.max(data_value, function(e) { return +e; })])
+        //.domain([0, 100])
+        .range([0, 13 * 20]);
+    var legendAxis = svg.append("g")
+        .attr("class","legend")
+        .attr('transform', function(d) {return 'translate('+(margin.left+20)+','+(5*margin.top)+')';})
+        .call(d3.axisRight(legendScale).ticks(10));
 
 updateMap();
 
 function updateMap() {
-    if ((d3.select("#by100k_i")._groups[0][0].checked)) {
-        dataRegion.value.forEach((d,i,t)=> { return (t[i] = (d/dataRegion.population[i])*100000);});
-    }
 
+    updateData();
 //			console.log(dataRegion.deps.find(d=>{ return d['84']!='undefined';}));
     	deps.selectAll("path")
         	.data(geojson.features)
@@ -239,7 +282,7 @@ function updateMap() {
 			.attr('id', function(d) {return "d" + d.properties.code;})
         	.attr("d", path).style('opacity',1).attr("class","regs")
         	.style('fill',function(d) {
-        		let nid = id(d.properties.code); let val = quantile(dataRegion.value[nid]); //console.log(val);
+        		let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
         		//console.log(colors[val],getOpositeColor(colors[val])); 
         		return colors[val];})
         	.style('stroke','blue').style('stroke-width',1)
@@ -248,9 +291,9 @@ function updateMap() {
     			eetooltip.addDataBlock("", d.properties.nom);
     			eetooltip.addDataBlock("code", d.properties.code);
     			eetooltip.addDataBlock("malades",
-    				(j) => { return valFormat(dataRegion.value[nid]); });
+    				(j) => { return valFormat(data_value[nid]); });
     			eetooltip.addDataBlock("cas/100000",
-    				(j) => { return valFormat(dataRegion.value[nid]/dataRegion.population[nid]*100000); });
+    				(j) => { return valFormat(dataRegion.value[nid]*100000.0/dataRegion.population[nid]); });
     			eetooltip.addDataBlock("population",valFormat(dataRegion.population[nid]));
 //    			eetooltip.addDataBlock("height", this.getBBox().height);
 //    			eetooltip.addDataBlock("x", this.getBBox().x);
@@ -270,7 +313,7 @@ function updateMap() {
     			d3.select(lid).style("stroke-width",1);
     			d3.select(rid).style("fill","#000");
 				return d3.select(this).style('stroke-width',1).style("fill",(d)=> {
-        		let nid = id(d.properties.code); let val = quantile(dataRegion.value[nid]); //console.log(val);
+        		let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
         		return colors[val];})});
 
         deps.selectAll("text")
@@ -284,31 +327,14 @@ function updateMap() {
 			.attr("y", function(d){return  path.centroid(d)[1];})
 			.attr("text-anchor","middle");
 
-	var legend = svg.append('g')
-    	.attr('transform', function(d) { return 'translate('+(margin.left)+','+(5*margin.top)+')';})
-    	.attr('id', 'legend');
+         deps.selectAll("path").transition().duration(2000)
+            .style('fill',function(d) {
+                let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
+                //console.log(colors[val],getOpositeColor(colors[val])); 
+                return colors[val];})
 
-    legend.select(".legend").remove();
-	
-	legend.selectAll('.colorbar')
-    	.data(d3.range(13))
-    	.enter().append('svg:rect')
-    		.attr('class','legend')
-        	.attr('y', function(d) { return d * 20 + 'px'; })
-        	.attr('height', '20px')
-        	.attr('width', '20px')
-        	.attr('x', '0px')
-        	.style('fill',function(d,i) { return colors[i];});
-//        	.attr("class", function(d) { return "q" + d + "-9"; });
+//    legend.selectAll("rect").style('fill',function(d,i) { return colors[i];});
 
-	var legendScale = d3.scaleLinear()
-    	.domain([0, d3.max(dataRegion.value, function(e) { return +e; })])
-    	//.domain([0, 100])
-    	.range([0, 13 * 20]);
-    var legendAxis = svg.append("g")
-        .attr("class","legend")
-    	.attr('transform', function(d) {return 'translate('+(margin.left+20)+','+(5*margin.top)+')';})
-    	.call(d3.axisRight(legendScale).ticks(10));
 }
 //-------------------------
 // le graphique line ...
@@ -357,8 +383,7 @@ function updateMap() {
 function update_line() {
 	let dMult = [];
 	dMult = (dReg.slice()) ; //console.log(dMult);
-	let cb = d3.select("#cumul_i");
-		console.log('ici : ',cb,cb._groups[0][0].checked);
+	let cb = d3.select("#cumul_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
 	if (cb._groups[0][0].checked) dMult.push({'name':'france','values':dHist});
     x.domain(d3.extent(dHist, function(d) { return d.date; }));
 	y.domain([0, d3.max(dMult, function(c) {
@@ -485,9 +510,26 @@ function update_line() {
 		return find[code].id;
     }
 
+    function updateData() {
+        data_value =[];
+
+        if ((d3.select("#by100k_i")._groups[0][0].checked)) {
+            dataRegion.value.forEach((d,i)=> { return (data_value.push(d*100000/dataRegion.population[i]));});
+        } else {
+            dataRegion.value.forEach((d)=> { return (data_value.push(d));});
+        }
+        quantile.domain([ 0,d3.max(data_value, function(e) { return +e; })]);
+        legendScale.domain([0, d3.max(data_value, function(e) { return +e; })])
+        legendAxis.call(d3.axisRight(legendScale).ticks(10));
+
+        //test
+        hopital.reduce((d,a)=>{ console.log(d);});
+    }
+
     // customs couleurs des pastilles   thanks to Cynthia Brewer@
 
     d3.select("#color").on("change", function() {
+        updateData();
     	let interpolate = d3[`interpolate${this.value}`];
     	colors = [];
     	const n=13;
@@ -498,7 +540,7 @@ function update_line() {
 
 		d3.selectAll(".regs").transition().duration(3000)
         	.style('fill',function(d) {
-        		let nid = id(d.properties.code); let val = quantile(dataRegion.value[nid]); //console.log(val);
+        		let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
         		return colors[val];});
 
         d3.selectAll(".legend").transition().duration(2000)
@@ -507,7 +549,7 @@ function update_line() {
         d3.select("header").transition().duration(2000).style("background-color",colors[colors.length-2]);
         d3.select("footer").transition().duration(2000).style("background-color",colors[colors.length-2]);
 
-        console.log(colors);
+        //console.log(colors);
 
     });
     d3.select("#cumul").on("change", update_line);
@@ -575,7 +617,7 @@ function convertRGBDecimalToHex(rgb)
         + (b + 0x10000).toString(16).substring(3).toUpperCase();
 }
   });
-});
+//});
 
    
    </script>
