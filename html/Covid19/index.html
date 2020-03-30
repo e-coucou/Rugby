@@ -446,7 +446,8 @@ function update_line() {
 		.attr('text-anchor', 'middle')
 		.attr("class","titleLine")
 		.style('font-size', '12px') 
-		.text('Mise à jour ARS au '+dataRegion.proprietes.data_version);
+        .text((d) => {return (selectValue==='regions')?"Mise à jour ARS au "+dataRegion.proprietes.data_version:"Mise à jour Gouv au "+dataRegion.proprietes.ARS; });
+//        .text((d) => {return (selectValue=="regions")?('Mise à jour ARS au '+dataRegion.proprietes.data_version):('Mise à jour Gouv au '+dataRegion.proprietes.ARS) ;});
 
 // Append a rect to catch mouse movements on canvas
 	mouseG.append('svg:rect') 
