@@ -186,6 +186,9 @@ let valFormat = (a) => {
 // console.log(scale,orientation);
 // console.log(width,height);
 
+    var dHist = [], dReg = [];
+    var selectValue = d3.select("#dataS").property('value');
+
 var public_spreadsheet_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKlM0rqtd30g3tiboIRwjal2KElonjOP2HhoZUanZCFPDd0yeAvaQy18qAkKQxz2_OW6hN36HV9fcE/pubhtml";
 var covid_google = "https://spreadsheets.google.com/feeds/cells/1-y1LPejhQw1iJfGMVGS_aHy1g0nbY4SFr3Q1LvazsV8/1/public/full?alt=json";
 var allGoogle = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKlM0rqtd30g3tiboIRwjal2KElonjOP2HhoZUanZCFPDd0yeAvaQy18qAkKQxz2_OW6hN36HV9fcE/pub?gid=1181120396&single=true&output=csv";
@@ -214,28 +217,6 @@ var allGoogle = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKlM0rqtd30g3t
 	const deps = svg.append("g");
 
 	var fichier = '../data/covid_data.csv';
-    var regionsDeps = [[1,3,7,15,26,38,42,43,63,69,73,74],
-[21,25,39,58,70,71,89,90],
-[22,29,35,56],
-[18,28,36,37,41,45],
-["2A","2B"],
-[8,10,51,52,54,55,57,67,68,88],
-[2,59,60,62,80],
-[75,77,78,91,92,93,94,95],
-[14,27,50,61,76],
-[16,17,19,23,24,33,40,47,64,79,86,87],
-[9,11,12,30,31,32,34,46,48,65,66,81,82],
-[44,49,53,72,85],
-[4,5,6,13,83,84]];
-    /*
-	fichier.forEach(function(url) {
-        promises.push(d3.csv(url))});
-	
-	Promise.all(promises).then(function(values) {
-		console.log(values);
-	})
-	.catch(error => { console.log(error);});
-*/
     var regionsDeps2 = [];
     var promises = [];
     var data_value =[];
@@ -253,7 +234,7 @@ var allGoogle = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKlM0rqtd30g3t
 
         dataRegion.value.forEach((d,i)=> { return (data_value.push(d*100000/dataRegion.population[i]));});
 
-    d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version+"| "+dataRegion.proprietes.ARS).attr("class","rky aside");
+    d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version+" | "+dataRegion.proprietes.ARS).attr("class","rky aside");
     var quantile = d3.scaleQuantile()
         .domain([ 0,d3.max(data_value, function(e) { return +e; })])//.domain([0, 100])
         .range(d3.range(13));
@@ -281,11 +262,36 @@ var allGoogle = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKlM0rqtd30g3t
         .attr('transform', function(d) {return 'translate('+(margin.left+20)+','+(5*margin.top)+')';})
         .call(d3.axisRight(legendScale).ticks(10));
 
-updateMap();
+//-------------------------
+// le graphique line ...
+//
+    const parseTime = d3.timeParse("%d/%m/%Y");
+    const parseTimeH = d3.timeParse("%Y-%m-%d");
+
+
+    let w_g=0,h_g=scale/3*2,dec=1;
+    if (orientation) {w_g=width-scale-margin.right-margin.left; dec=2;} else {w_g=scale-margin.left-margin.right; dec=1.4;} //
+    const x = d3.scaleTime()
+        .range([0, w_g]);
+    const y = d3.scaleLinear()
+        .range([h_g,0]);
+    const yL = d3.scaleSymlog()
+        .range([h_g,0]);
+    const line = d3.line()
+        .x(function(d) { return x(d.date); }) //vep
+        .y(function(d) { return (d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
+        .curve(d3.curveCardinal);
+
+    updateData();
+    updateMap();
+    update_line();
+
+    //// end -----------
+
 
 function updateMap() {
 
-    updateData();
+//    updateData();
 //			console.log(dataRegion.deps.find(d=>{ return d['84']!='undefined';}));
     	deps.selectAll("path")
         	.data(geojson.features)
@@ -349,56 +355,15 @@ function updateMap() {
 //    legend.selectAll("rect").style('fill',function(d,i) { return colors[i];});
 
 }
-//-------------------------
-// le graphique line ...
-//
-	const parseTime = d3.timeParse("%d/%m/%Y");
-
-
-	let w_g=0,h_g=scale/3*2,dec=1;
-	if (orientation) {w_g=width-scale-margin.right-margin.left; dec=2;} else {w_g=scale-margin.left-margin.right; dec=1.4;} //
-	const x = d3.scaleTime()
-    	.range([0, w_g]);
-	const y = d3.scaleLinear()
-    	.range([h_g,0]);
-	const yL = d3.scaleSymlog()
-    	.range([h_g,0]);
-	const line = d3.line()
-    	.x(function(d) { return x(d.date); }) //vep
-    	.y(function(d) { return (d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
-    	.curve(d3.curveCardinal);
-
-    var dHist = [], dReg = [];
-
-    dataRegion.historique.forEach(function(d) {
-        date = parseTime(d.date);
-        value = cumul(d.series);
-        dHist.push({date,value}); // sauvegarde sous forme de hashmap de nos données.
-    });
-    dataRegion.regions.forEach((r,i)=>
-    {
-    	name=i;
-    	let values=[];
-    	dataRegion.historique.forEach((h)=>
-    		{	
-    			date=parseTime(h.date);
-    			value=h.series[i];
-    			values.push({date,value})
-    		})
-    	dReg.push({name,values});
-    });
-
-    update_line();
-
-    //// end -----------
-
 
 function update_line() {
 	let dMult = [];
-	dMult = (dReg.slice()) ; //console.log(dMult);
+    let index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
+    let indexReg=dReg.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
+	dMult = (dReg[indexReg].data.slice()) ; //console.log('données ligne',dMult); console.log('dMult',dMult);
 	let cb = d3.select("#cumul_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
-	if (cb._groups[0][0].checked) dMult.push({'name':'france','values':dHist});
-    x.domain(d3.extent(dHist, function(d) { return d.date; }));
+	if (cb._groups[0][0].checked) dMult.push({'name':'france','values':dHist[index].values});
+    x.domain(d3.extent(dHist[index].values, function(d) { return d.date; }));
 	y.domain([0, d3.max(dMult, function(c) {
       	return d3.max(c.values, function(v) {
         return v.value; });})]);
@@ -414,7 +379,7 @@ function update_line() {
     // Ajout de l'axe X
     g_line.append("g")
         .attr("transform", "translate(0," + h_g + ")")
-        .call(d3.axisBottom(x).ticks(dHist.length-1).tickFormat(d3.timeFormat("%a %d/%m")))
+        .call(d3.axisBottom(x).ticks(dHist[index].values.length-1).tickFormat(d3.timeFormat("%a %d/%m")))
         .selectAll("text")	
         	.style("text-anchor", "end")
         	.attr("dx", "-.8em")
@@ -526,7 +491,7 @@ function update_line() {
     function updateData() {
         data_value =[];
         selectValue = d3.select("#dataS").property('value');
-        data_value = getDataARS(selectValue,0);
+        data_value = getDataARS(selectValue,0,dataRegion.proprietes.ARS);
         if (selectValue == "regions") {data_value = dataRegion.value;};
 
         if ((d3.select("#by100k_i")._groups[0][0].checked)) {
@@ -542,40 +507,117 @@ function update_line() {
                 let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
                 return colors[val];});
 
-//        d3.selectAll(".legend").transition().duration(2000)
- //           .style('fill',function(d,i) { return colors[i];});
+        let h_date = hopital.map(d=>{return d.jour;}).filter(getUnique);
 
-        //test
-        console.log(getDataARS('hosp',0));
-        console.log(getDataARS('rea',0));
-        console.log(getDataARS('rad',0));
-        console.log(getDataARS('dc',0));
+        // name/values[date/value]
+        multi_data = [];
+        dataRegion.regions_deps.forEach((r,j)=> {
+          values = [];
+          name = j;
+          h_date.forEach((d)=> { 
+            date= parseTime(d);
+            value=getDataRegion(selectValue,j,d,0);
+            values.push({date,value});
+          });
+          multi_data.push({name,values});
+        });
+       
+        dHist = [], dReg = [];
+        dataRegion.proprietes.cases.forEach( item=> {
+            values=[];
+            h_date.forEach(function(h) {
+              date = parseTimeH(h);
+              let value = hopital.reduce((a,d)=>{ let v=0;
+                if (d.jour == h && d.sexe == 0) {
+                    v= Number(d[item]);// console.log(a,v);
+                }
+                return (a+v); },0); //console.log(cum);        value = cumul(d.series);
+              values.push({date,value}); // sauvegarde sous forme de hashmap de nos données.
+            });
+            dHist.push({item,values});
+            data=[];
+            dataRegion.regions_deps.forEach((r,i)=>{
+                name=i;
+                values=[];
+                h_date.forEach(function(h) {
+                    value=0;
+                    r.forEach( (dep) => {
+                        date = parseTimeH(h); //console.log(h);
+                        let cum = hopital.reduce((a,d)=>{ let v=0;
+                          if (d.dep==dep && d.jour == h && d.sexe == 0) {
+                              v= Number(d[item]);}
+                          return (a+v); },0); //console.log(cum);        value = cumul(d.series);
+                        value += cum;
+                    });
+                    values.push({date,value}); // sauvegarde sous forme de hashmap de nos données.
+                });
+                data.push({name,values});
+            });
+            dReg.push({item,data});
+        });
+        values=[];
+        dataRegion.historique.forEach(function(d) {
+            date = parseTime(d.date);
+            value = cumul(d.series);
+            values.push({date,value}); // sauvegarde sous forme de hashmap de nos données.
+        }); 
+        item='regions';
+        dHist.push({item,values}); //console.log('dHist new',dHist);
+        console.log('multi_data',multi_data);
+        console.log('dHist',dHist);
+        console.log('dReg',dReg);
+        index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
+        data=[];
+        dataRegion.regions.forEach((r,i)=>{
+            name=i;
+            let values=[];
+            dataRegion.historique.forEach((h)=>
+                {   
+                    date=parseTime(h.date);
+                    value=h.series[i];
+                    values.push({date,value})
+                })
+            data.push({name,values});
+        });
+        dReg.push({item,data});
+
+
+//    console.log('dHist/dReg',dHist,dReg);
     }
 
-    function getDataARS(item,sexe) {
+    function getDataARS(item,sexe,date) {
         let cumR = 0, data =[];
-        dataRegion.regions_deps.forEach((l,j)=> {
-          cumR=0;
-          dataRegion.regions_deps[j].forEach((r,i)=>{
+        dataRegion.regions_deps.forEach((l,j)=> 
+            {   data.push(getDataRegion(item,j,date,sexe));
+            }
+    );
+
+        return data;
+    };
+    function getDataRegion(item,region,date,sexe) {
+          let cumR=0;
+          dataRegion.regions_deps[region].forEach((r,i)=>{
 
             let cum = hopital.reduce((a,d)=>{ let v=0;
-            if (d.dep == r && d.jour == dataRegion.proprietes.ARS && d.sexe == sexe) {
+            if (d.dep == r && d.jour == date && d.sexe == sexe) {
                 v= Number(d[item]); //console.log(r,a,v);
             }
             return (a+v); },0); //console.log(cum);
             cumR+= cum;
           });
-          data.push(cumR);
-        });
-        return data;
-    };
+          return cumR;
+        }
+    function getUnique(value, index, self) { 
+        return self.indexOf(value) === index;
+    }
 
     // customs couleurs des pastilles   thanks to Cynthia Brewer@
     d3.select("#dataS").on("change", function() {
         selectValue = d3.select("#dataS").property('value');
         console.log(selectValue);
-        //console.log(getDataARS(selectValue,0));
+        //console.log(getDataARS(selectValue,0,dataRegion.proprietes.ARS));
         updateData();
+        update_line();
     });
 
     d3.select("#color").on("change", function() {
@@ -604,7 +646,7 @@ function update_line() {
     });
     d3.select("#cumul").on("change", update_line);
     d3.select("#log").on("change", update_line);
-    d3.select("#by100k").on("change", updateMap);
+    d3.select("#by100k").on("change",(d)=> { updateData(); updateMap(); });
 
     // on ajoute un tooltip
     const eetooltip = new EETooltip({
