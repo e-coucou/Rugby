@@ -434,7 +434,7 @@ function update_line() {
         .attr("transform",(d,i)=>{ return "translate(50,"+(30+i*16)+")";});
         legendM.append('circle')
             .attr('r',3).attr('cx',3).attr('cy',2).style('fill',(d,i)=>{return couleur[i];});
-        legendM.append("text").style("font-size","12px").attr('x',10).attr('y',8).style('text-anchor','start')
+        legendM.append("text").style("font-size","12px").attr('x',10).attr('y',6).style('text-anchor','start')
         .text((d)=>{return d.name;})
 
     // curseur
@@ -533,7 +533,7 @@ function update_line() {
         // name/values[date/value]
         multi_data = [];
         dataRegion.regions_deps.forEach((r,j)=> {
-          values = []; console.log(j,dataRegion.regions_nom);
+          values = []; //console.log(j,dataRegion.regions_nom);
           name = dataRegion.regions_nom[j];
           h_date.forEach((d)=> { 
             date= parseTime(d);
@@ -558,7 +558,7 @@ function update_line() {
             dHist.push({item,values});
             data=[];
             dataRegion.regions_deps.forEach((r,i)=>{
-                name=i;
+                name=dataRegion.regions_nom[i];
                 values=[];
                 h_date.forEach(function(h) {
                     value=0;
