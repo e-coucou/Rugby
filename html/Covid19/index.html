@@ -138,6 +138,7 @@ select#dataS {
         <option value="rea">Réanimations</option>
         <option value="dc">Décédées</option>
         <option value="rad">Guéris</option>
+        <option value="death">Mortalité Mondiale</option>
     </optgroup></select>
 	<div id="cumul" >
   		<input id="cumul_i" type="checkbox" value="cumul" class="checkbox">
@@ -225,12 +226,14 @@ var allGoogle = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKlM0rqtd30g3t
     promises.push(d3.json('../data/covid.json')); // function(d,i) {console.log(d); return regionsDeps2.push(d.regions_deps[i]);}),
     promises.push(d3.csv('../data/covid_data.csv'));
     promises.push( d3.json('../data/regions.geojson'));
+    promises.push( d3.csv(allGoogle));
 
     Promise.all(promises).then(function(values) {
         console.log(values);
         var geojson = values[2],
             hopital = values[1],
-            dataRegion = values[0];
+            dataRegion = values[0],
+            dataGoogle = values[3];
 
         dataRegion.value.forEach((d,i)=> { return (data_value.push(d*100000/dataRegion.population[i]));});
 
@@ -564,9 +567,9 @@ function update_line() {
         }); 
         item='regions';
         dHist.push({item,values}); //console.log('dHist new',dHist);
-        console.log('multi_data',multi_data);
-        console.log('dHist',dHist);
-        console.log('dReg',dReg);
+//        console.log('multi_data',multi_data);
+//        console.log('dHist',dHist);
+//        console.log('dReg',dReg);
         index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
         data=[];
         dataRegion.regions.forEach((r,i)=>{
@@ -582,9 +585,24 @@ function update_line() {
         });
         dReg.push({item,data});
 
-
-//    console.log('dHist/dReg',dHist,dReg);
-    }
+// get data from google
+// dreg : item/data[names/values[date/value]]
+console.log(dataGoogle);
+        var values = dataGoogle.map((d)=>{ date=parseTime(d.date); value=Number(d.All_death); return ({date,value});});
+        item= "death";
+        dHist.push({item,values});
+        console.log("googl all",dHist);
+        var pays=["FR","GR","IT","SP"];
+        var data = [];
+            pays.forEach((n,i)=>{
+            name = n+"_"+item; console.log(name);
+            values = dataGoogle.map((d)=>{ date=parseTime(d.date); value=isNaN(d[name])?0:Number(d[name]); return ({date,value});});
+            data.push({name,values});
+        });
+        dReg.push({item,data});
+    console.log('dHist/dReg',dHist,dReg);
+    } //fin de update data
+//------------------------
 
     function getDataARS(item,sexe,date) {
         let cumR = 0, data =[];
