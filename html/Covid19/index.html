@@ -149,10 +149,10 @@ select#dataS {
     </optgroup></select>
 	<div id="cumul" >
   		<input id="cumul_i" type="checkbox" value="cumul" class="checkbox">
-  		<label for="cumul_i">France Entière</label></div>
+  		<label for="cumul_i">Global (France/Monde)</label></div>
     <div id="log" >
         <input id="log_i" type="checkbox" value="log" class="checkbox">
-        <label for="log_i">Echelle Log</label></div>
+        <label for="log_i">Echelle Log.</label></div>
     <div id="by100k" >
         <input id="by100k_i" type="checkbox" value="by100k" class="checkbox">
         <label for="by100k_i">Echelle par 100k</label></div>
@@ -373,7 +373,7 @@ function update_line() {
     let indexReg=dReg.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
 	dMult = (dReg[indexReg].data.slice()) ; //console.log('données ligne',dMult); console.log('dMult',dMult);
 	let cb = d3.select("#cumul_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
-	if (cb._groups[0][0].checked) dMult.push({'name':'france','values':dHist[index].values});
+	if (cb._groups[0][0].checked) dMult.push({'name':'France/Monde','values':dHist[index].values});
     x.domain(d3.extent(dHist[index].values, function(d) { return d.date; }));
 	y.domain([0, d3.max(dMult, function(c) {
       	return d3.max(c.values, function(v) {
@@ -433,8 +433,8 @@ function update_line() {
         .attr("class","legend")
         .attr("transform",(d,i)=>{ return "translate(50,"+(30+i*16)+")";});
         legendM.append('circle')
-            .attr('r',2).attr('cx',3).attr('cy',2).style('fill',(d,i)=>{return couleur[i];});
-        legendM.append("text").style("font-size","12px").attr('x',10).style('text-anchor','start')
+            .attr('r',3).attr('cx',3).attr('cy',2).style('fill',(d,i)=>{return couleur[i];});
+        legendM.append("text").style("font-size","12px").attr('x',10).attr('y',8).style('text-anchor','start')
         .text((d)=>{return d.name;})
 
     // curseur
@@ -534,7 +534,7 @@ function update_line() {
         multi_data = [];
         dataRegion.regions_deps.forEach((r,j)=> {
           values = [];
-          name = j;
+          name = dataRegion.regions_nom[j];
           h_date.forEach((d)=> { 
             date= parseTime(d);
             value=getDataRegion(selectValue,j,d,0);
