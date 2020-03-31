@@ -124,14 +124,14 @@ select#dataS {
         <option value="Greens">Verts</option>
         <option value="Reds">Rouges</option>
         <option value="Greys">Gris</option>
-        <option value="BrBG">BrBG</option>
+<!--        <option value="BrBG">BrBG</option>
         <option value="PiYG">PiYG</option>
         <option value="PRGn">PRGn</option>
         <option value="PuOr">PuOr</option>
         <option value="RdBu">RdBu</option>
         <option value="RdGy">RdGy</option>
         <option value="RdYlBu">RdYlBu</option>
-        <option value="RdYlGn">RdYlGn</option>
+        <option value="RdYlGn">RdYlGn</option> -->
         <option value="Turbo">Turbo</option>
         <option value="Plasma">Plasma</option>
         <option value="Magma">Magma</option>
@@ -201,6 +201,7 @@ let valFormat = (a) => {
 var public_spreadsheet_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKlM0rqtd30g3tiboIRwjal2KElonjOP2HhoZUanZCFPDd0yeAvaQy18qAkKQxz2_OW6hN36HV9fcE/pubhtml";
 var covid_google = "https://spreadsheets.google.com/feeds/cells/1-y1LPejhQw1iJfGMVGS_aHy1g0nbY4SFr3Q1LvazsV8/1/public/full?alt=json";
 var allGoogle = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKlM0rqtd30g3tiboIRwjal2KElonjOP2HhoZUanZCFPDd0yeAvaQy18qAkKQxz2_OW6hN36HV9fcE/pub?gid=1181120396&single=true&output=csv";
+var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f1b3ee1cabd7';
   // draw chart
   var d_Confirmed=[];
   d3.csv(allGoogle, function (data) { 
@@ -235,13 +236,15 @@ var allGoogle = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKlM0rqtd30g3t
     promises.push(d3.csv('../data/covid_data.csv'));
     promises.push( d3.json('../data/regions.geojson'));
     promises.push( d3.csv(allGoogle));
+    promises.push( d3.dsv(";",dataGouv));
 
     Promise.all(promises).then(function(values) {
         console.log(values);
         var geojson = values[2],
-            hopital = values[1],
+            hopital = values[4],
             dataRegion = values[0],
-            dataGoogle = values[3];
+            dataGoogle = values[3],
+            dataGouv = values[4];
 
         dataRegion.value.forEach((d,i)=> { return (data_value.push(d*100000/dataRegion.population[i]));});
 
@@ -373,7 +376,7 @@ function update_line() {
     let indexReg=dReg.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
 	dMult = (dReg[indexReg].data.slice()) ; //console.log('données ligne',dMult); console.log('dMult',dMult);
 	let cb = d3.select("#cumul_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
-	if (cb._groups[0][0].checked) dMult.push({'name':'France/Monde','values':dHist[index].values});
+	if (cb._groups[0][0].checked) dMult.push({'name':dHist[index].name,'values':dHist[index].values});
     x.domain(d3.extent(dHist[index].values, function(d) { return d.date; }));
 	y.domain([0, d3.max(dMult, function(c) {
       	return d3.max(c.values, function(v) {
@@ -546,6 +549,7 @@ function update_line() {
         dHist = [], dReg = [];
         dataRegion.proprietes.cases.forEach( item=> {
             values=[];
+            name='France';
             h_date.forEach(function(h) {
               date = parseTimeH(h);
               let value = hopital.reduce((a,d)=>{ let v=0;
@@ -555,7 +559,7 @@ function update_line() {
                 return (a+v); },0); //console.log(cum);        value = cumul(d.series);
               values.push({date,value}); // sauvegarde sous forme de hashmap de nos données.
             });
-            dHist.push({item,values});
+            dHist.push({item,name,values});
             data=[];
             dataRegion.regions_deps.forEach((r,i)=>{
                 name=dataRegion.regions_nom[i];
@@ -615,14 +619,16 @@ function update_line() {
         first = true; // parce que ca marche pas !!
     }
     function getGoogleData(item) {
-        name="All_"+item;
-        var values = dataGoogle.map((d)=>{ date=parseTime(d.date); value=isNaN(d[name])?0:Number(d[name]); return ({date,value});});
-        dHist.push({item,values}); //console.log("googl all",dHist);
+        nom="All_"+item;
+        name="Monde";
+        var values = dataGoogle.map((d)=>{ date=parseTime(d.date); value=isNaN(d[nom])?0:Number(d[nom]); return ({date,value});});
+        dHist.push({item,name,values}); //console.log("googl all",dHist);
         var pays=["FR","DE","IT","SP","US","CN"];
         var data = [];
             pays.forEach((n,i)=>{
-            name = n+"_"+item; //console.log(name);
-            values = dataGoogle.map((d)=>{ date=parseTime(d.date); value=isNaN(d[name])?0:Number(d[name]); return ({date,value});});
+            nom = n+"_"+item;
+            name = dataRegion.pays[n]; //console.log(name);
+            values = dataGoogle.map((d)=>{ date=parseTime(d.date); value=isNaN(d[nom])?0:Number(d[nom]); return ({date,value});});
             data.push({name,values});
         });
         dReg.push({item,data});
