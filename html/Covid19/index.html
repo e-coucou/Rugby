@@ -133,12 +133,14 @@ select#dataS {
     </optgroup></select>
 <select id="dataS" class="styleSelect">
     <optgroup label="Type de données">
-        <option value="regions">by régions</option>
-        <option value="hosp" selected="" >Hospitalisations</option>
-        <option value="rea">Réanimations</option>
-        <option value="dc">Décédées</option>
-        <option value="rad">Guéris</option>
-        <option value="death">Mortalité Mondiale</option>
+        <option value="regions">by régions (France)</option>
+        <option value="hosp" selected="" >Hospitalisations (France)</option>
+        <option value="rea">en Réanimations (France)</option>
+        <option value="dc">Décédées (France)</option>
+        <option value="rad">Guérisons (France)</option>
+        <option value="death">Mortalité Monde</option>
+        <option value="recover">Guérisons Monde</option>
+        <option value="cases">Cas Covid19 Monde</option>
     </optgroup></select>
 	<div id="cumul" >
   		<input id="cumul_i" type="checkbox" value="cumul" class="checkbox">
@@ -587,22 +589,24 @@ function update_line() {
 
 // get data from google
 // dreg : item/data[names/values[date/value]]
-console.log(dataGoogle);
-        var values = dataGoogle.map((d)=>{ date=parseTime(d.date); value=Number(d.All_death); return ({date,value});});
-        item= "death";
-        dHist.push({item,values});
-        console.log("googl all",dHist);
-        var pays=["FR","GR","IT","SP"];
+        item = ["death","recover","cases"];
+        item.forEach((id)=>{ getGoogleData(id);});
+        console.log('dHist/dReg',dHist,dReg);
+    } //fin de update data
+//------------------------
+    function getGoogleData(item) {
+        name="All_"+item;
+        var values = dataGoogle.map((d)=>{ date=parseTime(d.date); value=isNaN(d[name])?0:Number(d[name]); return ({date,value});});
+        dHist.push({item,values}); //console.log("googl all",dHist);
+        var pays=["FR","DE","IT","SP","US","CN"];
         var data = [];
             pays.forEach((n,i)=>{
-            name = n+"_"+item; console.log(name);
+            name = n+"_"+item; //console.log(name);
             values = dataGoogle.map((d)=>{ date=parseTime(d.date); value=isNaN(d[name])?0:Number(d[name]); return ({date,value});});
             data.push({name,values});
         });
         dReg.push({item,data});
-    console.log('dHist/dReg',dHist,dReg);
-    } //fin de update data
-//------------------------
+    }
 
     function getDataARS(item,sexe,date) {
         let cumR = 0, data =[];
@@ -633,7 +637,7 @@ console.log(dataGoogle);
     // customs couleurs des pastilles   thanks to Cynthia Brewer@
     d3.select("#dataS").on("change", function() {
         selectValue = d3.select("#dataS").property('value');
-        console.log(selectValue);
+        //console.log(selectValue);
         //console.log(getDataARS(selectValue,0,dataRegion.proprietes.ARS));
         updateData();
         update_line();
