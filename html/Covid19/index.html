@@ -430,11 +430,11 @@ function update_line() {
         .attr("data-legend",function(d) { return d.name}) //byEP
         .style("stroke", function(d,i) { return couleur[i];});
 
-    var legendM = g_line.append("g")
+    var legendM = g_lines.append("g")
     .attr("class","legend")
     .attr("transform","translate(50,30)")
     .style("font-size","12px")
-    .call(d3.legend);
+    .append("text").text((d)=>{return d.name;})
 
     // curseur
 	var mouseG = g_line.append("g")
