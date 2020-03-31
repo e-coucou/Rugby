@@ -166,6 +166,7 @@ let valFormat = (a) => {
 
 // Variables Globales
     var timeStart=0,timeStop=0;
+    var first = true;
 	let cumul = (array) => array.reduce((a, b) => { return a + b; }); // / array.length;
 	let average = (array) => array.reduce((a, b) => { return a + b; }) / array.length;
 	
@@ -587,13 +588,18 @@ function update_line() {
         });
         dReg.push({item,data});
 
+        if (first) getData();
+
+    } //fin de update data
+//------------------------
+   function getData() {
 // get data from google
 // dreg : item/data[names/values[date/value]]
         item = ["death","recover","cases"];
         item.forEach((id)=>{ getGoogleData(id);});
         console.log('dHist/dReg',dHist,dReg);
-    } //fin de update data
-//------------------------
+        first = false;
+    }
     function getGoogleData(item) {
         name="All_"+item;
         var values = dataGoogle.map((d)=>{ date=parseTime(d.date); value=isNaN(d[name])?0:Number(d[name]); return ({date,value});});
