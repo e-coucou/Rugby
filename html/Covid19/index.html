@@ -533,7 +533,7 @@ function update_line() {
         // name/values[date/value]
         multi_data = [];
         dataRegion.regions_deps.forEach((r,j)=> {
-          values = []; console.log(j,regions_nom);
+          values = []; console.log(j,dataRegion.regions_nom);
           name = dataRegion.regions_nom[j];
           h_date.forEach((d)=> { 
             date= parseTime(d);
