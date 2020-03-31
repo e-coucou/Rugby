@@ -433,7 +433,7 @@ function update_line() {
         .attr("class","legend")
         .attr("transform",(d,i)=>{ return "translate(50,"+(30+i*16)+")";});
         legendM.append('circle')
-            .attr('r',2).attr('cx',3).attr('cy',2).style('fill',(d,i)=>{return couleurs[i];});
+            .attr('r',2).attr('cx',3).attr('cy',2).style('fill',(d,i)=>{return couleur[i];});
         legendM.append("text").style("font-size","12px").attr('x',10).style('text-anchor','start')
         .text((d)=>{return d.name;})
 
