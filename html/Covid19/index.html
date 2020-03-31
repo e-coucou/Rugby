@@ -431,7 +431,7 @@ function update_line() {
 
     var legendM = g_lines.append("g")
         .attr("class","legend")
-        .attr("transform",(d,i)=>{ return "translate(50,"+(30+i*20)+")")
+        .attr("transform",(d,i)=>{ return "translate(50,"+(30+i*20)+")";})
         .style("font-size","12px")
         .append("text").text((d)=>{return d.name;})
 
