@@ -93,6 +93,10 @@ select#dataS {
   stroke:black;
   opacity:0.8;
 }
+#info {
+    color: white;
+    opacity: 1.0;
+}
 </style>
 <header>
   <div id='h1'>COVID-19</div>
@@ -143,6 +147,7 @@ select#dataS {
         <option value="rea">en Réanimations (France)</option>
         <option value="dc">Décédées (France)</option>
         <option value="rad">Guérisons (France)</option>
+        <option value="delta">Delta dc (France)</option>
         <option value="death">Mortalité Monde</option>
         <option value="recover">Guérisons Monde</option>
         <option value="cases">Cas Covid19 Monde</option>
@@ -158,8 +163,8 @@ select#dataS {
         <label for="by100k_i">Echelle par 100k</label></div>
     <div id="tooltipDiv"></div>
 <footer>
-<aside>(c) e-Coucou | y2K | Mars, 2020</aside>
-    <div id="info"></div>
+<aside>(c) e-Coucou | y2K | Mars, 2020</aside><aside>
+    <div id="info" href="https://www.data.gouv.fr/fr/datasets/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/">ARS</div></aside>
 </footer>
     <script type="text/javascript">
 // format ...
@@ -605,7 +610,20 @@ function update_line() {
             data.push({name,values});
         });
         dReg.push({item,data});
-
+// dreg : item/data[names/values[date/value]]
+    // delta mart
+        old=0;values=[];
+        dHist[2].values.forEach((d)=>{
+            date=d.date;
+            value=d.value-old;
+            values.push({date,value});
+            old=d.value;
+        });
+        item='delta';
+        name='delta dc';
+        dHist.push({item,name,values});
+        data=[]; data.push({name,values});
+        dReg.push({item,data});
         if (first) getData();
 
     } //fin de update data
@@ -623,9 +641,8 @@ function update_line() {
         name="Monde";
         var values = dataGoogle.map((d)=>{ date=parseTime(d.date); value=isNaN(d[nom])?0:Number(d[nom]); return ({date,value});});
         dHist.push({item,name,values}); //console.log("googl all",dHist);
-        var pays=["FR","DE","IT","SP","US","CN"];
         var data = [];
-            pays.forEach((n,i)=>{
+            dataRegion.pays_liste.forEach((n,i)=>{
             nom = n+"_"+item;
             name = dataRegion.pays[n]; //console.log(name);
             values = dataGoogle.map((d)=>{ date=parseTime(d.date); value=isNaN(d[nom])?0:Number(d[nom]); return ({date,value});});
