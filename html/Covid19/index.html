@@ -395,7 +395,9 @@ function update_line() {
             name = d.name;
             values = d.values.slice(dataRegion.pays_decalage[d.n]); 
             values.forEach((d,i,t)=>{
-                t[i].date = new Date(d.date.getDate() - dataRegion.pays_decalage[d.n]);
+                newD = new Date();
+                newD.setDate(d.date.getDate() - dataRegion.pays_decalage[d.n]);
+                t[i].date = newD;
             }); //console.log(d.n,dataRegion.pays_decalage[d.n]);
             dMult.push({name,values});
         }) ; 
