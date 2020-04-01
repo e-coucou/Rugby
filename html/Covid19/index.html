@@ -393,7 +393,10 @@ function update_line() {
     if (cb._groups[0][0].checked) {
         dReg[indexReg].data.forEach((d)=>{
             name = d.name;
-            values = d.values.slice(dataRegion.pays_decalage[d.n]); console.log(d.n,dataRegion.pays_decalage[d.n]);
+            values = d.values.slice(dataRegion.pays_decalage[d.n]); 
+            values.forEach((d,i,t)=>{
+                t[i].date = new Date(d.date.getDate() - dataRegion.pays_decalage[d.n]);
+            }); //console.log(d.n,dataRegion.pays_decalage[d.n]);
             dMult.push({name,values});
         }) ; 
         console.log('dMult',dMult);
