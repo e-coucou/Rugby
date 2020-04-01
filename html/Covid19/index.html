@@ -400,8 +400,8 @@ function update_line() {
     } else {
     	dMult = (dReg[indexReg].data.slice()) ; //console.log('données ligne',dMult); console.log('dMult',dMult);
     }
-    let cb = d3.select("#cumul_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
-    if (cb._groups[0][0].checked) dMult.push({'name':dHist[index].name,'values':dHist[index].values});
+    let cb2 = d3.select("#cumul_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
+    if (cb2._groups[0][0].checked) dMult.push({'name':dHist[index].name,'values':dHist[index].values});
     //
     x.domain(d3.extent(dHist[index].values, function(d) { return d.date; }));
 	y.domain([0, d3.max(dMult, function(c) {
