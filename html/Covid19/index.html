@@ -393,7 +393,7 @@ function update_line() {
     if (cb._groups[0][0].checked) {
         dReg[indexReg].data.forEach((d)=>{
             name = d.name;
-            values = d.values.slice(dataRegion.pays_decalage[d.id]); console.log(id,dataRegion.pays_decalage[d.id]);
+            values = d.values.slice(dataRegion.pays_decalage[d.id]); console.log(d.id,dataRegion.pays_decalage[d.id]);
             dMult.push({name,values});
         }) ; 
         console.log('dMult',dMult);
