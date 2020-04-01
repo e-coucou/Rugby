@@ -43,5 +43,5 @@
 	"Ile-de-France","Normandie","Nouvelle-Aquitaine","Occitanie","Pays de la Loire","Provence-Alpes-Côte d’Azur"],
 "pays":{"FR":"France","IT":"Italie","DE":"Allemagne","CN":"Chine","US":"Etats-Unis","SP":"Spain","All":"Monde","UK":"United Kingdom"},
 "pays_liste":["FR","DE","IT","SP","US","CN","UK"],
-"pays":{"FR":45,"IT":35,"DE":53,"CN":0,"US":43,"SP":46,"All":0,"UK":52},
+"pays_decalage":{"FR":45,"IT":35,"DE":53,"CN":0,"US":43,"SP":46,"All":0,"UK":52}
 }
