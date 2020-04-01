@@ -393,22 +393,32 @@ function update_line() {
     if (cb._groups[0][0].checked) {
         dReg[indexReg].data.forEach((d)=>{
             name = d.name;
-            values = d.values.slice(dataRegion.pays_decalage[d.n]); 
-            values.forEach((d,i,t)=>{
+            let val = [];
+            d.values.forEach((a,i,t)=>{
                 newD = new Date();
-                newD.setDate(d.date.getDate() - dataRegion.pays_decalage[d.n]);
-                t[i].date = newD;
+                newD.setTime(a.date.getTime() - 86400000*dataRegion.pays_decalage[d.n]);// console.log(newD,dataRegion.pays_decalage[d.n])
+                val.push({date:newD,value:a.value});
             }); //console.log(d.n,dataRegion.pays_decalage[d.n]);
-            dMult.push({name,values});
+            val=val.slice(dataRegion.pays_decalage[d.n]); 
+            dMult.push({name,values:val});
         }) ; 
-        console.log('dMult',dMult);
+        console.log('dMult-dec',dMult);
     } else {
+        console.log(dReg[indexReg]);
     	dMult = (dReg[indexReg].data.slice()) ; //console.log('données ligne',dMult); console.log('dMult',dMult);
+        console.log('dMult -ori',dMult);
     }
     let cb2 = d3.select("#cumul_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
     if (cb2._groups[0][0].checked) dMult.push({'name':dHist[index].name,'values':dHist[index].values});
     //
-    x.domain(d3.extent(dHist[index].values, function(d) { return d.date; }));
+//    x.domain(d3.extent(dHist[index].values, function(d) { return d.date; }));
+    x.domain([
+        d3.min(dMult, function(c) {
+        return d3.min(c.values, function(v) {
+        return v.date; });}),
+        d3.max(dMult, function(c) {
+        return d3.max(c.values, function(v) {
+        return v.date; });})]);
 	y.domain([0, d3.max(dMult, function(c) {
       	return d3.max(c.values, function(v) {
         return v.value; });})]);
@@ -517,6 +527,7 @@ function update_line() {
 						var xDate = x.invert(mouse[0]),
 							bisect = d3.bisector(function (d) { return d.date; }).left;
 							idx = bisect(d.values, xDate);
+                            try {
 							d3.select(this).select('text')
 								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(0)));
 							d3.select(".mouse-line")
@@ -525,6 +536,7 @@ function update_line() {
 										data += " " + x(d.values[idx].date) + "," + 0;
 									return data; });
 					return "translate(" + x(d.values[idx].date) + "," + ((d3.select("#log_i")._groups[0][0].checked)?yL(d.values[idx].value):y(d.values[idx].value)) + ")";
+                            } catch {}
 				});
   			});
     

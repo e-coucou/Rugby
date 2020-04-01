@@ -1,4 +1,4 @@
-{"proprietes":{"data_version":"25/03/2020","version":"3.41a","release":"Mars 2020","ARS":"2020-03-30","cases":["hosp","rea","dc","rad"]},
+{"proprietes":{"data_version":"25/03/2020","version":"3.51","release":"Mars 2020","ARS":"2020-04-01","cases":["hosp","rea","dc","rad"]},
 "regions":[{"84":{"id":0,"nom":"Auvergne-Rhône-Alpes"}},
 {"27":{"id":1,"nom":"Bourgogne-Franche-Comté"}},
 {"53":{"id":2,"nom":"Bretagne"}},
@@ -42,6 +42,6 @@
 "regions_nom":["Auvergne-Rhône-Alpes","Bourgogne-Franche-Comté","Bretagne","Centre-Val de Loire","Corse","Grand Est","Hauts-de-France",
 	"Ile-de-France","Normandie","Nouvelle-Aquitaine","Occitanie","Pays de la Loire","Provence-Alpes-Côte d’Azur"],
 "pays":{"FR":"France","IT":"Italie","DE":"Allemagne","CN":"Chine","US":"Etats-Unis","SP":"Spain","All":"Monde","UK":"United Kingdom"},
-"pays_liste":["FR","DE","IT","SP","US","CN","UK"],
+"pays_liste":["FR","DE","IT","SP","US","UK"],
 "pays_decalage":{"FR":45,"IT":35,"DE":53,"CN":0,"US":43,"SP":46,"All":0,"UK":52}
 }
