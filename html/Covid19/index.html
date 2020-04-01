@@ -385,7 +385,7 @@ function updateMap() {
 }
 
 function update_line() {
-	let dMult = [];
+	var dMult = [];
     let index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
     let indexReg=dReg.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
     let cb = d3.select("#cumul_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
@@ -402,9 +402,7 @@ function update_line() {
     } else {
     	dMult = (dReg[indexReg].data.slice()) ; //console.log('données ligne',dMult); console.log('dMult',dMult);
     }
-
     //
-
     x.domain(d3.extent(dHist[index].values, function(d) { return d.date; }));
 	y.domain([0, d3.max(dMult, function(c) {
       	return d3.max(c.values, function(v) {
@@ -427,7 +425,6 @@ function update_line() {
         	.attr("dx", "-.8em")
         	.attr("dy", ".15em")
         	.attr("transform", "rotate(-65)");
-    
     // Ajout de l'axe Y et du texte associé pour la légende
     g_line.append("g")
         .call((d3.select("#log_i")._groups[0][0].checked) ? d3.axisLeft(yL) : d3.axisLeft(y))
@@ -438,7 +435,6 @@ function update_line() {
             .attr("dy", "0.71em")
             .style("text-anchor", "end")
             .text("Malades");
-    
     // Ajout de la grille horizontale (pour l'axe Y donc). Pour chaque tiret (ticks), on ajoute une ligne qui va 
     // de la gauche à la droite du graphique et qui se situe à la bonne hauteur.
     g_line.selectAll("y axis").data(y.ticks(10)).enter()
@@ -448,8 +444,7 @@ function update_line() {
         .attr("x2", w_g)
         .attr("y1", function(d){ return (d3.select("#log_i")._groups[0][0].checked) ? yL(d) : y(d);})
         .attr("y2", function(d){ return (d3.select("#log_i")._groups[0][0].checked) ? yL(d) : y(d);});
-   
-   // on trace toutes les courbes
+    // on trace toutes les courbes
     var g_lines = g_line.selectAll(".currency")
         .data(dMult).enter().append("g")
         .attr("class", "currency");
@@ -467,22 +462,18 @@ function update_line() {
             .attr('r',3).attr('cx',3).attr('cy',2).style('fill',(d,i)=>{return couleur[i];});
         legendM.append("text").style("font-size","12px").attr('x',10).attr('y',6).style('text-anchor','start')
         .text((d)=>{return d.name;})
-
     // curseur
 	var mouseG = g_line.append("g")
   		.attr("class", "mouse-over-effects");
-
 	mouseG.append("path")
 		.attr("class", "mouse-line")
 		.style("stroke", "grey")
 		.style("stroke-width", "1px").style("stroke-dasharray",2)
 		.style("opacity", "0");
-
 	var mousePerLine = mouseG.selectAll('.mouse-per-line')
 		.data(dMult).enter()
  		.append("g").attr("class", "mouse-per-line");
-
-// reperage du point d'intersection curseur/courbe
+    // reperage du point d'intersection curseur/courbe
 	mousePerLine.append("circle")
 		.attr("r", 3)
 		.style("stroke", function (d,i) { return couleur[i];})
@@ -491,16 +482,15 @@ function update_line() {
     	.attr("class", "hover-text")
     	.attr("dy", "-1em")
     	.attr("transform", "translate(10,3)");
-//on ajoute un titre au graphique
+    //on ajoute un titre au graphique
 	g_line.append('text')
 		.attr('x', (w_g / 2)).attr('y', 0 - (margin.top / 3))
 		.attr('text-anchor', 'middle')
 		.attr("class","titleLine")
 		.style('font-size', '12px') 
         .text((d) => {return (selectValue==='regions')?"Mise à jour ARS au "+dataRegion.proprietes.data_version:"Mise à jour Gouv au "+dataRegion.proprietes.ARS; });
-//        .text((d) => {return (selectValue=="regions")?('Mise à jour ARS au '+dataRegion.proprietes.data_version):('Mise à jour Gouv au '+dataRegion.proprietes.ARS) ;});
-
-// Append a rect to catch mouse movements on canvas
+    //        .text((d) => {return (selectValue=="regions")?('Mise à jour ARS au '+dataRegion.proprietes.data_version):('Mise à jour Gouv au '+dataRegion.proprietes.ARS) ;});
+    // Append a rect to catch mouse movements on canvas
 	mouseG.append('svg:rect') 
 		.attr('width', w_g) .attr('height', h_g)
 		.attr('fill', 'none')
@@ -532,7 +522,7 @@ function update_line() {
 					return "translate(" + x(d.values[idx].date) + "," + ((d3.select("#log_i")._groups[0][0].checked)?yL(d.values[idx].value):y(d.values[idx].value)) + ")";
 				});
   			});
-
+    
 }
     //-----
     function id(code) {
@@ -668,7 +658,7 @@ function update_line() {
             dataRegion.pays_liste.forEach((n,i)=>{
             nom = n+"_"+item;
             name = dataRegion.pays[n]; //console.log(name);
-            id=n;
+            let id=n;
             values = dataGoogle.map((d)=>{ date=parseTime(d.date); value=isNaN(d[nom])?0:Number(d[nom]); return ({date,value});});
             data.push({n,name,values});
         });
