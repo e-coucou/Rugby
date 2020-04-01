@@ -388,10 +388,8 @@ function update_line() {
 	var dMult = [];
     let index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
     let indexReg=dReg.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
-    let cb = d3.select("#cumul_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
-    if (cb._groups[0][0].checked) dMult.push({'name':dHist[index].name,'values':dHist[index].values});
     // on decale les courbes enfct des Pays
-    cb = d3.select("#decalage_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
+    let cb = d3.select("#decalage_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
     if (cb._groups[0][0].checked) {
         dReg[indexReg].data.forEach((d)=>{
             name = d.name;
@@ -402,6 +400,8 @@ function update_line() {
     } else {
     	dMult = (dReg[indexReg].data.slice()) ; //console.log('données ligne',dMult); console.log('dMult',dMult);
     }
+    let cb = d3.select("#cumul_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
+    if (cb._groups[0][0].checked) dMult.push({'name':dHist[index].name,'values':dHist[index].values});
     //
     x.domain(d3.extent(dHist[index].values, function(d) { return d.date; }));
 	y.domain([0, d3.max(dMult, function(c) {
