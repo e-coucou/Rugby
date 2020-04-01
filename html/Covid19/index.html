@@ -190,7 +190,7 @@ let valFormat = (a) => {
 	let average = (array) => array.reduce((a, b) => { return a + b; }) / array.length;
 	
 	var couleur = ['DarkRed','yellowgreen','RebeccaPurple','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
-	let margin = {top: 10, right: 20, bottom: 30, left: 50},
+	let margin = {top: 10, right: 5, bottom: 30, left: 50},
     width = window.innerWidth - margin.right-margin.left,
     height = window.innerHeight - margin.top-margin.bottom -50;
     let orientation=0;
@@ -290,6 +290,29 @@ var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f
         .attr('transform', function(d) {return 'translate('+(margin.left+20)+','+(5*margin.top)+')';})
         .call(d3.axisRight(legendScale).ticks(10));
 
+    let IntervalData= [{v:'P1M',t:'m'},{v:'P7D',t:'s'},{v:'P1D',t:'j'},{v:'PT8H',t:'p'}];
+    var menu_select = svg.append("g").selectAll("g").data(dataRegion.pays_liste).enter()
+        .append('g')
+        .attr('transform', function(d,i) { return 'translate('+(width/2 + margin.left+i*25)+','+(4*margin.top)+')';})
+        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
+        .on('click',click);
+        
+    let selMenu=-1;
+    menu_select.append('circle').style('fill',colors[colors.length-2])
+        .attr('r',11)
+        .on('mouseover',function(d,i){ d3.select(this).style('fill','#FE6F5E');})
+        .on('mouseout',function(d,i){ d3.select(this).style('fill',(a)=>{return (d===selMenu)?'black':colors[colors.length-2];});});
+ //.attr('cx',(d,i)=>{return width-i*25;}).attr('cy',15)
+    menu_select.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'10px')
+        .attr('dy','0.3em').text(d=>d).raise();
+
+function click(d,i,t) {
+    selMenu=d;
+    menu_select.selectAll('circle').style('fill',function(m,j) {return m===selMenu?"black":colors[colors.length-2];});
+//.style("fill",(a,n)=>{return (n!=selMenu)?'green':'#2E2D88';});
+//    menu_select.selectAll("circle").style("fill",(a,n)=>{return (n!=selMenu)?'green':'#2E2D88';});
+    console.log(d,i,t);
+}        
 //-------------------------
 // le graphique line ...
 //
@@ -529,7 +552,7 @@ function update_line() {
 							idx = bisect(d.values, xDate);
                             try {
 							d3.select(this).select('text')
-								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(0)));
+								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(0))+" "+d.name);
 							d3.select(".mouse-line")
 								.attr("d", function () {
 									var data = "M" + x(d.values[idx].date) + "," + h_g;
@@ -736,6 +759,7 @@ function update_line() {
 
         d3.select("header").transition().duration(2000).style("background-color",colors[colors.length-2]);
         d3.select("footer").transition().duration(2000).style("background-color",colors[colors.length-2]);
+        menu_select.selectAll('circle').style('fill',function(m,j) {return m===selMenu?"black":colors[colors.length-2];});
 
         //console.log(colors);
 
