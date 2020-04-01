@@ -393,7 +393,7 @@ function update_line() {
     if (cb._groups[0][0].checked) {
         dReg[indexReg].data.forEach((d)=>{
             name = d.name;
-            values = d.values.slice(dataRegion.pays_decalage[d.id]); console.log(d.id,dataRegion.pays_decalage[d.id]);
+            values = d.values.slice(dataRegion.pays_decalage[d.n]); console.log(d.n,dataRegion.pays_decalage[d.n]);
             dMult.push({name,values});
         }) ; 
         console.log('dMult',dMult);
@@ -658,7 +658,6 @@ function update_line() {
             dataRegion.pays_liste.forEach((n,i)=>{
             nom = n+"_"+item;
             name = dataRegion.pays[n]; //console.log(name);
-            let id=n;
             values = dataGoogle.map((d)=>{ date=parseTime(d.date); value=isNaN(d[nom])?0:Number(d[nom]); return ({date,value});});
             data.push({n,name,values});
         });
