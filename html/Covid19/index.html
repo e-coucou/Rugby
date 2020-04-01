@@ -388,14 +388,23 @@ function update_line() {
 	let dMult = [];
     let index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
     let indexReg=dReg.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
-	dMult = (dReg[indexReg].data.slice()) ; //console.log('données ligne',dMult); console.log('dMult',dMult);
-	let cb = d3.select("#cumul_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
-	if (cb._groups[0][0].checked) dMult.push({'name':dHist[index].name,'values':dHist[index].values});
+    let cb = d3.select("#cumul_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
+    if (cb._groups[0][0].checked) dMult.push({'name':dHist[index].name,'values':dHist[index].values});
     // on decale les courbes enfct des Pays
     cb = d3.select("#decalage_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
     if (cb._groups[0][0].checked) {
-        //dMult
+        dReg[indexReg].data.forEach((d)=>{
+            name = d.name;
+            values = d.values.slice(dataRegion.pays_decalage[d.id]);
+            dMult.push({names,values});
+        }) ; 
+        console.log('dMult',dMult);
+    } else {
+    	dMult = (dReg[indexReg].data.slice()) ; //console.log('données ligne',dMult); console.log('dMult',dMult);
     }
+
+    //
+
     x.domain(d3.extent(dHist[index].values, function(d) { return d.date; }));
 	y.domain([0, d3.max(dMult, function(c) {
       	return d3.max(c.values, function(v) {
@@ -659,8 +668,9 @@ function update_line() {
             dataRegion.pays_liste.forEach((n,i)=>{
             nom = n+"_"+item;
             name = dataRegion.pays[n]; //console.log(name);
+            id=n;
             values = dataGoogle.map((d)=>{ date=parseTime(d.date); value=isNaN(d[nom])?0:Number(d[nom]); return ({date,value});});
-            data.push({name,values});
+            data.push({n,name,values});
         });
         dReg.push({item,data});
     }
@@ -724,8 +734,10 @@ function update_line() {
         //console.log(colors);
 
     });
+    // gestion des cases a cocher ...
     d3.select("#cumul").on("change", update_line);
     d3.select("#log").on("change", update_line);
+    d3.select("#decalage").on("change", update_line);
     d3.select("#by100k").on("change",(d)=> { updateData(); updateMap(); });
 
     // on ajoute un tooltip
