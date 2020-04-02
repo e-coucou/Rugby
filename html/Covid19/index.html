@@ -57,7 +57,6 @@
 	color: #333;
 	font-family: "HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,sans-serif;
 	font-size: 8px;
-	font-weight: bold;
 	padding: 6px 3px 0;
 }
 select#color {
@@ -172,7 +171,7 @@ select#dataS {
         <label for="by100k_i">Echelle par 100k</label></div>
     <div id="tooltipDiv"></div>
 <footer>
-<aside>(c) e-Coucou | y2K | Mars, 2020</aside><aside>
+<aside>(c) e-Coucou | y2K | Mars, 2020 | data from ARS France & Johns Hopkins University</aside><aside>
     <div id="info" href="https://www.data.gouv.fr/fr/datasets/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/">ARS</div></aside>
 </footer>
     <script type="text/javascript">
@@ -197,7 +196,7 @@ let valFormat = (a) => {
     var selMenu=[];
     if (width>height) orientation=1;
 //	const colors = d3[`scheme${'Sinebow'}`];	
-    var interpolate = d3[`interpolate${'Blues'}`];
+    var interpolate = d3[`interpolate${'Greens'}`];
     var colors = [];
     const n=14;
     dark = d3.lab(interpolate(0)).l < 50;
@@ -259,6 +258,7 @@ var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f
 
         dataRegion.value.forEach((d,i)=> { return (data_value.push(d*100000/dataRegion.population[i]));});
         selMenu=dataRegion.pays_liste.slice();
+    updateColor();
 
     d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version+" | "+dataRegion.proprietes.ARS).attr("class","rky aside");
     var quantile = d3.scaleQuantile()
@@ -426,8 +426,7 @@ function update_line() {
             val=val.slice(dataRegion.pays_decalage[d.n]);
             if (selMenu.findIndex(e=>e===d.n)!=-1)
                 dMult.push({name,values:val});
-        }) ; 
-        console.log('dMult-dec',dMult);
+        }) ; //    console.log('dMult-dec',dMult);
     } else {
         dReg[indexReg].data.forEach(d=>{
             if (d.n != undefined) {
@@ -436,13 +435,16 @@ function update_line() {
             } else { if (dMult.length <= 0)
                 dMult=dReg[indexReg].data.slice(); //console.log('ici : ',dMult);
             }
-        }) ; //console.log('données ligne',dMult); console.log('dMult',dMult);
-        console.log('dMult -ori',dMult);
+        }) ; //console.log('dMult -ori',dMult);
     }
     let cb2 = d3.select("#cumul_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
     if (cb2._groups[0][0].checked) dMult.push({'name':dHist[index].name,'values':dHist[index].values});
     //
 //    x.domain(d3.extent(dHist[index].values, function(d) { return d.date; }));
+let maj =         d3.max(dMult, function(c) {
+        return d3.max(c.values, function(v) {
+        return v.date; });}).toLocaleDateString('fr-FR'); 
+
     x.domain([
         d3.min(dMult, function(c) {
         return d3.min(c.values, function(v) {
@@ -530,11 +532,11 @@ function update_line() {
     	.attr("transform", "translate(10,3)");
     //on ajoute un titre au graphique
 	g_line.append('text')
-		.attr('x', (w_g / 2)).attr('y', 0 - (margin.top / 3))
-		.attr('text-anchor', 'middle')
+		.attr('x', (w_g)).attr('y', 0 - (margin.top / 3))
+		.attr('text-anchor', 'end')
 		.attr("class","titleLine")
-		.style('font-size', '12px') 
-        .text((d) => {return (selectValue==='regions')?"Mise à jour ARS au "+dataRegion.proprietes.data_version:"Mise à jour Gouv au "+dataRegion.proprietes.ARS; });
+		.style('font-size', '8px') 
+        .text((d) => {return (selectValue==='regions')?"Maj "+dataRegion.proprietes.data_version:"Maj "+maj; });
     //        .text((d) => {return (selectValue=="regions")?('Mise à jour ARS au '+dataRegion.proprietes.data_version):('Mise à jour Gouv au '+dataRegion.proprietes.ARS) ;});
     // Append a rect to catch mouse movements on canvas
 	mouseG.append('svg:rect') 
@@ -583,14 +585,13 @@ function update_line() {
         selectValue = d3.select("#dataS").property('value');
         data_value = getDataARS(selectValue,0,dataRegion.proprietes.ARS);
         switch(selectValue) {
+            case 'regions':
+                data_value = dataRegion.value;
             case 'dc': case 'hosp': case 'rea': case 'rad': case 'delta':
                 menu_select.selectAll('circle').style("visibility","hidden");
                 d3.select("#decalage").style("visibility","hidden");
-                break;
-            case 'regions':
-                data_value = dataRegion.value;
-                menu_select.selectAll('circle').style("visibility","hidden");
-                d3.select("#decalage").style("visibility","hidden");
+                d3.select("#decalage").selectAll("input[type=checkbox]").property("checked",false);
+                //d3.selectAll("input[type=checkbox]").property("checked", false);
                 break;
             default :
                 menu_select.selectAll('circle').style("visibility","visible");
@@ -780,13 +781,9 @@ function update_line() {
 
         d3.selectAll(".legend").transition().duration(2000)
         	.style('fill',function(d,i) { return colors[i];});
-
-        d3.select("header").transition().duration(2000).style("background-color",colors[colors.length-2]);
-        d3.select("footer").transition().duration(2000).style("background-color",colors[colors.length-2]);
         menu_select.selectAll('circle').style('fill',function(m,j) {return (selMenu.findIndex(e=> e===m)!=-1)?"black":colors[colors.length-2];});
 
-        //console.log(colors);
-
+        updateColor();
     });
     // gestion des cases a cocher ...
     d3.select("#cumul").on("change", update_line);
@@ -854,10 +851,15 @@ function convertRGBDecimalToHex(rgb)
         + (g + 0x10000).toString(16).substring(3).toUpperCase()
         + (b + 0x10000).toString(16).substring(3).toUpperCase();
 }
+    function updateColor() {
+        // body...
+        d3.select("header").transition().duration(2000).style("background-color",colors[colors.length-2]);
+        d3.select("footer").transition().duration(2000).style("background-color",colors[colors.length-2]);
+    }
+
   });
 //});
-
-   
+  
    </script>
 
    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"crossorigin="anonymous"></script>
