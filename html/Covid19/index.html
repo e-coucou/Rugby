@@ -582,6 +582,7 @@ let maj =         d3.max(dMult, function(c) {
 
     function updateData() {
         data_value =[];
+        var cases = 0;
         selectValue = d3.select("#dataS").property('value');
         data_value = getDataARS(selectValue,0,dataRegion.proprietes.ARS);
         switch(selectValue) {
@@ -596,6 +597,7 @@ let maj =         d3.max(dMult, function(c) {
             default :
                 menu_select.selectAll('circle').style("visibility","visible");
                 d3.select("#decalage").style("visibility","visible");
+                cases=1;
                 break;
         }
         //var selectCas = d3.select("#dataS").property('value');// console.log(d3.select("#dataS").node().value,selectCas);
@@ -612,7 +614,7 @@ let maj =         d3.max(dMult, function(c) {
         d3.selectAll(".regs").transition().duration(3000)
             .style('fill',function(d) {
                 let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
-                return colors[val];});
+                return cases===0?colors[val]:"Gainsboro";});
 
         let h_date = hopital.map(d=>{return d.jour;}).filter(getUnique);
 
@@ -784,6 +786,7 @@ let maj =         d3.max(dMult, function(c) {
         menu_select.selectAll('circle').style('fill',function(m,j) {return (selMenu.findIndex(e=> e===m)!=-1)?"black":colors[colors.length-2];});
 
         updateColor();
+        click();
     });
     // gestion des cases a cocher ...
     d3.select("#cumul").on("change", update_line);
