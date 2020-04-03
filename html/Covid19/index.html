@@ -156,6 +156,7 @@ select#dataS {
         <option value="death" >Mortalité Monde</option>
         <option value="recover" >Guérisons Monde</option>
         <option value="cases" >Cas Covid19 Monde</option>
+        <option value="simul" >Simulation Epidémie</option>
     </optgroup></select>
 	<div id="cumul" >
   		<input id="cumul_i" type="checkbox" value="cumul" class="checkbox">
@@ -294,7 +295,6 @@ var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f
     const parseTime = d3.timeParse("%d/%m/%Y");
     const parseTimeH = d3.timeParse("%Y-%m-%d");
 
-
     let w_g=0,h_g=scale/3*2,dec=1;
     if (orientation) {w_g=width-scale-margin.right-margin.left; dec=2;} else {w_g=scale-margin.left-margin.right; dec=1.4;} //
     const x = d3.scaleTime()
@@ -411,7 +411,7 @@ function updateMap() {
 function update_line() {
 	var dMult = [];
     let index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
-    let indexReg=dReg.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
+    let indexReg=dReg.findIndex(d=>{return d.item==selectValue;}); console.log('item',index,selectValue);
     // on decale les courbes enfct des Pays
     let cb = d3.select("#decalage_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
     if (cb._groups[0][0].checked) {
@@ -588,7 +588,7 @@ let maj =         d3.max(dMult, function(c) {
         switch(selectValue) {
             case 'regions':
                 data_value = dataRegion.value;
-            case 'dc': case 'hosp': case 'rea': case 'rad': case 'delta':
+            case 'dc': case 'hosp': case 'rea': case 'rad': case 'delta': case 'simul':
                 menu_select.selectAll('circle').style("visibility","hidden");
                 d3.select("#decalage").style("visibility","hidden");
                 d3.select("#decalage").selectAll("input[type=checkbox]").property("checked",false);
@@ -705,6 +705,7 @@ let maj =         d3.max(dMult, function(c) {
         data=[]; data.push({name,values});
         dReg.push({item,data});
         if (first) getData();
+        simul();
 
     } //fin de update data
 //------------------------
@@ -862,11 +863,40 @@ function convertRGBDecimalToHex(rgb)
 
     function simul() {
 //"modele":{ "population":70000000,"taux_infection":0.04,"mortalité":0.045,"asymptomatique":0.5,"contacts_j":5,"delai_guerison":18,"delai_mort":5,"risque_re":0.0001,"sur_risque_asymp":2}
-        var sains = dataRegion.modele.population,
-            infectes = [], malades = [], morts=[], gueris = []
+        var infectes = [], malades = [], morts=[], gueris = [], sains =[], assymp=[];
+        var ti = dataRegion.modele.taux_infection, tm=dataRegion.modele.mortalité, ra = dataRegion.modele.asymptomatique,
+            c=dataRegion.modele.contacts_j, dg=dataRegion.modele.delai_guerison, dm=dataRegion.modele.delai_mort,
+            rr=dataRegion.modele.risque_re, sa = dataRegion.modele.sur_risque_asymp, ddm = dataRegion.modele.decl_maladie;
+//console.log(c,sa,rr,ti);
+        infectes.push(1000);malades.push(0);morts.push(0);gueris.push(0),sains.push(dataRegion.modele.population),assymp.push(0);
+        var date=[];
+        date.push(new Date("01/01/2020"));
 
-        for (iter=0; )
-
+        for (let i=0; i<100;i++){
+            dd = new Date(); dd.setTime(date[i].getTime() + 86400000);//console.log(dd);
+            date.push( dd) ;
+            gueris.push(malades[i]*(1-tm)/dg+gueris[i]); //
+            assymp.push(infectes[i]*(1-ra)/dg);
+            morts.push(morts[i]+malades[i]*tm/(ddm+dm));
+            malades.push(infectes[i]*ra/ddm);
+            infectes.push((infectes[i]+assymp[i]*sa+malades[i]+gueris[i]*rr)*c*ti*sains[i]/sains[0] + infectes[i]
+                + gueris[i]+malades[i]+morts[i]+assymp[i]
+                - gueris[i+1] - malades[i+1] - morts[i+1] -assymp[i+1] );
+            sains.push(sains[i]-gueris[i+1]-assymp[i+1]-morts[i+1]-malades[i+1]-infectes[i+1]);
+        }
+//        date.forEach((d,i,t)=>{t[i]= parseTime(d);});
+  //      console.log(gueris,assymp,morts,malades,infectes,date);
+        data=[];
+        values=[];
+        date.forEach(d=>{values.push({date:d,value:0});});
+        dHist.push({item:'simul',name:'Global',values});
+        values=[];
+        morts.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'mortalité',n:'FR',values});
+        values=[];
+        malades.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'malades',n:'FR',values});
+        dReg.push({item:'simul',data});
     }
 
   });
