@@ -111,6 +111,7 @@ select#dataS {
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.4.3/tabletop.min.js"></script>
+<script src="https://unpkg.com/d3-simple-slider"></script>
 	<!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script> 
 	<script src="https://unpkg.com/d3@5.7.0/dist/d3.min.js" charset="utf-8"></script> 
@@ -170,6 +171,10 @@ select#dataS {
     <div id="by100k" >
         <input id="by100k_i" type="checkbox" value="by100k" class="checkbox">
         <label for="by100k_i">Echelle par 100k</label></div>
+  <div class="row align-items-center">
+    <div class="col-sm-2"><p id="value-simple"></p></div>
+    <div class="col-sm"><div id="slider-simple"></div></div>
+  </div>
     <div id="tooltipDiv"></div>
 <footer>
 <aside>(c) e-Coucou | y2K | Mars, 2020 | data from ARS France & Johns Hopkins University</aside><aside>
@@ -235,6 +240,8 @@ var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f
 
 	const deps = svg.append("g");
 
+//  d3.select('p#value-simple').text(d3.format('.2%')(sliderSimple.value()));
+
 	var fichier = '../data/covid_data.csv';
     var regionsDeps2 = [];
     var promises = [];
@@ -246,7 +253,7 @@ var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f
     promises.push( d3.json('../data/regions.geojson'));
     promises.push( d3.csv(allGoogle));
     promises.push( d3.dsv(";",dataGouv));
-//----------------------------------
+//-----------------------------------------------------------------------------
 //--
 //--
     Promise.all(promises).then(function(values) {
@@ -256,6 +263,11 @@ var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f
             dataRegion = values[0],
             dataGoogle = values[3],
             dataGouv = values[4];
+
+        const parseTime = d3.timeParse("%d/%m/%Y");
+        const parseTimeH = d3.timeParse("%Y-%m-%d");
+
+        var h_date = hopital.map(d=>{return d.jour;}).filter(getUnique);
 
         dataRegion.value.forEach((d,i)=> { return (data_value.push(d*100000/dataRegion.population[i]));});
         selMenu=dataRegion.pays_liste.slice();
@@ -289,12 +301,10 @@ var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f
         .attr('transform', function(d) {return 'translate('+(margin.left+20)+','+(5*margin.top)+')';})
         .call(d3.axisRight(legendScale).ticks(10));
 
+
 //-------------------------
 // le graphique line ...
 //
-    const parseTime = d3.timeParse("%d/%m/%Y");
-    const parseTimeH = d3.timeParse("%Y-%m-%d");
-
     let w_g=0,h_g=scale/3*2,dec=1;
     if (orientation) {w_g=width-scale-margin.right-margin.left; dec=2;} else {w_g=scale-margin.left-margin.right; dec=1.4;} //
     const x = d3.scaleTime()
@@ -323,6 +333,7 @@ var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f
         .attr('dy','0.3em').text(d=>d).raise();
 
 function click(d) {
+    console.log(d,selMenu);
     let t=selMenu.findIndex(e=>e===d);
     if (t===-1) {
         selMenu.push(d);//console.log(selMenu.findIndex((e)=> e=="FR"));
@@ -332,6 +343,40 @@ function click(d) {
     menu_select.selectAll('circle').style('fill',function(m,j) {return (selMenu.findIndex(e=>  m===e)==-1)?"Gainsboro":colors[colors.length-2];});
     update_line();
 }        
+
+//let h_date_min= parseTimeH(d3.min(h_date))
+//let h_date_max= parseTimeH(d3.max(h_date))
+
+  var dsimple = [0,  100];
+  var sliderSimple = d3
+    .sliderBottom()
+    .min(0) //d3.min(dsimple))
+    .max(h_date.length-1) //d3.max(dsimple))
+    .width(w_g).tickFormat(d3.format('1'))
+    .ticks(h_date.length).fill("forestgreen")
+    .displayValue(false).step(1)
+    .default(h_date.length-1)
+    .handle(d3
+        .symbol()
+        .type(d3.symbolCircle)
+        .size(70)()
+    )
+    .on('onchange', val => {
+//        console.log(val,h_date[Math.round(val)]);
+        data_value = getDataARS(selectValue,0,h_date[Math.round(val)]);
+        updateMap();
+//        updateData(h_date[Math.round(val)]);
+//        updateData("2020-04-01");
+//      d3.select('p#value-simple').text(d3.format('0')(val));
+    });
+  var gSimple = 
+//    d3.select('div#slider-simple')
+//    .attr('width', 500)
+//    .attr('height', 100)
+  svg  .append('g')
+    .attr('transform', ()=> {return 'translate('+(margin.left)+','+(height-50)+')';});
+
+  gSimple.call(sliderSimple);
 
 
     updateData();
@@ -360,7 +405,7 @@ function updateMap() {
         		let nid = id(d.properties.code), lid="#l"+nid,rid="#r_"+d.properties.code; //console.log(lid,rid);
     			eetooltip.addDataBlock("", d.properties.nom);
     			eetooltip.addDataBlock("code", d.properties.code);
-    			eetooltip.addDataBlock("malades",
+    			eetooltip.addDataBlock(selectValue,
     				(j) => { return valFormat(data_value[nid]); });
     			eetooltip.addDataBlock("cas/100000",
     				(j) => { return valFormat(dataRegion.value[nid]*100000.0/dataRegion.population[nid]); });
@@ -580,21 +625,28 @@ let maj =         d3.max(dMult, function(c) {
 		return find[code].id;
     }
 
-    function updateData() {
+    function updateData(selDate = dataRegion.proprietes.ARS) {
         data_value =[];
         var cases = 0;
         selectValue = d3.select("#dataS").property('value');
-        data_value = getDataARS(selectValue,0,dataRegion.proprietes.ARS);
+        data_value = getDataARS(selectValue,0,selDate);
         switch(selectValue) {
             case 'regions':
                 data_value = dataRegion.value;
-            case 'dc': case 'hosp': case 'rea': case 'rad': case 'delta': case 'simul':
+            case 'dc': case 'hosp': case 'rea': case 'rad': case 'delta':
                 menu_select.selectAll('circle').style("visibility","hidden");
                 d3.select("#decalage").style("visibility","hidden");
                 d3.select("#decalage").selectAll("input[type=checkbox]").property("checked",false);
                 //d3.selectAll("input[type=checkbox]").property("checked", false);
                 break;
+            case 'simul':
+                selMenu=["DC","MA","IN"];
+                menu_select.selectAll('circle').style("visibility","visible");
+                d3.select("#decalage").style("visibility","hidden");
+                d3.select("#decalage").selectAll("input[type=checkbox]").property("checked",false);
+                break;
             default :
+                selMenu=dataRegion.pays_liste.slice();
                 menu_select.selectAll('circle').style("visibility","visible");
                 d3.select("#decalage").style("visibility","visible");
                 cases=1;
@@ -615,9 +667,7 @@ let maj =         d3.max(dMult, function(c) {
             .style('fill',function(d) {
                 let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
                 return cases===0?colors[val]:"Gainsboro";});
-
-        let h_date = hopital.map(d=>{return d.jour;}).filter(getUnique);
-
+//h_date
         // name/values[date/value]
         multi_data = [];
         dataRegion.regions_deps.forEach((r,j)=> {
@@ -706,6 +756,7 @@ let maj =         d3.max(dMult, function(c) {
         dReg.push({item,data});
         if (first) getData();
         simul();
+//        console.log(data_value);
 
     } //fin de update data
 //------------------------
@@ -872,7 +923,7 @@ function convertRGBDecimalToHex(rgb)
         var date=[];
         date.push(new Date("01/01/2020"));
 
-        for (let i=0; i<100;i++){
+        for (let i=0; i<80;i++){
             dd = new Date(); dd.setTime(date[i].getTime() + 86400000);//console.log(dd);
             date.push( dd) ;
             gueris.push(malades[i]*(1-tm)/dg+gueris[i]); //
@@ -892,11 +943,17 @@ function convertRGBDecimalToHex(rgb)
         dHist.push({item:'simul',name:'Global',values});
         values=[];
         morts.forEach((d,i)=>{ values.push({date:date[i],value:d});});
-        data.push({name:'mortalité',n:'FR',values});
+        data.push({name:'mortalité',n:'DC',values});
         values=[];
         malades.forEach((d,i)=>{ values.push({date:date[i],value:d});});
-        data.push({name:'malades',n:'FR',values});
+        data.push({name:'malades',n:'MA',values});
         dReg.push({item:'simul',data});
+        values=[];
+        gueris.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'gueris',n:'GU',values});
+        values=[];
+        infectes.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'infectes',n:'IN',values});
     }
 
   });
