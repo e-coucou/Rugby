@@ -222,6 +222,7 @@ var public_spreadsheet_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ
 var covid_google = "https://spreadsheets.google.com/feeds/cells/1-y1LPejhQw1iJfGMVGS_aHy1g0nbY4SFr3Q1LvazsV8/1/public/full?alt=json";
 var allGoogle = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKlM0rqtd30g3tiboIRwjal2KElonjOP2HhoZUanZCFPDd0yeAvaQy18qAkKQxz2_OW6hN36HV9fcE/pub?gid=1181120396&single=true&output=csv";
 var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f1b3ee1cabd7';
+var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv";
   // draw chart
   var d_Confirmed=[];
 
@@ -253,6 +254,7 @@ var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f
     promises.push( d3.json('../data/regions.geojson'));
     promises.push( d3.csv(allGoogle));
     promises.push( d3.dsv(";",dataGouv));
+    promises.push( d3.csv(JH_global_death));
 //-----------------------------------------------------------------------------
 //--
 //--
@@ -262,7 +264,8 @@ var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f
             hopital = values[4],
             dataRegion = values[0],
             dataGoogle = values[3],
-            dataGouv = values[4];
+            dataGouv = values[4],
+            JHDeath = values[5];
 
         const parseTime = d3.timeParse("%d/%m/%Y");
         const parseTimeH = d3.timeParse("%Y-%m-%d");
@@ -271,6 +274,7 @@ var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f
 
         dataRegion.value.forEach((d,i)=> { return (data_value.push(d*100000/dataRegion.population[i]));});
         selMenu=dataRegion.pays_liste.slice();
+        selSimul=dataRegion.simul.slice();
     updateColor();
 
     d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version+" | "+dataRegion.proprietes.ARS).attr("class","rky aside");
@@ -317,7 +321,7 @@ var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f
         .x(function(d) { return x(d.date); }) //vep
         .y(function(d) { return (d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
         .curve(d3.curveCardinal);
-// Le menu select
+// Le menu select pour les pays
     var menu_select = svg.append("g").selectAll("g").data(dataRegion.pays_liste).enter()
         .append('g')
         .attr('transform', function(d,i) { return 'translate('+(width-w_g+i*25)+','+(4*margin.top)+')';})
@@ -328,12 +332,10 @@ var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f
         .attr('r',11)
         .on('mouseover',function(d,i){ d3.select(this).style('fill','#FE6F5E');})
         .on('mouseout',function(d,i){ d3.select(this).style('fill',(a)=>{return (selMenu.findIndex(e=> e===a)==-1)?'Gainsboro':colors[colors.length-2];});});
- //.attr('cx',(d,i)=>{return width-i*25;}).attr('cy',15)
     menu_select.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'10px')
         .attr('dy','0.3em').text(d=>d).raise();
 
 function click(d) {
-    console.log(d,selMenu);
     let t=selMenu.findIndex(e=>e===d);
     if (t===-1) {
         selMenu.push(d);//console.log(selMenu.findIndex((e)=> e=="FR"));
@@ -341,6 +343,31 @@ function click(d) {
         selMenu.splice(t,1);
     }
     menu_select.selectAll('circle').style('fill',function(m,j) {return (selMenu.findIndex(e=>  m===e)==-1)?"Gainsboro":colors[colors.length-2];});
+    update_line();
+}        
+// Le menu select pour la simulation
+    var menu_simul = svg.append("g").selectAll("g").data(dataRegion.simul).enter()
+        .append('g')
+        .attr('transform', function(d,i) { return 'translate('+(width-w_g+i*25)+','+(6*margin.top)+')';})
+        .attr("class","menu_select")
+        .on('click',clickSimul);
+        
+    menu_simul.append('circle').style('fill',(a)=>{return (selSimul.findIndex(e=> e===a)==-1)?'Gainsboro':colors[colors.length-2];})
+        .attr('r',11)
+        .on('mouseover',function(d,i){ d3.select(this).style('fill','#FE6F5E');})
+        .on('mouseout',function(d,i){ d3.select(this).style('fill',(a)=>{return (selSimul.findIndex(e=> e===a)==-1)?'Gainsboro':colors[colors.length-2];});});
+    menu_simul.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'10px')
+        .attr('dy','0.3em').text(d=>d).raise();
+
+function clickSimul(d) {
+    console.log(d,selSimul);
+    let t=selSimul.findIndex(e=>e===d);
+    if (t===-1) {
+        selSimul.push(d);
+    } else {
+        selSimul.splice(t,1);
+    }
+    menu_simul.selectAll('circle').style('fill',function(m,j) {return (selSimul.findIndex(e=>  m===e)==-1)?"Gainsboro":colors[colors.length-2];});
     update_line();
 }        
 
@@ -456,7 +483,7 @@ function updateMap() {
 function update_line() {
 	var dMult = [];
     let index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
-    let indexReg=dReg.findIndex(d=>{return d.item==selectValue;}); console.log('item',index,selectValue);
+    let indexReg=dReg.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
     // on decale les courbes enfct des Pays
     let cb = d3.select("#decalage_i"); //console.log('ici : ',cb,cb._groups[0][0].checked);
     if (cb._groups[0][0].checked) {
@@ -471,11 +498,16 @@ function update_line() {
             val=val.slice(dataRegion.pays_decalage[d.n]);
             if (selMenu.findIndex(e=>e===d.n)!=-1)
                 dMult.push({name,values:val});
+            if (selSimul.findIndex(e=>e===d.n)!=-1){
+                console.log('ici',selSimul);
+                dMult.push({name,values:val});}
         }) ; //    console.log('dMult-dec',dMult);
     } else {
         dReg[indexReg].data.forEach(d=>{
             if (d.n != undefined) {
                 if (selMenu.findIndex(e=>e===d.n)!=-1)
+                dMult.push({name:d.name,values:d.values});
+                if (selSimul.findIndex(e=>e===d.n)!=-1)
                 dMult.push({name:d.name,values:d.values});
             } else { if (dMult.length <= 0)
                 dMult=dReg[indexReg].data.slice(); //console.log('ici : ',dMult);
@@ -486,7 +518,7 @@ function update_line() {
     if (cb2._groups[0][0].checked) dMult.push({'name':dHist[index].name,'values':dHist[index].values});
     //
 //    x.domain(d3.extent(dHist[index].values, function(d) { return d.date; }));
-let maj =         d3.max(dMult, function(c) {
+    let maj =  d3.max(dMult, function(c) {
         return d3.max(c.values, function(v) {
         return v.date; });}).toLocaleDateString('fr-FR'); 
 
@@ -635,25 +667,27 @@ let maj =         d3.max(dMult, function(c) {
                 data_value = dataRegion.value;
             case 'dc': case 'hosp': case 'rea': case 'rad': case 'delta':
                 menu_select.selectAll('circle').style("visibility","hidden");
+                menu_simul.selectAll('circle').style("visibility","hidden");
                 d3.select("#decalage").style("visibility","hidden");
                 d3.select("#decalage").selectAll("input[type=checkbox]").property("checked",false);
                 //d3.selectAll("input[type=checkbox]").property("checked", false);
                 break;
             case 'simul':
-                selMenu=["DC","MA","IN"];
-                menu_select.selectAll('circle').style("visibility","visible");
+                data_value = getDataARS('dc',0,selDate);
+                menu_select.selectAll('circle').style("visibility","hidden");
+                menu_simul.selectAll('circle').style("visibility","visible");
                 d3.select("#decalage").style("visibility","hidden");
                 d3.select("#decalage").selectAll("input[type=checkbox]").property("checked",false);
                 break;
             default :
-                selMenu=dataRegion.pays_liste.slice();
+                data_value = getDataARS('dc',0,selDate);
                 menu_select.selectAll('circle').style("visibility","visible");
+                menu_simul.selectAll('circle').style("visibility","hidden");
                 d3.select("#decalage").style("visibility","visible");
                 cases=1;
                 break;
         }
-        //var selectCas = d3.select("#dataS").property('value');// console.log(d3.select("#dataS").node().value,selectCas);
-    //    if (selectValue == "regions") {data_value = dataRegion.value;};
+//        menu_select.selectAll('circle').style('fill',function(m,j) {return (selMenu.findIndex(e=> e===m)!=-1)?"black":colors[colors.length-2];});
 
         if ((d3.select("#by100k_i")._groups[0][0].checked)) {
             data_value.forEach((d,i,t)=> { return (t[i] = (d*100000/dataRegion.population[i]));});}
@@ -667,7 +701,6 @@ let maj =         d3.max(dMult, function(c) {
             .style('fill',function(d) {
                 let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
                 return cases===0?colors[val]:"Gainsboro";});
-//h_date
         // name/values[date/value]
         multi_data = [];
         dataRegion.regions_deps.forEach((r,j)=> {
@@ -836,6 +869,7 @@ let maj =         d3.max(dMult, function(c) {
         d3.selectAll(".legend").transition().duration(2000)
         	.style('fill',function(d,i) { return colors[i];});
         menu_select.selectAll('circle').style('fill',function(m,j) {return (selMenu.findIndex(e=> e===m)!=-1)?"black":colors[colors.length-2];});
+        menu_simul.selectAll('circle').style('fill',function(m,j) {return (selSimul.findIndex(e=> e===m)!=-1)?"black":colors[colors.length-2];});
 
         updateColor();
         click();
@@ -921,18 +955,18 @@ function convertRGBDecimalToHex(rgb)
 //console.log(c,sa,rr,ti);
         infectes.push(1000);malades.push(0);morts.push(0);gueris.push(0),sains.push(dataRegion.modele.population),assymp.push(0);
         var date=[];
-        date.push(new Date("01/01/2020"));
+        date.push(new Date("03/01/2020"));
 
-        for (let i=0; i<80;i++){
+        for (let i=0; i<100;i++){
             dd = new Date(); dd.setTime(date[i].getTime() + 86400000);//console.log(dd);
             date.push( dd) ;
-            gueris.push(malades[i]*(1-tm)/dg+gueris[i]); //
-            assymp.push(infectes[i]*(1-ra)/dg);
-            morts.push(morts[i]+malades[i]*tm/(ddm+dm));
-            malades.push(infectes[i]*ra/ddm);
-            infectes.push((infectes[i]+assymp[i]*sa+malades[i]+gueris[i]*rr)*c*ti*sains[i]/sains[0] + infectes[i]
+            gueris.push((i>=dg?malades[i-dg]:0)*(1-tm)+gueris[i]); //
+            assymp.push((i>=dg?infectes[i-dg]:0)*(1-ra)+assymp[i] - gueris[i]);
+            morts.push(morts[i]+(i>=(ddm+dm)?malades[i-ddm-dm]:0)*tm);
+            malades.push(malades[i]+(i>=dm?infectes[i]:0)*ra - gueris[i] - morts[i]);
+            infectes.push(Math.max((infectes[i]+assymp[i]*sa+malades[i]+gueris[i]*rr)*c*ti*sains[i]/sains[0] + infectes[i]
                 + gueris[i]+malades[i]+morts[i]+assymp[i]
-                - gueris[i+1] - malades[i+1] - morts[i+1] -assymp[i+1] );
+                - gueris[i+1] - malades[i+1] - morts[i+1] -assymp[i+1] ,0));
             sains.push(sains[i]-gueris[i+1]-assymp[i+1]-morts[i+1]-malades[i+1]-infectes[i+1]);
         }
 //        date.forEach((d,i,t)=>{t[i]= parseTime(d);});
@@ -954,6 +988,9 @@ function convertRGBDecimalToHex(rgb)
         values=[];
         infectes.forEach((d,i)=>{ values.push({date:date[i],value:d});});
         data.push({name:'infectes',n:'IN',values});
+        values=[];
+        assymp.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'assymptotiques',n:'AS',values});
     }
 
   });
