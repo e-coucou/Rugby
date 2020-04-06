@@ -964,10 +964,10 @@ function convertRGBDecimalToHex(rgb)
             delta_G_A = (i>dg?(assymp[i-dg]-assymp[i-dg-1]):0);
             delta_G_M = (i>dg?(malades[i-dg]-malades[i-dg-1]):0)*(1-tm);
             delta_A = (i>=ddm?infectes[i-ddm]:0)*(1-ra);
-            gueris.push(gueris[i]+ delta_G_A +delta_G_M);
-            assymp.push(assymp[i] + delta_A - delta_G_A );
+            gueris.push(Math.max(0,gueris[i]+ delta_G_A +delta_G_M));
+            assymp.push(Math.max(0,assymp[i] + delta_A - delta_G_A ));
             morts.push(morts[i]+ delta_D);
-            malades.push(malades[i]+(i>=ddm?infectes[i-ddm]:0)*ra - (i>=dg?malades[i-dg]:0)*(1-tm)- morts[i]);
+            malades.push(malades[i]+(i>=ddm?infectes[i-ddm]:0)*ra - delta_D);
             infectes.push(Math.max((infectes[i]+assymp[i]*sa+malades[i]*rr+gueris[i]*rr)*c*ti*sains[i]/sains[0] + infectes[i]*0
                 + gueris[i]+malades[i]+assymp[i]
                 - gueris[i+1] - malades[i+1]-assymp[i+1] ,0));
