@@ -637,6 +637,7 @@ function update_line() {
 						var xDate = x.invert(mouse[0]),
 							bisect = d3.bisector(function (d) { return d.date; }).left;
 							idx = bisect(d.values, xDate);
+                            laDate = d.values[idx].date.toLocaleDateString("fr-FR");console.log(laDate);
                             try {
 							d3.select(this).select('text')
 								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(0))+" "+d.name);
@@ -951,7 +952,8 @@ function convertRGBDecimalToHex(rgb)
         var infectes = [], malades = [], morts=[], gueris = [], sains =[], assymp=[];
         var ti = dataRegion.modele.taux_infection, tm=dataRegion.modele.mortalité, ra = dataRegion.modele.asymptomatique,
             c=dataRegion.modele.contacts_j, dg=dataRegion.modele.delai_guerison, dm=dataRegion.modele.delai_mort,
-            rr=dataRegion.modele.risque_re, sa = dataRegion.modele.sur_risque_asymp, ddm = dataRegion.modele.decl_maladie;
+            rr=dataRegion.modele.risque_re, sa = dataRegion.modele.sur_risque_asymp, ddm = dataRegion.modele.decl_maladie, 
+            da = dataRegion.modele.delai_asymptomatique;
 //console.log(c,sa,rr,ti);
         infectes.push(1000);malades.push(0);morts.push(0);gueris.push(0),sains.push(dataRegion.modele.population),assymp.push(0);
         var date=[];
@@ -961,18 +963,27 @@ function convertRGBDecimalToHex(rgb)
             dd = new Date(); dd.setTime(date[i].getTime() + 86400000);//console.log(dd);
             date.push( dd) ;
             delta_D = (i>=(dm)?malades[i-dm]:0)*tm;
-            delta_G_A = (i>dg?(assymp[i-dg]-assymp[i-dg-1]):0);
+            delta_G_A = (i>dg?(assymp[i-da]-assymp[i-dg-1]):0);
             delta_G_M = (i>dg?(malades[i-dg]-malades[i-dg-1]):0)*(1-tm);
-            delta_A = (i>=ddm?infectes[i-ddm]:0)*(1-ra);
-            delta_M = (i>=ddm?infectes[i-ddm]:0)*ra;
+            delta_A = (i>ddm?(infectes[i-ddm]-infectes[i-ddm-1]):0)*(1-ra);
+            delta_M = (i>ddm?(infectes[i-ddm]-infectes[i-ddm-1]):0)*ra;
+            delta_I = (infectes[i]+assymp[i]*sa+malades[i]*rr+gueris[i]*rr)*c*ti*sains[i]/sains[0];
+            //-----
+            delta_D = malades[i]*tm/dm;
+            delta_G_A = assymp[i]/da;
+            delta_A = infectes[i]*(1-ra)/dm;
+            delta_G_M = malades[i]*(1-tm)/dg;
+            delta_M = infectes[i]*ra/ddm;
+            delta_I = (infectes[i]+assymp[i]*sa+gueris[i]*rr)*ti*c*sains[i]/sains[0];
             gueris.push(Math.max(0,gueris[i]+ delta_G_A +delta_G_M));
             assymp.push(Math.max(0,assymp[i] + delta_A - delta_G_A ));
             morts.push(morts[i]+ delta_D);
-            malades.push(malades[i]+ - delta_D);
-            infectes.push(Math.max((infectes[i]+assymp[i]*sa+malades[i]*rr+gueris[i]*rr)*c*ti*sains[i]/sains[0] + infectes[i]*0
-                + gueris[i]+malades[i]+assymp[i]
-                - gueris[i+1] - malades[i+1]-assymp[i+1] ,0));
-            sains.push(sains[i]-gueris[i+1]-assymp[i+1]-morts[i+1]-malades[i+1]-infectes[i+1]);
+            malades.push(Math.max(0,malades[i]+ delta_M - delta_G_M - delta_D));
+            infectes.push(Math.max( delta_I + infectes[i]-delta_M - delta_A,0))
+                ;
+//                + gueris[i]+malades[i]+assymp[i]
+//                - gueris[i+1] - malades[i+1]-assymp[i+1] ,0));
+            sains.push(sains[0]-gueris[i+1]-assymp[i+1]-morts[i+1]-malades[i+1]-infectes[i+1]);
         }
 //        date.forEach((d,i,t)=>{t[i]= parseTime(d);});
   //      console.log(gueris,assymp,morts,malades,infectes,date);
@@ -995,7 +1006,10 @@ function convertRGBDecimalToHex(rgb)
         data.push({name:'infectes',n:'IN',values});
         values=[];
         assymp.forEach((d,i)=>{ values.push({date:date[i],value:d});});
-        data.push({name:'assymptotiques',n:'AS',values});
+        data.push({name:'asymptotiques',n:'AS',values});
+        values=[];
+        sains.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'sains',n:'S.',values});
     }
 
   });
