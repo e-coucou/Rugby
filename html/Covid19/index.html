@@ -964,9 +964,9 @@ function convertRGBDecimalToHex(rgb)
             assymp.push((i>=ddm?infectes[i-ddm]:0)*(1-ra)+assymp[i] - ((i>=dg?assymp[i-dg]:0)));
             morts.push(morts[i]+(i>=(ddm+dm)?malades[i-ddm-dm]:0)*tm);
             malades.push(malades[i]+(i>=ddm?infectes[i]:0)*ra - (i>=dg?malades[i-dg]:0)*(1-tm)- morts[i]);
-            infectes.push(Math.max((infectes[i]+assymp[i]*sa+malades[i]+gueris[i]*rr)*c*ti*sains[i]/sains[0] + infectes[i]
-                + gueris[i]+malades[i]+morts[i]+assymp[i]
-                - gueris[i+1] - malades[i+1] - morts[i+1] -assymp[i+1] ,0));
+            infectes.push(Math.max((infectes[i]+assymp[i]*sa+malades[i]*rr+gueris[i]*rr)*c*ti*sains[i]/sains[0] + infectes[i]*0
+                + gueris[i]+malades[i]+assymp[i]
+                - gueris[i+1] - malades[i+1]-assymp[i+1] ,0));
             sains.push(sains[i]-gueris[i+1]-assymp[i+1]-morts[i+1]-malades[i+1]-infectes[i+1]);
         }
 //        date.forEach((d,i,t)=>{t[i]= parseTime(d);});
