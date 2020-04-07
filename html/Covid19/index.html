@@ -719,8 +719,7 @@ function update_line() {
                 i1=cumul(getDataARS(d,1,selDate)),
                 i2=cumul(getDataARS(d,2,selDate));
             globalData.push({item:d,global:i0,hommes:i1,femmes:i2});
-        })
-        console.log('global',globalData);
+        }) //    console.log('global',globalData);
 
         switch(selectValue) {
             case 'regions':
@@ -1073,12 +1072,12 @@ function convertRGBDecimalToHex(rgb)
 
 function simulParam() {
 
-    let sl_l = w_g/12, i=0;
+    let sl_l = w_g/10, i=0;
   //echelle des dates nb jours simulation
     var sliderNumber = d3.sliderBottom().min(0).max(1000).width(sl_l).ticks(0).fill("white").default(nbSimul).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(0.005)
     .on('onchange', val => {//console.log(val);
         nbSimul=val;simul();update_line();});
-    var gNumber = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.5*(i++))+','+(height-20)+')';});
+    var gNumber = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
     gNumber.call(sliderNumber);
 
     var sliderContact = d3.sliderBottom().min(0).max(50).width(sl_l).step(1) //scale-margin.left)//.tickFormat(d3.format('1'))
@@ -1088,38 +1087,38 @@ function simulParam() {
         c=val;simul();update_line();
     });
   var gContact = svg  .append('g')
-    .attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.5*(i++))+','+(height-20)+')';});
+    .attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
 
   gContact.call(sliderContact);
   //infection
     var sliderInfection = d3.sliderBottom().min(0).max(0.2).width(sl_l).ticks(0).fill("red").default(ti).handle(d3.symbol().type(d3.symbolCircle).size(70)())
     .on('onchange', val => {//console.log(val);
         ti=val;simul();update_line();});
-    var gInfection = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.5*(i++))+','+(height-20)+')';});
+    var gInfection = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
     gInfection.call(sliderInfection);
   //mortalité
     var sliderMortalite = d3.sliderBottom().min(0).max(0.10).width(sl_l).ticks(0).fill("black").default(tm).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(0.005)
     .on('onchange', val => {//console.log(val);
         tm=val;simul();update_line();});
-    var gMortalite = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.5*(i++))+','+(height-20)+')';});
+    var gMortalite = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
     gMortalite.call(sliderMortalite);
   //asymptomatique
     var sliderAsymptome = d3.sliderBottom().min(0).max(1.00).width(sl_l).ticks(0).fill(couleur[i]).default(1-ra).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(0.01)
     .on('onchange', val => {//console.log(val);
         ra=1-val;simul();update_line();});
-    var gAsymptome = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.5*(i++))+','+(height-20)+')';});
+    var gAsymptome = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
     gAsymptome.call(sliderAsymptome);
   //temps maladie
     var sliderMaladie = d3.sliderBottom().min(0).max(15).width(sl_l).ticks(0).fill(couleur[i]).default(ddm).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(1)
     .on('onchange', val => {//console.log(val);
         ddm=val;simul();update_line();});
-    var gMaladie = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.5*(i++))+','+(height-20)+')';});
+    var gMaladie = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
     gMaladie.call(sliderMaladie);
   //delai de gurison
     var sliderGuerison = d3.sliderBottom().min(0).max(25).width(sl_l).ticks(0).fill(couleur[i]).default(dg).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(1)
     .on('onchange', val => {//console.log(val);
         dg=val;simul();update_line();});
-    var gGuerison = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.5*(i++))+','+(height-20)+')';});
+    var gGuerison = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
     gGuerison.call(sliderGuerison);
 
 }
