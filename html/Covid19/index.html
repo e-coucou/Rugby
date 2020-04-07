@@ -93,6 +93,18 @@ select#dataS {
     top:80px;
     font-size: 11px;
 }
+#byhomme {
+    position: absolute;
+    left: 110px;
+    top:120px;
+    font-size: 11px;
+}
+#byfemme {
+    position: absolute;
+    left: 110px;
+    top:100px;
+    font-size: 11px;
+}
 .legend rect {
   fill:white;
   stroke:black;
@@ -171,6 +183,12 @@ select#dataS {
     <div id="by100k" >
         <input id="by100k_i" type="checkbox" value="by100k" class="checkbox">
         <label for="by100k_i">Echelle par 100k</label></div>
+    <div id="byhomme" >
+        <input id="byhomme_i" type="checkbox" value="byhomme" class="checkbox">
+        <label for="byhomme_i">les Hommes</label></div>
+    <div id="byfemme" >
+        <input id="byfemme_i" type="checkbox" value="byfemme" class="checkbox">
+        <label for="byfemme_i">les Femmes</label></div>
     <div id="tooltipDiv"></div>
 <footer>
 <aside>(c) e-Coucou | y2K | Mars, 2020 | data from ARS France & Johns Hopkins University</aside><aside>
@@ -267,6 +285,8 @@ var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19
         const parseTimeH = d3.timeParse("%Y-%m-%d");
 
         var h_date = hopital.map(d=>{return d.jour;}).filter(getUnique);
+        var sexe = 0;
+        var globalData = [];
 
         dataRegion.value.forEach((d,i)=> { return (data_value.push(d*100000/dataRegion.population[i]));});
         selMenu=dataRegion.pays_liste.slice();
@@ -385,7 +405,7 @@ function clickSimul(d) {
     )
     .on('onchange', val => {
 //        console.log(val,h_date[Math.round(val)]);
-        data_value = getDataARS(selectValue,0,h_date[Math.round(val)]);
+        data_value = getDataARS(selectValue,sexe,h_date[Math.round(val)]);
         updateMap();
 //        updateData(h_date[Math.round(val)]);
 //        updateData("2020-04-01");
@@ -413,9 +433,20 @@ function clickSimul(d) {
 
     //// end -----------
 
-
+function updateGlobal(){
+    var gGlobal = svg.append("g").selectAll("g").data(globalData).enter()
+                    .append("g")
+                    .attr("transform",(d)=>{ return "translate("+(scale-200)+",100)";});
+        gGlobal.append("text").style("font-size","12px").style("fill","blue")
+            .text(d=>{return d.item+' '+d.global;})
+            .attr("id",(d,i)=>{return d.item+'000';})
+            .attr("x", function(d,i){return i*50;})
+//            .attr("y", function(d){return  path.centroid(d)[1];})
+            .attr("text-anchor","middle");
+}
 function updateMap() {
 
+    updateGlobal();
 //    updateData();
 //			console.log(dataRegion.deps.find(d=>{ return d['84']!='undefined';}));
     	deps.selectAll("path")
@@ -674,7 +705,23 @@ function update_line() {
         data_value =[];
         var cases = 0;
         selectValue = d3.select("#dataS").property('value');
-        data_value = getDataARS(selectValue,0,selDate);
+        sexe = 0;
+        if ((d3.select("#byhomme_i")._groups[0][0].checked)) {
+//            data_value.forEach((d,i,t)=> { return (t[i] = (d*100000/dataRegion.population[i]));});
+            sexe = 1;}
+        if ((d3.select("#byfemme_i")._groups[0][0].checked)) {
+//            data_value.forEach((d,i,t)=> { return (t[i] = (d*100000/dataRegion.population[i]));});
+            if (sexe==1) sexe=0; else sexe=2;}
+        data_value = getDataARS(selectValue,sexe,selDate);
+        globalData=[];
+        dataRegion.proprietes.cases.forEach(d=>{
+            let i0=cumul(getDataARS(d,0,selDate)),
+                i1=cumul(getDataARS(d,1,selDate)),
+                i2=cumul(getDataARS(d,2,selDate));
+            globalData.push({item:d,global:i0,hommes:i1,femmes:i2});
+        })
+        console.log('global',globalData);
+
         switch(selectValue) {
             case 'regions':
                 data_value = dataRegion.value;
@@ -686,14 +733,14 @@ function update_line() {
                 //d3.selectAll("input[type=checkbox]").property("checked", false);
                 break;
             case 'simul':
-                data_value = getDataARS('dc',0,selDate);
+                data_value = getDataARS('dc',sexe,selDate);
                 menu_select.selectAll('circle').style("visibility","hidden");
                 menu_simul.selectAll('circle').style("visibility","visible");
                 d3.select("#decalage").style("visibility","hidden");
                 d3.select("#decalage").selectAll("input[type=checkbox]").property("checked",false);
                 break;
             default :
-                data_value = getDataARS('dc',0,selDate);
+                data_value = getDataARS('dc',sexe,selDate);
                 menu_select.selectAll('circle').style("visibility","visible");
                 menu_simul.selectAll('circle').style("visibility","hidden");
                 d3.select("#decalage").style("visibility","visible");
@@ -834,10 +881,9 @@ function update_line() {
         dataRegion.regions_deps.forEach((l,j)=> 
             {   data.push(getDataRegion(item,j,date,sexe));
             }
-    );
-
+        );
         return data;
-    };
+    }
     function getDataRegion(item,region,date,sexe) {
           let cumR=0;
           dataRegion.regions_deps[region].forEach((r,i)=>{
@@ -892,6 +938,8 @@ function update_line() {
     d3.select("#log").on("change", update_line);
     d3.select("#decalage").on("change", update_line);
     d3.select("#by100k").on("change",(d)=> { updateData(); updateMap(); });
+    d3.select("#byhomme").on("change",(d)=> { updateData(); updateMap(); });
+    d3.select("#byfemme").on("change",(d)=> { updateData(); updateMap(); });
 
     // on ajoute un tooltip
     const eetooltip = new EETooltip({
