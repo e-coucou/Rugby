@@ -1,4 +1,4 @@
-{"proprietes":{"data_version":"25/03/2020","version":"6.22a","release":"Mars 2020","ARS":"2020-04-06","cases":["hosp","rea","dc","rad"]},
+{"proprietes":{"data_version":"25/03/2020","version":"6.24a","release":"Mars 2020","ARS":"2020-04-06","cases":["hosp","rea","dc","rad"]},
 "regions":[{"84":{"id":0,"nom":"Auvergne-Rhône-Alpes"}},
 {"27":{"id":1,"nom":"Bourgogne-Franche-Comté"}},
 {"53":{"id":2,"nom":"Bretagne"}},
@@ -45,7 +45,7 @@
 "BE":"Belgique","CH":"Suisse","PT":"Portugal","SE":"Suède"},
 "pays_liste":["FR","DE","IT","SP","US","UK","CN","BE","CH","PT","SE"],
 "pays_decalage":{"FR":45,"IT":35,"DE":53,"CN":0,"US":43,"SP":46,"All":0,"UK":52,"BE":57,"CH":53,"PT":61,"SE":58},
-"modele":{ "population":70000000,"taux_infection":0.065,"mortalité":0.02,"asymptomatique":0.2,"contacts_j":4,"delai_guerison":14,
+"modele":{ "population":70000000,"taux_infection":0.06,"mortalité":0.02,"asymptomatique":0.2,"contacts_j":5,"delai_guerison":14,
 "delai_asymptomatique":7,"delai_mort":5,"risque_re":0.0001,"sur_risque_asymp":1.2,"decl_maladie":5},
 "simul":["DC","MA","GU","IN","AS","S."]
 }

@@ -171,10 +171,10 @@ select#dataS {
     <div id="by100k" >
         <input id="by100k_i" type="checkbox" value="by100k" class="checkbox">
         <label for="by100k_i">Echelle par 100k</label></div>
-  <div class="row align-items-center">
+<!--  <div class="row align-items-center">
     <div class="col-sm-2"><p id="value-simple"></p></div>
     <div class="col-sm"><div id="slider-simple"></div></div>
-  </div>
+  </div>-->
     <div id="tooltipDiv"></div>
 <footer>
 <aside>(c) e-Coucou | y2K | Mars, 2020 | data from ARS France & Johns Hopkins University</aside><aside>
@@ -374,7 +374,6 @@ function clickSimul(d) {
 //let h_date_min= parseTimeH(d3.min(h_date))
 //let h_date_max= parseTimeH(d3.max(h_date))
 
-  var dsimple = [0,  100];
   var sliderSimple = d3
     .sliderBottom()
     .min(0) //d3.min(dsimple))
@@ -605,7 +604,7 @@ function update_line() {
 		.style("fill", "none").style("stroke-width", "2px").style("opacity", "0");
 	mousePerLine.append("text")
     	.attr("class", "hover-text")
-    	.attr("dy", "-1em")
+    	.attr("dy", "0.1em")
     	.attr("transform", "translate(10,3)");
     //on ajoute un titre au graphique
 	g_line.append('text')
