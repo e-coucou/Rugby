@@ -379,7 +379,7 @@ function clickSimul(d) {
     .sliderBottom()
     .min(0) //d3.min(dsimple))
     .max(h_date.length-1) //d3.max(dsimple))
-    .width(w_g).tickFormat(d3.format('1'))
+    .width(scale-margin.left).tickFormat(d3.format('1'))
     .ticks(h_date.length).fill("forestgreen")
     .displayValue(false).step(1)
     .default(h_date.length-1)
@@ -614,6 +614,14 @@ function update_line() {
 		.attr("class","titleLine")
 		.style('font-size', '8px') 
         .text((d) => {return (selectValue==='regions')?"Maj "+dataRegion.proprietes.data_version:"Maj "+maj; });
+    g_line.append('text')
+        .attr('x', (w_g)).attr('y', 0 - (margin.top / 3))
+        .attr("id","laDate")
+        .attr('text-anchor', 'middle')
+        .attr("class","titleLine")
+        .style('font-size', '10px'); 
+//        .text((d) => {return (selectValue==='regions')?"Maj "+dataRegion.proprietes.data_version:"Maj "+maj; });
+
     //        .text((d) => {return (selectValue=="regions")?('Mise à jour ARS au '+dataRegion.proprietes.data_version):('Mise à jour Gouv au '+dataRegion.proprietes.ARS) ;});
     // Append a rect to catch mouse movements on canvas
 	mouseG.append('svg:rect') 
@@ -637,7 +645,10 @@ function update_line() {
 						var xDate = x.invert(mouse[0]),
 							bisect = d3.bisector(function (d) { return d.date; }).left;
 							idx = bisect(d.values, xDate);
+                            try {
                             laDate = d.values[idx].date.toLocaleDateString("fr-FR");console.log(laDate);
+                            laDateX = x(d.values[idx].date);
+                            d3.select("#laDate").attr("x",laDateX).text(laDate);} catch{}
                             try {
 							d3.select(this).select('text')
 								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(0))+" "+d.name);
