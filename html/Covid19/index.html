@@ -171,10 +171,6 @@ select#dataS {
     <div id="by100k" >
         <input id="by100k_i" type="checkbox" value="by100k" class="checkbox">
         <label for="by100k_i">Echelle par 100k</label></div>
-<!--  <div class="row align-items-center">
-    <div class="col-sm-2"><p id="value-simple"></p></div>
-    <div class="col-sm"><div id="slider-simple"></div></div>
-  </div>-->
     <div id="tooltipDiv"></div>
 <footer>
 <aside>(c) e-Coucou | y2K | Mars, 2020 | data from ARS France & Johns Hopkins University</aside><aside>
@@ -404,6 +400,11 @@ function clickSimul(d) {
 
   gSimple.call(sliderSimple);
 
+        var ti = dataRegion.modele.taux_infection, tm=dataRegion.modele.mortalité, ra = dataRegion.modele.asymptomatique,
+            c=dataRegion.modele.contacts_j, dg=dataRegion.modele.delai_guerison, dm=dataRegion.modele.delai_mort,
+            rr=dataRegion.modele.risque_re, sa = dataRegion.modele.sur_risque_asymp, ddm = dataRegion.modele.decl_maladie, 
+            da = dataRegion.modele.delai_asymptomatique;
+simulParam();
 
     updateData();
     updateMap();
@@ -608,7 +609,7 @@ function update_line() {
     	.attr("transform", "translate(10,3)");
     //on ajoute un titre au graphique
 	g_line.append('text')
-		.attr('x', (w_g)).attr('y', 0 - (margin.top / 3))
+		.attr('x', (w_g)).attr('y', 0-2*margin.top)
 		.attr('text-anchor', 'end')
 		.attr("class","titleLine")
 		.style('font-size', '8px') 
@@ -645,7 +646,7 @@ function update_line() {
 							bisect = d3.bisector(function (d) { return d.date; }).left;
 							idx = bisect(d.values, xDate);
                             try {
-                            laDate = d.values[idx].date.toLocaleDateString("fr-FR");console.log(laDate);
+                            laDate = d.values[idx].date.toLocaleDateString("fr-FR");//console.log(laDate);
                             laDateX = x(d.values[idx].date);
                             d3.select("#laDate").attr("x",laDateX).text(laDate);} catch{}
                             try {
@@ -960,10 +961,6 @@ function convertRGBDecimalToHex(rgb)
     function simul() {
 //"modele":{ "population":70000000,"taux_infection":0.04,"mortalité":0.045,"asymptomatique":0.5,"contacts_j":5,"delai_guerison":18,"delai_mort":5,"risque_re":0.0001,"sur_risque_asymp":2}
         var infectes = [], malades = [], morts=[], gueris = [], sains =[], assymp=[];
-        var ti = dataRegion.modele.taux_infection, tm=dataRegion.modele.mortalité, ra = dataRegion.modele.asymptomatique,
-            c=dataRegion.modele.contacts_j, dg=dataRegion.modele.delai_guerison, dm=dataRegion.modele.delai_mort,
-            rr=dataRegion.modele.risque_re, sa = dataRegion.modele.sur_risque_asymp, ddm = dataRegion.modele.decl_maladie, 
-            da = dataRegion.modele.delai_asymptomatique;
 //console.log(c,sa,rr,ti);
         infectes.push(1000);malades.push(0);morts.push(0);gueris.push(0),sains.push(dataRegion.modele.population),assymp.push(0);
         var date=[];
@@ -995,7 +992,6 @@ function convertRGBDecimalToHex(rgb)
 //                - gueris[i+1] - malades[i+1]-assymp[i+1] ,0));
             sains.push(sains[0]-gueris[i+1]-assymp[i+1]-morts[i+1]-malades[i+1]-infectes[i+1]);
         }
-//        date.forEach((d,i,t)=>{t[i]= parseTime(d);});
   //      console.log(gueris,assymp,morts,malades,infectes,date);
         data=[];
         values=[];
@@ -1007,7 +1003,6 @@ function convertRGBDecimalToHex(rgb)
         values=[];
         malades.forEach((d,i)=>{ values.push({date:date[i],value:d});});
         data.push({name:'malades',n:'MA',values});
-        dReg.push({item:'simul',data});
         values=[];
         gueris.forEach((d,i)=>{ values.push({date:date[i],value:d});});
         data.push({name:'gueris',n:'GU',values});
@@ -1020,7 +1015,49 @@ function convertRGBDecimalToHex(rgb)
         values=[];
         sains.forEach((d,i)=>{ values.push({date:date[i],value:d});});
         data.push({name:'sains',n:'S.',values});
+        let index= dReg.findIndex(d=>d.item=='simul');
+        //console.log('simul existe ? ',index);
+        if (index != -1) dReg.splice(index,1);
+        dReg.push({item:'simul',data});  // console.log(dReg);
     }
+
+function simulParam() {
+    var sliderContact = d3.sliderBottom().min(0).max(50).width(50).step(1) //scale-margin.left)//.tickFormat(d3.format('1'))
+    .ticks(0).fill("green").default(c)//    .displayValue(false).step(1)
+    .handle(d3.symbol().type(d3.symbolCircle).size(70)())
+    .on('onchange', val => {//console.log(val);
+        c=val;simul();update_line();
+    });
+  var gContact = svg  .append('g')
+    .attr('transform', ()=> {return 'translate('+(scale+margin.left)+','+(height-20)+')';});
+
+  gContact.call(sliderContact);
+  //infection
+    var sliderInfection = d3.sliderBottom().min(0).max(0.2).width(50).ticks(0).fill("red").default(ti).handle(d3.symbol().type(d3.symbolCircle).size(70)())
+    .on('onchange', val => {//console.log(val);
+        ti=val;simul();update_line();});
+    var gInfection = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+80)+','+(height-20)+')';});
+    gInfection.call(sliderInfection);
+  //mortalité
+    var sliderMortalite = d3.sliderBottom().min(0).max(0.10).width(50).ticks(0).fill("black").default(tm).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(0.005)
+    .on('onchange', val => {//console.log(val);
+        tm=val;simul();update_line();});
+    var gMortalite = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+80*2)+','+(height-20)+')';});
+    gMortalite.call(sliderMortalite);
+  //asymptomatique
+    var sliderAsymptome = d3.sliderBottom().min(0).max(1.00).width(50).ticks(0).fill("yellow").default(1-ra).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(0.01)
+    .on('onchange', val => {//console.log(val);
+        ra=1-val;simul();update_line();});
+    var gAsymptome = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+80*3)+','+(height-20)+')';});
+    gAsymptome.call(sliderAsymptome);
+  //temps maladie
+    var sliderMaladie = d3.sliderBottom().min(0).max(15).width(50).ticks(0).fill("yellow").default(ddm).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(1)
+    .on('onchange', val => {//console.log(val);
+        ddm=val;simul();update_line();});
+    var gMaladie = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+80*4)+','+(height-20)+')';});
+    gMaladie.call(sliderMaladie);
+
+}
 
   });
 //});
