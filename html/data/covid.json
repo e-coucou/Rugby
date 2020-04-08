@@ -1,4 +1,4 @@
-{"proprietes":{"data_version":"25/03/2020","version":"6.55a","release":"Mars 2020","ARS":"2020-04-07","cases":["hosp","rea","dc","rad"]},
+{"proprietes":{"data_version":"25/03/2020","version":"6.57a","release":"Mars 2020","ARS":"2020-04-07","cases":["hosp","rea","dc","rad"]},
 "regions":[{"84":{"id":0,"nom":"Auvergne-Rhône-Alpes"}},
 {"27":{"id":1,"nom":"Bourgogne-Franche-Comté"}},
 {"53":{"id":2,"nom":"Bretagne"}},
