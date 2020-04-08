@@ -254,6 +254,14 @@ var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19
     	.attr("height", height+margin.top+margin.bottom);
 
 	const deps = svg.append("g");
+    var gFrance = svg.append("g").selectAll("g").data(["blue","white","red"]).enter()
+                    .append("g")
+                    .attr("transform",(d)=>{ return "translate("+(scale-180)+","+(3*margin.top)+")";});
+        gFrance.append("rect").style("fill",colors[colors.length-2]).attr("width",150).attr("height",35)//.attr("y",(d,i)=>{return i*30;})
+            .style("stroke-width",2).style("stroke",colors[8]).attr("rx",3).attr("ry",20).attr("class","cadre");
+        gFrance.append("text").style("font-size","24px").style("fill","white").style("font-family","HelveticaNeue-Light").style("font-weight","normal")
+            .text("France").attr("x",75).attr("y",26).attr("text-anchor","middle");
+        gFrance.append("rect").style("fill",d=>d).attr("width",50).attr("height",3).attr("x",(d,i)=>{return i*50;}).attr("y",37);
 
 //  d3.select('p#value-simple').text(d3.format('.2%')(sliderSimple.value()));
 
@@ -391,31 +399,15 @@ function clickSimul(d) {
 //let h_date_max= parseTimeH(d3.max(h_date))
 
   var sliderSimple = d3
-    .sliderBottom()
-    .min(0) //d3.min(dsimple))
-    .max(h_date.length-1) //d3.max(dsimple))
+    .sliderBottom().min(0).max(h_date.length-1)
     .width(scale-margin.left).tickFormat(d3.format('1'))
-    .ticks(h_date.length).fill("forestgreen")
-    .displayValue(false).step(1)
-    .default(h_date.length-1)
-    .handle(d3
-        .symbol()
-        .type(d3.symbolCircle)
-        .size(70)()
-    )
+    .ticks(h_date.length).fill(colors[colors.length-2]).displayValue(false).step(1).default(h_date.length-1)
+    .handle(d3.symbol().type(d3.symbolCircle).size(70)())
     .on('onchange', val => {
-//        console.log(val,h_date[Math.round(val)]);
         data_value = getDataARS(selectValue,sexe,h_date[Math.round(val)]);
-        updateMap();
-//        updateData(h_date[Math.round(val)]);
-//        updateData("2020-04-01");
-//      d3.select('p#value-simple').text(d3.format('0')(val));
-    });
-  var gSimple = 
-//    d3.select('div#slider-simple')
-//    .attr('width', 500)
-//    .attr('height', 100)
-  svg  .append('g')
+        getGlobalData(h_date[Math.round(val)]); //console.log(selectValue)
+        updateMap();});
+  var gSimple = svg.append('g')
     .attr('transform', ()=> {return 'translate('+(margin.left)+','+(height-50)+')';});
 
   gSimple.call(sliderSimple);
@@ -425,6 +417,22 @@ function clickSimul(d) {
             rr=dataRegion.modele.risque_re, sa = dataRegion.modele.sur_risque_asymp, ddm = dataRegion.modele.decl_maladie, 
             da = dataRegion.modele.delai_asymptomatique;
     var nbSimul = 100;
+    var gGlobal = svg.append("g").selectAll("g").data(dataRegion.proprietes.cases).enter()
+                    .append("g")
+                    .attr("transform",(d)=>{ return "translate("+(30+margin.left)+","+(360)+")";});
+        gGlobal.append("rect").style("fill",colors[colors.length-2]).attr("width",80).attr("height",25).attr("y",(d,i)=>{return i*30;})
+            .style("stroke-width",2).style("stroke",colors[8]).attr("rx",2).attr("ry",20);
+        gGlobal.append("text").style("font-size","16px").style("fill","white").style("font-family","HelveticaNeue-Light").style("font-weight","bold")
+            .text(d=>{return d})//.attr("id",(d,i)=>{return d.item+'000';})
+            .attr("x",40)
+            .attr("y", function(d,i){return i*30+18;}).attr("text-anchor","middle");
+    svg.append("g").attr("transform","translate("+(margin.left)+",360)").append("path").attr("d","M 2,12 L 22,12 M 12,2 L 12,22")
+        .attr("stroke-width",6).attr("stroke","blue");
+    svg.append("g").attr("transform","translate("+(margin.left)+",390)").append("path").attr("d","M 2,12 L 22,12 M 12,2 L 12,22")
+        .attr("stroke-width",6).attr("stroke","red");
+    svg.append("g").attr("transform","translate("+(margin.left)+",420)").append("path").attr("d","M 5,8 L 19,8 M 12,2 L 12,22")
+        .attr("stroke-width",3).attr("stroke","black");
+
     simulParam();
 
     updateData();
@@ -434,15 +442,13 @@ function clickSimul(d) {
     //// end -----------
 
 function updateGlobal(){
-    var gGlobal = svg.append("g").selectAll("g").data(globalData).enter()
-                    .append("g")
-                    .attr("transform",(d)=>{ return "translate("+(scale-200)+",100)";});
-        gGlobal.append("text").style("font-size","12px").style("fill","blue")
-            .text(d=>{return d.item+' '+d.global;})
-            .attr("id",(d,i)=>{return d.item+'000';})
-            .attr("x", function(d,i){return i*50;})
-//            .attr("y", function(d){return  path.centroid(d)[1];})
-            .attr("text-anchor","middle");
+    let val="";
+    switch(sexe) {
+        case 0: val="global"; break;
+        case 1: val="hommes"; break;
+        case 2: val="femmes"; break;
+    }
+    gGlobal.selectAll('text').text(d=>{return valFormat(globalData.find(g=>{console.log(g.item, d);return d===g.item;})[val]);});
 }
 function updateMap() {
 
@@ -701,6 +707,15 @@ function update_line() {
 		return find[code].id;
     }
 
+    function getGlobalData(selDate) {
+        globalData=[];
+        dataRegion.proprietes.cases.forEach(d=>{
+            let i0=cumul(getDataARS(d,0,selDate)),
+                i1=cumul(getDataARS(d,1,selDate)),
+                i2=cumul(getDataARS(d,2,selDate));
+            globalData.push({item:d,global:i0,hommes:i1,femmes:i2});
+        }); //     console.log('global',globalData);
+    }
     function updateData(selDate = dataRegion.proprietes.ARS) {
         data_value =[];
         var cases = 0;
@@ -713,13 +728,8 @@ function update_line() {
 //            data_value.forEach((d,i,t)=> { return (t[i] = (d*100000/dataRegion.population[i]));});
             if (sexe==1) sexe=0; else sexe=2;}
         data_value = getDataARS(selectValue,sexe,selDate);
-        globalData=[];
-        dataRegion.proprietes.cases.forEach(d=>{
-            let i0=cumul(getDataARS(d,0,selDate)),
-                i1=cumul(getDataARS(d,1,selDate)),
-                i2=cumul(getDataARS(d,2,selDate));
-            globalData.push({item:d,global:i0,hommes:i1,femmes:i2});
-        }) //    console.log('global',globalData);
+
+        getGlobalData(selDate);
 
         switch(selectValue) {
             case 'regions':
@@ -928,6 +938,10 @@ function update_line() {
         	.style('fill',function(d,i) { return colors[i];});
         menu_select.selectAll('circle').style('fill',function(m,j) {return (selMenu.findIndex(e=> e===m)!=-1)?"black":colors[colors.length-2];});
         menu_simul.selectAll('circle').style('fill',function(m,j) {return (selSimul.findIndex(e=> e===m)!=-1)?"black":colors[colors.length-2];});
+        gGlobal.selectAll("rect").style("fill",colors[colors.length-2]).style("stroke",colors[8]);
+        //sliderSimple color
+        d3.select(".track-fill").style("stroke",colors[colors.length-2]);
+        d3.selectAll(".cadre").style("fill",colors[colors.length-2]).style("stroke",colors[8]);
 
         updateColor();
         click();
