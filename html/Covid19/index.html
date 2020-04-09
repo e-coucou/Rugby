@@ -857,11 +857,34 @@ function update_line() {
         data=[]; data.push({name,values});
         dReg.push({item,data});
         if (first) getData();
+        getJHData();
         simul();
 //        console.log(data_value);
 
     } //fin de update data
 //------------------------
+    function getJHData() {
+        console.log(JHDeath.columns);
+        var JHDate = JHDeath.columns.slice(4); console.log(JHDate);
+        var fr=[];
+        JHDeath.forEach(d=>{
+            if (d['Country/Region'] === "France")
+                {
+//                    console.log(d);
+                    JHDate.forEach(v=>{
+                        date= v;
+                        value =Number(d[v]);
+                        let idx = fr.findIndex(e=>{return e.date===v;});
+                        if (idx != -1) {
+                            console.log(idx,fr[idx].value);
+                            fr[idx].value += value;
+                        } else {
+                            fr.push({date,value}); }
+                    })
+                }
+                ;});
+        console.log(fr);
+    }
    function getData() {
 // get data from google
 // dreg : item/data[names/values[date/value]]
