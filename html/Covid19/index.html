@@ -141,9 +141,9 @@ select#dataS {
     <optgroup label="Couleurs by e-Coucou">
         <option value="Spectral">Spectral</option>
         <option value="Purples">Violets</option>
-        <option value="Blues">Bleus</option>
+        <option value="Blues" selected="">Bleus</option>
         <option value="Oranges">Oranges</option>
-        <option value="Greens" selected="">Verts</option>
+        <option value="Greens">Verts</option>
         <option value="Reds">Rouges</option>
         <option value="Greys">Gris</option>
 <!--        <option value="BrBG">BrBG</option>
@@ -170,6 +170,9 @@ select#dataS {
         <option value="recover" >Guérisons Monde</option>
         <option value="cases" >Cas Covid19 Monde</option>
         <option value="simul" >Simulation Epidémie</option>
+        <option value="JH_D" >JH data Death</option>
+        <option value="JH_C" >JH Data Confirmed</option>
+        <option value="JH_R" >JH Data Recovered</option>
     </optgroup></select>
 	<div id="cumul" >
   		<input id="cumul_i" type="checkbox" value="cumul" class="checkbox">
@@ -216,7 +219,7 @@ let valFormat = (a) => {
     var selMenu=[];
     if (width>height) orientation=1;
 //	const colors = d3[`scheme${'Sinebow'}`];	
-    var interpolate = d3[`interpolate${'Greens'}`];
+    var interpolate = d3[`interpolate${'Blues'}`];
     var colors = [];
     const n=14;
     dark = d3.lab(interpolate(0)).l < 50;
@@ -236,7 +239,9 @@ var public_spreadsheet_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ
 var covid_google = "https://spreadsheets.google.com/feeds/cells/1-y1LPejhQw1iJfGMVGS_aHy1g0nbY4SFr3Q1LvazsV8/1/public/full?alt=json";
 var allGoogle = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKlM0rqtd30g3tiboIRwjal2KElonjOP2HhoZUanZCFPDd0yeAvaQy18qAkKQxz2_OW6hN36HV9fcE/pub?gid=1181120396&single=true&output=csv";
 var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f1b3ee1cabd7';
-var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv";
+var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv",
+    JH_global_confirmed = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv",
+    JH_globale_recovered = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv";
   // draw chart
   var d_Confirmed=[];
 
@@ -277,6 +282,8 @@ var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19
     promises.push( d3.csv(allGoogle));
     promises.push( d3.dsv(";",dataGouv));
     promises.push( d3.csv(JH_global_death));
+    promises.push( d3.csv(JH_global_confirmed));
+    promises.push( d3.csv(JH_globale_recovered));
 //-----------------------------------------------------------------------------
 //--
 //--
@@ -288,9 +295,12 @@ var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19
             dataGoogle = values[3],
             dataGouv = values[4],
             JHDeath = values[5];
+            JHConfirmed = values[6];
+            JHRecovered = values[7];
 
         const parseTime = d3.timeParse("%d/%m/%Y");
         const parseTimeH = d3.timeParse("%Y-%m-%d");
+        const parseTimeJH = d3.timeParse("%m/%d/%y");
 
         var h_date = hopital.map(d=>{return d.jour;}).filter(getUnique);
         var sexe = 0;
@@ -341,10 +351,10 @@ var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19
         .range([h_g,0]);
     const yL = d3.scaleSymlog()
         .range([h_g,0]);
-    const line = d3.line()
+    var line = d3.line()
         .x(function(d) { return x(d.date); }) //vep
         .y(function(d) { return (d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
-        .curve(d3.curveCardinal);
+        .curve( selectValue==='delta'?d3.curveStep:d3.curveCardinal);
 // Le menu select pour les pays
     var menu_select = svg.append("g").selectAll("g").data(dataRegion.pays_liste).enter()
         .append('g')
@@ -417,24 +427,22 @@ function clickSimul(d) {
             rr=dataRegion.modele.risque_re, sa = dataRegion.modele.sur_risque_asymp, ddm = dataRegion.modele.decl_maladie, 
             da = dataRegion.modele.delai_asymptomatique;
     var nbSimul = 100;
+    let iconCase = [{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"blue",s:6,f:"white"},
+    {d:"M17,5 c 2 0,6 2,6 6 c -1 1, -2 2, -3,3 L13,20 L5,13 c-1 -1 -1 -2 -1 -3 c 0-2,2 -5,5 -5  c 1 0,3 1,5 2 C14,6,17,6,18,6 z",c:"red",s:1,f:"white"},
+                    {d:"M 5,8 L 19,8 M 12,2 L 12,22",c:"white",s:3,f:"black"},{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"green",s:6,f:"white"}]
     var gGlobal = svg.append("g").selectAll("g").data(dataRegion.proprietes.cases).enter()
                     .append("g")
-                    .attr("transform",(d)=>{ return "translate("+(30+margin.left)+","+(360)+")";});
-        gGlobal.append("rect").style("fill",colors[colors.length-2]).attr("width",80).attr("height",25).attr("y",(d,i)=>{return i*30;})
+                    .attr("transform",(d,i)=>{ return "translate("+(margin.left)+","+(345+i*30)+")";});
+        gGlobal.append("rect").style("fill",colors[colors.length-2]).attr("width",80).attr("height",25).attr("x",30)//.attr("y",(d,i)=>{return i*30;})
             .style("stroke-width",2).style("stroke",colors[8]).attr("rx",2).attr("ry",20);
+        gGlobal.append("circle").attr("cx",12).attr("cy",12).attr("r",12).style("fill",(d,i)=>{return iconCase[i].f}).style("stroke-width",1).style("stroke",(d,i)=>{return iconCase[i].c});
         gGlobal.append("text").style("font-size","16px").style("fill","white").style("font-family","HelveticaNeue-Light").style("font-weight","bold")
-            .text(d=>{return d})//.attr("id",(d,i)=>{return d.item+'000';})
-            .attr("x",40)
-            .attr("y", function(d,i){return i*30+18;}).attr("text-anchor","middle");
-    svg.append("g").attr("transform","translate("+(margin.left)+",360)").append("path").attr("d","M 2,12 L 22,12 M 12,2 L 12,22")
-        .attr("stroke-width",6).attr("stroke","blue");
-    svg.append("g").attr("transform","translate("+(margin.left)+",390)").append("path").attr("d","M 2,12 L 22,12 M 12,2 L 12,22")
-        .attr("stroke-width",6).attr("stroke","red");
-    svg.append("g").attr("transform","translate("+(margin.left)+",420)").append("path").attr("d","M 5,8 L 19,8 M 12,2 L 12,22")
-        .attr("stroke-width",3).attr("stroke","black");
+            .text(d=>{return d}).attr("x",40+30)
+            .attr("y", 18).attr("text-anchor","middle");
+        gGlobal.append("path").attr("y",(d,i)=>{return i*30}).attr("d",(d,i)=>{return iconCase[i].d}).attr("stroke-width",(d,i)=>{return iconCase[i].s})
+            .attr("stroke",(d,i)=>{return iconCase[i].c}).style("fill","red");
 
     simulParam();
-
     updateData();
     updateMap();
     update_line();
@@ -720,6 +728,7 @@ function update_line() {
         data_value =[];
         var cases = 0;
         selectValue = d3.select("#dataS").property('value');
+        line.curve( selectValue==='delta'?d3.curveStep:d3.curveCardinal);
         sexe = 0;
         if ((d3.select("#byhomme_i")._groups[0][0].checked)) {
 //            data_value.forEach((d,i,t)=> { return (t[i] = (d*100000/dataRegion.population[i]));});
@@ -756,6 +765,13 @@ function update_line() {
                 cases=1;
                 break;
         }
+        d3.selectAll(".regs").transition().duration(3000)
+            .style('fill',function(d) {
+                let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
+                return colors[val];});
+
+        d3.selectAll(".legend").transition().duration(2000)
+            .style('fill',function(d,i) { return colors[i];});
 //        menu_select.selectAll('circle').style('fill',function(m,j) {return (selMenu.findIndex(e=> e===m)!=-1)?"black":colors[colors.length-2];});
 
         if ((d3.select("#by100k_i")._groups[0][0].checked)) {
@@ -782,8 +798,66 @@ function update_line() {
           });
           multi_data.push({name,values});
         });
-       
-        dHist = [], dReg = [];
+    
+        if (first) {
+            dHist = [], dReg = [];
+            getHospData(); //récupération des données hospitalières
+            getDataFile() // les données de la région : figées !
+            // dreg : item/data[names/values[date/value]]
+            getDelta() // delta mart
+            getData(); // Get data from google spreadsheet
+            getJHData(); // Get data from JH via Github
+            simul(); // calcul  initial de données simulation
+            first = false;
+        }
+        console.log('dHist/dReg',dHist,dReg);
+//        console.log(data_value);
+
+    } //fin de update data
+//------------------------
+    function getDelta() {
+        old=0;values=[];
+        dHist[2].values.forEach((d)=>{
+            date=d.date;
+            value=d.value-old;
+            values.push({date,value});
+            old=d.value;
+        });
+        item='delta';
+        name='delta dc';
+        dHist.push({item,name,values});
+        data=[]; data.push({name,values});
+        dReg.push({item,data});        
+    }
+    function getDataFile() {
+        values=[];
+        dataRegion.historique.forEach(function(d) {
+            date = parseTime(d.date);
+            value = cumul(d.series);
+            values.push({date,value}); // sauvegarde sous forme de hashmap de nos données.
+        }); 
+        item='regions';
+        dHist.push({item,values}); //console.log('dHist new',dHist);
+//        console.log('multi_data',multi_data);
+//        console.log('dHist',dHist);
+//        console.log('dReg',dReg);
+        index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
+        data=[];
+        dataRegion.regions.forEach((r,i)=>{
+            name=i;
+            let values=[];
+            dataRegion.historique.forEach((h)=>
+                {   
+                    date=parseTime(h.date);
+                    value=h.series[i];
+                    values.push({date,value})
+                })
+            data.push({name,values});
+        });
+        dReg.push({item,data});
+    }
+    function getHospData() {
+        // données hospitalières france
         dataRegion.proprietes.cases.forEach( item=> {
             values=[];
             name='France';
@@ -816,81 +890,72 @@ function update_line() {
                 data.push({name,values});
             });
             dReg.push({item,data});
-        });
-        values=[];
-        dataRegion.historique.forEach(function(d) {
-            date = parseTime(d.date);
-            value = cumul(d.series);
-            values.push({date,value}); // sauvegarde sous forme de hashmap de nos données.
-        }); 
-        item='regions';
-        dHist.push({item,values}); //console.log('dHist new',dHist);
-//        console.log('multi_data',multi_data);
-//        console.log('dHist',dHist);
-//        console.log('dReg',dReg);
-        index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
-        data=[];
-        dataRegion.regions.forEach((r,i)=>{
-            name=i;
-            let values=[];
-            dataRegion.historique.forEach((h)=>
-                {   
-                    date=parseTime(h.date);
-                    value=h.series[i];
-                    values.push({date,value})
-                })
-            data.push({name,values});
-        });
-        dReg.push({item,data});
-// dreg : item/data[names/values[date/value]]
-    // delta mart
-        old=0;values=[];
-        dHist[2].values.forEach((d)=>{
-            date=d.date;
-            value=d.value-old;
-            values.push({date,value});
-            old=d.value;
-        });
-        item='delta';
-        name='delta dc';
-        dHist.push({item,name,values});
-        data=[]; data.push({name,values});
-        dReg.push({item,data});
-        if (first) getData();
-        getJHData();
-        simul();
-//        console.log(data_value);
-
-    } //fin de update data
-//------------------------
+        });        
+    }
     function getJHData() {
-        console.log(JHDeath.columns);
-        var JHDate = JHDeath.columns.slice(4); //console.log(JHDate);
-        var fr=[];
-        JHDeath.forEach(d=>{
-            if (d['Country/Region'] === "France")
-                {
-//                    console.log(d);
-                    JHDate.forEach(v=>{
-                        date= v;
-                        value =Number(d[v]);
-                        let idx = fr.findIndex(e=>{return e.date===v;});
-                        if (idx != -1) {
-                            console.log(idx,fr[idx].value);
-                            fr[idx].value += value;
-                        } else {
-                            fr.push({date,value}); }
-                    })
-                }
-                ;});
-        console.log(fr);
+//        console.log(JHDeath.columns);
+        let JHDate = JHDeath.columns.slice(4); //console.log(JHDate);
+        let data=[];
+        dataRegion.pays_liste.forEach(p=>{
+          let values=[];
+          JHDeath.forEach(d=>{
+            if (d['Country/Region'].includes(dataRegion.pays_JH[p]))
+                {   JHDate.forEach(v=>{
+                    date= parseTimeJH(v); value =Number(d[v]);
+                    let idx = values.findIndex(e=>{return e.dJH===v;});
+                    if (idx != -1) { values[idx].value += value;
+                        } else { values.push({date,value,dJH:v}); }
+          })}});
+          data.push({name:dataRegion.pays[p],n:p,values});
+        })
+        dReg.push({item:'JH_D',data});
+        values=[];
+        JHDate.forEach(d=>{ date= parseTimeJH(d); values.push({date,value:0});});
+        dHist.push({item:"JH_D","name":"Monde",values});
+        // les confinés
+        data=[];
+        dataRegion.pays_liste.forEach(p=>{
+          let values=[];
+          JHConfirmed.forEach(d=>{
+            if (d['Country/Region'].includes(dataRegion.pays_JH[p]))
+                {   JHDate.forEach(v=>{
+                    date= parseTimeJH(v); value =Number(d[v]);
+                    let idx = values.findIndex(e=>{return e.dJH===v;});
+                    if (idx != -1) { values[idx].value += value;
+                        } else { values.push({date,value,dJH:v}); }
+          })}});
+          data.push({name:dataRegion.pays[p],n:p,values});
+        })
+        dReg.push({item:'JH_C',data});
+        values=[];
+        JHDate.forEach(d=>{ date= parseTimeJH(d); values.push({date,value:0});});
+        dHist.push({item:"JH_C","name":"Monde",values});
+        // les recovered
+        data=[];
+        dataRegion.pays_liste.forEach(p=>{
+          let values=[];
+          JHRecovered.forEach(d=>{
+            if (d['Country/Region'].includes(dataRegion.pays_JH[p]))
+                {   JHDate.forEach(v=>{
+                    date= parseTimeJH(v); value =Number(d[v]);
+                    let idx = values.findIndex(e=>{return e.dJH===v;});
+                    if (idx != -1) { values[idx].value += value;
+                        } else { values.push({date,value,dJH:v}); }
+          })}});
+          data.push({name:dataRegion.pays[p],n:p,values});
+        })
+        dReg.push({item:'JH_R',data});
+        values=[];
+        JHDate.forEach(d=>{ date= parseTimeJH(d); values.push({date,value:0});});
+        dHist.push({item:"JH_R","name":"Monde",values});
+
+//        console.log(values);
     }
    function getData() {
 // get data from google
 // dreg : item/data[names/values[date/value]]
         item = ["death","recover","cases"];
         item.forEach((id)=>{ getGoogleData(id);});
-        console.log('dHist/dReg',dHist,dReg);
         first = true; // parce que ca marche pas !!
     }
     function getGoogleData(item) {
