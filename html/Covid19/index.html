@@ -173,6 +173,7 @@ select#dataS {
         <option value="death" >old Mortalité</option>
         <option value="recover" > old Guérisons</option>
         <option value="cases" >old Cas Covid19</option>
+        <option value="test" >in test ...</option>
     </optgroup></select>
 	<div id="cumul" >
   		<input id="cumul_i" type="checkbox" value="cumul" class="checkbox">
@@ -207,6 +208,11 @@ let valFormat = (a) => {
 
 // Variables Globales
     var timeStart=0,timeStop=0;
+    var locale = {
+        dateTime: "%A, le %e %B %Y, %X",date: "%d/%m/%Y",time: "%H:%M:%S",periods: ["AM","PM"],days: ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"],shortDays: ["dim.","lun.","mar.","mer.","jeu.","ven.","sam."],months: ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"],shortMonths: ["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."]};
+
+    d3.timeFormatDefaultLocale(locale);
+
     var first = true;
 	let cumul = (array) => array.reduce((a, b) => { return a + b; }); // / array.length;
 	let average = (array) => array.reduce((a, b) => { return a + b; }) / array.length;
@@ -394,7 +400,7 @@ function click(d) {
         .attr('dy','0.3em').text(d=>d).raise();
 
 function clickSimul(d) {
-    console.log(d,selSimul);
+    //    console.log(d,selSimul);
     let t=selSimul.findIndex(e=>e===d);
     if (t===-1) {
         selSimul.push(d);
@@ -428,8 +434,7 @@ function clickSimul(d) {
             da = dataRegion.modele.delai_asymptomatique;
     var nbSimul = 100;
     let iconCase = [{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"blue",s:6,f:"white"},
-    {d:"M17,5 c 2 0,6 2,6 6 c -1 1, -2 2, -3,3 L13,20 L5,13 c-1 -1 -1 -2 -1 -3 c 0-2,2 -5,5 -5  c 1 0,3 1,5 2 C14,6,17,6,18,6 z",c:"red",s:1,f:"white"},
-                    {d:"M 5,8 L 19,8 M 12,2 L 12,22",c:"white",s:3,f:"black"},{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"green",s:6,f:"white"}]
+    {d:"M17,5 c 2.5 0,5 2,5 5 c 0 1.5, -0.5 2.5, -1.5,3.5 L13,21 L5,12.5 c -0.8 -0.8 -1.2 -2 -1.2 -3.2 c 0-2,2 -5, 4.6 -4.6 c 2 0,3.5 1.1,4.2 2.8 C 14 6, 15 5, 17 5 z",c:"red",s:1,f:"white"}, {d:"M 5,8 L 19,8 M 12,2 L 12,22",c:"white",s:3,f:"black"},{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"green",s:6,f:"white"}];
     var gGlobal = svg.append("g").selectAll("g").data(dataRegion.proprietes.cases).enter()
                     .append("g")
                     .attr("transform",(d,i)=>{ return "translate("+(margin.left)+","+(345+i*30)+")";});
@@ -456,7 +461,7 @@ function updateGlobal(){
         case 1: val="hommes"; break;
         case 2: val="femmes"; break;
     }
-    gGlobal.selectAll('text').text(d=>{return valFormat(globalData.find(g=>{console.log(g.item, d);return d===g.item;})[val]);});
+    gGlobal.selectAll('text').text(d=>{return valFormat(globalData.find(g=>{return d===g.item;})[val]);});
 }
 function updateMap() {
 
@@ -544,8 +549,7 @@ function update_line() {
             val=val.slice(dataRegion.pays_decalage[d.n]);
             if (selMenu.findIndex(e=>e===d.n)!=-1)
                 dMult.push({name,values:val});
-            if (selSimul.findIndex(e=>e===d.n)!=-1){
-                console.log('ici',selSimul);
+            if (selSimul.findIndex(e=>e===d.n)!=-1){ //console.log('ici',selSimul);
                 dMult.push({name,values:val});}
         }) ; //    console.log('dMult-dec',dMult);
     } else {
@@ -605,7 +609,7 @@ function update_line() {
             .attr("y", 6)
             .attr("dy", "0.71em")
             .style("text-anchor", "end")
-            .text("Malades");
+            .text("#personnes");
     // Ajout de la grille horizontale (pour l'axe Y donc). Pour chaque tiret (ticks), on ajoute une ligne qui va 
     // de la gauche à la droite du graphique et qui se situe à la bonne hauteur.
     g_line.selectAll("y axis").data(y.ticks(10)).enter()
@@ -731,10 +735,8 @@ function update_line() {
         line.curve( selectValue==='delta'?d3.curveStep:d3.curveCardinal);
         sexe = 0;
         if ((d3.select("#byhomme_i")._groups[0][0].checked)) {
-//            data_value.forEach((d,i,t)=> { return (t[i] = (d*100000/dataRegion.population[i]));});
             sexe = 1;}
         if ((d3.select("#byfemme_i")._groups[0][0].checked)) {
-//            data_value.forEach((d,i,t)=> { return (t[i] = (d*100000/dataRegion.population[i]));});
             if (sexe==1) sexe=0; else sexe=2;}
         data_value = getDataARS(selectValue,sexe,selDate);
 
@@ -746,14 +748,18 @@ function update_line() {
             case 'dc': case 'hosp': case 'rea': case 'rad': case 'delta':
                 menu_select.selectAll('circle').style("visibility","hidden");
                 menu_simul.selectAll('circle').style("visibility","hidden");
+                d3.select("#cumul").style("visibility","visible");
                 d3.select("#decalage").style("visibility","hidden");
                 d3.select("#decalage").selectAll("input[type=checkbox]").property("checked",false);
                 //d3.selectAll("input[type=checkbox]").property("checked", false);
                 break;
-            case 'simul':
+            case 'simul': case 'test':
+                if (selectValue=='test') {selSimul.splice(4)}
+                else {selSimul=dataRegion.simul.slice()}//; console.log(selSimul);}
                 data_value = getDataARS('dc',sexe,selDate);
                 menu_select.selectAll('circle').style("visibility","hidden");
                 menu_simul.selectAll('circle').style("visibility","visible");
+                d3.select("#cumul").style("visibility","hidden");
                 d3.select("#decalage").style("visibility","hidden");
                 d3.select("#decalage").selectAll("input[type=checkbox]").property("checked",false);
                 break;
@@ -761,10 +767,13 @@ function update_line() {
                 data_value = getDataARS('dc',sexe,selDate);
                 menu_select.selectAll('circle').style("visibility","visible");
                 menu_simul.selectAll('circle').style("visibility","hidden");
+                d3.select("#cumul").style("visibility","visible");
                 d3.select("#decalage").style("visibility","visible");
                 cases=1;
                 break;
         }
+//        menu_select.selectAll('circle').style('fill',function(m,j) {return (selMenu.findIndex(e=> e===m)!=-1)?"black":colors[colors.length-2];});
+        menu_simul.selectAll('circle').style('fill',function(m,j) {return (selSimul.findIndex(e=> e===m)!=-1)?colors[colors.length-2]:"Gainsboro";});
         d3.selectAll(".regs").transition().duration(3000)
             .style('fill',function(d) {
                 let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
@@ -948,6 +957,20 @@ function update_line() {
         values=[];
         JHDate.forEach(d=>{ date= parseTimeJH(d); values.push({date,value:0});});
         dHist.push({item:"JH_R","name":"Monde",values});
+        values=[];data=[];
+        values = dReg[9].data[0].values.slice(); data.push({n:'DC',name:'Morts',values});
+        values = dReg[10].data[0].values.slice(); data.push({n:'IN',name:'Infectés',values});
+        values = dReg[11].data[0].values.slice(); data.push({n:'GU',name:'Guéris',values});
+        values=[];
+        data[1].values.forEach((v,i)=>{
+                date=v.date;
+                value = v.value-data[0].values[i].value - data[2].values[i].value;
+                values.push({date,value});
+            });
+        data.push({n:'MA',name:'Malades',values});
+        dReg.push({item:'test',data});
+        values= dHist[11].values.slice();
+        dHist.push({item:'test',values});
 
 //        console.log(values);
     }
@@ -1024,8 +1047,8 @@ function update_line() {
 
         d3.selectAll(".legend").transition().duration(2000)
         	.style('fill',function(d,i) { return colors[i];});
-        menu_select.selectAll('circle').style('fill',function(m,j) {return (selMenu.findIndex(e=> e===m)!=-1)?"black":colors[colors.length-2];});
-        menu_simul.selectAll('circle').style('fill',function(m,j) {return (selSimul.findIndex(e=> e===m)!=-1)?"black":colors[colors.length-2];});
+        menu_select.selectAll('circle').style('fill',function(m,j) {return (selMenu.findIndex(e=> e===m)!=-1)?colors[colors.length-2]:"Gainsboro";});
+        menu_simul.selectAll('circle').style('fill',function(m,j) {return (selSimul.findIndex(e=> e===m)!=-1)?colors[colors.length-2]:"Gainsboro";});
         gGlobal.selectAll("rect").style("fill",colors[colors.length-2]).style("stroke",colors[8]);
         //sliderSimple color
         d3.select(".track-fill").style("stroke",colors[colors.length-2]);
