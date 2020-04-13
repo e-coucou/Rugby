@@ -264,6 +264,7 @@ var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19
         gFrance.append("rect").style("fill",d=>d).attr("width",50).attr("height",3).attr("x",(d,i)=>{return i*50;}).attr("y",37);
 
 //  d3.select('p#value-simple').text(d3.format('.2%')(sliderSimple.value()));
+    d3.select("#menu").append("text").text("#stayhome").attr("class","rky aside");
 
 	var fichier = '../data/covid_data.csv';
     var regionsDeps2 = [];
@@ -421,7 +422,7 @@ function clickSimul(d) {
             c=dataRegion.modele.contacts_j, dg=dataRegion.modele.delai_guerison, dm=dataRegion.modele.delai_mort,
             rr=dataRegion.modele.risque_re, sa = dataRegion.modele.sur_risque_asymp, ddm = dataRegion.modele.decl_maladie, 
             da = dataRegion.modele.delai_asymptomatique;
-    var nbSimul = 100;
+    var nbSimul = 150;
     let iconCase = [{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"blue",s:6,f:"white"},
     {d:"M17,5 c 2.5 0,5 2,5 5 c 0 1.5, -0.5 2.5, -1.5,3.5 L13,21 L5,12.5 c -0.8 -0.8 -1.2 -2 -1.2 -3.2 c 0-2,2 -5, 4.6 -4.6 c 2 0,3.5 1.1,4.2 2.8 C 14 6, 15 5, 17 5 z",c:"red",s:1,f:"white"}, {d:"M 5,8 L 19,8 M 12,2 L 12,22",c:"white",s:3,f:"black"},{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"green",s:6,f:"white"}];
     var gGlobal = svg.append("g").selectAll("g").data(dataRegion.proprietes.cases).enter()
@@ -771,8 +772,8 @@ function update_line() {
                 let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
                 return colors[val];});
 
-        d3.selectAll(".legend").transition().duration(2000)
-            .style('fill',function(d,i) { return colors[i];});
+//        d3.selectAll(".legend").transition().duration(2000)
+//            .style('fill',function(d,i) { return colors[i];});
 //        menu_select.selectAll('circle').style('fill',function(m,j) {return (selMenu.findIndex(e=> e===m)!=-1)?"black":colors[colors.length-2];});
 
         if ((d3.select("#by100k_i")._groups[0][0].checked)) {
@@ -1161,6 +1162,7 @@ function convertRGBDecimalToHex(rgb)
             delta_M = (i>ddm?(infectes[i-ddm]-infectes[i-ddm-1]):0)*ra;
             delta_I = (infectes[i]+assymp[i]*sa+malades[i]*rr+gueris[i]*rr)*c*ti*sains[i]/sains[0];
 */            //-----
+if (morts[i]<=200) {c=15} else {c=3}
             delta_D = malades[i]*tm/dm;
             delta_G_A = assymp[i]/da;
             delta_A = infectes[i]*(ra)/dm;
@@ -1168,11 +1170,15 @@ function convertRGBDecimalToHex(rgb)
             delta_M = infectes[i]*(1-ra)/ddm;
             delta_I = (infectes[i]+assymp[i]*sa+gueris[i]*rr)*ti*c*sains[i]/sains[0]*Math.max(0,(1-2*gueris[i]/sains[0]));
             cumul_inf.push(cumul_inf[i]+delta_I); 
-            gueris.push(Math.max(0,gueris[i]+ delta_G_A +delta_G_M));
-            assymp.push(Math.max(0,assymp[i] + delta_A - delta_G_A ));
+            gueris.push(gueris[i]+ delta_G_A +delta_G_M);
+//            gueris.push(Math.max(0,gueris[i]+ delta_G_A +delta_G_M));
+//            assymp.push(Math.max(0,assymp[i] + delta_A - delta_G_A ));
+            assymp.push(assymp[i] + delta_A - delta_G_A );
             morts.push(morts[i]+ delta_D);
-            malades.push(Math.max(0,malades[i]+ delta_M - delta_G_M - delta_D));
-            infectes.push(Math.max( delta_I + infectes[i]-delta_M - delta_A,0))
+            malades.push(malades[i]+ delta_M - delta_G_M - delta_D);
+//            malades.push(Math.max(0,malades[i]+ delta_M - delta_G_M - delta_D));
+//            infectes.push(Math.max( delta_I + infectes[i]-delta_M - delta_A,0))
+            infectes.push( delta_I + infectes[i]-delta_M - delta_A)
             cumul_mal.push(cumul_mal[i]+delta_M); 
             cumul_as.push(cumul_as[i]+delta_A); 
                 ;
