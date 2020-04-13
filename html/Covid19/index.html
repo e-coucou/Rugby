@@ -123,11 +123,7 @@ select#dataS {
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.4.3/tabletop.min.js"></script>
-<script src="https://unpkg.com/d3-simple-slider"></script>
-	<!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
-		<script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script> 
-	<script src="https://unpkg.com/d3@5.7.0/dist/d3.min.js" charset="utf-8"></script> 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.3.0/d3.min.js"></script>  -->
+    <script src="https://unpkg.com/d3-simple-slider"></script>
 	<script src="https://d3js.org/d3.v5.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.js" charset="utf-8"></script>
 <body>
@@ -146,14 +142,6 @@ select#dataS {
         <option value="Greens">Verts</option>
         <option value="Reds">Rouges</option>
         <option value="Greys">Gris</option>
-<!--        <option value="BrBG">BrBG</option>
-        <option value="PiYG">PiYG</option>
-        <option value="PRGn">PRGn</option>
-        <option value="PuOr">PuOr</option>
-        <option value="RdBu">RdBu</option>
-        <option value="RdGy">RdGy</option>
-        <option value="RdYlBu">RdYlBu</option>
-        <option value="RdYlGn">RdYlGn</option> -->
         <option value="Turbo">Turbo</option>
         <option value="Plasma">Plasma</option>
         <option value="Magma">Magma</option>
@@ -413,7 +401,7 @@ function clickSimul(d) {
 }        
 
 //let h_date_min= parseTimeH(d3.min(h_date))
-//let h_date_max= parseTimeH(d3.max(h_date))
+//  let h_date_max= parseTimeH(d3.max(h_date))
 
   var sliderSimple = d3
     .sliderBottom().min(0).max(h_date.length-1)
@@ -449,7 +437,7 @@ function clickSimul(d) {
             .attr("stroke",(d,i)=>{return iconCase[i].c}).style("fill","red");
 
     simulParam();
-    updateData();
+    updateData(h_date[h_date.length-1]);
     updateMap();
     update_line();
 
@@ -986,19 +974,19 @@ function update_line() {
         values=[];data=[];
         values = dHist[0].values.slice(); data.push({n:'HO',name:'Hospitalisations',values});
         values = dHist[1].values.slice(); data.push({n:'RE',name:'Réanimations',values});
-        values = dHist[2].values.slice(); data.push({n:'DC',name:'Décédées',values});
-        values = dHist[3].values.slice(); data.push({n:'GU',name:'Guérisons',values});
+        values = dHist[2].values.slice(); data.push({n:'MH',name:'Décés hopital',values});
+        values = dHist[3].values.slice(); data.push({n:'GH',name:'Guérisons Hopital',values});
+        values = dReg[9].data[0].values.slice(); data.push({n:'DC',name:'Morts',values});
+        values = dReg[10].data[0].values.slice(); data.push({n:'IN',name:'Infectés',values});
+        values = dReg[11].data[0].values.slice(); data.push({n:'GU',name:'Guéris',values});
         values=[];
-        data[0].values.forEach((v,i)=>{
+        data[5].values.forEach((v,i)=>{
                 date=v.date;
-                value = v.value-data[2].values[i].value - data[3].values[i].value;
+                value = v.value-data[4].values[i].value - data[6].values[i].value;
                 values.push({date,value});
             });
         data.push({n:'MA',name:'Malades',values});
         dReg.push({item:'test2',data});
-//        values= dHist[0].values.slice();
-//        dHist.push({item:'test2',values});
-
     }
     function getData() {
     // get data from google
@@ -1046,16 +1034,13 @@ function update_line() {
     function getUnique(value, index, self) { 
         return self.indexOf(value) === index;
     }
-
-    // customs couleurs des pastilles   thanks to Cynthia Brewer@
+    // on recupere le menu deroulant general de selection ...
     d3.select("#dataS").on("change", function() {
         selectValue = d3.select("#dataS").property('value');
-        //console.log(selectValue);
-        //console.log(getDataARS(selectValue,0,dataRegion.proprietes.ARS));
         updateData();
         update_line();
     });
-
+    // menu déroulant des couleurs
     d3.select("#color").on("change", function() {
         updateData();
     	let interpolate = d3[`interpolate${this.value}`];
@@ -1159,9 +1144,10 @@ function convertRGBDecimalToHex(rgb)
 
     function simul() {
 //"modele":{ "population":70000000,"taux_infection":0.04,"mortalité":0.045,"asymptomatique":0.5,"contacts_j":5,"delai_guerison":18,"delai_mort":5,"risque_re":0.0001,"sur_risque_asymp":2}
-        var infectes = [], malades = [], morts=[], gueris = [], sains =[], assymp=[];
+        var infectes = [], malades = [], morts=[], gueris = [], sains =[], assymp=[],cumul_inf=[],cumul_mal=[], cumul_as=[];
 //console.log(c,sa,rr,ti);
-        infectes.push(1000);malades.push(0);morts.push(0);gueris.push(0),sains.push(dataRegion.modele.population),assymp.push(0);
+        infectes.push(1000);malades.push(0);morts.push(0);gueris.push(0),sains.push(dataRegion.modele.population),assymp.push(0),
+            cumul_inf.push(0),cumul_as.push(0),cumul_mal.push(0);
         var date=[];
         date.push(new Date("03/01/2020"));
 
@@ -1177,15 +1163,18 @@ function convertRGBDecimalToHex(rgb)
 */            //-----
             delta_D = malades[i]*tm/dm;
             delta_G_A = assymp[i]/da;
-            delta_A = infectes[i]*(1-ra)/dm;
+            delta_A = infectes[i]*(ra)/dm;
             delta_G_M = malades[i]*(1-tm)/dg;
-            delta_M = infectes[i]*ra/ddm;
-            delta_I = (infectes[i]+assymp[i]*sa+gueris[i]*rr)*ti*c*sains[i]/sains[0];
+            delta_M = infectes[i]*(1-ra)/ddm;
+            delta_I = (infectes[i]+assymp[i]*sa+gueris[i]*rr)*ti*c*sains[i]/sains[0]*Math.max(0,(1-2*gueris[i]/sains[0]));
+            cumul_inf.push(cumul_inf[i]+delta_I); 
             gueris.push(Math.max(0,gueris[i]+ delta_G_A +delta_G_M));
             assymp.push(Math.max(0,assymp[i] + delta_A - delta_G_A ));
             morts.push(morts[i]+ delta_D);
             malades.push(Math.max(0,malades[i]+ delta_M - delta_G_M - delta_D));
             infectes.push(Math.max( delta_I + infectes[i]-delta_M - delta_A,0))
+            cumul_mal.push(cumul_mal[i]+malades[i+1]-malades[i]); 
+            cumul_as.push(cumul_as[i]+delta_A); 
                 ;
 //                + gueris[i]+malades[i]+assymp[i]
 //                - gueris[i+1] - malades[i+1]-assymp[i+1] ,0));
@@ -1216,6 +1205,15 @@ function convertRGBDecimalToHex(rgb)
         values=[];
         sains.forEach((d,i)=>{ values.push({date:date[i],value:d});});
         data.push({name:'sains',n:'S.',values});
+        values=[];
+        cumul_inf.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'Cumul Inf.',n:'cI',values});
+        values=[];
+        cumul_as.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'Cumul Asymp.',n:'cA',values});
+        values=[];
+        cumul_mal.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'Cumul Mal.',n:'cM',values});
   //      index= dReg.findIndex(d=>d.item=='simul');
         if (index != -1) dReg.splice(index,1);
         dReg.push({item:'simul',data});  // console.log(dReg);
@@ -1254,9 +1252,9 @@ function simulParam() {
     var gMortalite = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
     gMortalite.call(sliderMortalite);
   //asymptomatique
-    var sliderAsymptome = d3.sliderBottom().min(0).max(1.00).width(sl_l).ticks(0).fill(couleur[i]).default(1-ra).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(0.01)
+    var sliderAsymptome = d3.sliderBottom().min(0).max(1.00).width(sl_l).ticks(0).fill(couleur[i]).default(ra).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(0.01)
     .on('onchange', val => {//console.log(val);
-        ra=1-val;simul();update_line();});
+        ra=val;simul();update_line();});
     var gAsymptome = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
     gAsymptome.call(sliderAsymptome);
   //temps maladie
