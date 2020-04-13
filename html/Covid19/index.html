@@ -1173,7 +1173,7 @@ function convertRGBDecimalToHex(rgb)
             morts.push(morts[i]+ delta_D);
             malades.push(Math.max(0,malades[i]+ delta_M - delta_G_M - delta_D));
             infectes.push(Math.max( delta_I + infectes[i]-delta_M - delta_A,0))
-            cumul_mal.push(cumul_mal[i]+malades[i+1]-malades[i]); 
+            cumul_mal.push(cumul_mal[i]+delta_M); 
             cumul_as.push(cumul_as[i]+delta_A); 
                 ;
 //                + gueris[i]+malades[i]+assymp[i]
@@ -1246,7 +1246,7 @@ function simulParam() {
     var gInfection = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
     gInfection.call(sliderInfection);
   //mortalité
-    var sliderMortalite = d3.sliderBottom().min(0).max(0.10).width(sl_l).ticks(0).fill("black").default(tm).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(0.005)
+    var sliderMortalite = d3.sliderBottom().min(0).max(0.1).width(sl_l).ticks(0).fill("black").default(tm).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(0.005)
     .on('onchange', val => {//console.log(val);
         tm=val;simul();update_line();});
     var gMortalite = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
