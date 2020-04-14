@@ -271,7 +271,7 @@ var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19
         gFrance.append("rect").style("fill",d=>d).attr("width",50).attr("height",3).attr("x",(d,i)=>{return i*50;}).attr("y",37);
 
 //  d3.select('p#value-simple').text(d3.format('.2%')(sliderSimple.value()));
-    d3.select("#menu").append("text").text("#stayhome").style("font-family","HelveticaNeue-Light");//attr("class","rky aside");
+    d3.select("#menu").append("text").text("#RestezàlaMaison").style("font-family","HelveticaNeue-Light");//attr("class","rky aside");
     var gSimulSlider = svg.append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left)+','+(height-20)+')';});
 
 	var fichier = '../data/covid_data.csv';
@@ -795,7 +795,7 @@ function update_line() {
                 gSimulSlider.selectAll("g").style("visibility","hidden");
                 break;
             case 'simul': case 'frAll': case 'test2':
-                if (selectValue=='frAll') {selSimul.splice(4)}
+                if (selectValue=='frAll') {selSimul.splice(5)}
                 else {
                     if (selectValue=="test2") {
                         selSimul = ["HO","RE","DC","GU","MA"];
@@ -806,7 +806,9 @@ function update_line() {
                 d3.select("#cumul").style("visibility","hidden");
                 d3.select("#decalage").style("visibility","hidden");
                 d3.select("#decalage").selectAll("input[type=checkbox]").property("checked",false);
-                gSimulSlider.selectAll("g").style("visibility","visible");
+                if (selectValue=='simul') {gSimulSlider.selectAll("g").style("visibility","visible");}else{
+                    gSimulSlider.selectAll("g").style("visibility","hidden");
+                }
                 break;
             default :
                 data_value = getDataARS('dc',sexe,selDate);
@@ -870,7 +872,7 @@ function update_line() {
 //        console.log(data_value);
 
     } //fin de update data
-//------------------------
+//----------------------------------------------------------------------------
     function getDelta() {
         old=0;values=[];
         dHist[2].values.forEach((d)=>{
@@ -1208,6 +1210,7 @@ function convertRGBDecimalToHex(rgb)
         for (let i=0; i<nbSimul;i++){
             dd = new Date(); dd.setTime(date[i].getTime() + 86400000);//console.log(dd);
             date.push( dd) ;
+            let cc=c;
 /*            delta_D = (i>=(dm)?malades[i-dm]:0)*tm;
             delta_G_A = (i>dg?(assymp[i-da]-assymp[i-dg-1]):0);
             delta_G_M = (i>dg?(malades[i-dg]-malades[i-dg-1]):0)*(1-tm);
@@ -1215,13 +1218,14 @@ function convertRGBDecimalToHex(rgb)
             delta_M = (i>ddm?(infectes[i-ddm]-infectes[i-ddm-1]):0)*ra;
             delta_I = (infectes[i]+assymp[i]*sa+malades[i]*rr+gueris[i]*rr)*c*ti*sains[i]/sains[0];
 */            //-----
-if (morts[i]<=200) {c=15} else {c=3}
+if (morts[i]<=300) {cc=c*4} else {
+        if(morts[i]<=5000) {cc=c*2} }
             delta_D = malades[i]*tm/dm;
             delta_G_A = assymp[i]/da;
             delta_A = infectes[i]*(ra)/dm;
             delta_G_M = malades[i]*(1-tm)/dg;
             delta_M = infectes[i]*(1-ra)/ddm;
-            delta_I = (infectes[i]+assymp[i]*sa+gueris[i]*rr)*ti*c*sains[i]/sains[0]*Math.max(0,(1-2*gueris[i]/sains[0]));
+            delta_I = (infectes[i]+assymp[i]*sa+gueris[i]*rr)*ti*cc*sains[i]/sains[0]*Math.max(0,(1-2*gueris[i]/sains[0]));
             cumul_inf.push(cumul_inf[i]+delta_I); 
             gueris.push(gueris[i]+ delta_G_A +delta_G_M);
 //            gueris.push(Math.max(0,gueris[i]+ delta_G_A +delta_G_M));
