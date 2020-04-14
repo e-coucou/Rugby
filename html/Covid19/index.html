@@ -230,6 +230,7 @@ let valFormat = (a) => {
     var dHist = [], dReg = [];
     var selectValue = d3.select("#dataS").property('value');
 
+
 var public_spreadsheet_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKlM0rqtd30g3tiboIRwjal2KElonjOP2HhoZUanZCFPDd0yeAvaQy18qAkKQxz2_OW6hN36HV9fcE/pubhtml";
 var covid_google = "https://spreadsheets.google.com/feeds/cells/1-y1LPejhQw1iJfGMVGS_aHy1g0nbY4SFr3Q1LvazsV8/1/public/full?alt=json";
 var allGoogle = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKlM0rqtd30g3tiboIRwjal2KElonjOP2HhoZUanZCFPDd0yeAvaQy18qAkKQxz2_OW6hN36HV9fcE/pub?gid=1181120396&single=true&output=csv";
@@ -265,11 +266,13 @@ var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19
 
 //  d3.select('p#value-simple').text(d3.format('.2%')(sliderSimple.value()));
     d3.select("#menu").append("text").text("#stayhome").attr("class","rky aside");
+    var gSimulSlider = svg.append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left)+','+(height-20)+')';});
 
 	var fichier = '../data/covid_data.csv';
     var regionsDeps2 = [];
     var promises = [];
     var data_value =[];
+
 //        d3.json("https://d3js.org/us-10m.v1.json"),
 //        d3.tsv("unemployment.tsv", function(d) { unemployment.set(d.id, +d.rate); })
     promises.push(d3.json('../data/covid.json')); // function(d,i) {console.log(d); return regionsDeps2.push(d.regions_deps[i]);}),
@@ -742,6 +745,7 @@ function update_line() {
                 d3.select("#decalage").style("visibility","hidden");
                 d3.select("#decalage").selectAll("input[type=checkbox]").property("checked",false);
                 //d3.selectAll("input[type=checkbox]").property("checked", false);
+                gSimulSlider.selectAll("g").style("visibility","hidden");
                 break;
             case 'simul': case 'test': case 'test2':
                 if (selectValue=='test') {selSimul.splice(4)}
@@ -755,6 +759,7 @@ function update_line() {
                 d3.select("#cumul").style("visibility","hidden");
                 d3.select("#decalage").style("visibility","hidden");
                 d3.select("#decalage").selectAll("input[type=checkbox]").property("checked",false);
+                gSimulSlider.selectAll("g").style("visibility","visible");
                 break;
             default :
                 data_value = getDataARS('dc',sexe,selDate);
@@ -763,6 +768,7 @@ function update_line() {
                 d3.select("#cumul").style("visibility","visible");
                 d3.select("#decalage").style("visibility","visible");
                 cases=1;
+                gSimulSlider.selectAll("g").style("visibility","hidden");
                 break;
         }
 //        menu_select.selectAll('circle').style('fill',function(m,j) {return (selMenu.findIndex(e=> e===m)!=-1)?"black":colors[colors.length-2];});
@@ -1227,13 +1233,14 @@ if (morts[i]<=200) {c=15} else {c=3}
 
 function simulParam() {
 
-    let sl_l = w_g/10, i=0;
+    let sl_l = w_g/10, i=0, delta=1.35;
+
   //echelle des dates nb jours simulation
     var sliderNumber = d3.sliderBottom().min(0).max(1000).width(sl_l).ticks(0).fill("white").default(nbSimul).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(0.005)
     .on('onchange', val => {//console.log(val);
         nbSimul=val;simul();update_line();});
-    var gNumber = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
-    gNumber.call(sliderNumber);
+    var gNumber = gSimulSlider.append('g').attr('transform', ()=> {return 'translate('+ (sl_l*delta*(i++))+',0)';});
+    gNumber.call(sliderNumber);gNumber.append("text").attr("dy","20px").text("# jours");
 
     var sliderContact = d3.sliderBottom().min(0).max(50).width(sl_l).step(1) //scale-margin.left)//.tickFormat(d3.format('1'))
     .ticks(0).fill(couleur[i]).default(c)//    .displayValue(false).step(1)
@@ -1241,40 +1248,48 @@ function simulParam() {
     .on('onchange', val => {//console.log(val);
         c=val;simul();update_line();
     });
-  var gContact = svg  .append('g')
-    .attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
+  var gContact = gSimulSlider.append('g')
+    .attr('transform', ()=> {return 'translate('+(sl_l*delta*(i++))+',0)';});
 
-  gContact.call(sliderContact);
+  gContact.call(sliderContact);gContact.append("text").attr("dy","20px").text("# Contacts");
   //infection
-    var sliderInfection = d3.sliderBottom().min(0).max(0.2).width(sl_l).ticks(0).fill("red").default(ti).handle(d3.symbol().type(d3.symbolCircle).size(70)())
+    var sliderInfection = d3.sliderBottom().min(0).max(0.2).width(sl_l).ticks(0).fill("red").default(ti).handle(d3.symbol().type(d3.symbolCircle).size(70)()).tickFormat(d3.format('0.1%'))
     .on('onchange', val => {//console.log(val);
         ti=val;simul();update_line();});
-    var gInfection = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
-    gInfection.call(sliderInfection);
+    var gInfection = gSimulSlider.append('g').attr('transform', ()=> {return 'translate('+(sl_l*delta*(i++))+',0)';});
+    gInfection.call(sliderInfection);gInfection.append("text").attr("dy","20px").text("τ Infection");
   //mortalité
-    var sliderMortalite = d3.sliderBottom().min(0).max(0.1).width(sl_l).ticks(0).fill("black").default(tm).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(0.005)
+    var sliderMortalite = d3.sliderBottom().min(0).max(0.1).width(sl_l).ticks(0).fill("black").default(tm).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(0.005).tickFormat(d3.format('0.1%'))
     .on('onchange', val => {//console.log(val);
         tm=val;simul();update_line();});
-    var gMortalite = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
-    gMortalite.call(sliderMortalite);
+    var gMortalite = gSimulSlider.append('g').attr('transform', ()=> {return 'translate('+(sl_l*delta*(i++))+',0)';}).attr("id","gMortalite");
+    gMortalite.call(sliderMortalite);gMortalite.append("text").attr("dy","20px").text("τ Mortalité");
   //asymptomatique
-    var sliderAsymptome = d3.sliderBottom().min(0).max(1.00).width(sl_l).ticks(0).fill(couleur[i]).default(ra).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(0.01)
+    var sliderAsymptome = d3.sliderBottom().min(0).max(1.00).width(sl_l).ticks(0).fill(couleur[i]).default(ra).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(0.01).tickFormat(d3.format('.0%'))
     .on('onchange', val => {//console.log(val);
         ra=val;simul();update_line();});
-    var gAsymptome = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
-    gAsymptome.call(sliderAsymptome);
+    var gAsymptome = gSimulSlider.append('g').attr('transform', ()=> {return 'translate('+(sl_l*delta*(i++))+',0)';});
+    gAsymptome.call(sliderAsymptome); gAsymptome.append("text").attr("dy","20px").text("Asymptomatique");
   //temps maladie
     var sliderMaladie = d3.sliderBottom().min(0).max(15).width(sl_l).ticks(0).fill(couleur[i]).default(ddm).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(1)
     .on('onchange', val => {//console.log(val);
         ddm=val;simul();update_line();});
-    var gMaladie = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
-    gMaladie.call(sliderMaladie);
+    var gMaladie = gSimulSlider.append('g').attr('transform', ()=> {return 'translate('+(sl_l*delta*(i++))+',0)';});
+        gMaladie.call(sliderMaladie); gMaladie.append("text").attr("dy","20px").text("Δj Incubation");
   //delai de gurison
     var sliderGuerison = d3.sliderBottom().min(0).max(25).width(sl_l).ticks(0).fill(couleur[i]).default(dg).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(1)
     .on('onchange', val => {//console.log(val);
         dg=val;simul();update_line();});
-    var gGuerison = svg  .append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left+sl_l*1.6*(i++))+','+(height-20)+')';});
-    gGuerison.call(sliderGuerison);
+    var gGuerison = gSimulSlider.append('g').attr('transform', ()=> {return 'translate('+(sl_l*delta*(i++))+',0)';});
+    gGuerison.call(sliderGuerison); gGuerison.append("text").attr("dy","20px").text("Δj Guérisons");
+  //delai de mort
+    var sliderDMort = d3.sliderBottom().min(0).max(25).width(sl_l).ticks(0).fill(couleur[i]).default(dm).handle(d3.symbol().type(d3.symbolCircle).size(70)()).step(1)
+    .on('onchange', val => {//console.log(val);
+        dg=val;simul();update_line();});
+    var gDMort = gSimulSlider.append('g').attr('transform', ()=> {return 'translate('+(sl_l*delta*(i++))+',0)';});
+    gDMort.call(sliderDMort); gDMort.append("text").attr("dy","20px").text("Δj Mortalité");
+
+    gSimulSlider.selectAll('text').attr("y",10);
 
 }
 
