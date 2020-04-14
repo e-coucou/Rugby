@@ -111,8 +111,13 @@ select#dataS {
   opacity:0.8;
 }
 #info {
-    color: white;
-    opacity: 1.0;
+    position: absolute;
+    top: 2px;
+    right: 20px;
+}
+.infoG.label {
+    font: 12px "helvetica neue";
+    fill: "white";
 }
 </style>
 <header>
@@ -158,11 +163,11 @@ select#dataS {
         <option value="JH_C" >Cas Covid Monde [JH]</option>
         <option value="JH_R" >Guérisons Monde [JH]</option>
         <option value="simul" >Simulation Epidémie</option>
-        <option value="death" >old Mortalité</option>
+        <option value="frAll" >France (All)</option>
+<!--        <option value="death" >old Mortalité</option>
         <option value="recover" > old Guérisons</option>
         <option value="cases" >old Cas Covid19</option>
-        <option value="test" >in test ...</option>
-        <option value="test2" >in test 2...</option>
+-->        <option value="test2" >in test 2...</option>
     </optgroup></select>
 	<div id="cumul" >
   		<input id="cumul_i" type="checkbox" value="cumul" class="checkbox">
@@ -184,8 +189,9 @@ select#dataS {
         <label for="byfemme_i">les Femmes</label></div>
     <div id="tooltipDiv"></div>
 <footer>
-<aside>(c) e-Coucou | y2K | Mars, 2020 | data from ARS France & Johns Hopkins University</aside><aside>
-    <div id="info" href="https://www.data.gouv.fr/fr/datasets/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/">ARS</div></aside>
+<aside>(c) e-Coucou | y2K | Mars, 2020 | data from ARS France & Johns Hopkins University</aside>
+    <div id="info"></div>
+    <!-- href="https://www.data.gouv.fr/fr/datasets/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/">ARS</div></aside>-->
 </footer>
     <script type="text/javascript">
 // format ...
@@ -265,7 +271,7 @@ var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19
         gFrance.append("rect").style("fill",d=>d).attr("width",50).attr("height",3).attr("x",(d,i)=>{return i*50;}).attr("y",37);
 
 //  d3.select('p#value-simple').text(d3.format('.2%')(sliderSimple.value()));
-    d3.select("#menu").append("text").text("#stayhome").attr("class","rky aside");
+    d3.select("#menu").append("text").text("#stayhome").style("font-family","HelveticaNeue-Light");//attr("class","rky aside");
     var gSimulSlider = svg.append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left)+','+(height-20)+')';});
 
 	var fichier = '../data/covid_data.csv';
@@ -283,19 +289,60 @@ var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19
     promises.push( d3.csv(JH_global_death));
     promises.push( d3.csv(JH_global_confirmed));
     promises.push( d3.csv(JH_globale_recovered));
+
+    // Information data
+    var svgInfo = d3.select("#info").append("svg").attr('width',250).attr('height',20).append('g');
+    var infoG = svgInfo.selectAll('g').data(_.range(promises.length)).enter()
+        .append('g').attr('transform',(d)=>{return 'translate('+(d*-15)+',11)';});
+        infoG.append('circle').attr('fill','black')
+            .attr('r',6).attr('cx',235);
+    var infoGT = svgInfo.append('g').attr('transform','translate(-100,11)');
+        infoGT.append('text').attr('fill','white').style('text-anchor','end').style('font-family','HelveticaNeue-Light')
+              .attr('dx','220px').attr('dy','0.3em').text('informations').raise();
+
+    promises.forEach((p,i) =>{
+        Promise.resolve(p).then(function(val) {
+        dataRead(val,i);
+        });
+    });
+
+    var dataRegion=[],geojson=[],hopital=[];dataGouv=[];dataGoogle=[],JHDeath=[],JHConfirmed=[],JHRecovered=[];
+    var iRead=0;
+
+    function dataRead(data,i) {
+        switch(i) {
+        case 0:    dataRegion=data; break;
+        case 2:    geojson=data; break;
+        case 3:    dataGoogle=data; break;
+        case 4:    dataGouv=data; hopital=data;break;
+        case 5:    JHDeath=data; break;
+        case 6:    JHConfirmed=data; break;
+        case 7:    JHRecovered=data; break;
+        default:
+            break;
+        }
+        iRead += (1<<i); //console.log(i, iRead, (iRead>>i)&1);
+        infoGT.select('text').text("Chargement ...");
+        infoG.selectAll('circle').attr('fill',d=>{return ((iRead>>d)&1!=0)?'white':'red'});
+        if (iRead==255) start();
+    }
+
 //-----------------------------------------------------------------------------
 //--
 //--
-    Promise.all(promises).then(function(values) {
+/*    Promise.all(promises).then(function(values) {
         console.log(values);
-        var geojson = values[2],
+        var //geojson = values[2],
             hopital = values[4],
-            dataRegion = values[0],
+    //        dataRegion = values[0],
             dataGoogle = values[3],
             dataGouv = values[4],
             JHDeath = values[5];
             JHConfirmed = values[6];
             JHRecovered = values[7];
+*/
+function start() {
+        infoGT.select('text').text("Données chargées !");
 
         const parseTime = d3.timeParse("%d/%m/%Y");
         const parseTimeH = d3.timeParse("%Y-%m-%d");
@@ -747,8 +794,8 @@ function update_line() {
                 //d3.selectAll("input[type=checkbox]").property("checked", false);
                 gSimulSlider.selectAll("g").style("visibility","hidden");
                 break;
-            case 'simul': case 'test': case 'test2':
-                if (selectValue=='test') {selSimul.splice(4)}
+            case 'simul': case 'frAll': case 'test2':
+                if (selectValue=='frAll') {selSimul.splice(4)}
                 else {
                     if (selectValue=="test2") {
                         selSimul = ["HO","RE","DC","GU","MA"];
@@ -968,9 +1015,9 @@ function update_line() {
                 values.push({date,value});
             });
         data.push({n:'MA',name:'Malades',values});
-        dReg.push({item:'test',data});
+        dReg.push({item:'frAll',data});
         values= dHist[11].values.slice();
-        dHist.push({item:'test',values});
+        dHist.push({item:'frAll',values});
 
 //        console.log(values);
     }
@@ -1293,7 +1340,7 @@ function simulParam() {
 
 }
 
-  });
+  }; // promise.all manque une )
 //});
   
    </script>
