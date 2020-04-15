@@ -233,7 +233,7 @@ let valFormat = (a) => {
 // console.log(scale,orientation);
 // console.log(width,height);
 
-    var dHist = [], dReg = [];
+    var dHist = [], dReg = [], dept = [];
     var selectValue = d3.select("#dataS").property('value');
 
 
@@ -244,6 +244,7 @@ var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f
 var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv",
     JH_global_confirmed = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv",
     JH_globale_recovered = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv";
+var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
   // draw chart
   var d_Confirmed=[];
 
@@ -258,9 +259,14 @@ var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19
 	const svg = d3.select('#chart').append("svg")
     	.attr("id", "svg").attr("position", 2)
     	.attr("width", width+margin.right+margin.left)
-    	.attr("height", height+margin.top+margin.bottom);
+    	.attr("height", (height+margin.top+margin.bottom)*2);
 
+// ajoute la France des départements
+    const depart = svg.append("g")
+        .attr("transform", "translate(0," + (height+margin.top) + ")");
 	const deps = svg.append("g");
+
+// le logo de la France
     var gFrance = svg.append("g").selectAll("g").data(["blue","white","red"]).enter()
                     .append("g")
                     .attr("transform",(d)=>{ return "translate("+(scale-180)+","+(3*margin.top)+")";});
@@ -270,8 +276,9 @@ var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19
             .text("France").attr("x",75).attr("y",26).attr("text-anchor","middle");
         gFrance.append("rect").style("fill",d=>d).attr("width",50).attr("height",3).attr("x",(d,i)=>{return i*50;}).attr("y",37);
 
+
 //  d3.select('p#value-simple').text(d3.format('.2%')(sliderSimple.value()));
-    d3.select("#menu").append("text").text("#RestezàlaMaison").style("font-family","HelveticaNeue-Light");//attr("class","rky aside");
+    d3.select("#menu").append("text").text("#RestezàlaMaison").style("font-family","HelveticaNeue-Light").style("font-size","12px");//attr("class","rky aside");
     var gSimulSlider = svg.append('g').attr('transform', ()=> {return 'translate('+(scale+margin.left)+','+(height-20)+')';});
 
 	var fichier = '../data/covid_data.csv';
@@ -289,6 +296,7 @@ var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19
     promises.push( d3.csv(JH_global_death));
     promises.push( d3.csv(JH_global_confirmed));
     promises.push( d3.csv(JH_globale_recovered));
+    promises.push( d3.json(url_geoDepart));
 
     // Information data
     var svgInfo = d3.select("#info").append("svg").attr('width',250).attr('height',20).append('g');
@@ -306,7 +314,7 @@ var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19
         });
     });
 
-    var dataRegion=[],geojson=[],hopital=[];dataGouv=[];dataGoogle=[],JHDeath=[],JHConfirmed=[],JHRecovered=[];
+    var dataRegion=[],geojson=[],hopital=[];dataGouv=[];dataGoogle=[],JHDeath=[],JHConfirmed=[],JHRecovered=[],geoDepart=[];
     var iRead=0;
 
     function dataRead(data,i) {
@@ -318,13 +326,14 @@ var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19
         case 5:    JHDeath=data; break;
         case 6:    JHConfirmed=data; break;
         case 7:    JHRecovered=data; break;
+        case 8:    geoDepart=data; break;
         default:
             break;
         }
         iRead += (1<<i); //console.log(i, iRead, (iRead>>i)&1);
         infoGT.select('text').text("Chargement ...");
         infoG.selectAll('circle').attr('fill',d=>{return ((iRead>>d)&1!=0)?'white':'red'});
-        if (iRead==255) start();
+        if (iRead==511) start();
     }
 
 //-----------------------------------------------------------------------------
@@ -343,6 +352,7 @@ var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19
 */
 function start() {
         infoGT.select('text').text("Données chargées !");
+        console.log(dataGouv);
 
         const parseTime = d3.timeParse("%d/%m/%Y");
         const parseTimeH = d3.timeParse("%Y-%m-%d");
@@ -491,6 +501,7 @@ function clickSimul(d) {
     updateData(h_date[h_date.length-1]);
     updateMap();
     update_line();
+    updateDepart();
 
     //// end -----------
 
@@ -502,6 +513,21 @@ function updateGlobal(){
         case 2: val="femmes"; break;
     }
     gGlobal.selectAll('text').text(d=>{return valFormat(globalData.find(g=>{return d===g.item;})[val]);});
+}
+function updateDepart() {
+    console.log("Département ",geoDepart,geojson);
+        depart.selectAll("path")
+            .data(geoDepart.features)
+            .enter()
+            .append("path")
+            .attr('id', function(d) {return "dep" + d.properties.code;})
+            .attr("d", path).style('opacity',1).attr("class","deps")
+//            .style('fill',function(d) { let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
+                //console.log(colors[val],getOpositeColor(colors[val])); 
+//                return colors[val];})
+            .style("fill","lightgrey")
+            .style('stroke','blue').style('stroke-width',1);
+
 }
 function updateMap() {
 
@@ -769,6 +795,7 @@ function update_line() {
         }); //     console.log('global',globalData);
     }
     function updateData(selDate = dataRegion.proprietes.ARS) {
+getDepartementData();
         data_value =[];
         var cases = 0;
         selectValue = d3.select("#dataS").property('value');
@@ -913,6 +940,51 @@ function update_line() {
             data.push({name,values});
         });
         dReg.push({item,data});
+    }
+    function getDepartementData() {
+        var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
+        values=[];
+        let item='rea';
+        name='France';
+        let date = h_date[h_date.length-1];
+        dept=[];
+        hopital.forEach(d=>{ //console.log(d,date);
+            if (d.jour==date && d.sexe==0) {
+                v=Number(d[item]);//console.log(d);
+                dept.push({dep:d.dep,value:v});
+            }
+        });
+//        console.log('dept rea',dept);
+
+/*
+            h_date.forEach(function(h) {
+              date = parseTimeH(h);
+              let value = hopital.reduce((a,d)=>{ let v=0;
+                if (d.jour == h && d.sexe == 0) {
+                    v= Number(d[item]);// console.log(a,v);
+                }
+                return (a+v); },0); //console.log(cum);        value = cumul(d.series);
+              values.push({date,value}); // sauvegarde sous forme de hashmap de nos données.
+            });
+            dHist.push({item,name,values});
+            data=[];values=[];
+            h_date.forEach(function(h) {
+                h_dep.forEach(d=>{
+                value=0;
+                    r.forEach( (dep) => {
+                        date = parseTimeH(h); //console.log(h);
+//                        let cum = hopital.reduce((a,d)=>{ let v=0;
+                          if (d.dep==dep && d.jour == h && d.sexe == 0) {
+                              v= Number(d[item]);}
+                          return (a+v); },0); //console.log(cum);        value = cumul(d.series);
+                        value += cum;
+                    });
+                    values.push({date,value}); // sauvegarde sous forme de hashmap de nos données.
+                });
+                data.push({name,values});
+            });
+            dReg.push({item,data});
+*/
     }
     function getHospData() {
         // données hospitalières france
