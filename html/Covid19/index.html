@@ -110,6 +110,11 @@ select#dataS {
   stroke:black;
   opacity:0.8;
 }
+.legendDep rect {
+  fill:white;
+  stroke:black;
+  opacity:0.8;
+}
 #info {
     position: absolute;
     top: 2px;
@@ -304,7 +309,7 @@ var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geoj
         .append('g').attr('transform',(d)=>{return 'translate('+(d*-15)+',11)';});
         infoG.append('circle').attr('fill','black')
             .attr('r',6).attr('cx',235);
-    var infoGT = svgInfo.append('g').attr('transform','translate(-100,11)');
+    var infoGT = svgInfo.append('g').attr('transform','translate(-113,11)');
         infoGT.append('text').attr('fill','white').style('text-anchor','end').style('font-family','HelveticaNeue-Light')
               .attr('dx','220px').attr('dy','0.3em').text('informations').raise();
 
@@ -372,6 +377,7 @@ function start() {
         .domain([ 0,d3.max(data_value, function(e) { return +e; })])//.domain([0, 100])
         .range(d3.range(13));
 
+//legende de la carte des régions
     var legend = svg.append('g')
         .attr('transform', function(d) { return 'translate('+(margin.left)+','+(5*margin.top)+')';})
         .attr('id', 'legend');
@@ -394,8 +400,32 @@ function start() {
         .attr("class","legend")
         .attr('transform', function(d) {return 'translate('+(margin.left+20)+','+(5*margin.top)+')';})
         .call(d3.axisRight(legendScale).ticks(10));
+//legende de la carte des départements
+    var legendDep = svg.append('g')
+        .attr('transform', function(d) { return 'translate('+(margin.left)+','+(height +5*margin.top)+')';})
+        .attr('id', 'legendDep');
+    
+    legendDep.selectAll('.colorbar')
+        .data(d3.range(13))
+        .enter().append('svg:rect')
+            .attr('class','legendDep')
+            .attr('y', function(d) { return d * 20 + 'px'; })
+            .attr('height', '20px')
+            .attr('width', '20px')
+            .attr('x', '0px')
+            .style('fill',function(d,i) { return colors[i];});
+//          .attr("class", function(d) { return "q" + d + "-9"; });
+    var legendDepScale = d3.scaleLinear()
+        .domain([0, d3.max(dept, function(e) { return e.value; })])
+//        .domain([0, 750])
+        .range([0, 13 * 20]);
+    var legendDepAxis = svg.append("g")
+        .attr("class","legendDep")
+        .attr('transform', function(d) {return 'translate('+( margin.left+20)+','+(height + 5*margin.top)+')';})
+        .call(d3.axisRight(legendDepScale).ticks(10));
 
-
+console.log(legendAxis);
+console.log(legendDepAxis);
 //-------------------------
 // le graphique line ...
 //
@@ -499,6 +529,11 @@ function clickSimul(d) {
 
     simulParam();
     updateData(h_date[h_date.length-1]);
+    var tantile = d3.scaleQuantile()
+        .domain([ 0,d3.max(dept, function(e) { return e.value; })])//.domain([0, 100])
+        .range(d3.range(13));
+//console.log('tantile',tantile(10),tantile(500),d3.max(dept, function(e) { return e.value; }));
+
     updateMap();
     update_line();
     updateDepart();
@@ -515,7 +550,7 @@ function updateGlobal(){
     gGlobal.selectAll('text').text(d=>{return valFormat(globalData.find(g=>{return d===g.item;})[val]);});
 }
 function updateDepart() {
-    console.log("Département ",geoDepart,geojson);
+    //    console.log("Département ",geoDepart,geojson);
         depart.selectAll("path")
             .data(geoDepart.features)
             .enter()
@@ -525,7 +560,10 @@ function updateDepart() {
 //            .style('fill',function(d) { let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
                 //console.log(colors[val],getOpositeColor(colors[val])); 
 //                return colors[val];})
-            .style("fill","lightgrey")
+            .style("fill",d=>{
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                return colors[tantile(dept[n].value)];
+            })
             .style('stroke','blue').style('stroke-width',1);
 
 }
@@ -853,6 +891,9 @@ getDepartementData();
             .style('fill',function(d) {
                 let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
                 return colors[val];});
+        d3.selectAll(".deps").transition().duration(1000).style("fill",d=>{
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                return colors[tantile(dept[n].value)];})
 
 //        d3.selectAll(".legend").transition().duration(2000)
 //            .style('fill',function(d,i) { return colors[i];});
@@ -862,14 +903,19 @@ getDepartementData();
             data_value.forEach((d,i,t)=> { return (t[i] = (d*100000/dataRegion.population[i]));});}
 
         quantile.domain([ 0,d3.max(data_value, function(e) { return +e; })]);
-        legendScale.domain([0, d3.max(data_value, function(e) { return +e; })])
+        legendScale.domain([0, d3.max(data_value, function(e) { return +e; })]);
         legendAxis.call(d3.axisRight(legendScale).ticks(10));
-
+        legendDepScale.domain([0, d3.max(dept, function(e) { return e.value; })]);
+        legendDepAxis.call(d3.axisRight(legendDepScale).ticks(10));
+//xxxxx
 
         d3.selectAll(".regs").transition().duration(3000)
             .style('fill',function(d) {
                 let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
                 return cases===0?colors[val]:"Gainsboro";});
+        d3.selectAll(".deps").transition().duration(1000).style("fill",d=>{
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                return colors[tantile(dept[n].value)];})
         // name/values[date/value]
         multi_data = [];
         dataRegion.regions_deps.forEach((r,j)=> {
@@ -944,7 +990,7 @@ getDepartementData();
     function getDepartementData() {
         var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
         values=[];
-        let item='rea';
+        let item='hosp';
         name='France';
         let date = h_date[h_date.length-1];
         dept=[];
@@ -954,7 +1000,7 @@ getDepartementData();
                 dept.push({dep:d.dep,value:v});
             }
         });
-//        console.log('dept rea',dept);
+        console.log('dept rea',dept);
 
 /*
             h_date.forEach(function(h) {
@@ -1183,9 +1229,12 @@ getDepartementData();
         	.style('fill',function(d) {
         		let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
         		return colors[val];});
+        d3.selectAll(".deps").transition().duration(1000).style("fill",d=>{
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                return colors[tantile(dept[n].value)];})
 
-        d3.selectAll(".legend").transition().duration(2000)
-        	.style('fill',function(d,i) { return colors[i];});
+        d3.selectAll(".legend").transition().duration(2000).style('fill',function(d,i) { return colors[i];});
+        d3.selectAll(".legendDep").transition().duration(2000).style('fill',function(d,i) { return colors[i];});
         menu_select.selectAll('circle').style('fill',function(m,j) {return (selMenu.findIndex(e=> e===m)!=-1)?colors[colors.length-2]:"Gainsboro";});
         menu_simul.selectAll('circle').style('fill',function(m,j) {return (selSimul.findIndex(e=> e===m)!=-1)?colors[colors.length-2]:"Gainsboro";});
         gGlobal.selectAll("rect").style("fill",colors[colors.length-2]).style("stroke",colors[8]);
