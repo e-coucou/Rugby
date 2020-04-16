@@ -502,7 +502,9 @@ function clickSimul(d) {
     .on('onchange', val => {
         data_value = getDataARS(selectValue,sexe,h_date[Math.round(val)]);
         getGlobalData(h_date[Math.round(val)]); //console.log(selectValue)
-        updateMap();});
+        updateMap();
+        getDepartementData(h_date[Math.round(val)]);
+        updateDepart()});
   var gSimple = svg.append('g')
     .attr('transform', ()=> {return 'translate('+(margin.left)+','+(height-50)+')';});
 
@@ -987,12 +989,12 @@ getDepartementData();
         });
         dReg.push({item,data});
     }
-    function getDepartementData() {
+    function getDepartementData(date='') {
         var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
         values=[];
-        let item='hosp';
+        let item=selectValue;
         name='France';
-        let date = h_date[h_date.length-1];
+        if (date == '') {date = h_date[h_date.length-1];}
         dept=[];
         hopital.forEach(d=>{ //console.log(d,date);
             if (d.jour==date && d.sexe==0) {
