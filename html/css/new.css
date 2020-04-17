@@ -1,0 +1,48 @@
+@font-face {
+  font-family: Edelsans;
+  src: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/4273/edelsans_regular-webfont.woff);
+}
+body { 
+  margin: 0;
+  font-family: Edelsans, Avenir, sans-serif;
+}
+section { 
+  height: 100vh; 
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  padding: 2vw;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-size: 4vw; 
+}
+section:first-of-type { 
+  text-transform: uppercase;
+  font-size: 7vw;
+}
+section:first-of-type, section.pop { 
+  color: #fff;
+  text-shadow: 0 0 5px rgba(0,0,0,0.4); 
+}
+section:nth-of-type(even) { 
+  background: snow;
+  color: black;
+}
+section:nth-of-type(1) { 
+  background-image: url(../images/IMG_5850.jpeg); 
+}
+section:nth-of-type(3) { 
+  background-image: url(../images/IMG_6039.jpeg); 
+}
+section:nth-of-type(5) { 
+  background-image: url(../images/IMG_5962.jpeg); 
+  color: white;
+}
+section:nth-of-type(7) { 
+  background-image: url(../images/IMG_2449.jpeg); 
+  color: white;
+}
