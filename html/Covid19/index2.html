@@ -40,17 +40,37 @@
   font-weight: 50;
   text-rendering: optimizeLegibility;
 }
-	#svg {
-		display: block;
-		margin: auto;
-		background:#f5f5f5;
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+.horizontalGrid {
+	fill : none;
+	shape-rendering : crispEdges;
+	stroke : lightgrey;
+	stroke-width : 1px;
+}
+.verticalLine {
+	fill : none;
+	shape-rendering : crispEdges;
+	stroke : lightgrey;
+	stroke-width : 1px;
+}
+#svg {
+	display: block;
+	margin: auto;
+	opacity: 1;
 	position : relative;
-	}
-	#chart {
-		display: block;
-		margin: auto;
-		background:#f5f5f5;
-	}
+}
+#chart {
+	display: block;
+	margin: auto;
+}
+#region {
+	display: block;
+	margin: auto;
+}
 </style>
 <header>
   <div id='h1'>COVID-19</div>
@@ -76,7 +96,7 @@
   <h1>= 3 people per square km</h1>
 </section>
 <section>
-  <h1>With abundant geothermal energy, Iceland is also one of the greenest places on earth.</h1>
+	<div id="chart_jh"></div>
 </section>
 <section>
   <h1>Come to Iceland. You’ll be amazed.</h1>
@@ -90,13 +110,20 @@
     <script type="text/javascript">
     var locale = {
         dateTime: "%A, le %e %B %Y, %X",date: "%d/%m/%Y",time: "%H:%M:%S",periods: ["AM","PM"],days: ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"],shortDays: ["dim.","lun.","mar.","mer.","jeu.","ven.","sam."],months: ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"],shortMonths: ["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."]};
-
     d3.timeFormatDefaultLocale(locale);
+	const parseTime = d3.timeParse("%d/%m/%Y");
+    const parseTimeH = d3.timeParse("%Y-%m-%d");
+    const parseTimeJH = d3.timeParse("%m/%d/%y");
+
 	let margin = {top: 10, right: 5, bottom: 30, left: 50},
     width = window.innerWidth,
     height = window.innerHeight;
 	var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
 	var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f1b3ee1cabd7';
+	var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv",
+	    JH_global_confirmed = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv",
+	    JH_globale_recovered = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv";
+
     var interpolate = d3[`interpolate${'Blues'}`];
     var colors = [];
     const n=14;
@@ -105,6 +132,7 @@
       colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
     }
     let scale=0;
+    scale=height;
 
 	const path = d3.geoPath();
 	const projection = d3.geoConicConformal()
@@ -113,7 +141,11 @@
     	.translate([scale/2+1*margin.left, scale / 2]);
     path.projection(projection);
 	const svg = d3.select('#chart').append("svg")
-    	.attr("id", "svg").attr("position", 2)
+    	.attr("id", "svg")//.attr("position", 2)
+    	.attr("width", width-margin.right-margin.left)
+    	.attr("height", (height-margin.top-margin.bottom));
+	const svgJH = d3.select('#chart_jh').append("svg")
+    	.attr("id", "svg")//.attr("position", 1)
     	.attr("width", width-margin.right-margin.left)
     	.attr("height", (height-margin.top-margin.bottom));
 
@@ -122,10 +154,14 @@
         .attr("transform", "translate("+(0)+","+(0)+")");
 
     var promises=[];
-    var dept=[];
+    var dHist = [], dReg = [], dept = [];
     var tantile;
     promises.push( d3.json(url_geoDepart));
     promises.push( d3.dsv(";",dataGouv));
+    promises.push( d3.csv(JH_global_death));
+    promises.push( d3.csv(JH_global_confirmed));
+    promises.push( d3.csv(JH_globale_recovered));
+    promises.push(d3.json('../data/covid.json'));
     promises.forEach((p,i) =>{
         Promise.resolve(p).then(function(val) {
         dataRead(val,i);
@@ -135,17 +171,48 @@
     var dataRegion=[],geojson=[],hopital=[];dataGouv=[];dataGoogle=[],JHDeath=[],JHConfirmed=[],JHRecovered=[],geoDepart=[];
     var iRead=0;
     var h_date=[];
-
+    // definition lies au departement
+    var legendDep = svg.append('g')
+        .attr('transform', function(d) { return 'translate('+(margin.left)+','+( 5*margin.top)+')';})
+        .attr('id', 'legendDep');
+    var legendDepScale = d3.scaleLinear()
+        .domain([0, d3.max(dept, function(e) { return e.value; })])
+        .range([0, 13 * 20]);
+    var legendDepAxis = svg.append("g")
+        .attr("class","legendDep")
+        .attr('transform', function(d) {return 'translate('+( margin.left+20)+','+( 5*margin.top)+')';})
+        .call(d3.axisRight(legendDepScale).ticks(10));
+    	legendDep.selectAll('.colorbar')
+        	.data(d3.range(13))
+       		.enter().append('svg:rect')
+            	.attr('class','legendDep')
+            	.attr('y', function(d) { return d * 20 + 'px'; })
+            	.attr('height', '20px')
+            	.attr('width', '20px')
+            	.attr('x', '0px')
+            	.style('fill',function(d,i) { return colors[i];});
+    // ontrace des courbes
+    const x = d3.scaleTime()
+        .range([0, width-margin.left-margin.right]);
+    const y = d3.scaleLinear()
+        .range([height-margin.top-margin.bottom,0]);
+    const yL = d3.scaleSymlog()
+        .range([height,0]);
+    var line = d3.line()
+        .x(function(d) { return x(d.date); }) //vep
+        .y(function(d) { return y(d.value);}) //(d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
+        .curve(d3.curveCardinal);
+    
     function dataRead(data,i) {
         switch(i) {
-//        case 0:    dataRegion=data; break;
+        case 5:    dataRegion=data; break;
 /*        case 2:    geojson=data; break;
         case 3:    dataGoogle=data; break;
 */        case 1:    dataGouv=data; hopital=data;break;
-/*        case 5:    JHDeath=data; break;
-        case 6:    JHConfirmed=data; break;
-        case 7:    JHRecovered=data; break;
-*/        case 0:    geoDepart=data; break;
+        case 2:    JHDeath=data; break;
+        case 3:    JHConfirmed=data; break;
+        case 4:    JHRecovered=data; break;
+        case 0:    geoDepart=data; break;
         default:
             break;
         }
@@ -158,42 +225,31 @@
 
 	function start() {
         h_date = hopital.map(d=>{return d.jour;}).filter(getUnique);
-        console.log(hopital,h_date);
-//legende de la carte des départements
-    var legendDep = svg.append('g')
-        .attr('transform', function(d) { return 'translate('+(margin.left)+','+(height +5*margin.top)+')';})
-        .attr('id', 'legendDep');
-    
-    legendDep.selectAll('.colorbar')
-        .data(d3.range(13))
-        .enter().append('svg:rect')
-            .attr('class','legendDep')
-            .attr('y', function(d) { return d * 20 + 'px'; })
-            .attr('height', '20px')
-            .attr('width', '20px')
-            .attr('x', '0px')
-            .style('fill',function(d,i) { return colors[i];});
-//          .attr("class", function(d) { return "q" + d + "-9"; });
-    var legendDepScale = d3.scaleLinear()
-        .domain([0, d3.max(dept, function(e) { return e.value; })])
-//        .domain([0, 750])
-        .range([0, 13 * 20]);
-    var legendDepAxis = svg.append("g")
-        .attr("class","legendDep")
-        .attr('transform', function(d) {return 'translate('+( margin.left+20)+','+(height + 5*margin.top)+')';})
-        .call(d3.axisRight(legendDepScale).ticks(10));
+    //    console.log(hopital,h_date);
+	//legende de la carte des départements
+	//     	.attr("class", function(d) { return "q" + d + "-9"; });
 
-   	tantile = d3.scaleQuantile()
-        .domain([ 0,d3.max(dept, function(e) { return e.value; })])//.domain([0, 100])
-        .range(d3.range(13));
+   		tantile = d3.scaleQuantile()
+        	.domain([ 0,d3.max(dept, function(e) { return e.value; })])//.domain([0, 100])
+        	.range(d3.range(13));
 	
-	getDepartementData();
-
-    updateDepart();
+		getDepartementData();
+		updateData();
+		affiche_curve();
+    	updateDepart();
+	}
+	function updateData() {
+		getDepartementData();
+        legendDepScale.domain([0, d3.max(dept, function(e) { return e.value; })]);
+        legendDepAxis.call(d3.axisRight(legendDepScale).ticks(10));
+        d3.selectAll(".deps").transition().duration(1000).style("fill",d=>{
+                let n=dept.findIndex(k => k.dep===d.properties.code); //console.log(n,d.properties.code,dept[n].value, tantile(dept[n].value))
+                return colors[tantile(dept[n].value)];})
+        getJHData(); // Get data from JH via Github
+        console.log(dHist,dReg);
 	}
 	// ici xxx
-	function updateDepart() {
-        console.log("Département ",geoDepart,dept);
+	function updateDepart() { //console.log("Département ",geoDepart,dept);
         depart.selectAll("path")
             .data(geoDepart.features)
             .enter()
@@ -209,6 +265,35 @@
             })
             .style('stroke','blue').style('stroke-width',1);
 	}
+	function affiche_curve() {
+	var dMult = []; let selectValue="JH_D"; //xxxxx
+    let index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
+//    let indexReg=dReg.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
+	const g_line = svgJH
+	    .append("g")
+	    .attr("class","g_line")
+    	.attr("transform", "translate(" + (margin.left) + "," + (margin.top) + ")");
+    // Ajout de l'axe X
+    g_line.append("g")
+        .attr("transform", "translate(0," + (height-margin.top-margin.bottom) + ")")
+        .call(d3.axisBottom(x).ticks(dHist[0].values.length-1).tickFormat(d3.timeFormat("%a %d/%m")))
+        .selectAll("text")	
+        	.style("text-anchor", "end")
+        	.attr("dx", "-.8em")
+        	.attr("dy", ".15em")
+        	.attr("transform", "rotate(-65)");
+    // Ajout de l'axe Y et du texte associé pour la légende
+    g_line.append("g")
+        .call(d3.axisLeft(y))
+        .append("text")
+            .attr("fill", "#000")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", "0.71em")
+            .style("text-anchor", "end")
+            .text("#personnes");
+
+	}
     function getDepartementData(date='') {
         var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
         values=[];
@@ -221,11 +306,83 @@
                 v=Number(d[item]);//console.log(d);
                 dept.push({dep:d.dep,value:v});
             }
-        });
-        console.log('dept rea',dept);
+        });    console.log('dept rea',dept);
+		tantile.domain([ 0,d3.max(dept, function(e) { return e.value; })]);
+
     }
     function getUnique(value, index, self) { 
         return self.indexOf(value) === index;
+    }
+    function getJHData() {
+//        console.log(JHDeath.columns);
+        let JHDate = JHDeath.columns.slice(4); //console.log(JHDate);
+        let data=[];
+        dataRegion.pays_liste.forEach(p=>{
+          let values=[];
+          JHDeath.forEach(d=>{
+            if (d['Country/Region'].includes(dataRegion.pays_JH[p]))
+                {   JHDate.forEach(v=>{
+                    date= parseTimeJH(v); value =Number(d[v]);
+                    let idx = values.findIndex(e=>{return e.dJH===v;});
+                    if (idx != -1) { values[idx].value += value;
+                        } else { values.push({date,value,dJH:v}); }
+          })}});
+          data.push({name:dataRegion.pays[p],n:p,values});
+        })
+        dReg.push({item:'JH_D',data});
+        values=[];
+        JHDate.forEach(d=>{ date= parseTimeJH(d); values.push({date,value:0});});
+        dHist.push({item:"JH_D","name":"Monde",values});
+        // les confinés
+        data=[];
+        dataRegion.pays_liste.forEach(p=>{
+          let values=[];
+          JHConfirmed.forEach(d=>{
+            if (d['Country/Region'].includes(dataRegion.pays_JH[p]))
+                {   JHDate.forEach(v=>{
+                    date= parseTimeJH(v); value =Number(d[v]);
+                    let idx = values.findIndex(e=>{return e.dJH===v;});
+                    if (idx != -1) { values[idx].value += value;
+                        } else { values.push({date,value,dJH:v}); }
+          })}});
+          data.push({name:dataRegion.pays[p],n:p,values});
+        })
+        dReg.push({item:'JH_C',data});
+        values=[];
+        JHDate.forEach(d=>{ date= parseTimeJH(d); values.push({date,value:0});});
+        dHist.push({item:"JH_C","name":"Monde",values});
+        // les recovered
+        data=[];
+        dataRegion.pays_liste.forEach(p=>{
+          let values=[];
+          JHRecovered.forEach(d=>{
+            if (d['Country/Region'].includes(dataRegion.pays_JH[p]))
+                {   JHDate.forEach(v=>{
+                    date= parseTimeJH(v); value =Number(d[v]);
+                    let idx = values.findIndex(e=>{return e.dJH===v;});
+                    if (idx != -1) { values[idx].value += value;
+                        } else { values.push({date,value,dJH:v}); }
+          })}});
+          data.push({name:dataRegion.pays[p],n:p,values});
+        })
+        dReg.push({item:'JH_R',data});
+        values=[];
+        JHDate.forEach(d=>{ date= parseTimeJH(d); values.push({date,value:0});});
+        dHist.push({item:"JH_R","name":"Monde",values});
+        values=[];data=[];
+        values = dReg[0].data[0].values.slice(); data.push({n:'DC',name:'Morts',values});
+        values = dReg[1].data[0].values.slice(); data.push({n:'IN',name:'Infectés',values});
+        values = dReg[2].data[0].values.slice(); data.push({n:'GU',name:'Guéris',values});
+        values=[];
+        data[1].values.forEach((v,i)=>{
+                date=v.date;
+                value = v.value-data[0].values[i].value - data[2].values[i].value;
+                values.push({date,value});
+            });
+        data.push({n:'MA',name:'Malades',values});
+        dReg.push({item:'frAll',data});
+        values= dHist[2].values.slice();
+        dHist.push({item:'frAll',values});
     }
 
     </script>
