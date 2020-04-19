@@ -63,10 +63,6 @@
 	opacity: 1;
 	position : relative;
 }
-#chart {
-	display: block;
-	margin: auto;
-}
 #region {
 	display: block;
 	margin: auto;
@@ -98,7 +94,7 @@
 	<div id="chart_frAll"></div>
 </section>
 <section>
-  <h1>La mortalité dans le monde ...</h1>
+  <div id="valMonde"></div>
 </section>
 <section>
 	<div id="chart_jh"></div>
@@ -143,7 +139,7 @@
     var nbSimul = 150;
     var maj;
     //----------------------------------------------------------------
-	var margin = {top: 40, right: 40, bottom: 50, left: 50, padding: 30},
+	var margin = {top: 40, right: 40, bottom: 50, left: 100, padding: 30},
     width = window.innerWidth,
     height = window.innerHeight, h_header=50;
 	var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
@@ -253,15 +249,13 @@
     //--------------------------------------------------------------
 	function start() {
         h_date = hopital.map(d=>{return d.jour;}).filter(getUnique);
-        let maj= h_date[h_date.length-1]; //console.log(maj,parseTime);
-    //    console.log(hopital,h_date);
-	//legende de la carte des départements
-	//     	.attr("class", function(d) { return "q" + d + "-9"; });
-   		tantile = d3.scaleQuantile()
+        let maj= h_date[h_date.length-1];
+        tantile = d3.scaleQuantile()
         	.domain([ 0,d3.max(dept, function(e) { return e.value; })])//.domain([0, 100])
         	.range(d3.range(13));
 		getDepartementData();
 		updateData();
+		let JH_len =dHist[0].values.length-1, majMonde = dHist[0].values[JH_len].date;
 		aff_JH(); aff_JC();aff_frAll();
 		aff_Simul();
     	updateDepart();
@@ -269,7 +263,13 @@
 	    				"<br>Entrées Hospitalières : "+valFormat(globalData.find(g=>{return g.item==='hosp';})['global'])+
 	    				"<br><br>Personnes en réanimation : "+valFormat(globalData.find(g=>{return g.item==='rea';})['global'])+
 	    				"<br><br>Personnes décédées à l'Hôpital : "+valFormat(globalData.find(g=>{return g.item==='dc';})['global'])+
-						"<br><br>Personnes rentrées chez elles : "+valFormat(globalData.find(g=>{return g.item==='rad';})['global']) )+"</h1>";
+						"<br><br>Personnes rentrées chez elles : "+valFormat(globalData.find(g=>{return g.item==='rad';})['global'])+"</h1>");
+	    d3.select("#valMonde").html("<a>data JH Univerty du "+formatLongTime(majMonde)+"</a><h1>"+
+	    				"<br>Personnes contaminées dans le Monde : "+valFormat(dHist[1].values[JH_len].value)+
+	    				"<br><br>Personnes Guéries : "+valFormat(dHist[2].values[JH_len].value)+
+	    				"<br><br>Personnes Décédées : "+valFormat(dHist[0].values[JH_len].value) +
+	    				"</h1><br><a> soit une mortalité de "+Math.round(
+	    				dHist[0].values[JH_len].value/(dHist[2].values[JH_len].value+dHist[0].values[JH_len].value)*100)+" %</a>");
 	}
     //--------------------------------------------------------------
 	function updateData() {
@@ -482,8 +482,12 @@
           data.push({name:dataRegion.pays[p],n:p,values});
         })
         dReg.push({item:'JH_D',data});
-        values=[];
-        JHDate.forEach(d=>{ date= parseTimeJH(d); values.push({date,value:0});});
+        values=[]; console.log(JHDeath);
+        JHDate.forEach(d=>{ date= parseTimeJH(d);
+        	value=0;
+        	JHDeath.forEach(v=>{ value += Number(v[d]);})
+         values.push({date,value});
+     	});
         dHist.push({item:"JH_D","name":"Monde",values});
         // les confinés
         data=[];
@@ -501,7 +505,9 @@
         })
         dReg.push({item:'JH_C',data});
         values=[];
-        JHDate.forEach(d=>{ date= parseTimeJH(d); values.push({date,value:0});});
+        JHDate.forEach(d=>{ date= parseTimeJH(d); value=0;
+        	JHConfirmed.forEach(v=>{ value += Number(v[d]);})
+         values.push({date,value}); });
         dHist.push({item:"JH_C","name":"Monde",values});
         // les recovered
         data=[];
@@ -519,7 +525,9 @@
         })
         dReg.push({item:'JH_R',data});
         values=[];
-        JHDate.forEach(d=>{ date= parseTimeJH(d); values.push({date,value:0});});
+        JHDate.forEach(d=>{ date= parseTimeJH(d); value=0;
+        	JHRecovered.forEach(v=>{ value += Number(v[d]);})
+         values.push({date,value}); });
         dHist.push({item:"JH_R","name":"Monde",values});
         values=[];data=[];
         values = dReg[0].data[0].values.slice(); data.push({n:'DC',name:'Morts',values});

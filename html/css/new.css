@@ -6,6 +6,11 @@ body {
   margin: 0;
   font-family: Edelsans, Avenir, sans-serif;
 }
+.rky a {
+    color: #4169E1;
+    font-family: "helvetica neue";
+    font-size: 3vh;
+}
 section { 
   height: 100vh; 
   box-sizing: border-box;
@@ -47,4 +52,10 @@ section:nth-of-type(5) {
 }
 section:nth-of-type(7) { 
   background-image: url(../images/IMG_2449.jpeg); 
+}
+section:nth-of-type(9) { 
+  background-image: url(../images/IMG_5978.jpeg); 
+}
+section:nth-of-type(9) { 
+  background-image: url(../images/IMG_0042.jpeg); 
 }
