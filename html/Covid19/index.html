@@ -835,7 +835,6 @@ function update_line() {
         }); //     console.log('global',globalData);
     }
     function updateData(selDate = dataRegion.proprietes.ARS) {
-getDepartementData();
         data_value =[];
         var cases = 0;
         selectValue = d3.select("#dataS").property('value');
@@ -935,6 +934,7 @@ getDepartementData();
             dHist = [], dReg = [];
             getHospData(); //récupération des données hospitalières
             getDataFile() // les données de la région : figées !
+            getDepartementData();
             // dreg : item/data[names/values[date/value]]
             getDelta() // delta mart
             getData(); // Get data from google spreadsheet

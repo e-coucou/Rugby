@@ -74,6 +74,7 @@
 </style>
 <header>
   <div id='h1'>COVID-19</div>
+  <div id='h1'>e-Coucou</div>
   <aside >Avril, 2020</aside><div id="version"></div>
   <div id='menu'></div>
 </header>
@@ -91,33 +92,60 @@
 <div id="chart"></div>
 </section>
 <section class="pop">
-  <h1>Population: 325,671</h1>
-  <h1>Area: 103,001km<sup>2</sup></h1>
-  <h1>= 3 people per square km</h1>
+  <div id="val"></div>
+</section>
+<section>
+	<div id="chart_frAll"></div>
+</section>
+<section>
+  <h1>La mortalité dans le monde ...</h1>
 </section>
 <section>
 	<div id="chart_jh"></div>
 </section>
 <section>
-  <h1>Come to Iceland. You’ll be amazed.</h1>
+  <h1>Evolution dans le monde de la contamination par le Covid-19</h1>
 </section>
 <section>
-	<h2>cecie est une essai</h2>
+	<div id="chart_jc"></div>
+</section>
+<section>
+  <h1>Une belle simulation ...</h1>
+</section>
+<section>
+	<div id="chart_simul"></div>
 </section>
 <section>
   <h1>Merci pour cette visite et à Bientot sur e-coucou.com.</h1>
 </section>
     <script type="text/javascript">
+    //---------------------------------------------------------------
+    // les fonctions ...
     var locale = {
         dateTime: "%A, le %e %B %Y, %X",date: "%d/%m/%Y",time: "%H:%M:%S",periods: ["AM","PM"],days: ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"],shortDays: ["dim.","lun.","mar.","mer.","jeu.","ven.","sam."],months: ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"],shortMonths: ["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."]};
     d3.timeFormatDefaultLocale(locale);
+    var formatTime = d3.timeFormat("%a %d/%m");
+    var formatLongTime = d3.timeFormat("%A %_d %B %Y");
+	var couleur = ['DarkRed','yellowgreen','RebeccaPurple','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
 	const parseTime = d3.timeParse("%d/%m/%Y");
     const parseTimeH = d3.timeParse("%Y-%m-%d");
     const parseTimeJH = d3.timeParse("%m/%d/%y");
-
-	let margin = {top: 10, right: 5, bottom: 30, left: 50},
+	let valFormat = (a) => { 
+        let r = (a>100) ? Math.round(a) : ( (a>1)? Math.round(a*100.0)/100 : Math.round(a*1000.0)/1000);
+        return String(r).replace(/(.)(?=(\d{3})+$)/g,'$1 ');
+//        return r;
+        }
+	let cumul = (array) => array.reduce((a, b) => { return a + b; }); // / array.length;
+	let average = (array) => array.reduce((a, b) => { return a + b; }) / array.length;
+    //---------------------------------------------------------------
+    // les varibales
+    var ti , tm, ra,c, dg, dm,rr, sa, ddm ,da ;
+    var nbSimul = 150;
+    var maj;
+    //----------------------------------------------------------------
+	var margin = {top: 40, right: 40, bottom: 50, left: 50, padding: 30},
     width = window.innerWidth,
-    height = window.innerHeight;
+    height = window.innerHeight, h_header=50;
 	var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
 	var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f1b3ee1cabd7';
 	var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv",
@@ -142,12 +170,24 @@
     path.projection(projection);
 	const svg = d3.select('#chart').append("svg")
     	.attr("id", "svg")//.attr("position", 2)
-    	.attr("width", width-margin.right-margin.left)
-    	.attr("height", (height-margin.top-margin.bottom));
+    	.attr("width", width)
+    	.attr("height", (height-h_header));
 	const svgJH = d3.select('#chart_jh').append("svg")
-    	.attr("id", "svg")//.attr("position", 1)
-    	.attr("width", width-margin.right-margin.left)
-    	.attr("height", (height-margin.top-margin.bottom));
+    	.attr("id", "svgJH")//.attr("position", 1)
+    	.attr("width", width)
+    	.attr("height", (height-h_header));
+	const svgJC = d3.select('#chart_jc').append("svg")
+    	.attr("id", "svgJC")//.attr("position", 1)
+    	.attr("width", width)
+    	.attr("height", (height-h_header));
+	const svgfrAll = d3.select('#chart_frAll').append("svg")
+    	.attr("id", "svgJC")//.attr("position", 1)
+    	.attr("width", width)
+    	.attr("height", (height-h_header));
+	const svgSimul = d3.select('#chart_simul').append("svg")
+    	.attr("id", "svgSimul")//.attr("position", 1)
+    	.attr("width", width)
+    	.attr("height", (height-h_header));
 
 // ajoute la France des départements
     const depart = svg.append("g")
@@ -168,19 +208,19 @@
         });
     });
 
-    var dataRegion=[],geojson=[],hopital=[];dataGouv=[];dataGoogle=[],JHDeath=[],JHConfirmed=[],JHRecovered=[],geoDepart=[];
+    var dataRegion=[],geojson=[],hopital=[];dataGouv=[];dataGoogle=[],JHDeath=[],JHConfirmed=[],JHRecovered=[],geoDepart=[],globalData=[];
     var iRead=0;
     var h_date=[];
     // definition lies au departement
     var legendDep = svg.append('g')
-        .attr('transform', function(d) { return 'translate('+(margin.left)+','+( 5*margin.top)+')';})
+        .attr('transform', function(d) { return 'translate('+(margin.left)+','+( 1*margin.top)+')';})
         .attr('id', 'legendDep');
     var legendDepScale = d3.scaleLinear()
         .domain([0, d3.max(dept, function(e) { return e.value; })])
         .range([0, 13 * 20]);
     var legendDepAxis = svg.append("g")
         .attr("class","legendDep")
-        .attr('transform', function(d) {return 'translate('+( margin.left+20)+','+( 5*margin.top)+')';})
+        .attr('transform', function(d) {return 'translate('+( margin.left+20)+','+( 1*margin.top)+')';})
         .call(d3.axisRight(legendDepScale).ticks(10));
     	legendDep.selectAll('.colorbar')
         	.data(d3.range(13))
@@ -190,19 +230,7 @@
             	.attr('height', '20px')
             	.attr('width', '20px')
             	.attr('x', '0px')
-            	.style('fill',function(d,i) { return colors[i];});
-    // ontrace des courbes
-    const x = d3.scaleTime()
-        .range([0, width-margin.left-margin.right]);
-    const y = d3.scaleLinear()
-        .range([height-margin.top-margin.bottom,0]);
-    const yL = d3.scaleSymlog()
-        .range([height,0]);
-    var line = d3.line()
-        .x(function(d) { return x(d.date); }) //vep
-        .y(function(d) { return y(d.value);}) //(d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
-        .curve(d3.curveCardinal);
-    
+            	.style('fill',function(d,i) { return colors[i];});    
     function dataRead(data,i) {
         switch(i) {
         case 5:    dataRegion=data; break;
@@ -219,26 +247,37 @@
         iRead += (1<<i); //console.log(i, iRead, (iRead>>i)&1);
 //        infoGT.select('text').text("Chargement ...");
 //        infoG.selectAll('circle').attr('fill',d=>{return ((iRead>>d)&1!=0)?'white':'red'});
-		let seuil = Math.pow(2,promises.length)-1; console.log(seuil);
+		let seuil = Math.pow(2,promises.length)-1; // console.log(seuil);
         if (iRead==seuil) start();
     }
-
+    //--------------------------------------------------------------
 	function start() {
         h_date = hopital.map(d=>{return d.jour;}).filter(getUnique);
+        let maj= h_date[h_date.length-1]; //console.log(maj,parseTime);
     //    console.log(hopital,h_date);
 	//legende de la carte des départements
 	//     	.attr("class", function(d) { return "q" + d + "-9"; });
-
    		tantile = d3.scaleQuantile()
         	.domain([ 0,d3.max(dept, function(e) { return e.value; })])//.domain([0, 100])
         	.range(d3.range(13));
-	
 		getDepartementData();
 		updateData();
-		affiche_curve();
+		aff_JH(); aff_JC();aff_frAll();
+		aff_Simul();
     	updateDepart();
+	    d3.select("#val").html("<a>le "+formatLongTime(parseTimeH(maj))+"</a><h1>"+
+	    				"<br>Entrées Hospitalières : "+valFormat(globalData.find(g=>{return g.item==='hosp';})['global'])+
+	    				"<br><br>Personnes en réanimation : "+valFormat(globalData.find(g=>{return g.item==='rea';})['global'])+
+	    				"<br><br>Personnes décédées à l'Hôpital : "+valFormat(globalData.find(g=>{return g.item==='dc';})['global'])+
+						"<br><br>Personnes rentrées chez elles : "+valFormat(globalData.find(g=>{return g.item==='rad';})['global']) )+"</h1>";
 	}
+    //--------------------------------------------------------------
 	function updateData() {
+		// maj data simulation depuis le fichier json
+        ti = dataRegion.modele.taux_infection, tm=dataRegion.modele.mortalité, ra = dataRegion.modele.asymptomatique,
+        c=dataRegion.modele.contacts_j, dg=dataRegion.modele.delai_guerison, dm=dataRegion.modele.delai_mort,
+        rr=dataRegion.modele.risque_re, sa = dataRegion.modele.sur_risque_asymp, ddm = dataRegion.modele.decl_maladie, 
+        da = dataRegion.modele.delai_asymptomatique;
 		getDepartementData();
         legendDepScale.domain([0, d3.max(dept, function(e) { return e.value; })]);
         legendDepAxis.call(d3.axisRight(legendDepScale).ticks(10));
@@ -246,6 +285,8 @@
                 let n=dept.findIndex(k => k.dep===d.properties.code); //console.log(n,d.properties.code,dept[n].value, tantile(dept[n].value))
                 return colors[tantile(dept[n].value)];})
         getJHData(); // Get data from JH via Github
+        getGlobalData(h_date[h_date.length-1]);
+        simul();
         console.log(dHist,dReg);
 	}
 	// ici xxx
@@ -265,17 +306,54 @@
             })
             .style('stroke','blue').style('stroke-width',1);
 	}
-	function affiche_curve() {
-	var dMult = []; let selectValue="JH_D"; //xxxxx
+	function aff_frAll(){
+		affiche_curve(dReg[3].data.slice(),"frAll",svgfrAll);
+	}
+	function aff_JH(){
+		affiche_curve(dReg[0].data.slice(),"JH_D",svgJH);
+	}
+	function aff_JC(){
+		affiche_curve(dReg[1].data.slice(),"JH_C",svgJC);
+	}
+	function aff_Simul(){
+		affiche_curve(dReg[4].data.slice(),"simul",svgSimul);
+	}
+	function affiche_curve(dMult, selectValue, svgAff) {
+		let w_g=width-margin.left-margin.right-margin.padding, h_g=height-margin.top-margin.bottom-h_header-margin.padding;
+    // ontrace des courbes
+    const x = d3.scaleTime()
+        .range([0, width-margin.left-margin.right-margin.padding]);
+    const y = d3.scaleLinear()
+        .range([height-margin.top-margin.bottom-h_header-margin.padding,0]);
+    const yL = d3.scaleSymlog()
+        .range([height-margin.top-margin.bottom-h_header-margin.padding,0]);
+    var line = d3.line()
+        .x(function(d) { return x(d.date); }) //vep
+        .y(function(d) { return y(d.value);}) //(d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
+        .curve(d3.curveCardinal);
+	x.domain([
+        d3.min(dMult, function(c) {
+        return d3.min(c.values, function(v) {
+        return v.date; });}),
+        d3.max(dMult, function(c) {
+        return d3.max(c.values, function(v) {
+        return v.date; });})]);
+	y.domain([0, d3.max(dMult, function(c) {
+      	return d3.max(c.values, function(v) {
+        return v.value; });})]);
+	yL.domain([0, d3.max(dMult, function(c) {
+      	return d3.max(c.values, function(v) {
+        return v.value; });})]);
+
     let index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
 //    let indexReg=dReg.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
-	const g_line = svgJH
+	const g_line = svgAff
 	    .append("g")
 	    .attr("class","g_line")
-    	.attr("transform", "translate(" + (margin.left) + "," + (margin.top) + ")");
+    	.attr("transform", "translate(" + (margin.left) + "," + (0) + ")");
     // Ajout de l'axe X
     g_line.append("g")
-        .attr("transform", "translate(0," + (height-margin.top-margin.bottom) + ")")
+        .attr("transform", "translate(0," + (height-margin.top-margin.bottom-h_header-margin.padding) + ")")
         .call(d3.axisBottom(x).ticks(dHist[0].values.length-1).tickFormat(d3.timeFormat("%a %d/%m")))
         .selectAll("text")	
         	.style("text-anchor", "end")
@@ -292,7 +370,81 @@
             .attr("dy", "0.71em")
             .style("text-anchor", "end")
             .text("#personnes");
+    // on trace toutes les courbes
+    var g_lines = g_line.selectAll(".currency")
+        .data(dMult).enter().append("g")
+        .attr("class", "currency");
 
+    g_lines.append("path")
+        .attr("class", "line")
+        .attr("id",(d,i)=>{return "l"+i;})//.transition().duration(2000)
+        .attr("d", (d)=>{return line(d.values);})
+        .style("stroke", function(d,i) { return couleur[i];});
+    var legendM = g_lines.append("g")
+        .attr("class","legend")
+        .attr("transform",(d,i)=>{ return "translate(50,"+(30+i*16)+")";});
+        legendM.append('circle')
+            .attr('r',3).attr('cx',3).attr('cy',2).style('fill',(d,i)=>{return couleur[i];});
+        legendM.append("text").style("font-size","1.7vh").attr('x',10).attr('y',6).style('text-anchor','start')
+        .text((d)=>{return d.name;})
+    // curseur
+	var mouseG = g_line.append("g")
+  		.attr("class", "mouse-over-effects");
+	mouseG.append("path")
+		.attr("class", "mouse-line")
+		.style("stroke", "grey")
+		.style("stroke-width", "1px").style("stroke-dasharray",2)
+		.style("opacity", "0");
+	var mousePerLine = mouseG.selectAll('.mouse-per-line')
+		.data(dMult).enter()
+ 		.append("g").attr("class", "mouse-per-line");
+    // reperage du point d'intersection curseur/courbe
+	mousePerLine.append("circle")
+		.attr("r", 3)
+		.style("stroke", function (d,i) { return couleur[i];})
+		.style("fill", "none").style("stroke-width", "2px").style("opacity", "0");
+	mousePerLine.append("text")
+    	.attr("class", "hover-text").style('font-size','1.5vh').style("font-family","HelveticaNeue-Light")
+    	.attr("dy", "0.1em")
+    	.attr("transform", "translate(10,3)");
+	mouseG.append('rect') 
+		.attr('width', w_g) .attr('height', h_g)
+		.attr('fill', 'none')
+		.attr('pointer-events', 'all')
+		.on('mouseout', function () { // on mouse out hide line, circles and text
+  			d3.select(".mouse-line").style("opacity", "0");
+			d3.selectAll(".mouse-per-line circle").style("opacity", "0");
+			d3.selectAll(".mouse-per-line text").style("opacity", "0");
+			})
+		.on('mouseover', function () { // on mouse in show line, circles and text
+			d3.select(".mouse-line").style("opacity", "1");
+			d3.selectAll(".mouse-per-line circle").style("opacity", "1");
+			d3.selectAll(".mouse-per-line text").style("opacity", "1");
+  			})
+		.on('mousemove', function () { // mouse moving over canvas
+			var mouse = d3.mouse(this);
+				d3.selectAll(".mouse-per-line")
+      				.attr("transform", function (d, i) {
+						var xDate = x.invert(mouse[0]),
+							bisect = d3.bisector(function (d) { return d.date; }).left;
+							idx = bisect(d.values, xDate); //console.log(idx);
+                            try {
+                            laDate = d.values[idx].date.toLocaleDateString("fr-FR");//console.log(laDate);
+                            laDateX = x(d.values[idx].date);
+                            d3.select("#laDate").attr("x",laDateX).text(laDate);} catch{}
+                            try {
+							d3.select(this).select('text')
+								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(0))+" "+d.name);
+							d3.select(".mouse-line")
+								.attr("d", function () {
+									var data = "M" + x(d.values[idx].date) + "," + h_g;
+										data += " " + x(d.values[idx].date) + "," + 0; //console.log(data);
+									return data; });
+//					return "translate(" + x(d.values[idx].date) + "," + ((d3.select("#log_i")._groups[0][0].checked)?yL(d.values[idx].value):y(d.values[idx].value)) + ")";
+					return "translate(" + (x(d.values[idx].date)) + "," + (y(d.values[idx].value)) + ")";
+                            } catch {}
+				});
+  			});
 	}
     function getDepartementData(date='') {
         var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
@@ -306,7 +458,7 @@
                 v=Number(d[item]);//console.log(d);
                 dept.push({dep:d.dep,value:v});
             }
-        });    console.log('dept rea',dept);
+        });   // console.log('dept rea',dept);
 		tantile.domain([ 0,d3.max(dept, function(e) { return e.value; })]);
 
     }
@@ -383,6 +535,103 @@
         dReg.push({item:'frAll',data});
         values= dHist[2].values.slice();
         dHist.push({item:'frAll',values});
+    }
+    function getGlobalData(selDate) {
+        globalData=[];
+        dataRegion.proprietes.cases.forEach(d=>{
+            let i0=cumul(getDataARS(d,0,selDate)),
+                i1=cumul(getDataARS(d,1,selDate)),
+                i2=cumul(getDataARS(d,2,selDate));
+            globalData.push({item:d,global:i0,hommes:i1,femmes:i2});
+        }); //     console.log('global',globalData);
+    }
+    function getDataARS(item,sexe,date) {
+        let cumR = 0, data =[];
+        dataRegion.regions_deps.forEach((l,j)=> 
+            {   data.push(getDataRegion(item,j,date,sexe));
+            }
+        );
+        return data;
+    }
+    function getDataRegion(item,region,date,sexe) {
+          let cumR=0;
+          dataRegion.regions_deps[region].forEach((r,i)=>{
+
+            let cum = hopital.reduce((a,d)=>{ let v=0;
+            if (d.dep == r && d.jour == date && d.sexe == sexe) {
+                v= Number(d[item]); //console.log(r,a,v);
+            }
+            return (a+v); },0); //console.log(cum);
+            cumR+= cum;
+          });
+          return cumR;
+        }
+    function simul() {
+        var infectes = [], malades = [], morts=[], gueris = [], sains =[], assymp=[],cumul_inf=[],cumul_mal=[], cumul_as=[];
+        infectes.push(1000);malades.push(0);morts.push(0);gueris.push(0),sains.push(dataRegion.modele.population),assymp.push(0),
+            cumul_inf.push(0),cumul_as.push(0),cumul_mal.push(0);
+        var date=[];
+        date.push(new Date("03/01/2020"));
+
+        for (let i=0; i<nbSimul;i++){
+            dd = new Date(); dd.setTime(date[i].getTime() + 86400000);//console.log(dd);
+            date.push( dd) ;
+            let cc=c;
+			if (morts[i]<=300) {cc=c*4} else {
+        		if(morts[i]<=5000) {cc=c*2} }
+            delta_D = malades[i]*tm/dm;//console.log(tm,dm,delta_D);
+            delta_G_A = assymp[i]/da;
+            delta_A = infectes[i]*(ra)/dm;
+            delta_G_M = malades[i]*(1-tm)/dg;
+            delta_M = infectes[i]*(1-ra)/ddm;
+            delta_I = (infectes[i]+assymp[i]*sa+gueris[i]*rr)*ti*cc*sains[i]/sains[0]*Math.max(0,(1-2*gueris[i]/sains[0]));
+            cumul_inf.push(cumul_inf[i]+delta_I); 
+            gueris.push(gueris[i]+ delta_G_A +delta_G_M);
+            assymp.push(assymp[i] + delta_A - delta_G_A );
+            morts.push(morts[i]+ delta_D);
+            malades.push(malades[i]+ delta_M - delta_G_M - delta_D);
+            infectes.push( delta_I + infectes[i]-delta_M - delta_A)
+            cumul_mal.push(cumul_mal[i]+delta_M); 
+            cumul_as.push(cumul_as[i]+delta_A); 
+            sains.push(sains[0]-gueris[i+1]-assymp[i+1]-morts[i+1]-malades[i+1]-infectes[i+1]);
+        }
+  //      console.log(gueris,assymp,morts,malades,infectes,date);
+        data=[];
+        values=[];
+        date.forEach(d=>{values.push({date:d,value:0});});
+        let index= dHist.findIndex(d=>d.item=='simul');
+        if (index != -1) dHist.splice(index,1);
+        dHist.push({item:'simul',name:'Global',values});
+        values=[];
+        morts.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'mortalité',n:'DC',values});
+        values=[];
+        malades.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'malades',n:'MA',values});
+        values=[];
+        gueris.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'gueris',n:'GU',values});
+        values=[];
+        infectes.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'infectes',n:'IN',values});
+        values=[];
+        assymp.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'asymptotiques',n:'AS',values});
+        values=[];
+        sains.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'sains',n:'S.',values});
+        values=[];
+        cumul_inf.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'Cumul Inf.',n:'cI',values});
+        values=[];
+        cumul_as.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'Cumul Asymp.',n:'cA',values});
+        values=[];
+        cumul_mal.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'Cumul Mal.',n:'cM',values});
+  //      index= dReg.findIndex(d=>d.item=='simul');
+        if (index != -1) dReg.splice(index,1);
+        dReg.push({item:'simul',data});  // console.log(dReg);
     }
 
     </script>
