@@ -231,7 +231,7 @@
         switch(i) {
         case 5:    dataRegion=data; break;
 /*        case 2:    geojson=data; break;
-        case 3:    dataGoogle=data; break;
+        case 3:    dataGoogle=data; break; // remplacé par JH endirect
 */        case 1:    dataGouv=data; hopital=data;break;
         case 2:    JHDeath=data; break;
         case 3:    JHConfirmed=data; break;
@@ -285,7 +285,9 @@
                 let n=dept.findIndex(k => k.dep===d.properties.code); //console.log(n,d.properties.code,dept[n].value, tantile(dept[n].value))
                 return colors[tantile(dept[n].value)];})
         getJHData(); // Get data from JH via Github
+        getHospData(); // les données de l'ARS (gouv.fr)
         getGlobalData(h_date[h_date.length-1]);
+        assembleData();
         simul();
         console.log(dHist,dReg);
 	}
@@ -307,16 +309,16 @@
             .style('stroke','blue').style('stroke-width',1);
 	}
 	function aff_frAll(){
-		affiche_curve(dReg[3].data.slice(),"frAll",svgfrAll);
+		affiche_curve(dReg[getIndexdata('fullFR')].data.slice(),"fullFR",svgfrAll);
 	}
 	function aff_JH(){
-		affiche_curve(dReg[0].data.slice(),"JH_D",svgJH);
+		affiche_curve(dReg[getIndexdata('JH_D')].data.slice(),"JH_D",svgJH);
 	}
 	function aff_JC(){
-		affiche_curve(dReg[1].data.slice(),"JH_C",svgJC);
+		affiche_curve(dReg[getIndexdata('JH_C')].data.slice(),"JH_C",svgJC);
 	}
 	function aff_Simul(){
-		affiche_curve(dReg[4].data.slice(),"simul",svgSimul);
+		affiche_curve(dReg[getIndexdata('simul')].data.slice(),"simul",svgSimul);
 	}
 	function affiche_curve(dMult, selectValue, svgAff) {
 		let w_g=width-margin.left-margin.right-margin.padding, h_g=height-margin.top-margin.bottom-h_header-margin.padding;
@@ -371,9 +373,9 @@
             .style("text-anchor", "end")
             .text("#personnes");
     // on trace toutes les courbes
-    var g_lines = g_line.selectAll(".currency")
+    var g_lines = g_line.selectAll(".selected")
         .data(dMult).enter().append("g")
-        .attr("class", "currency");
+        .attr("class", "selected");
 
     g_lines.append("path")
         .attr("class", "line")
@@ -388,16 +390,17 @@
         legendM.append("text").style("font-size","1.7vh").attr('x',10).attr('y',6).style('text-anchor','start')
         .text((d)=>{return d.name;})
     // curseur
+    var class_mpl = 'mpl'+selectValue, class_ml='ml'+selectValue;
 	var mouseG = g_line.append("g")
   		.attr("class", "mouse-over-effects");
 	mouseG.append("path")
-		.attr("class", "mouse-line")
+		.attr("class", class_ml)
 		.style("stroke", "grey")
 		.style("stroke-width", "1px").style("stroke-dasharray",2)
-		.style("opacity", "0");
-	var mousePerLine = mouseG.selectAll('.mouse-per-line')
+		.style("opacity", "1");
+	var mousePerLine = mouseG.selectAll('.'+class_mpl)
 		.data(dMult).enter()
- 		.append("g").attr("class", "mouse-per-line");
+ 		.append("g").attr("class", class_mpl);
     // reperage du point d'intersection curseur/courbe
 	mousePerLine.append("circle")
 		.attr("r", 3)
@@ -412,18 +415,18 @@
 		.attr('fill', 'none')
 		.attr('pointer-events', 'all')
 		.on('mouseout', function () { // on mouse out hide line, circles and text
-  			d3.select(".mouse-line").style("opacity", "0");
-			d3.selectAll(".mouse-per-line circle").style("opacity", "0");
-			d3.selectAll(".mouse-per-line text").style("opacity", "0");
+  			d3.select("."+class_ml).style("opacity", "0");
+			d3.selectAll("."+class_mpl+" circle").style("opacity", "0");
+			d3.selectAll("."+class_mpl+" text").style("opacity", "0");
 			})
 		.on('mouseover', function () { // on mouse in show line, circles and text
-			d3.select(".mouse-line").style("opacity", "1");
-			d3.selectAll(".mouse-per-line circle").style("opacity", "1");
-			d3.selectAll(".mouse-per-line text").style("opacity", "1");
+			d3.select("."+class_ml).style("opacity", "1");
+			d3.selectAll("."+class_mpl+" circle").style("opacity", "1");
+			d3.selectAll("."+class_mpl+" text").style("opacity", "1");
   			})
 		.on('mousemove', function () { // mouse moving over canvas
 			var mouse = d3.mouse(this);
-				d3.selectAll(".mouse-per-line")
+				d3.selectAll("."+class_mpl)
       				.attr("transform", function (d, i) {
 						var xDate = x.invert(mouse[0]),
 							bisect = d3.bisector(function (d) { return d.date; }).left;
@@ -435,7 +438,7 @@
                             try {
 							d3.select(this).select('text')
 								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(0))+" "+d.name);
-							d3.select(".mouse-line")
+							d3.select("."+class_ml)
 								.attr("d", function () {
 									var data = "M" + x(d.values[idx].date) + "," + h_g;
 										data += " " + x(d.values[idx].date) + "," + 0; //console.log(data);
@@ -530,9 +533,9 @@
          values.push({date,value}); });
         dHist.push({item:"JH_R","name":"Monde",values});
         values=[];data=[];
-        values = dReg[0].data[0].values.slice(); data.push({n:'DC',name:'Morts',values});
-        values = dReg[1].data[0].values.slice(); data.push({n:'IN',name:'Infectés',values});
-        values = dReg[2].data[0].values.slice(); data.push({n:'GU',name:'Guéris',values});
+        values = dReg[getIndexdata('JH_D')].data[0].values.slice(); data.push({n:'DC',name:'Morts',values});
+        values = dReg[getIndexdata('JH_C')].data[0].values.slice(); data.push({n:'IN',name:'Infectés',values});
+        values = dReg[getIndexdata('JH_R')].data[0].values.slice(); data.push({n:'GU',name:'Guéris',values});
         values=[];
         data[1].values.forEach((v,i)=>{
                 date=v.date;
@@ -540,9 +543,9 @@
                 values.push({date,value});
             });
         data.push({n:'MA',name:'Malades',values});
-        dReg.push({item:'frAll',data});
-        values= dHist[2].values.slice();
-        dHist.push({item:'frAll',values});
+        dReg.push({item:'frJH',data});
+        values= dHist[getIndexdata('JH_D')].values.slice();
+        dHist.push({item:'frJH',values});
     }
     function getGlobalData(selDate) {
         globalData=[];
@@ -574,6 +577,42 @@
           });
           return cumR;
         }
+    function getHospData() {
+        // données hospitalières france
+        dataRegion.proprietes.cases.forEach( item=> {
+            values=[];
+            name='France';
+            h_date.forEach(function(h) {
+              date = parseTimeH(h);
+              let value = hopital.reduce((a,d)=>{ let v=0;
+                if (d.jour == h && d.sexe == 0) {
+                    v= Number(d[item]);// console.log(a,v);
+                }
+                return (a+v); },0); //console.log(cum);        value = cumul(d.series);
+              values.push({date,value}); // sauvegarde sous forme de hashmap de nos données.
+            });
+            dHist.push({item,name,values});
+            data=[];
+            dataRegion.regions_deps.forEach((r,i)=>{
+                name=dataRegion.regions_nom[i];
+                values=[];
+                h_date.forEach(function(h) {
+                    value=0;
+                    r.forEach( (dep) => {
+                        date = parseTimeH(h); //console.log(h);
+                        let cum = hopital.reduce((a,d)=>{ let v=0;
+                          if (d.dep==dep && d.jour == h && d.sexe == 0) {
+                              v= Number(d[item]);}
+                          return (a+v); },0); //console.log(cum);        value = cumul(d.series);
+                        value += cum;
+                    });
+                    values.push({date,value}); // sauvegarde sous forme de hashmap de nos données.
+                });
+                data.push({name,values});
+            });
+            dReg.push({item,data});
+        });        
+    }
     function simul() {
         var infectes = [], malades = [], morts=[], gueris = [], sains =[], assymp=[],cumul_inf=[],cumul_mal=[], cumul_as=[];
         infectes.push(1000);malades.push(0);morts.push(0);gueris.push(0),sains.push(dataRegion.modele.population),assymp.push(0),
@@ -640,6 +679,30 @@
   //      index= dReg.findIndex(d=>d.item=='simul');
         if (index != -1) dReg.splice(index,1);
         dReg.push({item:'simul',data});  // console.log(dReg);
+    }
+    function assembleData() {
+        values=[];
+        h_date.forEach(d=>{ date= parseTimeH(d); values.push({date,value:0});});
+        dHist.push({item:"fullFR","name":"France",values});
+        values=[];data=[];
+        values = dHist[getIndexdata('hosp')].values.slice(); data.push({n:'HO',name:'Hospitalisations',values});
+        values = dHist[getIndexdata('rea')].values.slice(); data.push({n:'RE',name:'Réanimations',values});
+        values = dHist[getIndexdata('dc')].values.slice(); data.push({n:'MH',name:'Décés hopital',values});
+        values = dHist[getIndexdata('rad')].values.slice(); data.push({n:'GH',name:'Guérisons Hopital',values});
+        values = dReg[getIndexdata('JH_D')].data[0].values.slice(); data.push({n:'DC',name:'Morts',values});
+        values = dReg[getIndexdata('JH_C')].data[0].values.slice(); data.push({n:'IN',name:'Infectés',values});
+        values = dReg[getIndexdata('JH_R')].data[0].values.slice(); data.push({n:'GU',name:'Guéris',values});
+        values=[];
+        data[5].values.forEach((v,i)=>{
+                date=v.date;
+                value = v.value-data[4].values[i].value - data[6].values[i].value;
+                values.push({date,value});
+            });
+        data.push({n:'MA',name:'Malades',values});
+        dReg.push({item:'fullFR',data});
+    }
+    function getIndexdata(val) {
+        return (dHist.findIndex(d=>d.item==val));
     }
 
     </script>
