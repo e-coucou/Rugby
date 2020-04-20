@@ -162,7 +162,7 @@
       colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
     }
     let scale=0;
-    scale=height;
+    if (width>height) {scale=height} else {scale=width}
 
 	const path = d3.geoPath();
 	const projection = d3.geoConicConformal()

@@ -20,8 +20,7 @@ section {
   text-align: center;
   flex-direction: column;
   padding: 2vw;
-  object-fit: cover;
-  object-position: center;
+  background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -42,7 +41,6 @@ section:nth-of-type(even) {
 }
 section:nth-of-type(odd) { 
   color: white;
-  object-fit: cover;
   background-size: cover;
   background-position: center;
   -webkit-background-size: cover;
