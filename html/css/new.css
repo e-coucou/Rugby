@@ -39,7 +39,7 @@ section:nth-of-type(even) {
 }
 section:nth-of-type(odd) { 
   color: white;
-  background-size: cover;
+  object-fit: cover;
 }
 section:nth-of-type(1) { 
   background-image: url(../images/IMG_5850.jpeg); 

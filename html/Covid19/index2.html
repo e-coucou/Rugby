@@ -386,7 +386,7 @@
             .style("text-anchor", "end")
             .text("#personnes");
     // on trace toutes les courbes
-    var g_lines = g_line.selectAll(".selected")
+    var g_lines = g_line.selectAll(".selected").raise()
         .data(dMult).enter().append("g")
         .attr("class", "selected");
 
@@ -395,18 +395,9 @@
         .attr("id",(d,i)=>{return "l"+i;})//.transition().duration(2000)
         .attr("d", (d)=>{return line(d.values);})
         .style("stroke", function(d,i) { return couleur[i];});
-    var legendM = g_lines.append("g")
-        .attr("class","legend").attr('z-index',10)
-        .attr("transform",(d,i)=>{ return "translate(50,"+(30+i*16)+")";})
-            .on('mouseover',(d,i)=>{console.log('ici');return this.style('fill','blue')})
-            .on('mouseout',(d,i)=>{return this.style('fill',couleur[i])});
-        legendM.append('circle')
-            .attr('r',5).attr('cx',1).attr('cy',2).style('fill',(d,i)=>{return couleur[i];});
-        legendM.append("text").style("font-size","1.7vh").attr('x',10).attr('y',6).style('text-anchor','start')
-        .text((d)=>{return d.name;})
     // curseur
     var class_mpl = 'mpl'+selectValue, class_ml='ml'+selectValue;
-	var mouseG = g_line.append("g")
+	var mouseG = g_line.append("g").lower()
   		.attr("class", "mouse-over-effects");
 	mouseG.append("path")
 		.attr("class", class_ml)
@@ -463,6 +454,16 @@
                             } catch {}
 				});
   			});
+    var legendM = g_lines.append("g")
+        .attr("class","legend")
+        .attr("transform",(d,i)=>{ return "translate(50,"+(30+i*16)+")";});
+        legendM.append('circle')
+            .attr('r',5).attr('cx',1).attr('cy',2).style('fill',(d,i)=>{return couleur[i];})
+            .on('mouseover',function(d,i){ d3.select(this).style('fill','blue').attr('r',7);})
+            .on('mouseout',function(d,i){ d3.select(this).style('fill',couleur[i]).attr('r',5);});
+        legendM.append("text").style("font-size","1.7vh").attr('x',10).attr('y',6).style('text-anchor','start')
+            .text((d)=>{return d.name;});
+
 	}
     function getDepartementData(date='') {
         var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
