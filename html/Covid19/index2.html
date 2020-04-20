@@ -91,7 +91,13 @@
   <div id="val"></div>
 </section>
 <section>
-	<div id="chart_frAll"></div>
+    <div id="chart_frAll"></div>
+</section>
+<section>
+  <div id="valRegion">les tendances par région</div>
+</section>
+<section>
+    <div id="chart_region"></div>
 </section>
 <section>
   <div id="valMonde"></div>
@@ -184,6 +190,10 @@
     	.attr("id", "svgSimul")//.attr("position", 1)
     	.attr("width", width)
     	.attr("height", (height-h_header));
+    const svgRegion = d3.select('#chart_region').append("svg")
+        .attr("id", "svgRegion")//.attr("position", 1)
+        .attr("width", width)
+        .attr("height", (height-h_header));
 
 // ajoute la France des départements
     const depart = svg.append("g")
@@ -256,7 +266,7 @@
 		getDepartementData();
 		updateData();
 		let JH_len =dHist[0].values.length-1, majMonde = dHist[0].values[JH_len].date;
-		aff_JH(); aff_JC();aff_frAll();
+		aff_JH(); aff_JC();aff_frAll();aff_regions();
 		aff_Simul();
     	updateDepart();
 	    d3.select("#val").html("<a>le "+formatLongTime(parseTimeH(maj))+"</a><h1>"+
@@ -308,9 +318,12 @@
             })
             .style('stroke','blue').style('stroke-width',1);
 	}
-	function aff_frAll(){
-		affiche_curve(dReg[getIndexdata('fullFR')].data.slice(),"fullFR",svgfrAll);
-	}
+    function aff_frAll(){
+        affiche_curve(dReg[getIndexdata('fullFR')].data.slice(),"fullFR",svgfrAll);
+    }
+    function aff_regions(){
+        affiche_curve(dReg[getIndexdata('rea')].data.slice(),"rea",svgRegion);
+    }
 	function aff_JH(){
 		affiche_curve(dReg[getIndexdata('JH_D')].data.slice(),"JH_D",svgJH);
 	}
@@ -383,10 +396,12 @@
         .attr("d", (d)=>{return line(d.values);})
         .style("stroke", function(d,i) { return couleur[i];});
     var legendM = g_lines.append("g")
-        .attr("class","legend")
-        .attr("transform",(d,i)=>{ return "translate(50,"+(30+i*16)+")";});
+        .attr("class","legend").attr('z-index',10)
+        .attr("transform",(d,i)=>{ return "translate(50,"+(30+i*16)+")";})
+            .on('mouseover',(d,i)=>{console.log('ici');return this.style('fill','blue')})
+            .on('mouseout',(d,i)=>{return this.style('fill',couleur[i])});
         legendM.append('circle')
-            .attr('r',3).attr('cx',3).attr('cy',2).style('fill',(d,i)=>{return couleur[i];});
+            .attr('r',5).attr('cx',1).attr('cy',2).style('fill',(d,i)=>{return couleur[i];});
         legendM.append("text").style("font-size","1.7vh").attr('x',10).attr('y',6).style('text-anchor','start')
         .text((d)=>{return d.name;})
     // curseur
