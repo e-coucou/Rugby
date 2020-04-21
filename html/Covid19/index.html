@@ -504,7 +504,12 @@ function clickSimul(d) {
         getGlobalData(h_date[Math.round(val)]); //console.log(selectValue)
         updateMap();
         getDepartementData(h_date[Math.round(val)]);
-        updateDepart()});
+        depart.selectAll('path').style("fill",d=>{
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                return colors[tantile(dept[n].value)];
+            });
+        updateDepart();
+    });
   var gSimple = svg.append('g')
     .attr('transform', ()=> {return 'translate('+(margin.left)+','+(height-50)+')';});
 
@@ -553,6 +558,7 @@ function updateGlobal(){
 }
 function updateDepart() {
     //    console.log("Département ",geoDepart,geojson);
+    console.log('update depart map',dept[75].value,tantile(dept[75].value));
         depart.selectAll("path")
             .data(geoDepart.features)
             .enter()
@@ -990,6 +996,7 @@ function update_line() {
         dReg.push({item,data});
     }
     function getDepartementData(date='') {
+        console.log('dept data',date);
         var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
         values=[];
         let item=selectValue;
@@ -1002,7 +1009,7 @@ function update_line() {
                 dept.push({dep:d.dep,value:v});
             }
         });
-        console.log('dept rea',dept);
+//        console.log('dept rea',dept);
 
 /*
             h_date.forEach(function(h) {
