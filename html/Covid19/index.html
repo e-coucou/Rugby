@@ -269,6 +269,8 @@ var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geoj
 // ajoute la France des départements
     const depart = svg.append("g")
         .attr("transform", "translate(0," + (height+margin.top) + ")");
+    const depart1 = svg.append("g")
+        .attr("transform", "translate("+(width/2+margin.left)+"," + (height+margin.top) + ")");
 	const deps = svg.append("g");
 
 // le logo de la France
@@ -506,9 +508,9 @@ function clickSimul(d) {
         getDepartementData(h_date[Math.round(val)]);
         depart.selectAll('path').style("fill",d=>{
                 let n=dept.findIndex(k => k.dep===d.properties.code);
-                return colors[tantile(dept[n].value)];
+                return colors[tantile(dept[n]['rea'])];
             });
-        updateDepart();
+        updateDepart('rea');
     });
   var gSimple = svg.append('g')
     .attr('transform', ()=> {return 'translate('+(margin.left)+','+(height-50)+')';});
@@ -537,13 +539,13 @@ function clickSimul(d) {
     simulParam();
     updateData(h_date[h_date.length-1]);
     var tantile = d3.scaleQuantile()
-        .domain([ 0,d3.max(dept, function(e) { return e.value; })])//.domain([0, 100])
+        .domain([ 0,d3.max(dept, function(e) { return e['rea']; })])//.domain([0, 100])
         .range(d3.range(13));
 //console.log('tantile',tantile(10),tantile(500),d3.max(dept, function(e) { return e.value; }));
 
     updateMap();
     update_line();
-    updateDepart();
+    updateDepart('rea');
 
     //// end -----------
 
@@ -556,9 +558,9 @@ function updateGlobal(){
     }
     gGlobal.selectAll('text').text(d=>{return valFormat(globalData.find(g=>{return d===g.item;})[val]);});
 }
-function updateDepart() {
+function updateDepart(item) {
     //    console.log("Département ",geoDepart,geojson);
-    console.log('update depart map',dept[75].value,tantile(dept[75].value));
+    console.log('update depart map',dept,dept[75][item],tantile(dept[75][item]));
         depart.selectAll("path")
             .data(geoDepart.features)
             .enter()
@@ -570,7 +572,21 @@ function updateDepart() {
 //                return colors[val];})
             .style("fill",d=>{
                 let n=dept.findIndex(k => k.dep===d.properties.code);
-                return colors[tantile(dept[n].value)];
+                return colors[tantile(dept[n][item])];
+            })
+            .style('stroke','blue').style('stroke-width',1);
+        depart1.selectAll("path")
+            .data(geoDepart.features)
+            .enter()
+            .append("path")
+            .attr('id', function(d) {return "dep" + d.properties.code;})
+            .attr("d", path).style('opacity',1).attr("class","deps")
+//            .style('fill',function(d) { let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
+                //console.log(colors[val],getOpositeColor(colors[val])); 
+//                return colors[val];})
+            .style("fill",d=>{
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                return colors[tantile(dept[n]['hosp'])];
             })
             .style('stroke','blue').style('stroke-width',1);
 
@@ -900,7 +916,7 @@ function update_line() {
                 return colors[val];});
         d3.selectAll(".deps").transition().duration(1000).style("fill",d=>{
                 let n=dept.findIndex(k => k.dep===d.properties.code);
-                return colors[tantile(dept[n].value)];})
+                return colors[tantile(dept[n]['rea'])];})
 
 //        d3.selectAll(".legend").transition().duration(2000)
 //            .style('fill',function(d,i) { return colors[i];});
@@ -912,7 +928,7 @@ function update_line() {
         quantile.domain([ 0,d3.max(data_value, function(e) { return +e; })]);
         legendScale.domain([0, d3.max(data_value, function(e) { return +e; })]);
         legendAxis.call(d3.axisRight(legendScale).ticks(10));
-        legendDepScale.domain([0, d3.max(dept, function(e) { return e.value; })]);
+        legendDepScale.domain([0, d3.max(dept, function(e) { return e['rea']; })]);
         legendDepAxis.call(d3.axisRight(legendDepScale).ticks(10));
 //xxxxx
 
@@ -922,7 +938,7 @@ function update_line() {
                 return cases===0?colors[val]:"Gainsboro";});
         d3.selectAll(".deps").transition().duration(1000).style("fill",d=>{
                 let n=dept.findIndex(k => k.dep===d.properties.code);
-                return colors[tantile(dept[n].value)];})
+                return colors[tantile(dept[n]['rea'])];})
         // name/values[date/value]
         multi_data = [];
         dataRegion.regions_deps.forEach((r,j)=> {
@@ -999,14 +1015,12 @@ function update_line() {
         console.log('dept data',date);
         var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
         values=[];
-        let item=selectValue;
         name='France';
         if (date == '') {date = h_date[h_date.length-1];}
         dept=[];
         hopital.forEach(d=>{ //console.log(d,date);
             if (d.jour==date && d.sexe==0) {
-                v=Number(d[item]);//console.log(d);
-                dept.push({dep:d.dep,value:v});
+                dept.push({dep:d.dep,'rea':Number(d['rea']),'hosp':Number(d['hosp']),'dc':Number(d['dc']),'rad':Number(d['rad'])});
             }
         });
 //        console.log('dept rea',dept);
@@ -1240,7 +1254,7 @@ function update_line() {
         		return colors[val];});
         d3.selectAll(".deps").transition().duration(1000).style("fill",d=>{
                 let n=dept.findIndex(k => k.dep===d.properties.code);
-                return colors[tantile(dept[n].value)];})
+                return colors[tantile(dept[n]['rea'])];})
 
         d3.selectAll(".legend").transition().duration(2000).style('fill',function(d,i) { return colors[i];});
         d3.selectAll(".legendDep").transition().duration(2000).style('fill',function(d,i) { return colors[i];});
