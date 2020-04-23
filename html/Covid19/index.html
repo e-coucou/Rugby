@@ -270,7 +270,7 @@ var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geoj
     const depart = svg.append("g")
         .attr("transform", "translate(0," + (height+margin.top) + ")");
     const depart1 = svg.append("g")
-        .attr("transform", "translate("+(width/2+margin.left)+"," + (height+margin.top) + ")");
+        .attr("transform", "translate("+(width/2)+"," + (height+margin.top) + ")");
 	const deps = svg.append("g");
 
 // le logo de la France
@@ -510,6 +510,10 @@ function clickSimul(d) {
                 let n=dept.findIndex(k => k.dep===d.properties.code);
                 return colors[tantile(dept[n]['rea'])];
             });
+        depart1.selectAll('path').style("fill",d=>{
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                return colors[tantile(dept[n]['hosp'])];
+            });
         updateDepart('rea');
     });
   var gSimple = svg.append('g')
@@ -545,7 +549,7 @@ function clickSimul(d) {
 
     updateMap();
     update_line();
-    updateDepart('rea');
+    updateDepart();
 
     //// end -----------
 
