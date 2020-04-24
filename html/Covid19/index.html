@@ -579,7 +579,7 @@ function updateDepart(item) {
                 return colors[tantile(dept[n][item])];
             })
             .style('stroke','blue').style('stroke-width',1);
-        depart2.selectAll("path")
+        depart1.selectAll("path")
             .data(geoDepart.features)
             .enter()
             .append("path")
