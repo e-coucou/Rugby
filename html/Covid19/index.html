@@ -563,7 +563,7 @@ function updateGlobal(){
     gGlobal.selectAll('text').text(d=>{return valFormat(globalData.find(g=>{return d===g.item;})[val]);});
 }
 function updateDepart(item) {
-    //    console.log("Département ",geoDepart,geojson);
+    //    console.log("Département ",geoDepart,geojson); //
     console.log('update depart map',dept,dept[75][item],tantile(dept[75][item]));
         depart.selectAll("path")
             .data(geoDepart.features)
