@@ -269,8 +269,8 @@ var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geoj
 // ajoute la France des départements
     const depart = svg.append("g")
         .attr("transform", "translate(0," + (height+margin.top) + ")");
-    const depart2 = svg.append("g")
-        .attr("transform", "translate("+(width/2+margin.left)+"," + (height+margin.top) + ")");
+    const depart1 = svg.append("g")
+        .attr("transform", "translate("+(width/2)+"," + (height+margin.top) + ")");
 	const deps = svg.append("g");
 
 // le logo de la France
@@ -510,6 +510,10 @@ function clickSimul(d) {
                 let n=dept.findIndex(k => k.dep===d.properties.code);
                 return colors[tantile(dept[n]['rea'])];
             });
+        depart1.selectAll('path').style("fill",d=>{
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                return colors[tantile(dept[n]['hosp'])];
+            });
         updateDepart('rea');
     });
   var gSimple = svg.append('g')
@@ -559,7 +563,7 @@ function updateGlobal(){
     gGlobal.selectAll('text').text(d=>{return valFormat(globalData.find(g=>{return d===g.item;})[val]);});
 }
 function updateDepart(item) {
-    //    console.log("Département ",geoDepart,geojson);
+    //    console.log("Département ",geoDepart,geojson); 
     console.log('update depart map',dept,dept[75][item],tantile(dept[75][item]));
         depart.selectAll("path")
             .data(geoDepart.features)
