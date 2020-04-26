@@ -260,7 +260,7 @@ var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geoj
         .translate([scale/2+1*margin.left, scale / 2]);
     const projectionDep = d3.geoConicConformal()
         .center([2.454071, 46.279229])
-        .scale(4.0*scaleDep)
+        .scale(3.5*scaleDep)
         .translate([scaleDep/2 + margin.right, scaleDep / 2]);
 
     path.projection(projection);
@@ -275,9 +275,9 @@ var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geoj
     const depart = svg.append("g")
         .attr("transform", "translate(30," + (height+margin.top) + ")");
     const depart1 = svg.append("g")
-        .attr("transform", "translate("+(scaleDep*4/5+20)+"," + (height+margin.top) + ")");
+        .attr("transform", "translate("+(scaleDep*3/5+20)+"," + (height+margin.top) + ")");
     const depart2 = svg.append("g")
-        .attr("transform", "translate("+(scaleDep*8/5)+"," + (height+margin.top) + ")");
+        .attr("transform", "translate("+(scaleDep*6/5)+"," + (height+margin.top) + ")");
 	const deps = svg.append("g");
 
 // le logo de la France
@@ -576,6 +576,8 @@ function updateGlobal(){
 function updateDepart(item) {
     //    console.log("Département ",geoDepart,geojson); 
     console.log('update depart map',dept,dept[75][item],tantile(dept[75][item]));
+        legendDepScale.domain([0, d3.max(dept, function(e) { return e['rea']; })]);
+        legendDepAxis.call(d3.axisRight(legendDepScale).ticks(10));
         depart.selectAll("path")
             .data(geoDepart.features)
             .enter()
