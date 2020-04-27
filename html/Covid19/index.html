@@ -278,6 +278,10 @@ var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geoj
         .attr("transform", "translate("+(scaleDep*3/5+20)+"," + (height+margin.top) + ")");
     const depart2 = svg.append("g")
         .attr("transform", "translate("+(scaleDep*6/5)+"," + (height+margin.top) + ")");
+    const d0Titre = svg.append("g").attr("transform", "translate("+(scaleDep/2-margin.left)+"," + (height+8*margin.top) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.5vw').text('Hospitalisations');
+    const d1Titre = svg.append("g").attr("transform", "translate("+(scaleDep)+"," + (height+8*margin.top) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.5vw').text('Réanimations');
+    const d3Titre = svg.append("g").attr("transform", "translate("+(scaleDep*3/2+margin.left)+"," + (height+8*margin.top) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.5vw').text('Décédées');
+
 	const deps = svg.append("g");
 
 // le logo de la France
