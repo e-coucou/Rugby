@@ -617,7 +617,19 @@ function updateDepart(item) {
                 let n=dept.findIndex(k => k.dep===d.properties.code);
                 return colors[tantile(dept[n]['hosp'])];
             })
-            .style('stroke','blue').style('stroke-width',1);
+            .on('mouseout',function(d,i){ d3.select(this).style('opacity',1);eetooltip.hide();eetooltip.removeAllDataBlocks()})
+            .on('mouseover',function(d,i){
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                //console.log(carteVR_ep[n]);
+                d3.select(this).style('opacity',0.2);
+                eetooltip.addDataBlock("", d.properties.nom);
+                eetooltip.addDataBlock("code", d.properties.code);
+                eetooltip.addDataBlock("Hospitalisées",valFormat(dept[n].hosp));
+                eetooltip.addDataBlock("en Réanimation",valFormat(dept[n].rea));
+                eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
+                eetooltip.show();
+        })
+            .style('stroke',colors[4]).style('stroke-width',1);
         depart1.selectAll("path")
             .data(geoDepart.features)
             .enter()
@@ -628,7 +640,19 @@ function updateDepart(item) {
                 let n=dept.findIndex(k => k.dep===d.properties.code);
                 return colors[tantile(dept[n]['rea'])];
             })
-            .style('stroke','blue').style('stroke-width',1);
+            .on('mouseout',function(d,i){ d3.select(this).style('opacity',1);eetooltip.hide();eetooltip.removeAllDataBlocks()})
+            .on('mouseover',function(d,i){
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                //console.log(carteVR_ep[n]);
+                d3.select(this).style('opacity',0.2);
+                eetooltip.addDataBlock("", d.properties.nom);
+                eetooltip.addDataBlock("code", d.properties.code);
+                eetooltip.addDataBlock("Hospitalisées",valFormat(dept[n].hosp));
+                eetooltip.addDataBlock("en Réanimation",valFormat(dept[n].rea));
+                eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
+                eetooltip.show();
+        })
+            .style('stroke',colors[4]).style('stroke-width',1);
         depart2.selectAll("path")
             .data(geoDepart.features)
             .enter()
@@ -639,7 +663,19 @@ function updateDepart(item) {
                 let n=dept.findIndex(k => k.dep===d.properties.code);
                 return colors[tantile(dept[n]['dc'])];
             })
-            .style('stroke','blue').style('stroke-width',1);
+            .on('mouseout',function(d,i){ d3.select(this).style('opacity',1);eetooltip.hide();eetooltip.removeAllDataBlocks()})
+            .on('mouseover',function(d,i){
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                //console.log(carteVR_ep[n]);
+                d3.select(this).style('opacity',0.2);
+                eetooltip.addDataBlock("", d.properties.nom);
+                eetooltip.addDataBlock("code", d.properties.code);
+                eetooltip.addDataBlock("Hospitalisées",valFormat(dept[n].hosp));
+                eetooltip.addDataBlock("en Réanimation",valFormat(dept[n].rea));
+                eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
+                eetooltip.show();
+        })
+            .style('stroke',colors[4]).style('stroke-width',1);
 
         departVR.selectAll("path")
             .data(geoDepart.features)
@@ -674,7 +710,8 @@ function updateDepart(item) {
             .on('mouseout',function(d,i){ d3.select(this).style('opacity',0.85);eetooltip.hide();eetooltip.removeAllDataBlocks()})//style('fill','#FE6F5E');})
             .on('mouseover',function(d,i){
                 let n=carteVR_ep.findIndex(k => (k.dep===d.properties.code));
-                console.log(carteVR_ep[n]); d3.select(this).style('opacity',0.1);
+                //console.log(carteVR_ep[n]);
+                d3.select(this).style('opacity',0.2);
                 eetooltip.addDataBlock("", d.properties.nom);
                 eetooltip.addDataBlock("code", d.properties.code);
                 eetooltip.addDataBlock("Pourcent Covid/Adm.",valFormat(carteVR_ep[n].pourcent)+'%');
@@ -1195,7 +1232,7 @@ function update_line() {
 //                console.log(d);
                 try {
                     val = Number(d['nbre_pass_corona'])/Number(d['nbre_pass_tot'])*100.0;}
-                    catch {val = -1;}
+                    catch {console.log('eeruer');val = -1;}
                 carteVR_ep.push({dep:d.dep,'pourcent':val});
             }
         });
