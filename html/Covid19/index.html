@@ -329,7 +329,8 @@ var url_defconf_carte = "https://www.data.gouv.fr/fr/datasets/r/f2d0f955-f9c4-43
     promises.push( d3.csv(JH_global_death));
     promises.push( d3.csv(JH_global_confirmed));
     promises.push( d3.csv(JH_globale_recovered));
-    promises.push( d3.json(url_geoDepart));
+//    promises.push( d3.json(url_geoDepart));
+    promises.push( d3.json('../data/departements.geojson'));
     promises.push( d3.dsv(",",url_datagouv_all));
     promises.push( d3.dsv(",",url_defconf_carte));
 
