@@ -444,7 +444,7 @@ d3.json("data/ranking.json", function(irb) {
     .on("mouseover",function(d) {return pays.text(d.rank+'- '+d.name+'\n('+Math.floor(d.points*10)/10+')');})
     .on("click", function(d) { return trace_team(d,this);})
     .sort(order);
-//    .filter(function(d) { return (d.id === 42)});
+    //    .filter(function(d) { return (d.id === 42)});
 
 
   // Add a title.

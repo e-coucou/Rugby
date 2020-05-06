@@ -1,0 +1,116 @@
+.eetooltip {
+	color: #333;
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	font-weight: lighter;
+	position: absolute;
+	z-index: 2000;
+	min-width: 200px; 
+	visibility:hidden;
+}
+
+.eetooltip-container {
+	background-color: #FFF;
+	padding: 6px;
+}
+
+.eetooltip,
+.eetooltip-arrow {
+	-webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+	-moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+	  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.eetooltip-body {
+	display: inline-block;
+	padding-right: 6px;
+	z-index: 1;
+}
+
+.eetooltip-header {
+	position: relative;
+	z-index: 1;
+}
+
+.eetooltip-header > div {
+	display: inline-block;
+	z-index: 1;
+}
+
+.eetooltip-small .eetooltip-title {
+	font-size: 16px;
+	line-height: 17px;
+	padding: 3px 6px;
+}
+
+.eetooltip-title {
+	vertical-align: top;
+}
+
+.eetooltip-data-container {
+	overflow-y: auto;
+	z-index: -1;
+}
+
+.eetooltip-data-title {
+	color: #333;
+	font-family: "HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	padding: 6px 3px 0;
+}
+
+.eetooltip-data-seperator {
+	background-color: #ddd;
+	display: block;
+	height: 1px;
+	margin: 0 3px;
+}
+
+.eetooltip-data-block {
+	color: #333;
+	font-family: "HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size: 12px;
+	padding: 3px 6px;
+	position: relative;
+}
+
+.eetooltip-data-name {
+	display: inline-block;
+}
+
+.eetooltip-data-value {
+	display: block;
+	font-weight: bold;
+	position: absolute;
+	right: 6px;
+	text-align: right;
+	top: 3px;
+}
+
+.eetooltip-arrow {
+	background-color: #fff;
+	bottom: -5px;
+	height: 10px;
+	left: 50%;
+	margin-left: -5px;
+	position: absolute;
+	width: 10px;
+	-webkit-transform: rotate(45deg); 
+		-moz-transform: rotate(45deg); 
+			-ms-transform: rotate(45deg); 
+				transform: rotate(45deg); 
+	z-index: -1;
+}
+
+.eetooltip-description {
+	font-size: 12px;
+	padding: 6px;
+}
+
+.eetooltip-footer {
+	color: #333;
+	font-size: 10px;
+	position: relative;
+	text-align: center;
+}

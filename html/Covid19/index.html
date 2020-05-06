@@ -355,7 +355,9 @@ var url_defconf_carte = "https://www.data.gouv.fr/fr/datasets/r/f2d0f955-f9c4-43
 
     function dataRead(data,i) {
         switch(i) {
-        case 0:    dataRegion=data; break;
+        case 0:    dataRegion=data;
+            d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version);// | "+dataRegion.proprietes.ARS).attr("class","rky aside");
+             break;
         case 2:    geojson=data; break;
 //        case 3:    dataGoogle=data; break;
         case 3:    dataGouv=data; hopital=data;break;
@@ -390,7 +392,7 @@ var url_defconf_carte = "https://www.data.gouv.fr/fr/datasets/r/f2d0f955-f9c4-43
             JHRecovered = values[7];
 */
 function start() {
-    console.log(carteVR);
+//    console.log(carteVR);
         infoGT.select('text').text("Données chargées !");
 
         const parseTime = d3.timeParse("%d/%m/%Y");
@@ -408,7 +410,6 @@ function start() {
         selSimul=dataRegion.simul.slice();
     updateColor();
 
-    d3.select("#version").append("aside").text("| "+dataRegion.proprietes.version+" | "+dataRegion.proprietes.ARS).attr("class","rky aside");
     var quantile = d3.scaleQuantile()
         .domain([ 0,d3.max(data_value, function(e) { return +e; })])//.domain([0, 100])
         .range(d3.range(13));
@@ -710,12 +711,16 @@ function updateDepart(item) {
             })
             .on('mouseout',function(d,i){ d3.select(this).style('opacity',0.85);eetooltip.hide();eetooltip.removeAllDataBlocks()})//style('fill','#FE6F5E');})
             .on('mouseover',function(d,i){
-                let n=carteVR_ep.findIndex(k => (k.dep===d.properties.code));
+                let nVR=carteVR_ep.findIndex(k => (k.dep===d.properties.code));
+                let n=dept.findIndex(k => k.dep===d.properties.code);
                 //console.log(carteVR_ep[n]);
                 d3.select(this).style('opacity',0.2);
                 eetooltip.addDataBlock("", d.properties.nom);
                 eetooltip.addDataBlock("code", d.properties.code);
-                eetooltip.addDataBlock("Pourcent Covid/Adm.",valFormat(carteVR_ep[n].pourcent)+'%');
+                eetooltip.addDataBlock("Hospitalisées",valFormat(dept[n].hosp));
+                eetooltip.addDataBlock("en Réanimation",valFormat(dept[n].rea));
+                eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
+                eetooltip.addDataBlock("Pourcent Covid/Adm.",valFormat(carteVR_ep[nVR].pourcent)+'%');
                 eetooltip.show();
         })
             .style('stroke','white').style('stroke-width',1);
