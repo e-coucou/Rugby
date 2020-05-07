@@ -401,7 +401,7 @@ function start() {
 
         var h_date = hopital.map(d=>{return d.jour;}).filter(getUnique);
         var h_dateVR = deconf.map(d=>{return d.date_de_passage;}).filter(getUnique); //console.log(h_dateVR);
-        var h_dateOffVR = carteVR.map(d=>{return d.extract_date;}).filter(getUnique); //console.log(h_dateVR);
+        var h_dateOffVR = carteVR.map(d=>{return d.date;}).filter(getUnique); //console.log(h_dateVR);
         var sexe = 0;
         var globalData = [];
 
@@ -686,9 +686,9 @@ function updateDepart(item) {
             .attr('id', function(d) {return "deconf" + d.properties.code;})
             .attr("d", pathDep).style('opacity',0.8).attr("class","depDeconf")
             .style("fill",d=>{
-                let n=carteVR.findIndex(k => (k.departement===d.properties.code && k.extract_date===h_dateOffVR[h_dateOffVR.length-1]));
-                //console.log(n);
-                return couleurVR[carteVR[n].indic_synthese];
+                let n=carteVR.findIndex(k => (k.code_departement===d.properties.code && k.date===h_dateOffVR[h_dateOffVR.length-1]));
+                console.log(n,carteVR[n]);
+                return couleurVR[carteVR[n].indicateur_synthese];
             })
             .style('stroke','white').style('stroke-width',1);
             dVRTitre.text('Carte Officielle au '+h_dateOffVR[h_dateOffVR.length-1]+' ');
@@ -1242,7 +1242,7 @@ function update_line() {
                 carteVR_ep.push({dep:d.dep,'pourcent':val});
             }
         });
-//        console.log('deconf',carteVR_ep);
+        console.log('deconf',carteVR);
 
     }
     function getJHData() {
