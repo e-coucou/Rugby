@@ -331,7 +331,7 @@ var url_defconf_carte = "https://www.data.gouv.fr/fr/datasets/r/f2d0f955-f9c4-43
     promises.push( d3.csv(JH_globale_recovered));
 //    promises.push( d3.json(url_geoDepart));
     promises.push( d3.json('../data/departements.geojson'));
-    promises.push( d3.dsv(",",url_datagouv_all));
+    promises.push( d3.dsv(";",url_datagouv_all));
     promises.push( d3.dsv(",",url_defconf_carte));
 
     // Information data
@@ -375,6 +375,7 @@ var url_defconf_carte = "https://www.data.gouv.fr/fr/datasets/r/f2d0f955-f9c4-43
         infoGT.select('text').text("Chargement ...");
         infoG.selectAll('circle').attr('fill',d=>{return ((iRead>>d)&1!=0)?'white':'red'});
         if (iRead==seuil) start();
+        console.log('dataGouv:',dataGouv);
     }
 
 //-----------------------------------------------------------------------------
@@ -399,7 +400,7 @@ function start() {
         const parseTimeH = d3.timeParse("%Y-%m-%d");
         const parseTimeJH = d3.timeParse("%m/%d/%y");
 
-        var h_date = hopital.map(d=>{return d.jour;}).filter(getUnique);
+        var h_date = hopital.map(d=>{console.log(Date.parse(d.jour)); return (d.jour);}).filter(getUnique); console.log("h_date",h_date);
         var h_dateVR = deconf.map(d=>{return d.date_de_passage;}).filter(getUnique); //console.log(h_dateVR);
         var h_dateOffVR = carteVR.map(d=>{return d.date;}).filter(getUnique); //console.log(h_dateVR);
         var sexe = 0;
@@ -603,7 +604,7 @@ function updateGlobal(){
 }
 function updateDepart(item) {
     //    console.log("Département ",geoDepart,geojson); 
-    console.log('update depart map',dept,dept[75][item],tantile(dept[75][item]));
+    console.log('update depart map',item,dept,dept[75][item],tantile(dept[75][item]));
         legendDepScale.domain([0, d3.max(dept, function(e) { return e['rea']; })]);
         legendDepAxis.call(d3.axisRight(legendDepScale).ticks(10));
         depart.selectAll("path")
@@ -700,11 +701,11 @@ function updateDepart(item) {
             .attr('id', function(d) {return "deconf" + d.properties.code;})
             .attr("d", pathDep).style('opacity',0.85).attr("class","depDeconf")
             .style("fill",d=>{
-                let n=carteVR_ep.findIndex(k => (k.dep===d.properties.code));
+                let n=carteVR_ep.findIndex(k => (k.dep===d.properties.code)); console.log(n,carteVR_ep);
                 temp=carteVR_ep[n].pourcent;
                 cl='YellowGreen';
-                if (temp>6.00) cl='Orange';
-                if (temp>10.0) cl='Red';
+                if (temp>1.00) cl='Orange';
+                if (temp>3.0) cl='Red';
                 if (temp==-1) cl='whitesmoke';
                 return cl;
             })
@@ -1194,7 +1195,7 @@ function update_line() {
         // données hospitalières france
         dataRegion.proprietes.cases.forEach( item=> {
             values=[];
-            name='France';
+            name='France'; //console.log("h_date",h_date);
             h_date.forEach(function(h) {
               date = parseTimeH(h);
               let value = hopital.reduce((a,d)=>{ let v=0;
@@ -1226,22 +1227,22 @@ function update_line() {
             dReg.push({item,data});
         });        
     }
-    function computeDepCouleur(date='') {
+    function computeDepCouleur(date='') { /// xxxep
 //        console.log("date ...",h_date);
         var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
         carteVR_ep=[];
-        name='Deconfinement';
+        name='Deconfinement'; console.log('deconfinement :',deconf);
         if (date == '') {date = h_dateVR[h_dateVR.length-1];}
         deconf.forEach(d=>{ 
             if (d.date_de_passage==date && d.sursaud_cl_age_corona=="0") {
 //                console.log(d);
                 try {
                     val = Number(d['nbre_pass_corona'])/Number(d['nbre_pass_tot'])*100.0;}
-                    catch {console.log('eeruer');val = -1;}
+                    catch {console.log('ERREUR');val = -1;}
                 carteVR_ep.push({dep:d.dep,'pourcent':val});
             }
         });
-        console.log('carteVR',carteVR);
+        console.log('carteVR',carteVR,carteVR_ep);
 
     }
     function getJHData() {

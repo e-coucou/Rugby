@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<title>COVID-19</title>
+<meta name="description" content="Interactive visualisation COVID-19 Data.">
+<meta name="author" content="e-Coucou">
+<html class="rky">
+<meta charset="utf-8">
+<title>COVID-19</title>
+<style>
+@import url(../css/dsp.css);
+	#svg {
+		display: block;
+		margin: auto;
+		background:#f5f5f5;
+	position : relative;
+	}
+	#chart {
+		display: block;
+		margin: auto;
+		background:#f5f5f5;
+	}
+</style>
+<header>
+  <div id='h1'>COVID-19</div>
+  <aside >Mai, 2020</aside><div id="version"></div>
+  <div id='menu'></div>
+</header>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.4.3/tabletop.min.js"></script>
+    <script src="https://unpkg.com/d3-simple-slider"></script>
+	<script src="https://d3js.org/d3.v5.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.js" charset="utf-8"></script>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/numjs/0.16.0/numjs.js"></script>
+    <script defer src="../js/all.js"></script>
+	<script type="text/javascript" src="../js/ekseerg-tooltip.js"></script>
+	<link rel="stylesheet" href="../css/ekseerg-tooltip.css">
+    <div id="chart"></div>
+<footer>
+<aside>(c) e-Coucou | y2K | Mars, 2020 | data from ARS France & Johns Hopkins University</aside>
+    <div id="info"></div>
+    <!-- href="https://www.data.gouv.fr/fr/datasets/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/">ARS</div></aside>-->
+</footer>
+    <script type="text/javascript">
+// format ...
+	let valFormat = (a) => { 
+        let r = (a>100) ? Math.round(a) : ( (a>1)? Math.round(a*100.0)/100 : Math.round(a*1000.0)/1000);
+        return String(r).replace(/(.)(?=(\d{3})+$)/g,'$1 ');
+//        return r;
+        }
+// Variables Globales
+    var timeStart=0,timeStop=0;
+    var locale = {
+        dateTime: "%A, le %e %B %Y, %X",date: "%d/%m/%Y",time: "%H:%M:%S",periods: ["AM","PM"],days: ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"],shortDays: ["dim.","lun.","mar.","mer.","jeu.","ven.","sam."],months: ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"],shortMonths: ["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."]};
+
+    d3.timeFormatDefaultLocale(locale);
+
+    var first = true;
+	let cumul = (array) => array.reduce((a, b) => { return a + b; }); // / array.length;
+	let average = (array) => array.reduce((a, b) => { return a + b; }) / array.length;
+	
+	var couleur = ['DarkRed','yellowgreen','RebeccaPurple','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
+	let margin = {top: 10, right: 5, bottom: 30, left: 50},
+    width = window.innerWidth - margin.right-margin.left,
+    height = window.innerHeight - margin.top-margin.bottom -50;
+
+   </script>
+
+   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"crossorigin="anonymous"></script>
+	<script id="dsq-count-scr" src="//ekseerg.disqus.com/count.js" async=""></script>
+</body>
+</html>
