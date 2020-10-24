@@ -296,7 +296,7 @@ var url_defconf_carte = "https://www.data.gouv.fr/fr/datasets/r/f2d0f955-f9c4-43
     const d3Titre = svg.append("g").attr("transform", "translate("+(scaleDep*3/2+margin.left)+"," + (height+8*margin.top) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.5vw').text('Décédées');
 
     const dVRTitre = svg.append("g").attr("transform", "translate("+(scaleDep*0/2+margin.left)+"," + (height*2+8*margin.top) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.5vw').text('Carte Officielle du déconfinement au 11-05-2020');
-    const dVRTitre1 = svg.append("g").attr("transform", "translate("+(scaleDep+margin.left)+"," + (height*2+8*margin.top) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.5vw').text('Carte Calculée (0<6%<10%)');
+    const dVRTitre1 = svg.append("g").attr("transform", "translate("+(scaleDep+margin.left)+"," + (height*2+8*margin.top) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.5vw').text('Carte Calculée (0<2%<5%<8%)');
 	const deps = svg.append("g");
 
 // le logo de la France
@@ -704,8 +704,9 @@ function updateDepart(item) {
                 let n=carteVR_ep.findIndex(k => (k.dep===d.properties.code)); console.log(n,carteVR_ep);
                 temp=carteVR_ep[n].pourcent;
                 cl='YellowGreen';
-                if (temp>1.00) cl='Orange';
-                if (temp>3.0) cl='Red';
+                if (temp>2.00) cl='gold';
+                if (temp>5.0) cl='Orange';
+                if (temp>8.0) cl='Red';
                 if (temp==-1) cl='whitesmoke';
                 return cl;
             })
