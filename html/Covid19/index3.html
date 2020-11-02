@@ -106,7 +106,7 @@
     	'tooltipId': 'tooltipDiv',
     	'headerText': "Information",
     	'footerText': "Data e-Coucou 2020",
-    	'keepInSVG': true
+//    	'keepInSVG': true
 	});
 	
 	var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
@@ -192,6 +192,7 @@ function updateDepart() {
                 let nVR=carteVR_ep.findIndex(k => (k.dep===d.properties.code));
 //                let n=dept.findIndex(k => k.dep===d.properties.code);
                 d3.select(this).style('opacity',0.3);
+                eetooltip.addDataBlock("Help", "by eCoucou");
 //                eetooltip.addDataBlock("", d.properties.nom);
 //                eetooltip.addDataBlock("code", d.properties.code);
 //                eetooltip.addDataBlock("Hospitalisées",valFormat(dept[n].hosp));
