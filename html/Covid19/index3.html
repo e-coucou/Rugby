@@ -77,7 +77,7 @@
 	let cumul = (array) => array.reduce((a, b) => { return a + b; }); // / array.length;
 	let average = (array) => array.reduce((a, b) => { return a + b; }) / array.length;
 	
-	var sel_date = "01/01/2020", version = "0.10";
+	var sel_date = "01/01/2020", version = "0.20";
 	var couleur = ['DarkRed','yellowgreen','RebeccaPurple','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
 	let margin = {top: 10, right: 5, bottom: 30, left: 50},
     width = window.innerWidth - margin.right-margin.left,
@@ -162,7 +162,7 @@
 			console.log(d,val);
             dataMoy.push({dep:d,'pourcent':val});
 		});
-    	setTimeout(updateDepart(dataMoy),10000);
+    	setTimeout(updateDepart(dataMoy),30000);
 //		updateDepart(dataMoy);
     }
 // on calcul 
