@@ -1159,7 +1159,9 @@ function update_line() {
     }
     function getDepartementData(date='') {
         console.log('dept data',date);
-        var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
+// v11.50
+		var h_dep = [...new Set(hopital.map(x=>x.dep))]; console.log(h_dep);
+//        var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
         values=[];
         name='France';
         if (date == '') {date = h_date[h_date.length-1];}
@@ -1239,7 +1241,9 @@ function update_line() {
     }
     function computeDepCouleur(date='') { /// xxxep
 //        console.log("date ...",h_date);
-        var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
+//v11.50
+		var h_dep = [...new Set(hopital.map(x=>x.dep))]; console.log(h_dep);
+//        var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
         carteVR_ep=[];
         name='Deconfinement'; console.log('deconfinement :',deconf);
         if (date == '') {date = h_dateVR[h_dateVR.length-1];}
