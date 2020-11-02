@@ -147,13 +147,13 @@
 		var h_dep = [...new Set(dataGouv.map(x=>x.dep))]; //console.log(h_dep);
 		var h_date = [...new Set(dataGouv.map(x=>x.date_de_passage))]; //console.log(h_date);
 		sel_date = h_date[h_date.length-1]; console.log(sel_date); //xxxxx
-		carteVR_ep ! udtDataCarte(sel_date);
+		carteVR_ep = updtDataCarte(sel_date);
     	console.log('start', carteVR_ep);
     	updateDepart();
     }
 // on calcul 
 
-function udtDataCarte(date) {
+function updtDataCarte(date) {
     	let dataVR=[];
         dataGouv.forEach(d=>{ 
             if (d.date_de_passage==date && d.sursaud_cl_age_corona=="0") {
