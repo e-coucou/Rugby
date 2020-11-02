@@ -402,7 +402,7 @@ function start() {
 //v11.50
 		var h_date = [...new Set(hopital.map(x=>x.jour))]; //console.log(h_date);
 		var h_dateVR = [...new Set(deconf.map(x=>x.date_de_passage))];// console.log(h_dateVR);
-		var h_dateOffVR = [...new Set(carteVR.map(x=>x.dep))]; //console.log(h_dateOffVR);
+		var h_dateOffVR = [...new Set(carteVR.map(x=>x.date))]; //console.log(h_dateOffVR);
 //        var h_date = hopital.map(d=>{console.log(Date.parse(d.jour)); return (d.jour);}).filter(getUnique); console.log("h_date",h_date);
 //        var h_dateVR = deconf.map(d=>{return d.date_de_passage;}).filter(getUnique); //console.log(h_dateVR);
 //        var h_dateOffVR = carteVR.map(d=>{return d.date;}).filter(getUnique); //console.log(h_dateVR);
