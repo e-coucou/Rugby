@@ -110,11 +110,13 @@
 	});
 	
 	var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
+	var url_datagouv_all = "https://www.data.gouv.fr/fr/datasets/r/eceb9fb4-3ebc-4da3-828d-f5939712600a";
 
 	// lecture des donnees
     var promises = [];
     promises.push( d3.json('../data/departements.geojson'));
-    promises.push( d3.dsv(";",'../data/sursaud-corona.csv'));
+//    promises.push( d3.dsv(";",'../data/sursaud-corona.csv'));
+    promises.push( d3.dsv(";",url_datagouv_all));
     var geoDepart = [], carteVR_ep =[], dataGouv=[];
     promises.forEach((p,i) =>{
 	    Promise.resolve(p).then(function(val) {
