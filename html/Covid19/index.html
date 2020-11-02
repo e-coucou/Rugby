@@ -360,7 +360,7 @@ var url_defconf_carte = "https://www.data.gouv.fr/fr/datasets/r/f2d0f955-f9c4-43
              break;
         case 2:    geojson=data; break;
 //        case 3:    dataGoogle=data; break;
-        case 3:    dataGouv=data; hopital=data;break;
+        case 3:    dataGouv=data; hopital=data; console.log("dataGouv",dataGouv); break;
         case 4:    JHDeath=data; break;
         case 5:    JHConfirmed=data; break;
         case 6:    JHRecovered=data; break;
@@ -375,7 +375,6 @@ var url_defconf_carte = "https://www.data.gouv.fr/fr/datasets/r/f2d0f955-f9c4-43
         infoGT.select('text').text("Chargement ...");
         infoG.selectAll('circle').attr('fill',d=>{return ((iRead>>d)&1!=0)?'white':'red'});
         if (iRead==seuil) start();
-        console.log('dataGouv:',dataGouv);
     }
 
 //-----------------------------------------------------------------------------
@@ -1160,7 +1159,7 @@ function update_line() {
     function getDepartementData(date='') {
         console.log('dept data',date);
 // v11.50
-		var h_dep = [...new Set(hopital.map(x=>x.dep))]; console.log(h_dep);
+		var h_dep = [...new Set(hopital.map(x=>x.dep))]; //console.log(h_dep);
 //        var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
         values=[];
         name='France';
@@ -1242,7 +1241,7 @@ function update_line() {
     function computeDepCouleur(date='') { /// xxxep
 //        console.log("date ...",h_date);
 //v11.50
-		var h_dep = [...new Set(hopital.map(x=>x.dep))]; console.log(h_dep);
+		var h_dep = [...new Set(hopital.map(x=>x.dep))]; console.log("h+dep", h_dep);
 //        var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
         carteVR_ep=[];
         name='Deconfinement'; console.log('deconfinement :',deconf);
