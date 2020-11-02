@@ -95,7 +95,7 @@
 	const svg = d3.select('#chart').append("svg")
     	.attr("id", "svg").attr("position", 2)
     	.attr("width", width+margin.right+margin.left)
-    	.attr("height", (height)*3);
+    	.attr("height", (height)*1); // nombre de pages
 
     const departVR_ep = svg.append("g")
         .attr("transform", "translate("+(margin.left*1)+"," + (margin.top) + ")");
