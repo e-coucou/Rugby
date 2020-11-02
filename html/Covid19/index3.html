@@ -77,6 +77,7 @@
 	let cumul = (array) => array.reduce((a, b) => { return a + b; }); // / array.length;
 	let average = (array) => array.reduce((a, b) => { return a + b; }) / array.length;
 	
+	var sel_date = "01/01/2020";
 	var couleur = ['DarkRed','yellowgreen','RebeccaPurple','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
 	let margin = {top: 10, right: 5, bottom: 30, left: 50},
     width = window.innerWidth - margin.right-margin.left,
@@ -118,6 +119,7 @@
 //    promises.push( d3.dsv(";",'../data/sursaud-corona.csv'));
     promises.push( d3.dsv(";",url_datagouv_all));
     var geoDepart = [], carteVR_ep =[], dataGouv=[];
+
     promises.forEach((p,i) =>{
 	    Promise.resolve(p).then(function(val) {
 	      dataRead(val,i);
@@ -145,7 +147,7 @@
 		console.log(dataGouv);
 		var h_dep = [...new Set(dataGouv.map(x=>x.dep))]; //console.log(h_dep);
 		var h_date = [...new Set(dataGouv.map(x=>x.date_de_passage))]; //console.log(h_date);
-		var sel_date = h_date[h_date.length-1]; console.log(sel_date); //xxxxx
+		sel_date = h_date[h_date.length-1]; console.log(sel_date); //xxxxx
         dataGouv.forEach(d=>{ 
             if (d.date_de_passage==sel_date && d.sursaud_cl_age_corona=="0") {
                 try {
