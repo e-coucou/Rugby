@@ -173,7 +173,8 @@ function updateDepart() {
                 let n=carteVR_ep.findIndex(k => (k.dep===d.properties.code));//  console.log(n,carteVR_ep[1]);
                 if (n!=-1) {
                 temp= carteVR_ep[n].pourcent;
-                cl='yellow';
+                cl='green';
+                if (temp>0.O) cl='yellow';
                 if (temp>0.50) cl='#ffba08';
                 if (temp>1.00) cl='#f48c06';
                 if (temp>1.50) cl='#e85d04';
