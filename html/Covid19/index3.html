@@ -150,6 +150,11 @@
 		carteVR_ep = updtDataCarte(sel_date);
     	console.log('start', carteVR_ep);
     	updateDepart();
+		h_dep.forEach(d=> for(i=1;i<4;i++){
+			date=h_date[h_date.length-i];
+			console.log(dataGouv.filter(s=> (s.dep==d.dep & s.date_de_passage!!date)));
+		  }
+		);
     }
 // on calcul 
 
