@@ -52,10 +52,10 @@
 	<script type="text/javascript" src="../js/ekseerg-tooltip.js"></script>
 	<link rel="stylesheet" href="../css/ekseerg-tooltip.css">
     <div id="chart"></div>
+    <div id="tooltipDiv"></div>
 <footer>
 <aside>(c) e-Coucou | y2K | Novembre, 2020 | data from ARS France & Johns Hopkins University</aside>
     <div id="info"></div>
-    <div id="tooltipDiv"></div>
     <!-- href="https://www.data.gouv.fr/fr/datasets/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/">ARS</div></aside>-->
 </footer>
     <script type="text/javascript">
@@ -200,8 +200,10 @@ function updateDepart() {
 //                eetooltip.addDataBlock("Hospitalisées",valFormat(dept[n].hosp));
 //                eetooltip.addDataBlock("en Réanimation",valFormat(dept[n].rea));
 //                eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
-//                eetooltip.addDataBlock("Pourcent Covid/Adm.",valFormat(carteVR_ep[nVR].pourcent)+'%');
-                eetooltip.show(); console.log(valFormat(carteVR_ep[nVR].pourcent));
+                eetooltip.addDataBlock("Pourcent Covid/Adm.",valFormat(carteVR_ep[nVR].pourcent)+'%');
+                eetooltip.show(); 
+				//console.log(valFormat(carteVR_ep[nVR].pourcent));
+				console.log(d);
         })
             .style('stroke','white').style('stroke-width',0.8);
 //            dVRTitre1.text('Carte calculée au '+h_dateVR[h_dateVR.length-1]+' (0<1<2<3<5<8<13%)');
