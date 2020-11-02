@@ -143,23 +143,27 @@
     }
 
    	function start() {
-    	carteVR_ep=[];
 		console.log(dataGouv);
 		var h_dep = [...new Set(dataGouv.map(x=>x.dep))]; //console.log(h_dep);
 		var h_date = [...new Set(dataGouv.map(x=>x.date_de_passage))]; //console.log(h_date);
 		sel_date = h_date[h_date.length-1]; console.log(sel_date); //xxxxx
+		udtDataCarte(sel_date);
+    	console.log('start', carteVR_ep);
+    	updateDepart();
+    }
+// on calcul 
+
+function udtDataCarte(date) {
+    	carteVR_ep=[];
         dataGouv.forEach(d=>{ 
-            if (d.date_de_passage==sel_date && d.sursaud_cl_age_corona=="0") {
+            if (d.date_de_passage==date && d.sursaud_cl_age_corona=="0") {
                 try {
                     val = Number(d['nbre_pass_corona'])/Number(d['nbre_pass_tot'])*100.0;}
                     catch {console.log('ERREUR');val = -1;}
                 carteVR_ep.push({dep:d.dep,'pourcent':val});
             }
         });
-    	console.log('start', carteVR_ep);
-    	updateDepart();
-    }
-// on calcul 
+}
 
 function getUnique(value, index, self) { 
         return self.indexOf(value) === index;
