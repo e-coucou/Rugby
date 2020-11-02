@@ -194,16 +194,15 @@ function updateDepart() {
                 let nVR=carteVR_ep.findIndex(k => (k.dep===d.properties.code));
 //                let n=dept.findIndex(k => k.dep===d.properties.code);
                 d3.select(this).style('opacity',0.3);
-                eetooltip.addDataBlock("Help", "by eCoucou");
-//                eetooltip.addDataBlock("", d.properties.nom);
-//                eetooltip.addDataBlock("code", d.properties.code);
+                eetooltip.addDataBlock("", d.properties.nom);
+                eetooltip.addDataBlock("code", d.properties.code);
 //                eetooltip.addDataBlock("Hospitalisées",valFormat(dept[n].hosp));
 //                eetooltip.addDataBlock("en Réanimation",valFormat(dept[n].rea));
 //                eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
                 eetooltip.addDataBlock("Pourcent Covid/Adm.",valFormat(carteVR_ep[nVR].pourcent)+'%');
                 eetooltip.show(); 
 				//console.log(valFormat(carteVR_ep[nVR].pourcent));
-				console.log(d);
+				//console.log(d);
         })
             .style('stroke','white').style('stroke-width',0.8);
 //            dVRTitre1.text('Carte calculée au '+h_dateVR[h_dateVR.length-1]+' (0<1<2<3<5<8<13%)');
