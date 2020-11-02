@@ -18,6 +18,21 @@
 		margin: auto;
 		background:#f5f5f5;
 	}
+.tooltip {
+	position: absolute;
+	opacity:0.8;
+	z-index:1000;
+	text-align:left;
+	border-radius:4px;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	padding:8px;
+	color:#fff;
+	background-color:#000;
+	font: 12px sans-serif;
+	max-width: 300px;
+	height: 53px;
+}
 </style>
 <header>
   <div id='h1'>COVID-19</div>
@@ -38,8 +53,9 @@
 	<link rel="stylesheet" href="../css/ekseerg-tooltip.css">
     <div id="chart"></div>
 <footer>
-<aside>(c) e-Coucou | y2K | Mars, 2020 | data from ARS France & Johns Hopkins University</aside>
+<aside>(c) e-Coucou | y2K | Novembre, 2020 | data from ARS France & Johns Hopkins University</aside>
     <div id="info"></div>
+    <div id="tooltipDiv"></div>
     <!-- href="https://www.data.gouv.fr/fr/datasets/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/">ARS</div></aside>-->
 </footer>
     <script type="text/javascript">
@@ -49,6 +65,7 @@
         return String(r).replace(/(.)(?=(\d{3})+$)/g,'$1 ');
 //        return r;
         }
+
 // Variables Globales
     var timeStart=0,timeStop=0;
     var locale = {
@@ -64,6 +81,128 @@
 	let margin = {top: 10, right: 5, bottom: 30, left: 50},
     width = window.innerWidth - margin.right-margin.left,
     height = window.innerHeight - margin.top-margin.bottom -50;
+    let orientation=0;
+    if (width>height) orientation=1;
+    let scale=0, scaleDep = width/2;
+    if (orientation) {scale=height, scaleDep=height} else {scale=width}
+	const pathDep = d3.geoPath();
+    const projectionDep = d3.geoConicConformal()
+        .center([2.454071, 46.279229])
+        .scale(3.5*scaleDep)
+        .translate([scaleDep/2 + margin.right, scaleDep / 2]);
+    pathDep.projection(projectionDep);
+
+	const svg = d3.select('#chart').append("svg")
+    	.attr("id", "svg").attr("position", 2)
+    	.attr("width", width+margin.right+margin.left)
+    	.attr("height", (height)*3);
+
+    const departVR_ep = svg.append("g")
+        .attr("transform", "translate("+(margin.left*1)+"," + (margin.top) + ")");
+//        .attr("transform", "translate("+(margin.left*3+scaleDep*3/5)+"," + (2*height+margin.top) + ")");
+    // on ajoute un tooltip
+    const eetooltip = new EETooltip({
+    	'svgId': 'svg', 
+    	'tooltipId': 'tooltipDiv',
+    	'headerText': "Information",
+    	'footerText': "Data e-Coucou 2020",
+    	'keepInSVG': true
+	});
+	
+	var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
+
+	// lecture des donnees
+    var promises = [];
+    promises.push( d3.json('../data/departements.geojson'));
+    promises.push( d3.dsv(";",'../data/sursaud-corona.csv'));
+    var geoDepart = [], carteVR_ep =[], dataGouv=[];
+    promises.forEach((p,i) =>{
+	    Promise.resolve(p).then(function(val) {
+	      dataRead(val,i);
+      	});
+	});
+	var iRead=0;
+
+    function dataRead(data,i) {
+          switch(i) {
+        	case 0:    geoDepart=data; break;
+        	case 1:    dataGouv=data; break;
+        	default:
+              break;
+          }
+          iRead += (1<<i); // console.log(i, iRead, (iRead>>i)&1, promises.length);
+          let seuil = Math.pow(2,promises.length)-1; // console.log(seuil);
+//        infoGT.select('text').text("Chargement ...");
+//        infoG.selectAll('circle').attr('fill',d=>{return ((iRead>>d)&1!=0)?'white':'red'});
+          if (iRead==seuil) start();
+//          console.log('dataGouv:',dataGouv);
+    }
+
+   	function start() {
+    	carteVR_ep=[];
+		var h_dep = dataGouv.map(d=>{return d.dep;}).filter(getUnique); // console.log(h_dep);
+		var h_date = dataGouv.map(d=>{return d.date_de_passage;}).filter(getUnique); //console.log(h_date);
+		sel_date = h_date[h_date.length-1]; console.log(sel_date); //xxxxx
+        dataGouv.forEach(d=>{ 
+            if (d.date_de_passage==sel_date && d.sursaud_cl_age_corona=="0") {
+                try {
+                    val = Number(d['nbre_pass_corona'])/Number(d['nbre_pass_tot'])*100.0;}
+                    catch {console.log('ERREUR');val = -1;}
+                carteVR_ep.push({dep:d.dep,'pourcent':val});
+            }
+        });
+//    	console.log('start', carteVR_ep);
+    	updateDepart();
+    }
+// on calcul 
+
+function getUnique(value, index, self) { 
+        return self.indexOf(value) === index;
+}
+function updateDepart() {
+        departVR_ep.selectAll("path")
+            .data(geoDepart.features)
+            .enter()
+            .append("path")
+            .attr('id', function(d) {return "deconf" + d.properties.code;})
+            .attr("d", pathDep).style('opacity',0.85).attr("class","depDeconf")
+            .style("fill",d=>{
+                let n=carteVR_ep.findIndex(k => (k.dep===d.properties.code));//  console.log(n,carteVR_ep[1]);
+                if (n!=-1) {
+                temp= carteVR_ep[n].pourcent;
+                cl='green';
+                if (temp>0.50) cl='#ffba08';
+                if (temp>1.00) cl='#f48c06';
+                if (temp>1.50) cl='#e85d04';
+                if (temp>2.00) cl='#dc2f02';
+                if (temp>3.0) cl='#d00000';
+                if (temp>5.0) cl='#9d0208';
+                if (temp>8.0) cl='#6a040f';
+                if (temp>13.0) cl='#370617';
+                if (temp>21.0) cl='#03071e';
+                if (temp==-1) cl='#03071e';
+//                console.log(temp,cl);
+                return cl;
+            	} else return "black";
+            })
+            .on('mouseout',function(d,i){ d3.select(this).style('opacity',0.85) ; eetooltip.hide();eetooltip.removeAllDataBlocks()})//style('fill','#FE6F5E');})
+            .on('mouseover',function(d,i){
+                let nVR=carteVR_ep.findIndex(k => (k.dep===d.properties.code));
+//                let n=dept.findIndex(k => k.dep===d.properties.code);
+                d3.select(this).style('opacity',0.3);
+//                eetooltip.addDataBlock("", d.properties.nom);
+//                eetooltip.addDataBlock("code", d.properties.code);
+//                eetooltip.addDataBlock("Hospitalisées",valFormat(dept[n].hosp));
+//                eetooltip.addDataBlock("en Réanimation",valFormat(dept[n].rea));
+//                eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
+                eetooltip.addDataBlock("Pourcent Covid/Adm.",valFormat(carteVR_ep[nVR].pourcent)+'%');
+                eetooltip.show(); console.log(valFormat(carteVR_ep[nVR].pourcent));
+        })
+            .style('stroke','white').style('stroke-width',0.8);
+//            dVRTitre1.text('Carte calculée au '+h_dateVR[h_dateVR.length-1]+' (0<1<2<3<5<8<13%)');
+
+};
+
 
    </script>
 

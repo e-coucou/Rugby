@@ -693,7 +693,7 @@ function updateDepart(item) {
             .style('stroke','white').style('stroke-width',1);
             dVRTitre.text('Carte Officielle au '+h_dateOffVR[h_dateOffVR.length-1]+' ');
 //console.log("data VR",carteVR);
-
+//https://coolors.co/03071e-370617-6a040f-9d0208-d00000-dc2f02-e85d04-f48c06-ffba08-ffba08
         departVR_ep.selectAll("path")
             .data(geoDepart.features)
             .enter()
@@ -703,14 +703,17 @@ function updateDepart(item) {
             .style("fill",d=>{
                 let n=carteVR_ep.findIndex(k => (k.dep===d.properties.code)); console.log(n,carteVR_ep);
                 temp=carteVR_ep[n].pourcent;
-                cl='YellowGreen';
-                if (temp>1.00) cl='Yellow';
-                if (temp>2.00) cl='Gold';
-                if (temp>3.0) cl='Orange';
-                if (temp>5.0) cl='OrangeRed';
-                if (temp>8.0) cl='Red';
-                if (temp>13.0) cl='DarkSlateGrey';
-                if (temp==-1) cl='whitesmoke';
+                cl='#ffba08';
+                if (temp>0.50) cl='#ffba08';
+                if (temp>1.00) cl='#f48c06';
+                if (temp>1.50) cl='#e85d04';
+                if (temp>2.00) cl='#dc2f02';
+                if (temp>3.0) cl='#d00000';
+                if (temp>5.0) cl='#9d0208';
+                if (temp>8.0) cl='#6a040f';
+                if (temp>13.0) cl='#370617';
+                if (temp>21.0) cl='#03071e';
+                if (temp==-1) cl='#03071e';
                 return cl;
             })
             .on('mouseout',function(d,i){ d3.select(this).style('opacity',0.85);eetooltip.hide();eetooltip.removeAllDataBlocks()})//style('fill','#FE6F5E');})
