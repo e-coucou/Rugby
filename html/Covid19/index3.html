@@ -184,6 +184,7 @@ function getUnique(value, index, self) {
         return self.indexOf(value) === index;
 }
 function updateDepart(carte) {
+		departVR_ep.selectAll("path").remove();
         departVR_ep.selectAll("path")
             .data(geoDepart.features)
             .enter()
