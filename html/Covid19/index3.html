@@ -154,10 +154,11 @@
 			let s_cor=0, s_tot=0;
 			for(i=1;i<4;i++){
 			  date=h_date[h_date.length-i];
-			  extract = (dataGouv.filter(s=> (s.dep==d && s.date_de_passage==date && s.sursaud_cl_age_corona=="0")));
-			  console.log(extract,extract.nbre_pass_corona,extract.nbre_pass_tot);
+			  extract = dataGouv.filter(s=> (s.dep==d && s.date_de_passage==date && s.sursaud_cl_age_corona=="0"));
+			  s_cor += Number(extract[0].nbre_pass_corona); s_tot += Number(extract[0].nbre_pass_tot);
 		    }
 			try { val = s_cor/s_tot;} catch {val=-1;}
+			console.log(d,val);
 		});
     }
 // on calcul 
