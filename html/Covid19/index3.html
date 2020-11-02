@@ -141,8 +141,9 @@
    	function start() {
     	carteVR_ep=[];
 		var h_dep = [...new Set(dataGouv.map(x=>x.dep))]; console.log(h_dep);
+		var h_date = [...new Set(dataGouv.map(x=>x.date_de_passage))]; console.log(h_date);
 //		var h_dep = dataGouv.map(d=>{return d.dep;}).filter(getUnique); // console.log(h_dep);
-		var h_date = dataGouv.map(d=>{return d.date_de_passage;}).filter(getUnique); //console.log(h_date);
+//		var h_date = dataGouv.map(d=>{return d.date_de_passage;}).filter(getUnique); //console.log(h_date);
 		sel_date = h_date[h_date.length-1]; console.log(sel_date); //xxxxx
         dataGouv.forEach(d=>{ 
             if (d.date_de_passage==sel_date && d.sursaud_cl_age_corona=="0") {
