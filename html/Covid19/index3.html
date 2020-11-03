@@ -18,7 +18,11 @@
 		margin: auto;
 		background:#f5f5f5;
 	}
-.tooltip {
+.legendDep rect {
+  fill:white;
+  stroke:black;
+  opacity:0.8;
+}.tooltip {
 	position: absolute;
 	opacity:0.8;
 	z-index:1000;
@@ -122,7 +126,11 @@
     for (let i = 0; i < n; ++i) {
       colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
     }
-   
+	var tantile = d3.scaleQuantile()
+//        .domain([ 0,d3.max(dept, function(e) { return e['rea']; })])//.domain([0, 100])
+        .domain([0, 50])
+        .range(d3.range(13));
+
     legendDep.selectAll('.colorbar')
         .data(d3.range(13))
         .enter().append('svg:rect')
@@ -139,7 +147,7 @@
         .range([0, 13 * 20]);
     var legendDepAxis = svg.append("g")
         .attr("class","legendDep")
-        .attr('transform', function(d) {return 'translate('+( margin.left+20)+','+(height + 5*margin.top)+')';})
+        .attr('transform', function(d) {return 'translate('+( margin.left+20)+','+(0 + 2*margin.top)+')';})
         .call(d3.axisRight(legendDepScale).ticks(10));
 
 	
@@ -267,6 +275,8 @@ function updateFill(carte) {
                 let n=carte.findIndex(k => (k.dep===d.properties.code));//  console.log(n,carteVR_ep[1]);
                 if (n!=-1) {
                 temp= carte[n].pourcent;
+                return colors[tantile(temp)];
+/*
                 cl='green';
                 if (temp>0.0) cl='yellow';
                 if (temp>0.50) cl='#ffba08';
@@ -281,7 +291,7 @@ function updateFill(carte) {
                 if (temp==-1) cl='#03071e';
 //                console.log(temp,cl);
                 return cl;
-                } else return "white";
+                } else return "white";*/
             })
             .on('mouseout',function(d,i){ d3.select(this).style('opacity',0.85) ; eetooltip.hide();eetooltip.removeAllDataBlocks()})//style('fill','#FE6F5E');})
             .on('mouseover',function(d,i){
