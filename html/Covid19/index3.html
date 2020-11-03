@@ -128,7 +128,7 @@
     }
 	var tantile = d3.scaleQuantile()
 //        .domain([ 0,d3.max(dept, function(e) { return e['rea']; })])//.domain([0, 100])
-        .domain([0, 50])
+        .domain([0, 25])
         .range(d3.range(13));
 
     legendDep.selectAll('.colorbar')
@@ -143,7 +143,7 @@
 //          .attr("class", function(d) { return "q" + d + "-9"; });
     var legendDepScale = d3.scaleLinear()
 //        .domain([0, d3.max(dept, function(e) { return e.value; })])
-        .domain([0, 50])
+        .domain([0, 25])
         .range([0, 13 * 20]);
     var legendDepAxis = svg.append("g")
         .attr("class","legendDep")
