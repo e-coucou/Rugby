@@ -163,7 +163,7 @@
     promises.push( d3.json('../data/departements.geojson'));
 //    promises.push( d3.dsv(";",'../data/sursaud-corona.csv'));
     promises.push( d3.dsv(";",url_datagouv_all));
-    promises.push( d3.csv(url_departement));
+    promises.push( d3.csv('../data/dep_data.csv')); //url_departement));
     var geoDepart = [], carteVR_ep =[], dataGouv=[], dataMoy = []; dataDep =[];
     var h_date =[], h_dep =[];
     var iRead=0, rot=0, moy=5;
