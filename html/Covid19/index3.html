@@ -274,7 +274,7 @@ function updtDataCarte(date) {
                 try {
                     val = Number(d['nbre_pass_corona'])/Number(d['nbre_pass_tot'])*100.0;}
                     catch {console.log('ERREUR');val = 0;}
-				let pop = dataDep.filter(w=> w.Code!d.dep); console.log(pop);
+				let pop = dataDep.filter(w=> w.Code==d.dep); console.log(pop);
                 dataVR.push({dep:d.dep,'pourcent':val,'cor':Number(d['nbre_pass_corona']),'tot':Number(d['nbre_pass_tot'])});
             }
         });
