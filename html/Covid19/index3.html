@@ -186,9 +186,9 @@
     }
 //===============================================================
 // Menu
-    var menu = svg.append("g").selectAll("g").data([0,1,2,3]).enter()
+    var menu = svg.append("g").selectAll("g").data(["Auj.","Moy.","+","-"]).enter()
         .append('g') //.attr('transform', 'translate(100,100)')
-        .attr('transform', function(d,i) { return 'translate('+(width-scaleDep/2)+','+(7*margin.top + i*35)+')';})
+        .attr('transform', function(d,i) { return 'translate('+(width-scaleDep/2)+','+(7*margin.top + i*55)+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',click);
     menu.append('circle').style('fill','blue')
@@ -196,7 +196,7 @@
         .on('mouseover',function(d,i){ d3.select(this).style('fill','#FE6F5E');})
         .on('mouseout',function(d,i){ d3.select(this).style('fill','blue');});
     menu.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'10px')
-        .attr('dy','0.3em').text('Moy').raise();
+        .attr('dy','0.3em').text(d=>d).raise();
 
     var menu2 = svg.append('g')
         .attr('transform', 'translate(80,150)')
@@ -211,7 +211,7 @@
         .attr('dy','0.3em').text('Rot').raise();
 
 
-    function click(d) {
+    function click(d,i) {
 		console.log('click',d);
         rot = rot + 1;
         dataMoyenne(rot,rot+5); updateFill(dataMoy);
