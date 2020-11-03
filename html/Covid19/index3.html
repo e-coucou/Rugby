@@ -261,7 +261,7 @@ function dataMoyenne(first,nb) { console.log("moyenne ...");
             }
             try { val = s_cor/s_tot*100.0;} catch {val=0;}
 //          console.log(d,val);
-			let pop = dataDep.filter(w=> w.Code==d.dep); console.log(pop);
+			let pop = dataDep.filter(w=> w.Code==d); console.log(pop);
             dataMoy.push({dep:d,'pourcent':val,'cor':s_cor,'tot':s_tot,'pop':Number(pop[0].PopT)});
         });  //console.log(dataMoy);
         console.log("fin moyenne");
@@ -275,7 +275,7 @@ function updtDataCarte(date) {
                 try {
                     val = Number(d['nbre_pass_corona'])/Number(d['nbre_pass_tot'])*100.0;}
                     catch {console.log('ERREUR');val = 0;}
-				let pop = dataDep.filter(w=> w.Code==d.dep); console.log(d.dep,pop);
+				let pop = dataDep.filter(w=> w.Code==d.dep);//console.log(d.dep,pop);
                 dataVR.push({dep:d.dep,'pourcent':val,'cor':Number(d['nbre_pass_corona']),'tot':Number(d['nbre_pass_tot']),'pop':Number(pop[0].PopT)});
             }
         });
