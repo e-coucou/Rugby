@@ -88,8 +88,8 @@
     height = window.innerHeight - margin.top-margin.bottom -50;
     let orientation=0;
     if (width>height) orientation=1;
-    let scale=0, scaleDep = width/2;
-    if (orientation) {scale=height, scaleDep=height} else {scale=width}
+    let scale=0, scaleDep = height;
+    if (orientation) {scale=width, scaleDep=width} else {scale=height}
 	const pathDep = d3.geoPath();
     const projectionDep = d3.geoConicConformal()
         .center([2.454071, 46.279229])
