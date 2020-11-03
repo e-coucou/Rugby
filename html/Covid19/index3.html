@@ -188,7 +188,7 @@
 // Menu
     var menu = svg.append("g").selectAll("g").data(["<<","Auj.",">>"]).enter()
         .append('g') //.attr('transform', 'translate(100,100)')
-        .attr('transform', function(d,i) { return 'translate('+(width-scaleDep/2 +i*50)+','+(7*margin.top )+')';})
+        .attr('transform', function(d,i) { return 'translate('+(width-scaleDep/2 +(i-1)*50)+','+(7*margin.top )+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',click);
     menu.append('circle').style('fill','blue')
@@ -219,12 +219,10 @@
 		  case 0 : rot = (rot + 1) % h_date.length ; break;
 		  case 2 : if (rot>0) {rot -= 1} else {rot = h_date.length -1}; break;
 		}
-		if (i>0) {
 			console.log(rot);
 			sel_date = h_date[h_date.length-rot-1]; console.log(sel_date); //xxxxx
 			carteVR_ep = updtDataCarte(sel_date);
 			updateFill(carteVR_ep);
-		}
     }
 
     function change() {
