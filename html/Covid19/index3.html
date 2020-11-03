@@ -119,7 +119,7 @@
 //legende de la carte des départements
 	console.log(width,scaleDep);
     var legendDep = svg.append('g')
-        .attr('transform', function(d) { return 'translate('+(margin.left+width/2-scaleDep/2)+','+(0 +7*margin.top)+')';})
+        .attr('transform', function(d) { return 'translate('+(width/2-scaleDep/4)+','+(0 +7*margin.top)+')';})
         .attr('id', 'legendDep');
 
     var interpolate = d3[`interpolate${'Greens'}`];
@@ -150,7 +150,7 @@
         .range([0, 13 * 20]);
     var legendDepAxis = svg.append("g")
         .attr("class","legendDep")
-        .attr('transform', function(d) {return 'translate('+( margin.left+20+width/2-scaleDep/2)+','+(0 + 7*margin.top)+')';})
+        .attr('transform', function(d) {return 'translate('+( 20+width/2-scaleDep/4)+','+(0 + 7*margin.top)+')';})
         .call(d3.axisRight(legendDepScale).ticks(10));
 
 //=============================================================
@@ -187,8 +187,7 @@
 //===============================================================
 // Menu
     var menu = svg.append("g").selectAll("g").data(["<<","Auj.",">>"]).enter()
-        .append('g') //.attr('transform', 'translate(100,100)')
-        .attr('transform', function(d,i) { return 'translate('+(width-scaleDep/2 +(i-1)*50)+','+(7*margin.top )+')';})
+        .append('g').attr('transform', function(d,i) { return 'translate('+(width-scaleDep/4 +(i-1)*50)+','+(7*margin.top )+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',click);
     menu.append('circle').style('fill','blue')
@@ -200,7 +199,7 @@
 
     var menu2 = svg.append('g').selectAll("g").data(["-","Moy.","+"]).enter()
 //        .attr('transform', 'translate(80,150)')
-        .append("g").attr('transform', function(d,i) { return 'translate('+(width-scaleDep/2+ (i-1)*50)+','+(12*margin.top)+')';})
+        .append("g").attr('transform', function(d,i) { return 'translate('+(width-scaleDep/4+ (i-1)*50)+','+(12*margin.top)+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',change);
     menu2.append('circle').style('fill','blue')
