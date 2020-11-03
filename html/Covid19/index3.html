@@ -164,7 +164,7 @@
 //    promises.push( d3.dsv(";",'../data/sursaud-corona.csv'));
     promises.push( d3.dsv(";",url_datagouv_all));
     promises.push( d3.dsv(";",url_departement));
-    var geoDepart = [], carteVR_ep =[], dataGouv=[], dataMoy = [];
+    var geoDepart = [], carteVR_ep =[], dataGouv=[], dataMoy = []; dataDep =[];
     var h_date =[], h_dep =[];
     var iRead=0, rot=0, moy=5;
     let seuil = Math.pow(2,promises.length)-1; // console.log(seuil);
@@ -178,6 +178,7 @@
           switch(i) {
         	case 0:    geoDepart=data; drawCarte(); break;
         	case 1:    dataGouv=data; break;
+			case 2:	   dataDep=data; console.log(dataDep); break;
         	default: break;
           }
           iRead += (1<<i); // console.log(i, iRead, (iRead>>i)&1, promises.length);
