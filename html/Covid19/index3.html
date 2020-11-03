@@ -253,11 +253,12 @@ function dataMoyenne(first,nb) { console.log("moyenne ...");
             for(i=first;i<nb;i++){
               date=h_date[h_date.length-i];
               extract = dataGouv.filter(s=> (s.dep==d && s.date_de_passage==date && s.sursaud_cl_age_corona=="0"));
-              s_cor += Number(extract[0].nbre_pass_corona); s_tot += Number(extract[0].nbre_pass_tot);
+              try { s_cor += Number(extract[0].nbre_pass_corona); } catch {}
+			  try { s_tot += Number(extract[0].nbre_pass_tot);} catch {}
             }
-            try { val = s_cor/s_tot*100.0;} catch {val=-1;}
+            try { val = s_cor/s_tot*100.0;} catch {val=0;}
 //          console.log(d,val);
-            dataMoy.push({dep:d,'pourcent':val});
+            dataMoy.push({dep:d,'pourcent':val,'cor':s_cor,'tot':s_tot});
         });  //console.log(dataMoy);
         console.log("fin moyenne");
     return 1;
@@ -269,8 +270,8 @@ function updtDataCarte(date) {
             if (d.date_de_passage==date && d.sursaud_cl_age_corona=="0") {
                 try {
                     val = Number(d['nbre_pass_corona'])/Number(d['nbre_pass_tot'])*100.0;}
-                    catch {console.log('ERREUR');val = -1;}
-                dataVR.push({dep:d.dep,'pourcent':val});
+                    catch {console.log('ERREUR');val = 0;}
+                dataVR.push({dep:d.dep,'pourcent':val,'cor':Number(d['nbre_pass_corona']),'tot':Number(d['nbre_pass_tot'])});
             }
         });
 		return dataVR;
