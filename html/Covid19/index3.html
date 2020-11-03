@@ -198,9 +198,9 @@
     menu.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'10px')
         .attr('dy','0.3em').text(d=>d).raise();
 
-    var menu2 = svg.append('g')
-        .attr('transform', 'translate(80,150)')
-//        .attr('transform', function(d,i) { return 'translate('+(width-w_g+i*25)+','+(4*margin.top)+')';})
+    var menu2 = svg.append('g').selectAll("g").data(["-","Moy.","+"]).enter()
+//        .attr('transform', 'translate(80,150)')
+        .append("g").attr('transform', function(d,i) { return 'translate('+(width-scaleDep/2+ (i-1)*50)+','+(12*margin.top)+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',change);
     menu2.append('circle').style('fill','blue')
