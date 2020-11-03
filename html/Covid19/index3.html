@@ -16,7 +16,7 @@
 	#chart {
 		display: block;
 		margin: auto;
-		background:#f5f5f5;
+		background:#f5f5ff;
 	}
 .legendDep rect {
   fill:white;
@@ -85,7 +85,7 @@
 	var couleur = ['DarkRed','yellowgreen','RebeccaPurple','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
 	let margin = {top: 10, right: 5, bottom: 30, left: 50},
     width = window.innerWidth - margin.right-margin.left,
-    height = window.innerHeight - margin.top-margin.bottom -50;
+    height = window.innerHeight - margin.top-margin.bottom -40;
     let orientation=0;
     if (width>height) orientation=1;
     let scale=0, scaleDep = height;
@@ -261,7 +261,7 @@ function dataMoyenne(first,nb) { console.log("moyenne ...");
             }
             try { val = s_cor/s_tot*100.0;} catch {val=0;}
 //          console.log(d,val);
-			let pop = dataDep.filter(w=> w.Code==d); console.log(pop);
+			let pop = dataDep.filter(w=> w.Code==d); //console.log(pop);
             dataMoy.push({dep:d,'pourcent':val,'cor':s_cor,'tot':s_tot,'pop':Number(pop[0].PopT)});
         });  //console.log(dataMoy);
         console.log("fin moyenne");
@@ -318,7 +318,7 @@ function updateFill(carte) {
                 d3.select(this).style('opacity',0.3);
                 eetooltip.addDataBlock("Version",version);
                 eetooltip.addDataBlock(sel_date,"");
-                eetooltip.addDataBlock("", d.properties.nom);
+                eetooltip.addDataBlock(d.properties.nom,"-o-");
                 eetooltip.addDataBlock("code", d.properties.code);
                 eetooltip.addDataBlock("population", carte[nVR].pop);
                 eetooltip.addDataBlock("Passage Corona", carte[nVR].cor);
