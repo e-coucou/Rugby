@@ -106,7 +106,8 @@
     const departVR_ep = svg.append("g")
         .attr("transform", "translate("+(margin.left*1)+"," + (margin.top) + ")");
 //        .attr("transform", "translate("+(margin.left*3+scaleDep*3/5)+"," + (2*height+margin.top) + ")");
-    // on ajoute un tooltip
+//===========================================================
+// on ajoute un tooltip
     const eetooltip = new EETooltip({
     	'svgId': 'svg', 
     	'tooltipId': 'tooltipDiv',
@@ -114,13 +115,14 @@
     	'footerText': "Data e-Coucou 2020",
 //    	'keepInSVG': true
 	});
-	//legende de la carte des départements
+//===========================================================
+//legende de la carte des départements
 	console.log(width,scaleDep);
     var legendDep = svg.append('g')
         .attr('transform', function(d) { return 'translate('+(margin.left+width/2-scaleDep/2)+','+(0 +7*margin.top)+')';})
         .attr('id', 'legendDep');
 
-    var interpolate = d3[`interpolate${'Green'}`];
+    var interpolate = d3[`interpolate${'Greens'}`];
     var colors = [];
     const n=14;
 //    dark = d3.lab(interpolate(0)).l < 50;
