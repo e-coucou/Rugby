@@ -211,7 +211,8 @@
         .attr('dy','0.3em').text('Rot').raise();
 
 
-    function click() {
+    function click(d) {
+		console.log('click',d);
         rot = rot + 1;
         dataMoyenne(rot,rot+5); updateFill(dataMoy);
     }
