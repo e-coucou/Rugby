@@ -114,7 +114,15 @@
     var legendDep = svg.append('g')
         .attr('transform', function(d) { return 'translate('+(margin.left)+','+(0 +1*margin.top)+')';})
         .attr('id', 'legendDep');
-    
+
+    var interpolate = d3[`interpolate${'Blues'}`];
+    var colors = [];
+    const n=14;
+//    dark = d3.lab(interpolate(0)).l < 50;
+    for (let i = 0; i < n; ++i) {
+      colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
+    }
+   
     legendDep.selectAll('.colorbar')
         .data(d3.range(13))
         .enter().append('svg:rect')
