@@ -157,13 +157,13 @@
 // lecture des donnees	
 	var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
 	var url_datagouv_all = "https://www.data.gouv.fr/fr/datasets/r/eceb9fb4-3ebc-4da3-828d-f5939712600a";
-	var url_departement = "https://docs.google.com/spreadsheets/d/1uw_My3aVfkbFFTtDW64hFg5ujR0FYtDeoahq8h4h3-A/edit?usp=sharing"
+	var url_departement = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRghx56FCqr-w-WrjXFbJMKx7ficnfo5OeSdQLx7elCsKb_C3dy2Wrk7T4ag1fDXCnN9BTJe7-OfzAC/pub?gid=0&single=true&output=csv"
 
     var promises = [];
     promises.push( d3.json('../data/departements.geojson'));
 //    promises.push( d3.dsv(";",'../data/sursaud-corona.csv'));
     promises.push( d3.dsv(";",url_datagouv_all));
-    promises.push( d3.dsv(";",url_departement));
+    promises.push( d3.dsv(",",url_departement));
     var geoDepart = [], carteVR_ep =[], dataGouv=[], dataMoy = []; dataDep =[];
     var h_date =[], h_dep =[];
     var iRead=0, rot=0, moy=5;
