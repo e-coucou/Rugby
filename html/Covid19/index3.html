@@ -186,9 +186,9 @@
     }
 //===============================================================
 // Menu
-    var menu = svg.append("g").selectAll("g").data(["Moy.","Auj.","+","-"]).enter()
+    var menu = svg.append("g").selectAll("g").data(["<<","Auj.",">>"]).enter()
         .append('g') //.attr('transform', 'translate(100,100)')
-        .attr('transform', function(d,i) { return 'translate('+(width-scaleDep/2)+','+(7*margin.top + i*55)+')';})
+        .attr('transform', function(d,i) { return 'translate('+(width-scaleDep/2 +i*50)+','+(7*margin.top )+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',click);
     menu.append('circle').style('fill','blue')
@@ -214,10 +214,10 @@
     function click(d,i) {
 		console.log('click',d);
 		switch (i) {
-		  case 0 :	dataMoyenne(rot,rot+5); updateFill(dataMoy); break;
+		  case 9 :	dataMoyenne(rot,rot+5); updateFill(dataMoy); break;
           case 1 : rot = 0; break;
-		  case 2 : rot = (rot + 1) % h_date.length ; break;
-		  case 3 : if (rot>0) {rot -= 1} else {rot = h_date.length -1}; break;
+		  case 0 : rot = (rot + 1) % h_date.length ; break;
+		  case 2 : if (rot>0) {rot -= 1} else {rot = h_date.length -1}; break;
 		}
 		if (i>0) {
 			console.log(rot);
