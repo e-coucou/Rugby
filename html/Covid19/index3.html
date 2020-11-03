@@ -110,6 +110,30 @@
     	'footerText': "Data e-Coucou 2020",
 //    	'keepInSVG': true
 	});
+	//legende de la carte des départements
+    var legendDep = svg.append('g')
+        .attr('transform', function(d) { return 'translate('+(margin.left)+','+(0 +1*margin.top)+')';})
+        .attr('id', 'legendDep');
+    
+    legendDep.selectAll('.colorbar')
+        .data(d3.range(13))
+        .enter().append('svg:rect')
+            .attr('class','legendDep')
+            .attr('y', function(d) { return d * 20 + 'px'; })
+            .attr('height', '20px')
+            .attr('width', '20px')
+            .attr('x', '0px')
+            .style('fill',function(d,i) { return colors[i];});
+//          .attr("class", function(d) { return "q" + d + "-9"; });
+    var legendDepScale = d3.scaleLinear()
+        .domain([0, d3.max(dept, function(e) { return e.value; })])
+//        .domain([0, 750])
+        .range([0, 13 * 20]);
+    var legendDepAxis = svg.append("g")
+        .attr("class","legendDep")
+        .attr('transform', function(d) {return 'translate('+( margin.left+20)+','+(height + 5*margin.top)+')';})
+        .call(d3.axisRight(legendDepScale).ticks(10));
+
 	
 	var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
 	var url_datagouv_all = "https://www.data.gouv.fr/fr/datasets/r/eceb9fb4-3ebc-4da3-828d-f5939712600a";
