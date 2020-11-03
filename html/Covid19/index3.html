@@ -186,7 +186,7 @@
     }
 //===============================================================
 // Menu
-    var menu = svg.append("g").selectAll("g").data(["Auj.","Moy.","+","-"]).enter()
+    var menu = svg.append("g").selectAll("g").data(["Moy.","Auj.","+","-"]).enter()
         .append('g') //.attr('transform', 'translate(100,100)')
         .attr('transform', function(d,i) { return 'translate('+(width-scaleDep/2)+','+(7*margin.top + i*55)+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
@@ -213,8 +213,17 @@
 
     function click(d,i) {
 		console.log('click',d);
-        rot = rot + 1;
-        dataMoyenne(rot,rot+5); updateFill(dataMoy);
+		switch (i) {
+		  case 0 :	dataMoyenne(rot,rot+5); updateFill(dataMoy); break;
+          case 1 : rot = 1; break;
+		  case 2 : rot += 1; break;
+		  case 3 : ror -= 1; break;
+		}
+		if (i>0) {
+			sel_date = h_date[h_date.length-rot-1]; console.log(sel_date); //xxxxx
+			carteVR_ep = updtDataCarte(sel_date);
+			updateFill(carteVR_ep);
+		}
     }
 
     function change() {
