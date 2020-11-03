@@ -112,7 +112,7 @@
 	});
 	//legende de la carte des départements
     var legendDep = svg.append('g')
-        .attr('transform', function(d) { return 'translate('+(margin.left)+','+(0 +1*margin.top)+')';})
+        .attr('transform', function(d) { return 'translate('+(margin.left)+','+(0 +2*margin.top)+')';})
         .attr('id', 'legendDep');
 
     var interpolate = d3[`interpolate${'Blues'}`];
@@ -134,8 +134,8 @@
             .style('fill',function(d,i) { return colors[i];});
 //          .attr("class", function(d) { return "q" + d + "-9"; });
     var legendDepScale = d3.scaleLinear()
-        .domain([0, d3.max(dept, function(e) { return e.value; })])
-//        .domain([0, 750])
+//        .domain([0, d3.max(dept, function(e) { return e.value; })])
+        .domain([0, 50])
         .range([0, 13 * 20]);
     var legendDepAxis = svg.append("g")
         .attr("class","legendDep")
