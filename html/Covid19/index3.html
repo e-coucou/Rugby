@@ -208,11 +208,11 @@
         .on('mouseover',function(d,i){ d3.select(this).style('fill','#FE6F5E');})
         .on('mouseout',function(d,i){ d3.select(this).style('fill','blue');});
     menu2.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'10px')
-        .attr('dy','0.3em').text('Rot').raise();
+        .attr('dy','0.3em').text(d=>d).raise();
 
 
     function click(d,i) {
-		console.log('click',d);
+		//console.log('click',d);
 		switch (i) {
 		  case 9 :	dataMoyenne(rot,rot+5); updateFill(dataMoy); break;
           case 1 : rot = 0; break;
