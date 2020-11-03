@@ -216,8 +216,8 @@
 		switch (i) {
 		  case 0 :	dataMoyenne(rot,rot+5); updateFill(dataMoy); break;
           case 1 : rot = 0; break;
-		  case 2 : rot += 1; break;
-		  case 3 : rot =(rot -1) % h_date.length; break;//if (rot>0) {rot -= 1} ; break;
+		  case 2 : rot = (rot + 1) % h_date.length ; break;
+		  case 3 : if (rot>0) {rot -= 1} else {rot = h_date.length +1}; break;
 		}
 		if (i>0) {
 			sel_date = h_date[h_date.length-rot-1]; console.log(sel_date); //xxxxx
