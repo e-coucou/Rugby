@@ -226,10 +226,10 @@
 
     function change(d,i) {
         switch(i) {
-			case 2 : Moy += 1; break;
-			case 0 : Moy -= 1; break;
+			case 2 : moy += 1; break;
+			case 0 : moy -= 1; break;
 		}
-		dataMoyenne(rot,rot+Moy); updateFill(dataMoy);
+		dataMoyenne(rot,rot+moy); updateFill(dataMoy);
     }
     async function start() {
 		console.log('start'); //console.log(dataGouv);
