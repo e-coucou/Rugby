@@ -164,7 +164,7 @@
     promises.push( d3.dsv(";",url_datagouv_all));
     var geoDepart = [], carteVR_ep =[], dataGouv=[], dataMoy = [];
     var h_date =[], h_dep =[];
-    var iRead=0, rot=0;
+    var iRead=0, rot=0, moy=5;
     let seuil = Math.pow(2,promises.length)-1; // console.log(seuil);
 
     promises.forEach((p,i) =>{
@@ -224,13 +224,12 @@
 			updateFill(carteVR_ep);
     }
 
-    function change() {
-        rot = rot +1;
-        sel_date = h_date[h_date.length-rot-1]; console.log(sel_date); //xxxxx
-        carteVR_ep = updtDataCarte(sel_date);
-        //console.log('start', carteVR_ep);
-//      updateDepart(carteVR_ep);
-        updateFill(carteVR_ep);
+    function change(d,i) {
+        switch(i) {
+			case 2 : Moy += 1; break;
+			case 0 : Moy -= 1; break;
+		}
+		dataMoyenne(rot,rot+Moy); updateFill(dataMoy); break;
     }
     async function start() {
 		console.log('start'); //console.log(dataGouv);
