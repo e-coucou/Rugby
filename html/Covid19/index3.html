@@ -217,7 +217,7 @@
 		  case 0 :	dataMoyenne(rot,rot+5); updateFill(dataMoy); break;
           case 1 : rot = 0; break;
 		  case 2 : rot = (rot + 1) % h_date.length ; break;
-		  case 3 : if (rot>0) {rot -= 1} else {rot = h_date.length +1}; break;
+		  case 3 : if (rot>0) {rot -= 1} else {rot = h_date.length }; break;
 		}
 		if (i>0) {
 			console.log(rot);
