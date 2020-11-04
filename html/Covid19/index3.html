@@ -164,7 +164,7 @@
 //    promises.push( d3.dsv(";",'../data/sursaud-corona.csv'));
     promises.push( d3.dsv(";",url_datagouv_all));
     promises.push( d3.csv('../data/dep_data.csv')); //url_departement));
-    var geoDepart = [], carteVR_ep =[], dataGouv=[], dataMoy = []; dataDep =[];
+    var geoDepart = [], carteVR_ep =[], dataGouv=[], dataMoy = [], dataDep =[], dataTrend = [];
     var h_date =[], h_dep =[];
     var iRead=0, rot=0, moy=5;
     let seuil = Math.pow(2,promises.length)-1; // console.log(seuil);
@@ -267,7 +267,23 @@ function dataMoyenne(first,nb) { console.log("moyenne ...");
         console.log("fin moyenne");
     return 1;
 }
-
+function dataTrend(first) {
+	dataTrend = []; d_cor = [];
+	h_dep.forEach(d=> {
+		for(i=0;i<3;i++) {
+			date=h_date[h_date.length-i-first];
+            extract = dataGouv.filter(s=> (s.dep==d && s.date_de_passage==date && s.sursaud_cl_age_corona=="0"));
+            try { s_cor += Number(extract[0].nbre_pass_corona); 
+			 s_tot += Number(extract[0].nbre_pass_tot);
+			 d_cor.push(Number(extract[0].nbre_pass_corona);
+			 }
+			catch {}
+		}
+		for(i=0;i<3;i++) {
+			
+		}
+	});
+}
 function updtDataCarte(date) {
     	let dataVR=[];
         dataGouv.forEach(d=>{ 
