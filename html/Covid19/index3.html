@@ -275,7 +275,7 @@ function dataTrend(first) {
             extract = dataGouv.filter(s=> (s.dep==d && s.date_de_passage==date && s.sursaud_cl_age_corona=="0"));
             try { s_cor += Number(extract[0].nbre_pass_corona); 
 			 s_tot += Number(extract[0].nbre_pass_tot);
-			 d_cor.push(Number(extract[0].nbre_pass_corona);
+			 d_cor.push(Number(extract[0].nbre_pass_corona));
 			 }
 			catch {}
 		}
