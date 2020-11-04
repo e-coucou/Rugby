@@ -223,6 +223,7 @@
 		}
 			console.log(rot);
 			sel_date = h_date[h_date.length-rot-1]; console.log(sel_date); //xxxxx
+            dataTendance(rot);
 			carteVR_ep = updtDataCarte(sel_date);
 			updateFill(carteVR_ep);
     }
@@ -264,25 +265,29 @@ function dataMoyenne(first,nb) { console.log("moyenne ...");
 			let pop = dataDep.filter(w=> w.Code==d); //console.log(pop);
             dataMoy.push({dep:d,'pourcent':val,'cor':s_cor,'tot':s_tot,'pop':Number(pop[0].PopT)});
         });  //console.log(dataMoy);
-        console.log("fin moyenne");
+        console.log("fin moyenne"); dataTendance(first);
     return 1;
 }
-function dataTrend(first) {
-	dataTrend = []; d_cor = [];
+function dataTendance(first) {
+	dataTrend = [];
 	h_dep.forEach(d=> {
-		for(i=0;i<3;i++) {
+        d_cor=[];
+		for(i=1;i<4;i++) {
 			date=h_date[h_date.length-i-first];
             extract = dataGouv.filter(s=> (s.dep==d && s.date_de_passage==date && s.sursaud_cl_age_corona=="0"));
-            try { s_cor += Number(extract[0].nbre_pass_corona); 
-			 s_tot += Number(extract[0].nbre_pass_tot);
+            try { 
+                //s_cor += Number(extract[0].nbre_pass_corona); 
+			     //s_tot += Number(extract[0].nbre_pass_tot);
 			 d_cor.push(Number(extract[0].nbre_pass_corona));
 			 }
-			catch {}
+			catch {console.log('erreur');}
 		}
-		for(i=0;i<3;i++) {
-			
+        m_cor = average(d_cor);
+		for(i=0;i<3;i++) {			
 		}
-	});
+        trend = ((d_cor[0]-m_cor)-(d_cor[2]-m_cor))/3.0; //console.log('trend',d,trend,d_cor);
+        dataTrend.push({'dep':d,'trend':trend, 'val':d_cor});
+	}); //console.log(dataTrend);
 }
 function updtDataCarte(date) {
     	let dataVR=[];
@@ -330,6 +335,7 @@ function updateFill(carte) {
             .on('mouseout',function(d,i){ d3.select(this).style('opacity',0.85) ; eetooltip.hide();eetooltip.removeAllDataBlocks()})//style('fill','#FE6F5E');})
             .on('mouseover',function(d,i){
                 let nVR=carte.findIndex(k => (k.dep===d.properties.code));
+                let nT=dataTrend.findIndex(k => (k.dep===d.properties.code));
 //                let n=dept.findIndex(k => k.dep===d.properties.code);
                 d3.select(this).style('opacity',0.3);
                 eetooltip.addDataBlock("________________________________________","");
@@ -341,6 +347,7 @@ function updateFill(carte) {
                 eetooltip.addDataBlock("population", carte[nVR].pop);
                 eetooltip.addDataBlock("Passage Corona", carte[nVR].cor);
                 eetooltip.addDataBlock("Passage Total", carte[nVR].tot);
+                eetooltip.addDataBlock("Trend", valFormat(dataTrend[nT].trend));
 //                eetooltip.addDataBlock("Hospitalisées",valFormat(dept[n].hosp));
 //                eetooltip.addDataBlock("en Réanimation",valFormat(dept[n].rea));
 //                eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
