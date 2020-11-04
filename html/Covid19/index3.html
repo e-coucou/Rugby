@@ -316,9 +316,11 @@ function updateFill(carte) {
                 let nVR=carte.findIndex(k => (k.dep===d.properties.code));
 //                let n=dept.findIndex(k => k.dep===d.properties.code);
                 d3.select(this).style('opacity',0.3);
+                eetooltip.addDataBlock("________________________________________","");
                 eetooltip.addDataBlock("Version",version);
-                eetooltip.addDataBlock(sel_date,"");
-                eetooltip.addDataBlock(d.properties.nom,"-o-");
+                eetooltip.addDataBlock("Maj",sel_date);
+                eetooltip.addDataBlock("________________________________________","");
+                eetooltip.addDataBlock("-",d.properties.nom+" -");
                 eetooltip.addDataBlock("code", d.properties.code);
                 eetooltip.addDataBlock("population", carte[nVR].pop);
                 eetooltip.addDataBlock("Passage Corona", carte[nVR].cor);
