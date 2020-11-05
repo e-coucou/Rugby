@@ -205,7 +205,7 @@ console.log(width,scaleDep,height);
 
     var menu2 = svg.append('g').selectAll("g").data(["-","Moy.","+"]).enter()
 //        .attr('transform', 'translate(80,150)')
-        .append("g").attr('transform', function(d,i) { return 'translate('+(width-(3-i)*m_size)+','+(12*margin.top)+')';})
+        .append("g").attr('transform', function(d,i) { return 'translate('+(width-(3-i)*m_size)+','+(7*margin.top+m_size)+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',change);
     menu2.append('circle').style('fill','#0D3E9A')
