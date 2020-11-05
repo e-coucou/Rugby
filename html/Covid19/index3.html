@@ -97,8 +97,8 @@ console.log(width,scaleDep,height);
 	const pathDep = d3.geoPath();
     const projectionDep = d3.geoConicConformal()
         .center([2.454071, 46.279229])
-        .scale(3500)
-        .translate([width/2 , height / 2+margin.top*3]);
+        .scale(3200)
+        .translate([width/2 , height / 2+margin.top*1]);
 //        .translate([scaleDep/2 + margin.right, scaleDep / 2]);
     pathDep.projection(projectionDep);
 
@@ -122,10 +122,10 @@ console.log(width,scaleDep,height);
 //===========================================================
 //legende de la carte des départements
     var legendDep = svg.append('g')
-        .attr('transform', function(d) { return 'translate('+(width/2-scaleDep/4)+','+(0 +7*margin.top)+')';})
+        .attr('transform', function(d) { return 'translate('+(margin.left)+','+(0 +7*margin.top)+')';})
         .attr('id', 'legendDep');
 
-    var interpolate = d3[`interpolate${'Plasma'}`];
+    var interpolate = d3[`interpolate${'Reds'}`];
     var colors = [];
     const n=15;
 //    dark = d3.lab(interpolate(0)).l < 50;
@@ -152,7 +152,7 @@ console.log(width,scaleDep,height);
         .range([0, n * 20]);
     var legendDepAxis = svg.append("g")
         .attr("class","legendDep")
-        .attr('transform', function(d) {return 'translate('+( 20+width/2-scaleDep/4)+','+(0 + 7*margin.top)+')';})
+        .attr('transform', function(d) {return 'translate('+( 20+margin.left)+','+(0 + 7*margin.top)+')';})
         .call(d3.axisRight(legendDepScale).ticks(10));
 
 //=============================================================
@@ -191,12 +191,13 @@ console.log(width,scaleDep,height);
     }
 //===============================================================
 // Menu
+    let m_size = scaleDep/13;
     var menu = svg.append("g").selectAll("g").data(["<<","Auj.",">>","Trend"]).enter()
-        .append('g').attr('transform', function(d,i) { return 'translate('+(width-scaleDep/4 +(i-1)*50)+','+(7*margin.top )+')';})
+        .append('g').attr('transform', function(d,i) { return 'translate('+(width-scaleDep/4 +(i-1)*m_size)+','+(7*margin.top )+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',click);
     menu.append('circle').style('fill','blue')
-        .attr('r',20)
+        .attr('r',m_size*0.4)
         .on('mouseover',function(d,i){ d3.select(this).style('fill','#FE6F5E');})
         .on('mouseout',function(d,i){ d3.select(this).style('fill','blue');});
     menu.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'10px')
@@ -204,11 +205,11 @@ console.log(width,scaleDep,height);
 
     var menu2 = svg.append('g').selectAll("g").data(["-","Moy.","+"]).enter()
 //        .attr('transform', 'translate(80,150)')
-        .append("g").attr('transform', function(d,i) { return 'translate('+(width-scaleDep/4+ (i-1)*50)+','+(12*margin.top)+')';})
+        .append("g").attr('transform', function(d,i) { return 'translate('+(width-scaleDep/4+ (i-1)*m_size)+','+(12*margin.top)+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',change);
     menu2.append('circle').style('fill','blue')
-        .attr('r',20)
+        .attr('r',m_size*0.4)
         .on('mouseover',function(d,i){ d3.select(this).style('fill','#FE6F5E');})
         .on('mouseout',function(d,i){ d3.select(this).style('fill','blue');});
     menu2.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'10px')
