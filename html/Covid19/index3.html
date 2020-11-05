@@ -271,7 +271,7 @@ function dataMoyenne(first,nb) { console.log("moyenne ...");
 function dataTendance(first) {
 	dataTrend = [];
 	h_dep.forEach(d=> {
-        d_cor=[]; xx = [-2,-1,0,1,2];
+        d_cor=[]; xx = [2,1,0,-1,-2];
 		for(i=1;i<6;i++) {
 			date=h_date[h_date.length-i-first];
             extract = dataGouv.filter(s=> (s.dep==d && s.date_de_passage==date && s.sursaud_cl_age_corona=="0"));
@@ -287,7 +287,7 @@ function dataTendance(first) {
 			trend += xx[i]*(d_cor[i]-m_cor);
 		}
         //trend = ((d_cor[0]-m_cor)-(d_cor[2]-m_cor))/3.0;
-		trend /= 2;
+		trend = trend /10.0;
 		console.log('trend',d,trend,d_cor);
         dataTrend.push({'dep':d,'trend':trend, 'val':d_cor});
 	}); //console.log(dataTrend);
