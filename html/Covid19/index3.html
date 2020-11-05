@@ -122,7 +122,7 @@
         .attr('transform', function(d) { return 'translate('+(width/2-scaleDep/4)+','+(0 +7*margin.top)+')';})
         .attr('id', 'legendDep');
 
-    var interpolate = d3[`interpolate${'Reds'}`];
+    var interpolate = d3[`interpolate${'Turbo'}`];
     var colors = [];
     const n=14;
 //    dark = d3.lab(interpolate(0)).l < 50;
@@ -131,7 +131,7 @@
     }
 	var tantile = d3.scaleQuantile()
 //        .domain([ 0,d3.max(dept, function(e) { return e['rea']; })])//.domain([0, 100])
-        .domain([0, 13])
+        .domain([0, 15])
         .range(d3.range(13));
 
     legendDep.selectAll('.colorbar')
@@ -146,7 +146,7 @@
 //          .attr("class", function(d) { return "q" + d + "-9"; });
     var legendDepScale = d3.scaleLinear()
 //        .domain([0, d3.max(dept, function(e) { return e.value; })])
-        .domain([0, 13])
+        .domain([0, 15])
         .range([0, 13 * 20]);
     var legendDepAxis = svg.append("g")
         .attr("class","legendDep")
@@ -216,7 +216,7 @@
     function click(d,i) {
 		//console.log('click',d);
 		switch (i) {
-		  case 9 :	dataMoyenne(rot,rot+5); updateFill(dataMoy); break;
+		  case 3 :	dataMoyenne(rot,rot+5); updateFill(dataMoy); break;
           case 1 : rot = 0; break;
 		  case 0 : rot = (rot + 1) % h_date.length ; break;
 		  case 2 : if (rot>0) {rot -= 1} else {rot = h_date.length -1}; break;
@@ -226,6 +226,7 @@
             dataTendance(rot);
 			carteVR_ep = updtDataCarte(sel_date);
 			updateFill(carteVR_ep);
+			if (i==3) updateTrend(dataTrend);
     }
 
     function change(d,i) {
@@ -233,8 +234,8 @@
 			case 2 : moy += 1; break;
 			case 0 : moy -= 1; break;
 		}
-		dataMoyenne(rot,rot+moy); // updateFill(dataMoy);
-		updateTrend(dataTrend);
+		dataMoyenne(rot,rot+moy); updateFill(dataMoy);
+//		updateTrend(dataTrend);
     }
     async function start() {
 		console.log('start'); //console.log(dataGouv);
@@ -266,7 +267,7 @@ function dataMoyenne(first,nb) { console.log("moyenne ...");
 			let pop = dataDep.filter(w=> w.Code==d); //console.log(pop);
             dataMoy.push({dep:d,'pourcent':val,'cor':s_cor,'tot':s_tot,'pop':Number(pop[0].PopT)});
         });  //console.log(dataMoy);
-        console.log("fin moyenne"); dataTendance(first);
+        console.log("fin moyenne"); // dataTendance(first);
     return 1;
 }
 function dataTendance(first) {
@@ -314,6 +315,7 @@ function updateTrend(carte) {
 	legendDepScale = d3.scaleLinear()
 //        .domain([0, d3.max(dept, function(e) { return e.value; })])
         .domain([-20, 20]);
+	tantile.domain([-20,20]);
      departVR_ep.selectAll("path")
             .style("fill",d=>{
                 let n=carte.findIndex(k => (k.dep===d.properties.code));//  console.log(n,carteVR_ep[1]);
@@ -324,6 +326,7 @@ function updateTrend(carte) {
 }
 function updateFill(carte) {
     console.log("mise à jour color");
+	tantile.domain([0,15]);
 	legendDepScale = d3.scaleLinear()
 //        .domain([0, d3.max(dept, function(e) { return e.value; })])
         .domain([0, 15]);
