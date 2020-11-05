@@ -330,7 +330,7 @@ function updateFill(carte) {
             .style("fill",d=>{
                 let n=carte.findIndex(k => (k.dep===d.properties.code));//  console.log(n,carteVR_ep[1]);
                 if (n!=-1) {
-                temp= carte[n].trend;
+                temp= carte[n].pourcent;
                 return colors[tantile(temp)];}
 /*
                 cl='green';
