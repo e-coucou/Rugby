@@ -122,7 +122,7 @@
         .attr('transform', function(d) { return 'translate('+(width/2-scaleDep/4)+','+(0 +7*margin.top)+')';})
         .attr('id', 'legendDep');
 
-    var interpolate = d3[`interpolate${'Turbo'}`];
+    var interpolate = d3[`interpolate${'Plasma'}`];
     var colors = [];
     const n=14;
 //    dark = d3.lab(interpolate(0)).l < 50;
@@ -130,7 +130,6 @@
       colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
     }
 	var tantile = d3.scaleQuantile()
-//        .domain([ 0,d3.max(dept, function(e) { return e['rea']; })])//.domain([0, 100])
         .domain([0, 15])
         .range(d3.range(13));
 
@@ -332,22 +331,6 @@ function updateFill(carte) {
                 if (n!=-1) {
                 temp= carte[n].pourcent;
                 return colors[tantile(temp)];}
-/*
-                cl='green';
-                if (temp>0.0) cl='yellow';
-                if (temp>0.50) cl='#ffba08';
-                if (temp>1.00) cl='#f48c06';
-                if (temp>1.50) cl='#e85d04';
-                if (temp>2.00) cl='#dc2f02';
-                if (temp>3.0) cl='#d00000';
-                if (temp>5.0) cl='#9d0208';
-                if (temp>8.0) cl='#6a040f';
-                if (temp>13.0) cl='#370617';
-                if (temp>21.0) cl='#03071e';
-                if (temp==-1) cl='#03071e';
-//                console.log(temp,cl);
-                return cl;
-                } else return "white";*/
             })
             .on('mouseout',function(d,i){ d3.select(this).style('opacity',0.85) ; eetooltip.hide();eetooltip.removeAllDataBlocks()})//style('fill','#FE6F5E');})
             .on('mouseover',function(d,i){
