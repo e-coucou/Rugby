@@ -191,7 +191,7 @@ console.log(width,scaleDep,height);
     }
 //===============================================================
 // Menu
-    let m_size = scaleDep/13;
+    let m_size = scaleDep/17;
     var menu = svg.append("g").selectAll("g").data(["<<","Auj.",">>","Trend"]).enter()
         .append('g').attr('transform', function(d,i) { return 'translate('+(width-(3-i)*m_size)+','+(7*margin.top )+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
