@@ -233,7 +233,8 @@
 			case 2 : moy += 1; break;
 			case 0 : moy -= 1; break;
 		}
-		dataMoyenne(rot,rot+moy); updateFill(dataMoy);
+		dataMoyenne(rot,rot+moy); // updateFill(dataMoy);
+		updateTrend(dataTrend);
     }
     async function start() {
 		console.log('start'); //console.log(dataGouv);
@@ -309,14 +310,28 @@ function updtDataCarte(date) {
 function getUnique(value, index, self) { 
         return self.indexOf(value) === index;
 }
-
-function updateFill(carte) {
-    console.log("mise à jour color");
-    departVR_ep.selectAll("path")
+function updateTrend(carte) {
+	legendDepScale = d3.scaleLinear()
+//        .domain([0, d3.max(dept, function(e) { return e.value; })])
+        .domain([-20, 20]);
+     departVR_ep.selectAll("path")
             .style("fill",d=>{
                 let n=carte.findIndex(k => (k.dep===d.properties.code));//  console.log(n,carteVR_ep[1]);
                 if (n!=-1) {
-                temp= carte[n].pourcent;
+                temp= carte[n].trend;
+                return colors[tantile(temp)];}
+            });
+}
+function updateFill(carte) {
+    console.log("mise à jour color");
+	legendDepScale = d3.scaleLinear()
+//        .domain([0, d3.max(dept, function(e) { return e.value; })])
+        .domain([0, 15]);
+    departVR_ep.selectAll("path")
+            .style("fill",d=>{
+                let n=dataTrend.findIndex(k => (k.dep===d.properties.code));//  console.log(n,carteVR_ep[1]);
+                if (n!=-1) {
+                temp= dataTrend[n].trend;
                 return colors[tantile(temp)];}
 /*
                 cl='green';
