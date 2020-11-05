@@ -90,11 +90,15 @@
     if (width>height) orientation=1;
     let scale=0, scaleDep = height;
     if (orientation) {scale=width, scaleDep=width} else {scale=height}
+//===========================================================
+// la carte de France
+//
+console.log(width,scaleDep,height);
 	const pathDep = d3.geoPath();
     const projectionDep = d3.geoConicConformal()
         .center([2.454071, 46.279229])
-        .scale(2*scaleDep)
-        .translate([width/2 , height / 2]);
+        .scale(3000)
+        .translate([width/2 , height / 2+margin.top]);
 //        .translate([scaleDep/2 + margin.right, scaleDep / 2]);
     pathDep.projection(projectionDep);
 
@@ -117,7 +121,6 @@
 	});
 //===========================================================
 //legende de la carte des départements
-	console.log(width,scaleDep);
     var legendDep = svg.append('g')
         .attr('transform', function(d) { return 'translate('+(width/2-scaleDep/4)+','+(0 +7*margin.top)+')';})
         .attr('id', 'legendDep');
