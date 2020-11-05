@@ -216,17 +216,18 @@
     function click(d,i) {
 		//console.log('click',d);
 		switch (i) {
-		  case 3 :	dataMoyenne(rot,rot+5); updateFill(dataMoy); break;
           case 1 : rot = 0; break;
 		  case 0 : rot = (rot + 1) % h_date.length ; break;
 		  case 2 : if (rot>0) {rot -= 1} else {rot = h_date.length -1}; break;
 		}
+		if (i==3) { updateTrend(dataTrend); } 
+		else {
 			console.log(rot);
 			sel_date = h_date[h_date.length-rot-1]; console.log(sel_date); //xxxxx
             dataTendance(rot);
 			carteVR_ep = updtDataCarte(sel_date);
 			updateFill(carteVR_ep);
-			if (i==3) updateTrend(dataTrend);
+		}
     }
 
     function change(d,i) {
@@ -242,6 +243,7 @@
 		h_date = [...new Set(dataGouv.map(x=>x.date_de_passage))]; //console.log(h_date);
 		sel_date = h_date[h_date.length-1]; console.log(sel_date); //xxxxx
 		carteVR_ep = updtDataCarte(sel_date);
+		rot=0; dataTendance(rot);
     	//console.log('start', carteVR_ep);
         updateFill(carteVR_ep);
 //        const val = await dataMoyenne();
@@ -285,9 +287,7 @@ function dataTendance(first) {
 		for(i=0;i<5;i++) {
 			trend += xx[i]*(d_cor[i]-m_cor);
 		}
-        //trend = ((d_cor[0]-m_cor)-(d_cor[2]-m_cor))/3.0;
-		trend = trend /10.0;
-		console.log('trend',d,trend,d_cor);
+		trend = trend /10.0; //console.log('trend',d,trend,d_cor);
         dataTrend.push({'dep':d,'trend':trend, 'val':d_cor});
 	}); //console.log(dataTrend);
 }
