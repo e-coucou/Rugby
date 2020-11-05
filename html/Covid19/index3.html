@@ -235,7 +235,6 @@
 			case 0 : moy -= 1; break;
 		}
 		dataMoyenne(rot,rot+moy); updateFill(dataMoy);
-//		updateTrend(dataTrend);
     }
     async function start() {
 		console.log('start'); //console.log(dataGouv);
@@ -310,10 +309,10 @@ function getUnique(value, index, self) {
         return self.indexOf(value) === index;
 }
 function updateTrend(carte) {
-	legendDepScale
-//        .domain([0, d3.max(dept, function(e) { return e.value; })])
-        .domain([-20, 20]);
-	tantile.domain([-20,20]);
+	console.log("affiche trend");
+	legendDepScale.domain([-10, 10]);
+	legendDepAxis.call(d3.axisRight(legendDepScale).ticks(10));
+	tantile.domain([-10,10]);
      departVR_ep.selectAll("path")
             .style("fill",d=>{
                 let n=carte.findIndex(k => (k.dep===d.properties.code));//  console.log(n,carteVR_ep[1]);
@@ -325,14 +324,13 @@ function updateTrend(carte) {
 function updateFill(carte) {
     console.log("mise à jour color");
 	tantile.domain([0,15]);
-	legendDepScale
-//        .domain([0, d3.max(dept, function(e) { return e.value; })])
-        .domain([0, 15]);
+	legendDepScale.domain([0, 15]);
+	legendDepAxis.call(d3.axisRight(legendDepScale).ticks(10));
     departVR_ep.selectAll("path")
             .style("fill",d=>{
-                let n=dataTrend.findIndex(k => (k.dep===d.properties.code));//  console.log(n,carteVR_ep[1]);
+                let n=carte.findIndex(k => (k.dep===d.properties.code));//  console.log(n,carteVR_ep[1]);
                 if (n!=-1) {
-                temp= dataTrend[n].trend;
+                temp= carte[n].trend;
                 return colors[tantile(temp)];}
 /*
                 cl='green';
