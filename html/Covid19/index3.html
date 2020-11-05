@@ -124,17 +124,17 @@
 
     var interpolate = d3[`interpolate${'Plasma'}`];
     var colors = [];
-    const n=14;
+    const n=15;
 //    dark = d3.lab(interpolate(0)).l < 50;
     for (let i = 0; i < n; ++i) {
       colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
     }
 	var tantile = d3.scaleQuantile()
-        .domain([0, 13])
-        .range(d3.range(15));
+        .domain([0, n-1])
+        .range(d3.range(n));
 
     legendDep.selectAll('.colorbar')
-        .data(d3.range(15))
+        .data(d3.range(n))
         .enter().append('svg:rect')
             .attr('class','legendDep')
             .attr('y', function(d) { return d * 20 + 'px'; })
@@ -145,8 +145,8 @@
 //          .attr("class", function(d) { return "q" + d + "-9"; });
     var legendDepScale = d3.scaleLinear()
 //        .domain([0, d3.max(dept, function(e) { return e.value; })])
-        .domain([0, 13])
-        .range([0, 15 * 20]);
+        .domain([0, n-1])
+        .range([0, n * 20]);
     var legendDepAxis = svg.append("g")
         .attr("class","legendDep")
         .attr('transform', function(d) {return 'translate('+( 20+width/2-scaleDep/4)+','+(0 + 7*margin.top)+')';})
@@ -322,8 +322,8 @@ function updateTrend(carte) {
 }
 function updateFill(carte) {
     console.log("mise à jour color");
-	tantile.domain([0,13]);
-	legendDepScale.domain([0, 13]);
+	tantile.domain([0,n-1]);
+	legendDepScale.domain([0, n-1]);
 	legendDepAxis.call(d3.axisRight(legendDepScale).ticks(10));
     departVR_ep.selectAll("path")
             .style("fill",d=>{
