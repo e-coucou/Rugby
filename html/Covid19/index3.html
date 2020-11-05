@@ -244,11 +244,9 @@
 		sel_date = h_date[h_date.length-1]; console.log(sel_date); //xxxxx
 		carteVR_ep = updtDataCarte(sel_date);
     	//console.log('start', carteVR_ep);
-//    	updateDepart(carteVR_ep);
         updateFill(carteVR_ep);
 //        const val = await dataMoyenne();
         console.log("fin du start");
-//		updateDepart(dataMoy);
     }
 // on calcul 
 
@@ -389,55 +387,6 @@ function drawCarte() {
                 d3.select(this).style('opacity',0.3);  })
             .style('stroke','white').style('stroke-width',0.8);
 }
-function updateDepart(carte) {
-//		departVR_ep.selectAll("path").remove();
-        eetooltip.removeAllDataBlocks();
-        departVR_ep.selectAll("path")
-            .data(geoDepart.features)
-            .enter()
-            .append("path")
-            .attr('id', function(d) {return "deconf" + d.properties.code;})
-            .attr("d", pathDep).style('opacity',0.85).attr("class","depDeconf")
-            .style("fill",d=>{
-                let n=carte.findIndex(k => (k.dep===d.properties.code));//  console.log(n,carteVR_ep[1]);
-                if (n!=-1) {
-                temp= carte[n].pourcent;
-                cl='green';
-                if (temp>0.0) cl='yellow';
-                if (temp>0.50) cl='#ffba08';
-                if (temp>1.00) cl='#f48c06';
-                if (temp>1.50) cl='#e85d04';
-                if (temp>2.00) cl='#dc2f02';
-                if (temp>3.0) cl='#d00000';
-                if (temp>5.0) cl='#9d0208';
-                if (temp>8.0) cl='#6a040f';
-                if (temp>13.0) cl='#370617';
-                if (temp>21.0) cl='#03071e';
-                if (temp==-1) cl='#03071e';
-//                console.log(temp,cl);
-                return cl;
-            	} else return "black";
-            })
-            .on('mouseout',function(d,i){ d3.select(this).style('opacity',0.85) ; eetooltip.hide();eetooltip.removeAllDataBlocks()})//style('fill','#FE6F5E');})
-            .on('mouseover',function(d,i){
-                let nVR=carte.findIndex(k => (k.dep===d.properties.code));
-//                let n=dept.findIndex(k => k.dep===d.properties.code);
-                d3.select(this).style('opacity',0.3);
-                eetooltip.addDataBlock("Version",version);
-                eetooltip.addDataBlock(sel_date,"");
-                eetooltip.addDataBlock("", d.properties.nom);
-                eetooltip.addDataBlock("code", d.properties.code);
-//                eetooltip.addDataBlock("Hospitalisées",valFormat(dept[n].hosp));
-//                eetooltip.addDataBlock("en Réanimation",valFormat(dept[n].rea));
-//                eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
-                eetooltip.addDataBlock("Pourcent Covid/Adm.",valFormat(carte[nVR].pourcent)+'%');
-                eetooltip.show(); 
-        })
-            .style('stroke','white').style('stroke-width',0.8);
-//            dVRTitre1.text('Carte calculée au '+h_dateVR[h_dateVR.length-1]+' (0<1<2<3<5<8<13%)');
-
-};
-
 
    </script>
 
