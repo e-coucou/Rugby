@@ -189,7 +189,7 @@
     }
 //===============================================================
 // Menu
-    var menu = svg.append("g").selectAll("g").data(["<<","Auj.",">>"]).enter()
+    var menu = svg.append("g").selectAll("g").data(["<<","Auj.",">>","Trend"]).enter()
         .append('g').attr('transform', function(d,i) { return 'translate('+(width-scaleDep/4 +(i-1)*50)+','+(7*margin.top )+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',click);
@@ -312,7 +312,7 @@ function getUnique(value, index, self) {
         return self.indexOf(value) === index;
 }
 function updateTrend(carte) {
-	legendDepScale = d3.scaleLinear()
+	legendDepScale
 //        .domain([0, d3.max(dept, function(e) { return e.value; })])
         .domain([-20, 20]);
 	tantile.domain([-20,20]);
@@ -327,7 +327,7 @@ function updateTrend(carte) {
 function updateFill(carte) {
     console.log("mise à jour color");
 	tantile.domain([0,15]);
-	legendDepScale = d3.scaleLinear()
+	legendDepScale
 //        .domain([0, d3.max(dept, function(e) { return e.value; })])
         .domain([0, 15]);
     departVR_ep.selectAll("path")
