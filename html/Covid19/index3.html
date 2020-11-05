@@ -168,7 +168,7 @@ console.log(width,scaleDep,height);
     promises.push( d3.csv('../data/dep_data.csv')); //url_departement));
     var geoDepart = [], carteVR_ep =[], dataGouv=[], dataMoy = [], dataDep =[], dataTrend = [];
     var h_date =[], h_dep =[];
-    var iRead=0, rot=0, moy=5;
+    var iRead=0, rot=0, moy=5, flip = false;
     let seuil = Math.pow(2,promises.length)-1; // console.log(seuil);
 
     promises.forEach((p,i) =>{
@@ -193,25 +193,25 @@ console.log(width,scaleDep,height);
 // Menu
     let m_size = scaleDep/13;
     var menu = svg.append("g").selectAll("g").data(["<<","Auj.",">>","Trend"]).enter()
-        .append('g').attr('transform', function(d,i) { return 'translate('+(width-scaleDep/4 +(i-1)*m_size)+','+(7*margin.top )+')';})
+        .append('g').attr('transform', function(d,i) { return 'translate('+(width-(3-i)*m_size)+','+(7*margin.top )+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',click);
-    menu.append('circle').style('fill','blue')
+    menu.append('circle').style('fill','#0D3E9A')
         .attr('r',m_size*0.4)
-        .on('mouseover',function(d,i){ d3.select(this).style('fill','#FE6F5E');})
-        .on('mouseout',function(d,i){ d3.select(this).style('fill','blue');});
+        .on('mouseover',function(d,i){ d3.select(this).style('fill','#03045E');})
+        .on('mouseout',function(d,i){ d3.select(this).style('fill','#0D3E9A');});
     menu.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'10px')
         .attr('dy','0.3em').text(d=>d).raise();
 
     var menu2 = svg.append('g').selectAll("g").data(["-","Moy.","+"]).enter()
 //        .attr('transform', 'translate(80,150)')
-        .append("g").attr('transform', function(d,i) { return 'translate('+(width-scaleDep/4+ (i-1)*m_size)+','+(12*margin.top)+')';})
+        .append("g").attr('transform', function(d,i) { return 'translate('+(width-(3-i)*m_size)+','+(12*margin.top)+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',change);
-    menu2.append('circle').style('fill','blue')
+    menu2.append('circle').style('fill','#0D3E9A')
         .attr('r',m_size*0.4)
-        .on('mouseover',function(d,i){ d3.select(this).style('fill','#FE6F5E');})
-        .on('mouseout',function(d,i){ d3.select(this).style('fill','blue');});
+        .on('mouseover',function(d,i){ d3.select(this).style('fill','#03045E');})
+        .on('mouseout',function(d,i){ d3.select(this).style('fill','#0D3E9A');});
     menu2.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'10px')
         .attr('dy','0.3em').text(d=>d).raise();
 
@@ -219,16 +219,18 @@ console.log(width,scaleDep,height);
     function click(d,i) {
 		//console.log('click',d);
 		switch (i) {
+          case 3 : flip = !flip; break;
           case 1 : rot = 0; break;
 		  case 0 : rot = (rot + 1) % h_date.length ; break;
 		  case 2 : if (rot>0) {rot -= 1} else {rot = h_date.length -1}; break;
 		}
-		if (i==3) { updateTrend(dataTrend); } 
+        console.log(rot);
+        sel_date = h_date[h_date.length-rot-1]; console.log(sel_date); //xxxxx
+        carteVR_ep = updtDataCarte(sel_date);
+        dataTendance(rot);
+		if (flip) { 
+            updateTrend(dataTrend); } 
 		else {
-			console.log(rot);
-			sel_date = h_date[h_date.length-rot-1]; console.log(sel_date); //xxxxx
-            dataTendance(rot);
-			carteVR_ep = updtDataCarte(sel_date);
 			updateFill(carteVR_ep);
 		}
     }
@@ -305,6 +307,7 @@ function updtDataCarte(date) {
                 dataVR.push({dep:d.dep,'pourcent':val,'cor':Number(d['nbre_pass_corona']),'tot':Number(d['nbre_pass_tot']),'pop':Number(pop[0].PopT)});
             }
         });
+//yyy        console.log(cumul(dataVR['cor'],0));
 		return dataVR;
 }
 
@@ -336,11 +339,15 @@ function updateFill(carte) {
                 temp= carte[n].pourcent;
                 return colors[tantile(temp)];}
             })
-            .on('mouseout',function(d,i){ d3.select(this).style('opacity',0.85) ; eetooltip.hide();eetooltip.removeAllDataBlocks()})//style('fill','#FE6F5E');})
+            .on('mouseout',function(d,i){ 
+                d3.select(this).style('stroke','white').style('stroke-width',0.8);
+                d3.select(this).style('opacity',1) ;
+                eetooltip.hide();eetooltip.removeAllDataBlocks()})//style('fill','#FE6F5E');})
             .on('mouseover',function(d,i){
                 let nVR=carte.findIndex(k => (k.dep===d.properties.code));
                 let nT=dataTrend.findIndex(k => (k.dep===d.properties.code));
 //                let n=dept.findIndex(k => k.dep===d.properties.code);
+                d3.select(this).style('stroke','black').style('stroke-width',3);
                 d3.select(this).style('opacity',0.3);
                 eetooltip.addDataBlock("________________________________________","");
                 eetooltip.addDataBlock("Version",version);
@@ -356,7 +363,7 @@ function updateFill(carte) {
 //                eetooltip.addDataBlock("en Réanimation",valFormat(dept[n].rea));
 //                eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
                 eetooltip.addDataBlock("Pourcent Covid/Adm.",valFormat(carte[nVR].pourcent)+'%');
-                eetooltip.show(); 
+                eetooltip.show();
         });
 }
 function drawCarte() {
