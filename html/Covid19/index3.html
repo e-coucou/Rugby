@@ -81,7 +81,7 @@
 	let cumul = (array) => array.reduce((a, b) => { return a + b; }); // / array.length;
 	let average = (array) => array.reduce((a, b) => { return a + b; }) / array.length;
 	
-	var sel_date = "01/01/2020", version = "0.20";
+	var sel_date = "01/01/2020", version = "0.55";
 	var couleur = ['DarkRed','yellowgreen','RebeccaPurple','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
 	let margin = {top: 10, right: 5, bottom: 30, left: 50},
     width = window.innerWidth - margin.right-margin.left,
@@ -156,9 +156,10 @@ console.log(width,scaleDep,height);
         .call(d3.axisRight(legendDepScale).ticks(10));
 //=============================================================
 // les infos globales de santé France
+function aff_jour() {
     let iconCase = [{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"blue",s:6,f:"white"},
     {d:"M17,5 c 2.5 0,5 2,5 5 c 0 1.5, -0.5 2.5, -1.5,3.5 L13,21 L5,12.5 c -0.8 -0.8 -1.2 -2 -1.2 -3.2 c 0-2,2 -5, 4.6 -4.6 c 2 0,3.5 1.1,4.2 2.8 C 14 6, 15 5, 17 5 z",c:"red",s:1,f:"white"}, {d:"M 5,8 L 19,8 M 12,2 L 12,22",c:"white",s:3,f:"black"},{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"green",s:6,f:"white"}];
-    var gGlobal = svg.append("g").selectAll("g").data([100,200,300]).enter()
+    var gGlobal = svg.append("g").selectAll("g").data(data_day).enter()
                     .append("g")
                     .attr("transform",(d,i)=>{ return "translate("+(margin.left)+","+(height-(4-i)*30-margin.bottom)+")";});
         gGlobal.append("rect").style("fill",colors[colors.length-2]).attr("width",80).attr("height",25).attr("x",30)//.attr("y",(d,i)=>{return i*30;})
@@ -169,14 +170,15 @@ console.log(width,scaleDep,height);
             .attr("y", 18).attr("text-anchor","middle");
         gGlobal.append("path").attr("y",(d,i)=>{return i*30}).attr("d",(d,i)=>{return iconCase[i].d}).attr("stroke-width",(d,i)=>{return iconCase[i].s})
             .attr("stroke",(d,i)=>{return iconCase[i].c}).style("fill","red");
+}
 //=============================================================
 // gestion des event
-	var event = new Event ('data');
-	elem.addEventListener('data',test);
-	elem.dispatchEvent(event);
+	var event = new Event ('jour');
+    document.addEventListener('data',test);
+    document.addEventListener('jour',aff_jour);
 	
 	function test() {
-		concoles.log('coucou event');
+		console.log('coucou event');
 	}
 //=============================================================
 // lecture des donnees	
@@ -189,7 +191,7 @@ console.log(width,scaleDep,height);
 //    promises.push( d3.dsv(";",'../data/sursaud-corona.csv'));
     promises.push( d3.dsv(";",url_datagouv_all));
     promises.push( d3.csv('../data/dep_data.csv')); //url_departement));
-    var geoDepart = [], carteVR_ep =[], dataGouv=[], dataMoy = [], dataDep =[], dataTrend = [];
+    var geoDepart = [], carteVR_ep =[], dataGouv=[], dataMoy = [], dataDep =[], dataTrend = [], data_day =[];
     var h_date =[], h_dep =[];
     var iRead=0, rot=0, moy=5, flip = false;
     let seuil = Math.pow(2,promises.length)-1; // console.log(seuil);
@@ -276,9 +278,13 @@ console.log(width,scaleDep,height);
         updateFill(carteVR_ep);
 //        const val = await dataMoyenne();
         console.log("fin du start");
+//        document.dispatchEvent(event);
     }
-// on calcul 
 
+//==========================================================
+// les calculs en tout genre sur les données
+// la moyenne des data
+//
 function dataMoyenne(first,nb) { console.log("moyenne ...");
     dataMoy=[]; //console.log(h_dep);
         h_dep.forEach(d=> { 
@@ -297,6 +303,9 @@ function dataMoyenne(first,nb) { console.log("moyenne ...");
         console.log("fin moyenne"); // dataTendance(first);
     return 1;
 }
+//--------
+// les tendances sur 5 jours
+//
 function dataTendance(first) {
 	dataTrend = [];
 	h_dep.forEach(d=> {
@@ -319,6 +328,9 @@ function dataTendance(first) {
         dataTrend.push({'dep':d,'trend':trend, 'val':d_cor});
 	}); //console.log(dataTrend);
 }
+//-------
+// le tableau des cartes journalière
+//
 function updtDataCarte(date) {
     	let dataVR=[];
         dataGouv.forEach(d=>{ 
@@ -330,7 +342,11 @@ function updtDataCarte(date) {
                 dataVR.push({dep:d.dep,'pourcent':val,'cor':Number(d['nbre_pass_corona']),'tot':Number(d['nbre_pass_tot']),'pop':Number(pop[0].PopT)});
             }
         });
-//yyy        console.log(cumul(dataVR['cor'],0));
+        data_day=[];
+        data_day.push(cumul(dataVR.map(cm => {return cm.cor;}),0));
+        data_day.push(cumul(dataVR.map(cm => {return cm.tot;}),0));
+        data_day.push(cumul(dataVR.map(cm => {return cm.pop;}),0));
+        document.dispatchEvent(event);
 		return dataVR;
 }
 
