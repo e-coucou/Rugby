@@ -156,9 +156,20 @@ console.log(width,scaleDep,height);
         .call(d3.axisRight(legendDepScale).ticks(10));
 //=============================================================
 // les infos globales de santé France
-    const d0Titre = svg.append("g").attr("transform", "translate("+(scaleDep/2-margin.left)+"," + (height+8*margin.top) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.5vw').text('Hospitalisations');
-    const d1Titre = svg.append("g").attr("transform", "translate("+(scaleDep)+"," + (height+8*margin.top) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.5vw').text('Réanimations');
-    const d3Titre = svg.append("g").attr("transform", "translate("+(scaleDep*3/2+margin.left)+"," + (height+8*margin.top) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.5vw').text('Décédées');
+    let iconCase = [{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"blue",s:6,f:"white"},
+    {d:"M17,5 c 2.5 0,5 2,5 5 c 0 1.5, -0.5 2.5, -1.5,3.5 L13,21 L5,12.5 c -0.8 -0.8 -1.2 -2 -1.2 -3.2 c 0-2,2 -5, 4.6 -4.6 c 2 0,3.5 1.1,4.2 2.8 C 14 6, 15 5, 17 5 z",c:"red",s:1,f:"white"}, {d:"M 5,8 L 19,8 M 12,2 L 12,22",c:"white",s:3,f:"black"},{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"green",s:6,f:"white"}];
+    var gGlobal = svg.append("g").selectAll("g").data([100,200,300]).enter()
+                    .append("g")
+                    .attr("transform",(d,i)=>{ return "translate("+(margin.left)+","+(345+i*30)+")";});
+        gGlobal.append("rect").style("fill",colors[colors.length-2]).attr("width",80).attr("height",25).attr("x",30)//.attr("y",(d,i)=>{return i*30;})
+            .style("stroke-width",2).style("stroke",colors[8]).attr("rx",2).attr("ry",20);
+        gGlobal.append("circle").attr("cx",12).attr("cy",12).attr("r",12).style("fill",(d,i)=>{return iconCase[i].f}).style("stroke-width",1).style("stroke",(d,i)=>{return iconCase[i].c});
+        gGlobal.append("text").style("font-size","16px").style("fill","white").style("font-family","HelveticaNeue-Light").style("font-weight","bold")
+            .text(d=>{return d}).attr("x",40+30)
+            .attr("y", 18).attr("text-anchor","middle");
+        gGlobal.append("path").attr("y",(d,i)=>{return i*30}).attr("d",(d,i)=>{return iconCase[i].d}).attr("stroke-width",(d,i)=>{return iconCase[i].s})
+            .attr("stroke",(d,i)=>{return iconCase[i].c}).style("fill","red");
+
 //=============================================================
 // lecture des donnees	
 	var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
