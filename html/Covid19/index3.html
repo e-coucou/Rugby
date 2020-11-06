@@ -154,7 +154,11 @@ console.log(width,scaleDep,height);
         .attr("class","legendDep")
         .attr('transform', function(d) {return 'translate('+( 20+margin.left)+','+(0 + 7*margin.top)+')';})
         .call(d3.axisRight(legendDepScale).ticks(10));
-
+//=============================================================
+// les infos globales de santé France
+    const d0Titre = svg.append("g").attr("transform", "translate("+(scaleDep/2-margin.left)+"," + (height+8*margin.top) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.5vw').text('Hospitalisations');
+    const d1Titre = svg.append("g").attr("transform", "translate("+(scaleDep)+"," + (height+8*margin.top) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.5vw').text('Réanimations');
+    const d3Titre = svg.append("g").attr("transform", "translate("+(scaleDep*3/2+margin.left)+"," + (height+8*margin.top) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.5vw').text('Décédées');
 //=============================================================
 // lecture des donnees	
 	var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
