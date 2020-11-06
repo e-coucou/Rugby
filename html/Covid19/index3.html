@@ -169,7 +169,15 @@ console.log(width,scaleDep,height);
             .attr("y", 18).attr("text-anchor","middle");
         gGlobal.append("path").attr("y",(d,i)=>{return i*30}).attr("d",(d,i)=>{return iconCase[i].d}).attr("stroke-width",(d,i)=>{return iconCase[i].s})
             .attr("stroke",(d,i)=>{return iconCase[i].c}).style("fill","red");
-
+//=============================================================
+// gestion des event
+	var event = new Event ('data');
+	elem.addEventListener('data',test);
+	elem.dispatchEvent(event);
+	
+	function test() {
+		concoles.log('coucou event');
+	}
 //=============================================================
 // lecture des donnees	
 	var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
