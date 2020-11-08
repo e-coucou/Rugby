@@ -89,7 +89,7 @@
     let orientation=0;
     if (width>height) orientation=1;
     let scale=0, scaleDep = height;
-    if (orientation) {scale=width} else {scale=height}
+    if (orientation) {scale=width} else {scale=height, scaleDep=width}
 //===========================================================
 // la carte de France
 //
@@ -97,7 +97,7 @@ console.log(width,scaleDep,height);
 	const pathDep = d3.geoPath();
     const projectionDep = d3.geoConicConformal()
         .center([2.454071, 46.279229])
-        .scale(3000*scaleDep/590)
+        .scale(3000*scaleDep/580)
         .translate([width/2 , height / 2+margin.top*1]);
 //        .translate([scaleDep/2 + margin.right, scaleDep / 2]);
     pathDep.projection(projectionDep);
@@ -193,7 +193,7 @@ function aff_jour2() {
     gSursaut.remove();
     gSursaut = svg.append("g").selectAll("g").data(data_day_s).enter()
                     .append("g")
-                    .attr("transform",(d,i)=>{ return "translate("+(margin.left+width/2+(i-2)*scaleDep/5)+","+(height-margin.bottom)+")";}).append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.6vmin').text(d=>d).style("font-weight","bold").style('fill','#9D0208');
+                    .attr("transform",(d,i)=>{ return "translate("+(margin.left+width/2+(i-1)*scaleDep/6)+","+(height-margin.bottom)+")";}).append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.6vmin').text(d=>d).style("font-weight","bold").style('fill','#9D0208').style("text-anchor","middle");
 }	
 function aff_ARS() {
 //    console.log('les cumuls ARS');
