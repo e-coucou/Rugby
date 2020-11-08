@@ -89,7 +89,7 @@
     let orientation=0;
     if (width>height) orientation=1;
     let scale=0, scaleDep = height;
-    if (orientation) {scale=width, scaleDep=width} else {scale=height}
+    if (orientation) {scale=width} else {scale=height}
 //===========================================================
 // la carte de France
 //
@@ -97,7 +97,7 @@ console.log(width,scaleDep,height);
 	const pathDep = d3.geoPath();
     const projectionDep = d3.geoConicConformal()
         .center([2.454071, 46.279229])
-        .scale(3200)
+        .scale(3000*scaleDep/590)
         .translate([width/2 , height / 2+margin.top*1]);
 //        .translate([scaleDep/2 + margin.right, scaleDep / 2]);
     pathDep.projection(projectionDep);
@@ -156,6 +156,8 @@ console.log(width,scaleDep,height);
         .call(d3.axisRight(legendDepScale).ticks(10));
 //=============================================================
 // les infos globales de santé France
+    const gJour = svg.append("g").attr("transform", "translate("+(margin.left+20)+"," + (height-5*30-margin.bottom+10) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','2vw').text('xx/xx/xxxx').style("font-weight","bold").style('fill','#9D0208');
+
 function aff_jour() {
     let iconCase = [{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"blue",s:6,f:"white"},
     {d:"M17,5 c 2.5 0,5 2,5 5 c 0 1.5, -0.5 2.5, -1.5,3.5 L13,21 L5,12.5 c -0.8 -0.8 -1.2 -2 -1.2 -3.2 c 0-2,2 -5, 4.6 -4.6 c 2 0,3.5 1.1,4.2 2.8 C 14 6, 15 5, 17 5 z",c:"red",s:1,f:"white"}, {d:"M 5,8 L 19,8 M 12,2 L 12,22",c:"white",s:3,f:"black"},{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"green",s:6,f:"white"}];
@@ -165,33 +167,61 @@ function aff_jour() {
         gGlobal.append("rect").style("fill",colors[colors.length-2]).attr("width",80).attr("height",25).attr("x",30)//.attr("y",(d,i)=>{return i*30;})
             .style("stroke-width",2).style("stroke",colors[8]).attr("rx",2).attr("ry",20);
         gGlobal.append("circle").attr("cx",12).attr("cy",12).attr("r",12).style("fill",(d,i)=>{return iconCase[i].f}).style("stroke-width",1).style("stroke",(d,i)=>{return iconCase[i].c});
-        gGlobal.append("text").style("font-size","16px").style("fill","white").style("font-family","HelveticaNeue-Light").style("font-weight","bold")
+        gGlobal.append("text").style("font-size","1.9vw").style("fill","white").style("font-family","HelveticaNeue-Light").style("font-weight","bold")
             .text(d=>{return d}).attr("x",40+30)
             .attr("y", 18).attr("text-anchor","middle");
         gGlobal.append("path").attr("y",(d,i)=>{return i*30}).attr("d",(d,i)=>{return iconCase[i].d}).attr("stroke-width",(d,i)=>{return iconCase[i].s})
             .attr("stroke",(d,i)=>{return iconCase[i].c}).style("fill","red");
+
+   gJour.text(sel_date);
+
 }
 //=============================================================
 // gestion des event
-	var event = new Event ('jour');
-    document.addEventListener('data',test);
-    document.addEventListener('jour',aff_jour);
-	
-	function test() {
-		console.log('coucou event');
-	}
+    var data_day =[], data_day_s=[];
+
+    var evt_sursaut = new Event ('sursaut');
+    document.addEventListener('sursaut',aff_jour2);
+    var evt_ARS = new Event ('ARS');
+    document.addEventListener('ARS',aff_ARS);
+
+    var gSursaut = svg.append("g").selectAll("g").data([0]).enter()
+                    .append("g")
+                    .attr("transform",(d,i)=>{ return "translate("+(margin.left+width/2+(i-1)*scaleDep/5)+","+(height-margin.bottom)+")";}).append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.6vw').text(d=>d).style("font-weight","bold").style('fill','#9D0208');
+function aff_jour2() {
+//    console.log('coucou');
+    gSursaut.remove();
+    gSursaut = svg.append("g").selectAll("g").data(data_day_s).enter()
+                    .append("g")
+                    .attr("transform",(d,i)=>{ return "translate("+(margin.left+width/2+(i-2)*scaleDep/5)+","+(height-margin.bottom)+")";}).append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.6vw').text(d=>d).style("font-weight","bold").style('fill','#9D0208');
+}	
+function aff_ARS() {
+//    console.log('les cumuls ARS');
+    let data_hosp = getDataARS('hosp',0,sel_date);
+    let data_rea = getDataARS('rea',0,sel_date);
+    let data_dc = getDataARS('dc',0,sel_date);
+    let data_rad = getDataARS('rad',0,sel_date);
+    data_day=[];
+    data_day.push(cumul(data_hosp));
+    data_day.push(cumul(data_rea));
+    data_day.push(cumul(data_dc));
+    data_day.push(cumul(data_rad));
+    aff_jour();
+}
 //=============================================================
 // lecture des donnees	
 	var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
 	var url_datagouv_all = "https://www.data.gouv.fr/fr/datasets/r/eceb9fb4-3ebc-4da3-828d-f5939712600a";
 	var url_departement = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRghx56FCqr-w-WrjXFbJMKx7ficnfo5OeSdQLx7elCsKb_C3dy2Wrk7T4ag1fDXCnN9BTJe7-OfzAC/pub?gid=0&single=true&output=csv"
+    var url_dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f1b3ee1cabd7';
 
     var promises = [];
     promises.push( d3.json('../data/departements.geojson'));
 //    promises.push( d3.dsv(";",'../data/sursaud-corona.csv'));
     promises.push( d3.dsv(";",url_datagouv_all));
     promises.push( d3.csv('../data/dep_data.csv')); //url_departement));
-    var geoDepart = [], carteVR_ep =[], dataGouv=[], dataMoy = [], dataDep =[], dataTrend = [], data_day =[];
+    promises.push( d3.dsv(";",url_dataGouv));
+    var geoDepart = [], carteVR_ep =[], dataGouv=[], dataMoy = [], dataDep =[], dataTrend =[], dataHosp = [];
     var h_date =[], h_dep =[];
     var iRead=0, rot=0, moy=5, flip = false;
     let seuil = Math.pow(2,promises.length)-1; // console.log(seuil);
@@ -205,7 +235,8 @@ function aff_jour() {
           switch(i) {
         	case 0:    geoDepart=data; drawCarte(); break;
         	case 1:    dataGouv=data; break;
-			case 2:	   dataDep=data; console.log(dataDep); break;
+			case 2:	   dataDep=data;  break;
+            case 3:    dataHosp=data;  break;
         	default: break;
           }
           iRead += (1<<i); // console.log(i, iRead, (iRead>>i)&1, promises.length);
@@ -213,6 +244,21 @@ function aff_jour() {
 //        infoG.selectAll('circle').attr('fill',d=>{return ((iRead>>d)&1!=0)?'white':'red'});
           if (iRead==seuil) 
           {     start();      }
+    }
+//===============================================================
+// les datas sont la !
+    async function start() {
+        console.log('start'); //console.log(dataGouv);
+        h_dep = [...new Set(dataGouv.map(x=>x.dep))]; //console.log(h_dep);
+        h_date = [...new Set(dataGouv.map(x=>x.date_de_passage))]; //console.log(h_date);
+        sel_date = h_date[h_date.length-1]; console.log(sel_date); //xxxxx
+        carteVR_ep = updtDataCarte(sel_date);
+        rot=0; dataTendance(rot);
+        //console.log('start', carteVR_ep);
+        updateFill(carteVR_ep);
+//        const val = await dataMoyenne();
+        console.log("fin du start");
+//        document.dispatchEvent(event);
     }
 //===============================================================
 // Menu
@@ -225,7 +271,7 @@ function aff_jour() {
         .attr('r',m_size*0.4)
         .on('mouseover',function(d,i){ d3.select(this).style('fill','#03045E');})
         .on('mouseout',function(d,i){ d3.select(this).style('fill','#0D3E9A');});
-    menu.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'10px')
+    menu.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'1.5vw')
         .attr('dy','0.3em').text(d=>d).raise();
 
     var menu2 = svg.append('g').selectAll("g").data(["-","Moy.","+"]).enter()
@@ -237,7 +283,7 @@ function aff_jour() {
         .attr('r',m_size*0.4)
         .on('mouseover',function(d,i){ d3.select(this).style('fill','#03045E');})
         .on('mouseout',function(d,i){ d3.select(this).style('fill','#0D3E9A');});
-    menu2.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'10px')
+    menu2.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'1.5vw')
         .attr('dy','0.3em').text(d=>d).raise();
 
 
@@ -267,20 +313,6 @@ function aff_jour() {
 		}
 		dataMoyenne(rot,rot+moy); updateFill(dataMoy);
     }
-    async function start() {
-		console.log('start'); //console.log(dataGouv);
-	    h_dep = [...new Set(dataGouv.map(x=>x.dep))]; //console.log(h_dep);
-		h_date = [...new Set(dataGouv.map(x=>x.date_de_passage))]; //console.log(h_date);
-		sel_date = h_date[h_date.length-1]; console.log(sel_date); //xxxxx
-		carteVR_ep = updtDataCarte(sel_date);
-		rot=0; dataTendance(rot);
-    	//console.log('start', carteVR_ep);
-        updateFill(carteVR_ep);
-//        const val = await dataMoyenne();
-        console.log("fin du start");
-//        document.dispatchEvent(event);
-    }
-
 //==========================================================
 // les calculs en tout genre sur les données
 // la moyenne des data
@@ -303,6 +335,24 @@ function dataMoyenne(first,nb) { console.log("moyenne ...");
         console.log("fin moyenne"); // dataTendance(first);
     return 1;
 }
+function getDataARS(item,sexe,date) { //hosp,rea,rad,dc
+    let data =[];
+    h_dep.forEach((d)=> 
+            {   data.push(getDataDep(item,d,date,sexe));
+            }
+        );
+    return data;
+}
+function getDataDep(item,dept,date,sexe) {
+
+    let cum = dataHosp.reduce((a,d)=>{ let v=0;
+        if (d.dep == dept && d.jour == date && d.sexe == sexe) {
+            v= Number(d[item]); //console.log(r,a,v);
+        }
+        return (a+v); },0); //console.log(cum);
+    return cum;
+}
+
 //--------
 // les tendances sur 5 jours
 //
@@ -342,11 +392,13 @@ function updtDataCarte(date) {
                 dataVR.push({dep:d.dep,'pourcent':val,'cor':Number(d['nbre_pass_corona']),'tot':Number(d['nbre_pass_tot']),'pop':Number(pop[0].PopT)});
             }
         });
-        data_day=[];
-        data_day.push(cumul(dataVR.map(cm => {return cm.cor;}),0));
-        data_day.push(cumul(dataVR.map(cm => {return cm.tot;}),0));
-        data_day.push(cumul(dataVR.map(cm => {return cm.pop;}),0));
-        document.dispatchEvent(event);
+        data_day_s=[];
+        data_day_s.push(cumul(dataVR.map(cm => {return cm.cor;}),0));
+        data_day_s.push(cumul(dataVR.map(cm => {return cm.tot;}),0));
+        data_day_s.push(cumul(dataVR.map(cm => {return cm.pop;}),0)+'p');
+        data_day_s.push(valFormat(data_day_s[0]/data_day_s[1]*100.0)+' %');
+        data_day_s[0] += ' corona';    data_day_s[1] += ' total';
+        document.dispatchEvent(evt_sursaut);document.dispatchEvent(evt_ARS);
 		return dataVR;
 }
 
