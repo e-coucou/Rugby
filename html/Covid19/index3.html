@@ -156,7 +156,7 @@ console.log(width,scaleDep,height);
         .call(d3.axisRight(legendDepScale).ticks(10));
 //=============================================================
 // les infos globales de santé France
-    const gJour = svg.append("g").attr("transform", "translate("+(margin.left+20)+"," + (height-5*30-margin.bottom+10) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','2vw').text('xx/xx/xxxx').style("font-weight","bold").style('fill','#9D0208');
+    const gJour = svg.append("g").attr("transform", "translate("+(margin.left+20)+"," + (height-5*30-margin.bottom+10) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','2vmin').text('xx/xx/xxxx').style("font-weight","bold").style('fill','#9D0208');
 
 function aff_jour() {
     let iconCase = [{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"blue",s:6,f:"white"},
@@ -167,7 +167,7 @@ function aff_jour() {
         gGlobal.append("rect").style("fill",colors[colors.length-2]).attr("width",80).attr("height",25).attr("x",30)//.attr("y",(d,i)=>{return i*30;})
             .style("stroke-width",2).style("stroke",colors[8]).attr("rx",2).attr("ry",20);
         gGlobal.append("circle").attr("cx",12).attr("cy",12).attr("r",12).style("fill",(d,i)=>{return iconCase[i].f}).style("stroke-width",1).style("stroke",(d,i)=>{return iconCase[i].c});
-        gGlobal.append("text").style("font-size","1.9vw").style("fill","white").style("font-family","HelveticaNeue-Light").style("font-weight","bold")
+        gGlobal.append("text").style("font-size","1.9vmin").style("fill","white").style("font-family","HelveticaNeue-Light").style("font-weight","bold")
             .text(d=>{return d}).attr("x",40+30)
             .attr("y", 18).attr("text-anchor","middle");
         gGlobal.append("path").attr("y",(d,i)=>{return i*30}).attr("d",(d,i)=>{return iconCase[i].d}).attr("stroke-width",(d,i)=>{return iconCase[i].s})
@@ -187,13 +187,13 @@ function aff_jour() {
 
     var gSursaut = svg.append("g").selectAll("g").data([0]).enter()
                     .append("g")
-                    .attr("transform",(d,i)=>{ return "translate("+(margin.left+width/2+(i-1)*scaleDep/5)+","+(height-margin.bottom)+")";}).append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.6vw').text(d=>d).style("font-weight","bold").style('fill','#9D0208');
+                    .attr("transform",(d,i)=>{ return "translate("+(margin.left+width/2+(i-1)*scaleDep/5)+","+(height-margin.bottom)+")";}).append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.6vmin').text(d=>d).style("font-weight","bold").style('fill','#9D0208');
 function aff_jour2() {
 //    console.log('coucou');
     gSursaut.remove();
     gSursaut = svg.append("g").selectAll("g").data(data_day_s).enter()
                     .append("g")
-                    .attr("transform",(d,i)=>{ return "translate("+(margin.left+width/2+(i-2)*scaleDep/5)+","+(height-margin.bottom)+")";}).append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.6vw').text(d=>d).style("font-weight","bold").style('fill','#9D0208');
+                    .attr("transform",(d,i)=>{ return "translate("+(margin.left+width/2+(i-2)*scaleDep/5)+","+(height-margin.bottom)+")";}).append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.6vmin').text(d=>d).style("font-weight","bold").style('fill','#9D0208');
 }	
 function aff_ARS() {
 //    console.log('les cumuls ARS');
@@ -271,7 +271,7 @@ function aff_ARS() {
         .attr('r',m_size*0.4)
         .on('mouseover',function(d,i){ d3.select(this).style('fill','#03045E');})
         .on('mouseout',function(d,i){ d3.select(this).style('fill','#0D3E9A');});
-    menu.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'1.5vw')
+    menu.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'1.5vmin')
         .attr('dy','0.3em').text(d=>d).raise();
 
     var menu2 = svg.append('g').selectAll("g").data(["-","Moy.","+"]).enter()
@@ -283,7 +283,7 @@ function aff_ARS() {
         .attr('r',m_size*0.4)
         .on('mouseover',function(d,i){ d3.select(this).style('fill','#03045E');})
         .on('mouseout',function(d,i){ d3.select(this).style('fill','#0D3E9A');});
-    menu2.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'1.5vw')
+    menu2.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'1.5vmin')
         .attr('dy','0.3em').text(d=>d).raise();
 
 
