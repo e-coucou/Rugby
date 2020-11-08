@@ -86,10 +86,10 @@
 	let margin = {top: 10, right: 5, bottom: 30, left: 50},
     width = window.innerWidth - margin.right-margin.left,
     height = window.innerHeight - margin.top-margin.bottom -40;
-    let orientation=0;
-    if (width>height) orientation=1;
+    let orientation=1;
+    if (width>height) orientation=0;
     let scale=0, scaleDep = height;
-    if (orientation) {scale=width} else {scale=height, scaleDep=width}
+    if (orientation) {scale=height, scaleDep=width} else {scale=width}
 //===========================================================
 // la carte de France
 //
@@ -122,7 +122,7 @@ console.log(width,scaleDep,height);
 //===========================================================
 //legende de la carte des départements
     var legendDep = svg.append('g')
-        .attr('transform', function(d) { return 'translate('+(margin.left)+','+(0 +7*margin.top)+')';})
+        .attr('transform', function(d) { return 'translate('+(margin.left)+','+(orientation*scaleDep/2 +7*margin.top)+')';})
         .attr('id', 'legendDep');
 
     var interpolate = d3[`interpolate${'Reds'}`];
@@ -152,7 +152,7 @@ console.log(width,scaleDep,height);
         .range([0, n * 20]);
     var legendDepAxis = svg.append("g")
         .attr("class","legendDep")
-        .attr('transform', function(d) {return 'translate('+( 20+margin.left)+','+(0 + 7*margin.top)+')';})
+        .attr('transform', function(d) {return 'translate('+( 20+margin.left)+','+(orientation*scaleDep/2 + 7*margin.top)+')';})
         .call(d3.axisRight(legendDepScale).ticks(10));
 //=============================================================
 // les infos globales de santé France
