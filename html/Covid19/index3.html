@@ -63,24 +63,25 @@
     <!-- href="https://www.data.gouv.fr/fr/datasets/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/">ARS</div></aside>-->
 </footer>
     <script type="text/javascript">
+//====================================================================
+// FONCTIONS
+//
 // format ...
 	let valFormat = (a) => { 
         let r = (a>100) ? Math.round(a) : ( (a>1)? Math.round(a*100.0)/100 : Math.round(a*1000.0)/1000);
         return String(r).replace(/(.)(?=(\d{3})+$)/g,'$1 ');
 //        return r;
         }
-
+	let cumul = (array) => array.reduce((a, b) => { return a + b; }); // / array.length;
+	let average = (array) => array.reduce((a, b) => { return a + b; }) / array.length;
+//=================================================================================================
 // Variables Globales
     var timeStart=0,timeStop=0;
     var locale = {
         dateTime: "%A, le %e %B %Y, %X",date: "%d/%m/%Y",time: "%H:%M:%S",periods: ["AM","PM"],days: ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"],shortDays: ["dim.","lun.","mar.","mer.","jeu.","ven.","sam."],months: ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"],shortMonths: ["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."]};
-
     d3.timeFormatDefaultLocale(locale);
 
-    var first = true;
-	let cumul = (array) => array.reduce((a, b) => { return a + b; }); // / array.length;
-	let average = (array) => array.reduce((a, b) => { return a + b; }) / array.length;
-	
+    var first = true;	
 	var sel_date = "01/01/2020", version = "0.55", pop_france=1;
 	var couleur = ['DarkRed','yellowgreen','RebeccaPurple','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
 	let margin = {top: 10, right: 5, bottom: 30, left: 50},
@@ -90,7 +91,7 @@
     if (width>height) orientation=0;
     let scale=0, scaleDep = height;
     if (orientation) {scale=height, scaleDep=width} else {scale=width}
-//===========================================================
+//====================================================================================================
 // la carte de France
 //
 console.log(width,scaleDep,height);
@@ -110,7 +111,7 @@ console.log(width,scaleDep,height);
     const departVR_ep = svg.append("g")
         .attr("transform", "translate("+(margin.left*1)+"," + (margin.top) + ")");
 //        .attr("transform", "translate("+(margin.left*3+scaleDep*3/5)+"," + (2*height+margin.top) + ")");
-//===========================================================
+//=========================================================================================================
 // on ajoute un tooltip
     const eetooltip = new EETooltip({
     	'svgId': 'svg', 
@@ -175,7 +176,6 @@ function aff_jour() {
             .attr("stroke",(d,i)=>{return iconCase[i].c}).style("fill","red");
 
    gJour.text(sel_date);
-
 }
 //=============================================================
 // gestion des event
@@ -185,6 +185,8 @@ function aff_jour() {
     document.addEventListener('sursaut',aff_jour2);
     var evt_ARS = new Event ('ARS');
     document.addEventListener('ARS',aff_ARS);
+    var evt_Trend = new Event ('Trend');
+    document.addEventListener('Trend',lance_Trend);
 
     var gSursaut = svg.append("g").selectAll("g").data([0]).enter()
                     .append("g")
@@ -208,6 +210,10 @@ function aff_ARS() {
     data_day.push(cumul(data_dc));
     data_day.push(cumul(data_rad));
     aff_jour();
+}
+function lance_Trend() {
+	console.log('lancmeent des trends');
+	dataTendance(rot);
 }
 //=============================================================
 // lecture des donnees	
@@ -254,12 +260,11 @@ function aff_ARS() {
         h_date = [...new Set(dataGouv.map(x=>x.date_de_passage))]; //console.log(h_date);
         sel_date = h_date[h_date.length-1]; console.log(sel_date); //xxxxx
         carteVR_ep = updtDataCarte(sel_date);
-        rot=0; dataTendance(rot);
+        rot=0;
         //console.log('start', carteVR_ep);
         updateFill(carteVR_ep);
-//        const val = await dataMoyenne();
         console.log("fin du start");
-//        document.dispatchEvent(event);
+		dispatchEvent(evt_Trend);
     }
 //===============================================================
 // Menu
