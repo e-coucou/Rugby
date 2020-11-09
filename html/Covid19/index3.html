@@ -449,7 +449,7 @@ function updateFill(carte) {
                 eetooltip.addDataBlock("Trend", valFormat(dataTrend[nT].trend));
                 eetooltip.addDataBlock("Pourcent Covid/Adm.",valFormat(carte[nVR].pourcent)+'%');
                 eetooltip.addDataBlock("________________________________________","");
-                eetooltip.addDataBlock("Hospitalisées",valFormat(dataHosp[nHosp].hosp)+'/'+valFormat(dataHosp[nHosp].hosp/carte[nVR].pop*100000.0));
+                eetooltip.addDataBlock("Hospitalisées / 100k",valFormat(dataHosp[nHosp].hosp)+' / '+Math.round(dataHosp[nHosp].hosp/carte[nVR].pop*100000.0));
                 eetooltip.addDataBlock("en Réanimation",valFormat(dataHosp[nHosp].rea));
                 eetooltip.addDataBlock("Décédées",valFormat(dataHosp[nHosp].dc));
                 eetooltip.addDataBlock("________________________________________","");
