@@ -298,7 +298,8 @@ function aff_ARS() {
         console.log(rot);
         sel_date = h_date[h_date.length-rot-1]; console.log(sel_date); //xxxxx
         carteVR_ep = updtDataCarte(sel_date);
-        dataTendance(rot);hospTendance(rot,'hosp');
+        dataTendance(rot);
+		hospTendance(rot,'hosp');hospTendance(rot,'rea');hospTendance(rot,'dc');
 		if (flip) { 
             updateTrend(dataTrend); } 
 		else {
@@ -393,10 +394,10 @@ function hospTendance(first,item) {
 		for(i=0;i<5;i++) {
 			trend += xx[i]*(d_temp[i]-m_temp);
 		}
-		trend = trend /10.0; console.log(trend,d_temp);
+		trend = trend /10.0; //console.log(d,trend,d_temp);
         let n=dataTrend.findIndex(k => (k.dep===d));
         dataTrend[n][item] = d_temp;
-	}); //console.log(dataTrend);
+	}); console.log(dataTrend);
 }
 //-------
 // le tableau des cartes journalière
