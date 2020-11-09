@@ -214,6 +214,7 @@ function aff_ARS() {
 function lance_Trend() {
 	console.log('lancmeent des trends');
 	dataTendance(rot);
+	hospTendance(rot,'hosp');hospTendance(rot,'rea');hospTendance(rot,'dc');
 }
 //=============================================================
 // lecture des donnees	
@@ -304,8 +305,9 @@ function lance_Trend() {
         console.log(rot);
         sel_date = h_date[h_date.length-rot-1]; console.log(sel_date); //xxxxx
         carteVR_ep = updtDataCarte(sel_date);
-        dataTendance(rot);
-		hospTendance(rot,'hosp');hospTendance(rot,'rea');hospTendance(rot,'dc');
+//        dataTendance(rot);
+//		hospTendance(rot,'hosp');hospTendance(rot,'rea');hospTendance(rot,'dc');
+		document.dispatchEvent(evt_Trend);
 		if (flip) { 
             updateTrend(dataTrend); } 
 		else {
