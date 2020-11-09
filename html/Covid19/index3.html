@@ -396,6 +396,7 @@ function hospTendance(first,item) {
 		}
 		trend = trend /10.0; //console.log(d,trend,d_temp);
         let n=dataTrend.findIndex(k => (k.dep===d));
+        dataTrend[n]['t_'+item] = trend;
         dataTrend[n][item] = d_temp;
 	}); console.log(dataTrend);
 }
