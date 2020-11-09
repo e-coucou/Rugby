@@ -159,7 +159,7 @@ console.log(width,scaleDep,height);
     const gJour = svg.append("g").attr("transform", "translate("+(margin.left+20)+"," + (height-5*30-margin.bottom+10) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','2vmin').text('xx/xx/xxxx').style("font-weight","bold").style('fill','#9D0208');
 
 function aff_jour() {
-	data_day[0] += '/'+ Math.round(data_day[0]/pop_france);
+	data_day[0] += '/'+ Math.round(data_day[0]/pop_france*100000.0);
     let iconCase = [{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"blue",s:6,f:"white"},
     {d:"M17,5 c 2.5 0,5 2,5 5 c 0 1.5, -0.5 2.5, -1.5,3.5 L13,21 L5,12.5 c -0.8 -0.8 -1.2 -2 -1.2 -3.2 c 0-2,2 -5, 4.6 -4.6 c 2 0,3.5 1.1,4.2 2.8 C 14 6, 15 5, 17 5 z",c:"red",s:1,f:"white"}, {d:"M 5,8 L 19,8 M 12,2 L 12,22",c:"white",s:3,f:"black"},{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"green",s:6,f:"white"}];
     var gGlobal = svg.append("g").selectAll("g").data(data_day).enter()
