@@ -82,7 +82,7 @@
     d3.timeFormatDefaultLocale(locale);
 
     var first = true;	
-	var sel_date = "01/01/2020", version = "0.55", pop_france=1;
+	var sel_date = "01/01/2020", sel_jour , version = "0.55", pop_france=1;
 	var couleur = ['DarkRed','yellowgreen','RebeccaPurple','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
 	let margin = {top: 10, right: 5, bottom: 30, left: 50},
     width = window.innerWidth - margin.right-margin.left,
@@ -157,12 +157,23 @@ console.log(width,scaleDep,height);
         .call(d3.axisRight(legendDepScale).ticks(10));
 //=============================================================
 // les infos globales de santé France
-    const gJour = svg.append("g").attr("transform", "translate("+(margin.left+20)+"," + (height-5*30-margin.bottom+10) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','2vmin').text('xx/xx/xxxx').style("font-weight","bold").style('fill','#9D0208');
+    const gDate = svg.append("g").attr("transform", "translate("+(margin.left+20)+"," + (height-5*30-margin.bottom+10) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','2vmin').text('xx/xx/xxxx').style("font-weight","bold").style('fill','#9D0208');
+    const gJour = svg.append("g").attr("transform", "translate("+(margin.left+55)+"," + (margin.top+30) + ")").append('text').style('font-family','HelveticaNeue-Light').style('font-size','2vmin').text('xx/xx/xxxx').style("font-weight","bold").style('fill','#9D0208');
+
 
 function aff_jour() {
 	data_day[0] += '/'+ Math.round(data_day[0]/pop_france*100000.0);
     let iconCase = [{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"blue",s:6,f:"white"},
     {d:"M17,5 c 2.5 0,5 2,5 5 c 0 1.5, -0.5 2.5, -1.5,3.5 L13,21 L5,12.5 c -0.8 -0.8 -1.2 -2 -1.2 -3.2 c 0-2,2 -5, 4.6 -4.6 c 2 0,3.5 1.1,4.2 2.8 C 14 6, 15 5, 17 5 z",c:"red",s:1,f:"white"}, {d:"M 5,8 L 19,8 M 12,2 L 12,22",c:"white",s:3,f:"black"},{d:"M 2,12 L 22,12 M 12,2 L 12,22",c:"green",s:6,f:"white"}];
+    var gToday = svg.append("g").selectAll("g").data(data_dernier).enter()
+                    .append("g")
+                    .attr("transform",(d,i)=>{ return "translate("+(margin.left+50)+","+((2+i)*30-margin.top)+")";})
+        gToday.append("circle").attr("cx",12).attr("cy",12).attr("r",12).style("fill",(d,i)=>{return iconCase[i].f}).style("stroke-width",1).style("stroke",(d,i)=>{return iconCase[i].c});
+        gToday.append("path").attr("y",(d,i)=>{return i*30}).attr("d",(d,i)=>{return iconCase[i].d}).attr("stroke-width",(d,i)=>{return iconCase[i].s})
+            .attr("stroke",(d,i)=>{return iconCase[i].c}).style("fill","red");
+        gToday.append("text").style("font-size","1.9vmin").style("fill","black").style("font-family","HelveticaNeue-Light").style("font-weight","bold").text(d=>{return d}).attr("x",40+20).attr("y", 18).attr("text-anchor","middle");
+
+
     var gGlobal = svg.append("g").selectAll("g").data(data_day).enter()
                     .append("g")
                     .attr("transform",(d,i)=>{ return "translate("+(margin.left)+","+(height-(4-i)*30-margin.bottom)+")";});
@@ -175,7 +186,8 @@ function aff_jour() {
         gGlobal.append("path").attr("y",(d,i)=>{return i*30}).attr("d",(d,i)=>{return iconCase[i].d}).attr("stroke-width",(d,i)=>{return iconCase[i].s})
             .attr("stroke",(d,i)=>{return iconCase[i].c}).style("fill","red");
 
-   gJour.text(sel_date);
+   gJour.text(sel_jour);
+   gDate.text(sel_date);
 }
 //=============================================================
 // gestion des event
@@ -199,24 +211,36 @@ function aff_jour2() {
                     .attr("transform",(d,i)=>{ return "translate("+(margin.left+width/2+(i-1)*scaleDep/6)+","+(height-margin.bottom)+")";}).append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.6vmin').text(d=>d).style("font-weight","bold").style('fill','#9D0208').style("text-anchor","middle");
 }	
 function aff_ARS() {
-    console.log('les cumuls ARS');
-    let data_hosp = getDataARS('hosp',0,sel_date);
-    let data_rea = getDataARS('rea',0,sel_date);
-    let data_dc = getDataARS('dc',0,sel_date);
-    let data_rad = getDataARS('rad',0,sel_date);
+    console.log('les cumuls ARS'); timeStart = new Date();
+    let temp_date = [...new Set(dataHosp.map(x=>x.jour))]; //console.log(h_date);
+        sel_jour = temp_date[temp_date.length-1]; console.log(sel_jour); //xxxxx
+    let data_hosp = getDataARS('hosp',0,sel_jour);
+    let data_rea = getDataARS('rea',0,sel_jour);
+    let data_dc = getDataARS('dc',0,sel_jour);
+    let data_rad = getDataARS('rad',0,sel_jour);
+    data_dernier=[];
+    data_dernier.push(cumul(data_hosp));
+    data_dernier.push(cumul(data_rea));
+    data_dernier.push(cumul(data_dc));
+    data_dernier.push(cumul(data_rad));
+    //
+    data_hosp = getDataARS('hosp',0,sel_date);
+    data_rea = getDataARS('rea',0,sel_date);
+    data_dc = getDataARS('dc',0,sel_date);
+    data_rad = getDataARS('rad',0,sel_date);
     data_day=[];
     data_day.push(cumul(data_hosp));
     data_day.push(cumul(data_rea));
     data_day.push(cumul(data_dc));
     data_day.push(cumul(data_rad));
-    aff_jour();
-    console.log('ARS read');
+    aff_jour(); timeStop = new Date();
+    console.log('ARS read #'+ (timeStop-timeStart));
 }
 function lance_Trend() {
-	console.log('lancement des trends');
+	console.log('lancement des trends');timeStart = new Date();
 	dataTendance(rot);
-	hospTendance(rot,'hosp');hospTendance(rot,'rea');hospTendance(rot,'dc');
-    console.log('trends OK');
+	hospTendance(rot,'hosp');hospTendance(rot,'rea');hospTendance(rot,'dc'); timeStop = new Date();
+    console.log('trends #'+ (timeStop-timeStart));
 }
 //=============================================================
 // lecture des donnees	
@@ -303,8 +327,8 @@ function lance_Trend() {
 		  case 0 : rot = (rot + 1) % h_date.length ; break;
 		  case 2 : if (rot>0) {rot -= 1} else {rot = h_date.length -1}; break;
 		}
-        console.log(rot);
-        sel_date = h_date[h_date.length-rot-1]; console.log(sel_date); //xxxxx
+        //console.log(rot);
+        sel_date = h_date[h_date.length-rot-1]; //console.log(sel_date); //xxxxx
         carteVR_ep = updtDataCarte(sel_date);
 //        dataTendance(rot);
 //		hospTendance(rot,'hosp');hospTendance(rot,'rea');hospTendance(rot,'dc');
