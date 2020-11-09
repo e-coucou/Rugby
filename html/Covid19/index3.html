@@ -199,7 +199,7 @@ function aff_jour2() {
                     .attr("transform",(d,i)=>{ return "translate("+(margin.left+width/2+(i-1)*scaleDep/6)+","+(height-margin.bottom)+")";}).append('text').style('font-family','HelveticaNeue-Light').style('font-size','1.6vmin').text(d=>d).style("font-weight","bold").style('fill','#9D0208').style("text-anchor","middle");
 }	
 function aff_ARS() {
-//    console.log('les cumuls ARS');
+    console.log('les cumuls ARS');
     let data_hosp = getDataARS('hosp',0,sel_date);
     let data_rea = getDataARS('rea',0,sel_date);
     let data_dc = getDataARS('dc',0,sel_date);
@@ -210,11 +210,13 @@ function aff_ARS() {
     data_day.push(cumul(data_dc));
     data_day.push(cumul(data_rad));
     aff_jour();
+    console.log('ARS read');
 }
 function lance_Trend() {
-	console.log('lancmeent des trends');
+	console.log('lancement des trends');
 	dataTendance(rot);
 	hospTendance(rot,'hosp');hospTendance(rot,'rea');hospTendance(rot,'dc');
+    console.log('trends OK');
 }
 //=============================================================
 // lecture des donnees	
@@ -262,10 +264,9 @@ function lance_Trend() {
         sel_date = h_date[h_date.length-1]; console.log(sel_date); //xxxxx
         carteVR_ep = updtDataCarte(sel_date);
         rot=0;
-        //console.log('start', carteVR_ep);
         updateFill(carteVR_ep);
-        console.log("fin du start");
 		document.dispatchEvent(evt_Trend);
+        console.log("fin du start");
     }
 //===============================================================
 // Menu
@@ -275,7 +276,7 @@ function lance_Trend() {
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',click);
     menu.append('circle').style('fill','#0D3E9A')
-        .attr('r',m_size*0.4)
+        .attr('r',m_size*0.46)
         .on('mouseover',function(d,i){ d3.select(this).style('fill','#03045E');})
         .on('mouseout',function(d,i){ d3.select(this).style('fill','#0D3E9A');});
     menu.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'1.5vmin')
@@ -287,7 +288,7 @@ function lance_Trend() {
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',change);
     menu2.append('circle').style('fill','#0D3E9A')
-        .attr('r',m_size*0.4)
+        .attr('r',m_size*0.46)
         .on('mouseover',function(d,i){ d3.select(this).style('fill','#03045E');})
         .on('mouseout',function(d,i){ d3.select(this).style('fill','#0D3E9A');});
     menu2.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'1.5vmin')
@@ -406,7 +407,7 @@ function hospTendance(first,item) {
         let n=dataTrend.findIndex(k => (k.dep===d));
         dataTrend[n]['t_'+item] = trend;
         dataTrend[n][item] = d_temp;
-	}); console.log(dataTrend);
+	}); //console.log(dataTrend);
 }
 //-------
 // le tableau des cartes journalière
