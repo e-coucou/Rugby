@@ -443,8 +443,7 @@ function updateFill(carte) {
                 d3.select(this).style('opacity',0.3);
                 eetooltip.addDataBlock("________________________________________","");
                 eetooltip.addDataBlock("population", carte[nVR].pop);
-                eetooltip.addDataBlock("Passage Corona", carte[nVR].cor);
-                eetooltip.addDataBlock("Passage Total", carte[nVR].tot);
+                eetooltip.addDataBlock("Passage Corona/Total", carte[nVR].cor+' / '+carte[nVR].tot);
                 eetooltip.addDataBlock("Trend", valFormat(dataTrend[nT].trend));
                 eetooltip.addDataBlock("Pourcent Covid/Adm.",valFormat(carte[nVR].pourcent)+'%');
                 eetooltip.addDataBlock("________________________________________","");
@@ -453,7 +452,7 @@ function updateFill(carte) {
                 eetooltip.addDataBlock("Décédées",valFormat(dataHosp[nHosp].dc));
                 eetooltip.addDataBlock("________________________________________","");
                 eetooltip.addDataBlock(sel_date,d.properties.nom+" -");
-                eetooltip.addDataBlock("code département / version", d.properties.code+' / '+version);
+                eetooltip.addDataBlock("v "+version, d.properties.code+' -);
                 eetooltip.show();
         });
 }
