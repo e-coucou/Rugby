@@ -437,6 +437,7 @@ function updateFill(carte) {
             .on('mouseover',function(d,i){
                 let nVR=carte.findIndex(k => (k.dep===d.properties.code));
                 let nT=dataTrend.findIndex(k => (k.dep===d.properties.code));
+                let nHosp=dataHosp.findIndex(k => (k.dep===d.properties.code && k.jour===sel_date));
 //                let n=dept.findIndex(k => k.dep===d.properties.code);
                 d3.select(this).style('stroke','black').style('stroke-width',3);
                 d3.select(this).style('opacity',0.3);
@@ -450,10 +451,11 @@ function updateFill(carte) {
                 eetooltip.addDataBlock("Passage Corona", carte[nVR].cor);
                 eetooltip.addDataBlock("Passage Total", carte[nVR].tot);
                 eetooltip.addDataBlock("Trend", valFormat(dataTrend[nT].trend));
-//                eetooltip.addDataBlock("Hospitalisées",valFormat(dept[n].hosp));
-//                eetooltip.addDataBlock("en Réanimation",valFormat(dept[n].rea));
-//                eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
                 eetooltip.addDataBlock("Pourcent Covid/Adm.",valFormat(carte[nVR].pourcent)+'%');
+                eetooltip.addDataBlock("________________________________________","");
+                eetooltip.addDataBlock("Hospitalisées",valFormat(dataHosp[nHosp].hosp));
+                eetooltip.addDataBlock("en Réanimation",valFormat(dataHosp[nHosp].rea));
+                eetooltip.addDataBlock("Décédées",valFormat(dataHosp[nHosp].dc));
                 eetooltip.show();
         });
 }
