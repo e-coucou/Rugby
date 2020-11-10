@@ -107,7 +107,6 @@ console.log(width,scaleDep,height);
     	.attr("id", "svg").attr("position", 2)
     	.attr("width", width+margin.right+margin.left)
     	.attr("height", (height)*1); // nombre de pages
-	updateColor();
 
     const departVR_ep = svg.append("g")
         .attr("transform", "translate("+(margin.left*1)+"," + (margin.top) + ")");
@@ -134,6 +133,8 @@ console.log(width,scaleDep,height);
     for (let i = 0; i < n; ++i) {
       colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
     }
+	updateColor();
+
 	var tantile = d3.scaleQuantile()
         .domain([0, n-1])
         .range(d3.range(n));
