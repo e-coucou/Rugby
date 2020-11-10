@@ -107,6 +107,7 @@ console.log(width,scaleDep,height);
     	.attr("id", "svg").attr("position", 2)
     	.attr("width", width+margin.right+margin.left)
     	.attr("height", (height)*1); // nombre de pages
+	updateColor();
 
     const departVR_ep = svg.append("g")
         .attr("transform", "translate("+(margin.left*1)+"," + (margin.top) + ")");
@@ -526,6 +527,16 @@ function drawCarte() {
                 d3.select(this).style('opacity',0.3);  })
             .style('stroke','white').style('stroke-width',0.8);
 }
+
+//=============================================================================
+// fonction d'agréménets ...
+//
+function updateColor() {
+        // body...
+        d3.select("header").transition().duration(2000).style("background-color",colors[colors.length-2]);
+        d3.select("footer").transition().duration(2000).style("background-color",colors[colors.length-2]);
+}
+
 
    </script>
 
