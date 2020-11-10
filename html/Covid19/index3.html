@@ -17,6 +17,7 @@
 		display: block;
 		margin: auto;
 		background:#f5f5ff;
+    position : relative;
 	}
 .legendDep rect {
   fill:white;
@@ -82,11 +83,11 @@
     d3.timeFormatDefaultLocale(locale);
 
     var first = true;	
-	var sel_date = "01/01/2020", sel_jour , version = "0.55", pop_france=1;
+	var sel_date = "01/01/2020", sel_jour , version = "1.03", pop_france=1;
 	var couleur = ['DarkRed','yellowgreen','RebeccaPurple','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
-	let margin = {top: 10, right: 5, bottom: 30, left: 50},
-    width = window.innerWidth - margin.right-margin.left,
-    height = window.innerHeight - margin.top-margin.bottom -40;
+	let margin = {top: 10, right: 10, bottom: 10, left: 40},
+    width = window.innerWidth -0; //- margin.right-margin.left;
+    height = window.innerHeight -60;//- margin.top-margin.bottom;
     let orientation=1;
     if (width>height) orientation=0;
     let scale=0, scaleDep = height;
@@ -104,9 +105,9 @@ console.log(width,scaleDep,height);
     pathDep.projection(projectionDep);
 
 	const svg = d3.select('#chart').append("svg")
-    	.attr("id", "svg").attr("position", 2)
-    	.attr("width", width+margin.right+margin.left)
-    	.attr("height", (height)*1); // nombre de pages
+    	.attr("id", "svg").attr("position", 2).style('margin-top','40px')
+    	.attr("width", width) //+margin.right+margin.left)
+    	.attr("height", height); // nombre de pages
 
     const departVR_ep = svg.append("g")
         .attr("transform", "translate("+(margin.left*1)+"," + (margin.top) + ")");
@@ -123,17 +124,16 @@ console.log(width,scaleDep,height);
 //===========================================================
 //legende de la carte des départements
     var legendDep = svg.append('g')
-        .attr('transform', function(d) { return 'translate('+(margin.left)+','+(orientation*scaleDep/2 +7*margin.top)+')';})
+        .attr('transform', function(d) { return 'translate('+(margin.left)+','+(orientation*scaleDep/2 +2*margin.top)+')';})
         .attr('id', 'legendDep');
 
-    var interpolate = d3[`interpolate${'Reds'}`];
+    var interpolate = d3[`interpolate${'Blues'}`];
     var colors = [];
     const n=15;
 //    dark = d3.lab(interpolate(0)).l < 50;
     for (let i = 0; i < n; ++i) {
       colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
     }
-	updateColor();
 
 	var tantile = d3.scaleQuantile()
         .domain([0, n-1])
@@ -155,7 +155,7 @@ console.log(width,scaleDep,height);
         .range([0, n * 20]);
     var legendDepAxis = svg.append("g")
         .attr("class","legendDep")
-        .attr('transform', function(d) {return 'translate('+( 20+margin.left)+','+(orientation*scaleDep/2 + 7*margin.top)+')';})
+        .attr('transform', function(d) {return 'translate('+( 20+margin.left)+','+(orientation*scaleDep/2 + 2*margin.top)+')';})
         .call(d3.axisRight(legendDepScale).ticks(10));
 //=============================================================
 // les infos globales de santé France
@@ -298,7 +298,7 @@ function lance_Trend() {
 // Menu
     let m_size = scaleDep/17;
     var menu = svg.append("g").selectAll("g").data(["<<","Auj.",">>","Trend"]).enter()
-        .append('g').attr('transform', function(d,i) { return 'translate('+(width-(3-i)*m_size)+','+(7*margin.top )+')';})
+        .append('g').attr('transform', function(d,i) { return 'translate('+(width-(3.5-i)*m_size-margin.right)+','+(3*margin.top )+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',click);
     menu.append('circle').style('fill','#0D3E9A')
@@ -310,7 +310,7 @@ function lance_Trend() {
 
     var menu2 = svg.append('g').selectAll("g").data(["-","Moy.","+"]).enter()
 //        .attr('transform', 'translate(80,150)')
-        .append("g").attr('transform', function(d,i) { return 'translate('+(width-(3-i)*m_size)+','+(7*margin.top+m_size)+')';})
+        .append("g").attr('transform', function(d,i) { return 'translate('+(width-(3.5-i)*m_size-margin.right)+','+(3*margin.top+m_size)+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',change);
     menu2.append('circle').style('fill','#0D3E9A')
@@ -320,6 +320,7 @@ function lance_Trend() {
     menu2.append('text').style('fill','white').style('text-anchor','middle').style("font-size",'1.5vmin')
         .attr('dy','0.3em').text(d=>d).raise();
 
+    updateColor();
 
     function click(d,i) {
 		//console.log('click',d);
@@ -539,6 +540,7 @@ function updateColor() {
         // body...
         d3.select("header").transition().duration(2000).style("background-color",colors[colors.length-2]);
         d3.select("footer").transition().duration(2000).style("background-color",colors[colors.length-2]);
+        d3.selectAll("circle").transition().duration(2000).style("fill",colors[colors.length-2]);
 }
 
 
