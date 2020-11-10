@@ -439,6 +439,7 @@ function hospTendance(first,item) {
 // le tableau des cartes journalière
 //
 function updtDataCarte(date) {
+	console.log('updCarte',getTime(new Date());
     	let dataVR=[];
         dataGouv.forEach(d=>{ 
             if (d.date_de_passage==date && d.sursaud_cl_age_corona=="0") {
@@ -456,7 +457,9 @@ function updtDataCarte(date) {
         data_day_s.push(pop_france+'p');
         data_day_s.push(valFormat(data_day_s[0]/data_day_s[1]*100.0)+' %');
         data_day_s[0] += ' corona';    data_day_s[1] += ' total';
+	console.log('updCarte : avant event',getTime(new Date());
         document.dispatchEvent(evt_sursaut);document.dispatchEvent(evt_ARS);
+	console.log('updCarte : after dispatchEvent',getTime(new Date());
 		return dataVR;
 }
 
