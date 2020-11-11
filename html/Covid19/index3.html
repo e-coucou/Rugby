@@ -331,11 +331,13 @@ function lance_Trend() {
 		  case 2 : if (rot>0) {rot -= 1} else {rot = h_date.length -1}; break;
 		}
         //console.log(rot);
-        sel_date = h_date[h_date.length-rot-1]; //console.log(sel_date); //xxxxx
-        carteVR_ep = updtDataCarte(sel_date);
+        if (i!=3){
+            sel_date = h_date[h_date.length-rot-1]; //console.log(sel_date); //xxxxx
+            carteVR_ep = updtDataCarte(sel_date);
 //        dataTendance(rot);
 //		hospTendance(rot,'hosp');hospTendance(rot,'rea');hospTendance(rot,'dc');
-		document.dispatchEvent(evt_Trend);
+    		document.dispatchEvent(evt_Trend);
+        }
 		if (flip) { 
             updateTrend(dataTrend); } 
 		else {
