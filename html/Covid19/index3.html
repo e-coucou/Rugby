@@ -259,7 +259,7 @@ function lance_Trend() {
     promises.push( d3.dsv(";",url_dataGouv));
     var geoDepart = [], carteVR_ep =[], dataGouv=[], dataMoy = [], dataDep =[], dataTrend =[], dataHosp = [];
     var h_date =[], h_dep =[];
-    var iRead=0, rot=0, moy=5, flip = false;
+    var iRead=0, rot=0, moy=5, flip = false, test = false ;
     let seuil = Math.pow(2,promises.length)-1; // console.log(seuil);
 
     promises.forEach((p,i) =>{
@@ -297,8 +297,8 @@ function lance_Trend() {
 //===============================================================
 // Menu
     let m_size = scaleDep/17;
-    var menu = svg.append("g").selectAll("g").data(["<<","Auj.",">>","Trend"]).enter()
-        .append('g').attr('transform', function(d,i) { return 'translate('+(width-(3.5-i)*m_size-margin.right)+','+(3*margin.top )+')';})
+    var menu = svg.append("g").selectAll("g").data(["<<","Auj.",">>","Trend","test"]).enter()
+        .append('g').attr('transform', function(d,i) { return 'translate('+(width-(4.5-i)*m_size-margin.right)+','+(3*margin.top )+')';})
 //        .attr("id",(d,i)=>{return "menu_"+i;}).attr("class","menu_select")
         .on('click',click);
     menu.append('circle').style('fill','#0D3E9A')
@@ -324,22 +324,23 @@ function lance_Trend() {
 
     function click(d,i) {
 		//console.log('click',d);
+        //console.log(rot);
+        if (i<3){
+            sel_date = h_date[h_date.length-rot-1]; //console.log(sel_date); //xxxxx
+            carteVR_ep = updtDataCarte(sel_date);
+            document.dispatchEvent(evt_Trend);
+        }
+//        dataTendance(rot);
+//      hospTendance(rot,'hosp');hospTendance(rot,'rea');hospTendance(rot,'dc');
 		switch (i) {
-          case 3 : flip = !flip; break;
+          case 4 : test = !test; if (test) {updateTest()}; break;
+          case 3 : flip = !flip; if (flip) {updateTrend()}; break;
           case 1 : rot = 0; break;
 		  case 0 : rot = (rot + 1) % h_date.length ; break;
 		  case 2 : if (rot>0) {rot -= 1} else {rot = h_date.length -1}; break;
 		}
-        //console.log(rot);
-        if (i!=3){
-            sel_date = h_date[h_date.length-rot-1]; //console.log(sel_date); //xxxxx
-            carteVR_ep = updtDataCarte(sel_date);
-//        dataTendance(rot);
-//		hospTendance(rot,'hosp');hospTendance(rot,'rea');hospTendance(rot,'dc');
-    		document.dispatchEvent(evt_Trend);
-        }
-		if (flip) { 
-            updateTrend(dataTrend); } 
+		if (flip || test) { 
+ } 
 		else {
 			updateFill(carteVR_ep);
 		}
@@ -463,22 +464,38 @@ function updtDataCarte(date) {
 	console.log('updCarte : avant event',(new Date()));
         document.dispatchEvent(evt_sursaut);document.dispatchEvent(evt_ARS);
 	console.log('updCarte : after dispatchEvent',(new Date()));
+    console.log('dataVR',dataVR);
 		return dataVR;
 }
 
 function getUnique(value, index, self) { 
         return self.indexOf(value) === index;
 }
-function updateTrend(carte) {
-	console.log("affiche trend");
-	legendDepScale.domain([-10, 10]);
-	legendDepAxis.call(d3.axisRight(legendDepScale).ticks(10));
-	tantile.domain([-10,10]);
+function updateTrend() {
+    console.log("affiche trend");
+    legendDepScale.domain([-10, 10]);
+    legendDepAxis.call(d3.axisRight(legendDepScale).ticks(10));
+    tantile.domain([-10,10]);
      departVR_ep.selectAll("path")
             .style("fill",d=>{
-                let n=carte.findIndex(k => (k.dep===d.properties.code));//  console.log(n,carteVR_ep[1]);
+                let n=dataTrend.findIndex(k => (k.dep===d.properties.code));//  console.log(n,carteVR_ep[1]);
                 if (n!=-1) {
-                temp= carte[n].trend;
+                temp= dataTrend[n].trend;
+                return colors[tantile(temp)];}
+            });
+}
+function updateTest() {
+    console.log("affiche test");
+    legendDepScale.domain([0, 125]);
+    legendDepAxis.call(d3.axisRight(legendDepScale).ticks(10));
+    tantile.domain([0,125]);
+     departVR_ep.selectAll("path")
+            .style("fill",d=>{
+                let n=carteVR_ep.findIndex(k => (k.dep===d.properties.code));//  console.log(n,carteVR_ep[1]);
+                let nT=dataTrend.findIndex(k => (k.dep===d.properties.code));
+                let nHosp=dataHosp.findIndex(k => (k.dep===d.properties.code && k.jour===sel_date));
+                if (n!=-1) {
+                temp= Math.round(dataHosp[nHosp].hosp/carteVR_ep[n].pop*100000.0);
                 return colors[tantile(temp)];}
             });
 }
@@ -502,6 +519,8 @@ function updateFill(carte) {
                 let nVR=carte.findIndex(k => (k.dep===d.properties.code));
                 let nT=dataTrend.findIndex(k => (k.dep===d.properties.code));
                 let nHosp=dataHosp.findIndex(k => (k.dep===d.properties.code && k.jour===sel_date));
+                console.log(dataTrend[nT]);
+
 //                let n=dept.findIndex(k => k.dep===d.properties.code);
                 d3.select(this).style('stroke','black').style('stroke-width',3);
                 d3.select(this).style('opacity',0.3);
