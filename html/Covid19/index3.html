@@ -129,7 +129,7 @@ console.log(width,scaleDep,height);
 
     var interpolate = d3[`interpolate${'Blues'}`];
     var colors = [];
-    const n=15;
+    const n=10;
 //    dark = d3.lab(interpolate(0)).l < 50;
     for (let i = 0; i < n; ++i) {
       colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
