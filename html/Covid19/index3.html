@@ -532,7 +532,7 @@ function updateFill(carte) {
                 eetooltip.addDataBlock("________________________________________","");
                 eetooltip.addDataBlock("Hospitalisées / 100k",valFormat(dataHosp[nHosp].hosp)+' / '+Math.round(dataHosp[nHosp].hosp/carte[nVR].pop*100000.0));
                 eetooltip.addDataBlock("en Réanimation",valFormat(dataHosp[nHosp].rea));
-                eetooltip.addDataBlock("Décédées",valFormat(dataHosp[nHosp].dc));
+                eetooltip.addDataBlock("Décédées",valFormat(dataHosp[nHosp].dc)+' / '+valFormat(Math.round(dataHosp[nHosp].dc/carte[nVR].pop*100000)));
                 eetooltip.addDataBlock("Trend Hosp/Réa/DC",dataTrend[nT].t_hosp+' / '+dataTrend[nT].t_rea+' / '+dataTrend[nT].t_dc);
                 eetooltip.addDataBlock("________________________________________","");
                 eetooltip.addDataBlock(sel_date,d.properties.nom+" -");

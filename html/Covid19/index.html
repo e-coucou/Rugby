@@ -63,47 +63,47 @@
 select#color {
     position: absolute;
     left: 110px;
-    top:35px;
+    top:57px;
 }
 select#dataS {
     position: absolute;
     left: 110px;
-    top:55px;
+    top:77px;
 }
 #cumul {
     position: absolute;
     right: 50px;
-    top:30px;
+    top:50px;
     font-size: 11px;
 }
 #log {
     position: absolute;
     right: 50px;
-    top:45px;
+    top:65px;
     font-size: 11px;
 }
 #decalage {
     position: absolute;
     right: 50px;
-    top: 60px;
+    top: 80px;
     font-size: 11px;
 }
 #by100k {
     position: absolute;
     left: 110px;
-    top:80px;
+    top:100px;
     font-size: 11px;
 }
 #byhomme {
     position: absolute;
     left: 110px;
-    top:120px;
+    top:140px;
     font-size: 11px;
 }
 #byfemme {
     position: absolute;
     left: 110px;
-    top:100px;
+    top:120px;
     font-size: 11px;
 }
 .legend rect {
@@ -220,7 +220,7 @@ let valFormat = (a) => {
 	
 	var couleur = ['DarkRed','yellowgreen','RebeccaPurple','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
     var couleurVR = {'vert':"green", 'orange':"orange", 'rouge':'red'};
-	let margin = {top: 10, right: 5, bottom: 10, left: 50},
+	let margin = {top: 10, right: 5, bottom: 10, left: 30},
     width = window.innerWidth; //ep - margin.right-margin.left;
     height = window.innerHeight; //ep - margin.top-margin.bottom;
     let orientation=0;
@@ -234,8 +234,8 @@ let valFormat = (a) => {
     for (let i = 0; i < n; ++i) {
       colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
     }
-    let scale=0, scaleDep = width/3;
-    if (orientation) {scale=height, scaleDep=height} else {scale=width}
+    let scale=0, scaleDep = (width- margin.right-margin.left)/3;
+    if (orientation) {scale=height- margin.right-margin.left-30, scaleDep=height- margin.right-margin.left} else {scale=width- 30-margin.right-margin.left}
 //    let scale=Math.min(width,height);
 // console.log(scale,orientation);
 // console.log(width,height);
@@ -277,7 +277,7 @@ var url_defconf_carte = "https://www.data.gouv.fr/fr/datasets/r/f2d0f955-f9c4-43
 
 	const svg = d3.select('#chart').append("svg")
     	.attr("id", "svg").attr("position", 2)
-    	.attr("width", width+margin.right+margin.left)
+    	.attr("width", width) //+margin.right+margin.left)
     	.attr("height", (height)*3);
 
 // ajoute la France des départements
@@ -303,7 +303,7 @@ var url_defconf_carte = "https://www.data.gouv.fr/fr/datasets/r/f2d0f955-f9c4-43
 // le logo de la France
     var gFrance = svg.append("g").selectAll("g").data(["blue","white","red"]).enter()
                     .append("g")
-                    .attr("transform",(d)=>{ return "translate("+(scale-180)+","+(3*margin.top)+")";});
+                    .attr("transform",(d)=>{ return "translate("+(scale-180)+","+(5*margin.top)+")";});
         gFrance.append("rect").style("fill",colors[colors.length-2]).attr("width",150).attr("height",35)//.attr("y",(d,i)=>{return i*30;})
             .style("stroke-width",2).style("stroke",colors[8]).attr("rx",3).attr("ry",20).attr("class","cadre");
         gFrance.append("text").style("font-size","24px").style("fill","white").style("font-family","HelveticaNeue-Light").style("font-weight","normal")
@@ -420,7 +420,7 @@ function start() {
 
 //legende de la carte des régions
     var legend = svg.append('g')
-        .attr('transform', function(d) { return 'translate('+(margin.left)+','+(5*margin.top)+')';})
+        .attr('transform', function(d) { return 'translate('+(margin.left)+','+(7*margin.top)+')';})
         .attr('id', 'legend');
     
     legend.selectAll('.colorbar')
@@ -471,7 +471,8 @@ function start() {
 // le graphique line ...
 //
     let w_g=0,h_g=scale/3*2,dec=1;
-    if (orientation) {w_g=width-scale-margin.right-margin.left; dec=2;} else {w_g=scale-margin.left-margin.right; dec=1.4;} //
+    if (orientation) {w_g=width-scale-margin.right-margin.left-30; dec=2;} else {w_g=scale-margin.left-margin.right-30; dec=1.4;} //
+    console.log(w_g,width,height,scale);
     const x = d3.scaleTime()
         .range([0, w_g]);
     const y = d3.scaleLinear()
