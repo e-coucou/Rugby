@@ -12,14 +12,13 @@ menu = { 1:"Matchs" , 2:"Evenements" , 3:"Classement" ,4:"Duels", 5:"MAJ WRC2105
 DEBUG = 0
 
 def get_data(url):
-    print url
     requete = s.get(url,proxies=p)
 #    print requete.content
-    print requete.status_code
     code = requete.status_code
     while code<>200:
-        requete = s.get(url,proxies=p)
+        print url
         print requete.status_code
+        requete = s.get(url,proxies=p)
         code = requete.status_code
         time.sleep(10)
     js = json.loads(requete.content)
@@ -468,8 +467,7 @@ if __name__ == "__main__":
     elif mode == 'menu' :
         q=False
         start=2003
-        add=2
-        end = 2005
+        end = 2022
         while not q:
             options=menu.keys()
             options.sort()
@@ -488,9 +486,6 @@ if __name__ == "__main__":
                 get_json()
             elif sel == '6':
                 get_rank_json(u,start,end)
-                start = start + add
-                end = start + add
-                end = max(end,2021)
             elif sel == '7':
                 get_rank_json_init()
             elif (sel == '8') | (sel == '0'):
