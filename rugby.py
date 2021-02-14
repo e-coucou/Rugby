@@ -493,7 +493,7 @@ if __name__ == "__main__":
                 break
             else:
                 print "Mauvaise option !"
-    print "\nby e-Coucou 2015"
+    print "\nby e-Coucou 2015, révision 2021"
 """    
         structure json :  pour une competition ... par event
             nodes : name group send receive OU // equivalence equipe id pour contre match

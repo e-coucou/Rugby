@@ -175,7 +175,7 @@ Sélectionnez différentes compétitions avec le menu déroulant.<br><br></p></a
 <p>Les abscisses (<i>x</i>) représentent le nombre de points, en ordonnée (<i>y</i>) le classement et le nombre de matches disputés par an est représenté par la taille de la pastille (rayon). Les Pays sont coloriés aléatoirement. En passant la souris sur les pastilles vous pourrez découvrir les noms, points et classement.</p>
     <p>Mille et un remerciements à <a href="http://bl.ocks.org/mbostock">Mike Bostock</a> et à <a href="http://alignedleft.com/tutorials/d3/">Scott Murray</a>.</p>
 <footer>
-	<aside>(c) e-Coucou | y2kJ | Data septembre 2019</aside>
+	<aside>(c) e-Coucou | y2kJ | Data février 2021</aside>
     <div id="info"></div>
     <a href="index.html" rel="author">e-Coucou</a>
 </footer>
@@ -194,6 +194,7 @@ function radius(d) { return (d.matchs===undefined ? 0 : d.matchs); }
 function color(d) { return d.id; }  // region
 function key(d) { return d.name; }
 
+var endYear = 2022;
 // Chart dimensions.
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = window.innerWidth - margin.right -margin.left,
@@ -203,7 +204,7 @@ var margin = {top: 20, right: 20, bottom: 30, left: 40},
 var xScale = d3.scale.linear().domain([0, 100]).range([0, width]),  // vs log
     yScale = d3.scale.linear().domain([0, 110]).range([0,height]),
     radiusScale = d3.scale.sqrt().domain([0, 200]).range([1, 20]),
-	dScale = d3.scale.linear().domain([2003, 2021]).range([0, width]),
+	dScale = d3.scale.linear().domain([2003, endYear]).range([0, width]),
     colorScale = d3.scale.ordinal()
         .range(colorbrewer.Rky[27]);
 
@@ -518,7 +519,7 @@ function trace_team(d,instance) {
   // After the transition finishes, you can mouseover to change the year.
   function enableInteraction() {
     var yearScale = d3.scale.linear()
-        .domain([2003, 2021])
+        .domain([2003, endYear])
 //        .range([box.x + 10, box.x + box.width - 10])
         .range([0, width ])
         .clamp(true);
@@ -559,7 +560,7 @@ function trace_team(d,instance) {
   // Tweens the entire chart by first tweening the year, and then the data.
   // For the interpolated data, the dots and label are redrawn.
   function tweenYear() {
-    var year = d3.interpolateNumber(2003, 2021);
+    var year = d3.interpolateNumber(2003, endYear);
     return function(t) { displayYear(year(t)); };
   }
 
@@ -604,7 +605,7 @@ function trace_team(d,instance) {
   // tracé du parcourt ...
   function parcourt(name) {
 	test.length=0;       //return 
-	for (annee=2003.8 ; annee < 2021.0 ; annee += 0.1) {
+	for (annee=2003.8 ; annee < (endYear + 0.0) ; annee += 0.1) {
 		irb.forEach(function(d) {
           if (d.name == name) {
             var l =  test.push( {
