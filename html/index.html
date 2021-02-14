@@ -10,10 +10,15 @@
 @import url(../css/dsp.css);
 
 #chart {
-  margin-left: 0px;
+/*  margin-left: 0px;
   margin-right: 20px;
   margin-top: 50px;
-  height: 506px;
+  height: 506px;*/
+  margin: auto;
+}
+/* update header size vs 40px  */
+.rky header{
+    height: 50px;
 }
 .entete {
     position: absolute;
@@ -101,13 +106,13 @@ td {
 }
 select#mois_select {
     position: absolute;
-    right: 20px;
-    bottom: :100px;
+    right: 50px;
+    top: 460px;
 }
 select#color {
     position: absolute;
-    right: 20px;
-    bottom: :80px;
+    right: 50px;
+    top: 480px;
 }
 #captain {
     color: #191970;
@@ -115,7 +120,7 @@ select#color {
 </style>
 <header>
   <div id='h1'>Classement RWC depuis 2003</div>
-  <aside >Novembre, 2015<br><br> | rev 02/20</aside>
+  <aside >Novembre, 2015<br><br> | rev 02/21</aside>
   <div id='menu'></div>
 <!--  <aside >Novembre, 2015 <br>rev 09/2019 <a class="entete" href="index.html" rel="author">e-Coucou</a></aside>
   <aside><a class="entete" href="wrc.html">Visualisation en graphe des Coupes du Monde de Rugby</a>
@@ -194,11 +199,11 @@ function radius(d) { return (d.matchs===undefined ? 0 : d.matchs); }
 function color(d) { return d.id; }  // region
 function key(d) { return d.name; }
 
-var endYear = 2022;
+var endYear = 2022, padd = 100;
 // Chart dimensions.
-var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = window.innerWidth - margin.right -margin.left,
-    height = 550 - margin.top - margin.bottom;
+var margin = {top: 30, right: 20, bottom: 20, left: 30},
+    width = window.innerWidth - margin.right - margin.left-padd,
+    height = window.innerHeight - margin.top - margin.bottom-padd;
 
 // Various scales. These domains make assumptions of data, naturally.
 var xScale = d3.scale.linear().domain([0, 100]).range([0, width]),  // vs log
@@ -217,11 +222,11 @@ var xDate = d3.svg.axis().orient("top").scale(dScale).ticks(18, d3.format(",d"))
 	
 // Create the SVG container and set the origin.
 var svg = d3.select("#chart").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("width", width+padd )
+    .attr("height", height+padd)
     .attr("position", 2)
   .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    .attr("transform", "translate(" + (margin.left+padd/2) + "," + (margin.top+padd/2) + ")");
 //Data
 var test=[{name: 'x', rank: 110, annee: 2003}];
 
@@ -255,7 +260,7 @@ svg.append("text")
     .attr("class", "x label")
     .attr("text-anchor", "end")
     .attr("x", width)
-    .attr("y", height + 30)
+    .attr("y", height + 10)
     .text("nombre de points");
 
 // Add a y-axis label.
