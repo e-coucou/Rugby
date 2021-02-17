@@ -112,11 +112,6 @@ td {
     font: 11px "helvetica neue";
     color: #F5FFFA;
 }
-select#mois_select {
-    position: absolute;
-    right: 50px;
-    top: 460px;
-}
 select#color {
     position: absolute;
     right: 50px;
@@ -125,11 +120,25 @@ select#color {
 #captain {
     color: #191970;
 }
+#mois_select {
+    position: absolute;
+    right: 220px;
+    top: 15px;
+}
 </style>
 <header>
   <div id='h1'>Classement RWC depuis 2003</div>
   <aside >Novembre, 2015<br><br> | rev 02/21</aside>
   <div id='menu'></div>
+  <select id="mois_select" class="styledSelect">
+    <optgroup label="ChampionShip from IRB.">
+    <option value=1>World Cup</option>
+    <option value=2 selected="">Six Nations</option>
+    <option value=3>Tri Nations</option>
+    <option value=4>TOP 3</option>
+    <option value=5>Pacific Nations Cup</option>
+    </optgroup>
+  </select>
 <!--  <aside >Novembre, 2015 <br>rev 09/2019 <a class="entete" href="index.html" rel="author">e-Coucou</a></aside>
   <aside><a class="entete" href="wrc.html">Visualisation en graphe des Coupes du Monde de Rugby</a>
   <a class="entete" href="wrc.html" rel="author"><img src="RWC.png" alt="Coupe du Monde" style="width:10px;height:10px;"></a></aside>
@@ -141,15 +150,6 @@ select#color {
   </div>-->
 </header>
 
-<select id="mois_select" class="styledSelect">
-    <optgroup label="ChampionShip from IRB.">
-    <option value=1>World Cup</option>
-    <option value=2 selected="">Six Nations</option>
-    <option value=3>Tri Nations</option>
-    <option value=4>TOP 3</option>
-    <option value=5>Pacific Nations Cup</option>
-    </optgroup>
-</select>
 <select id="color" class="styleSelect">
     <optgroup label="Colors by Cynthia Brewer.">
         <option value="BrBG">BrBG</option>

@@ -4,26 +4,48 @@
 <meta name="author" content="e-Coucou">
 <html class="rky">
 <meta charset="utf-8">
-<title>RWC 2019 - JAPON</title>
+<title>Rugby World Championship</title>
 <style>
 @import url(../css/dsp.css);
-
+.rky header{
+    height: 47px;
+}
 #chart {
 	position : absolute;
 	background-color : lightcyan;
 }
+#retour {
+    position : absolute;
+    right: 25px;
+    margin-top: 50px;
+}
 #intervalle {
     position: absolute;
-    top: 25px;
+    top: 50px;
     right: 30px;
 }
 #infoLive {
     position: absolute;
-    top: 25px;
+    top: 50px;
     font: 10px sans-serif;
     left: 20px;
     font-family: "helvetica neue", sans-serif;
     color: #191970;
+}
+#comp_select {
+    position: absolute;
+    right: 250px;
+    top: 15px;
+}
+#defilementUP {
+    position: absolute;
+    right: 220px;
+    top: 10px;
+}
+#defilementDOWN {
+    position: absolute;
+    right: 400px;
+    top: 10px;
 }
 text {
   font: 10px sans-serif;
@@ -41,11 +63,22 @@ table {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 6.11</aside>
+  <aside >Septembre, 2019<br><br>| v 6.30</aside>
   <div id='menu'></div>
+  <div id='defilementUP'></div>
+  <div id='defilementDOWN'></div>
+  <select id="comp_select" class="styledSelect">
+        <optgroup label="ChampionShip from IRB.">
+        <option value=1>World Cup</option>
+        <option value=2 selected="">Six Nations</option>
+        <option value=3>Tri Nations</option>
+        <option value=4>TOP 3</option>
+        <option value=5>Pacific Nations Cup</option>
+        </optgroup>
+  </select>
 </header>
 <footer>
-    <aside>(c) e-Coucou | y2kJ | Live Data</aside>
+    <aside>(c) e-Coucou | y2kL | Live Data</aside>
     <div id="info"></div>
 </footer>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -55,15 +88,9 @@ table {
     <div id="chart"></div>
     <div id="infoLive">Live info ...</div>
     <div id='intervalle'></div>
+    <div id="retour"></div>
   <script type="text/javascript">
-	var rwc_index = [[ "1","2","3","4","5","952","1023","1238","1558"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1622","1623","1782","1783"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135","1697","1764","1807"],["1577"],["925","957","971","1006","1072","1130","1166","1235","1273","1569","1653","1769"]]; // rwc , six nation , 4 nations , xx , wrc pacific
-    var idComp=0, nbComp=rwc_index[idComp].length, iComp=nbComp-1;
-	var idLive=0, clock='', selMenu=0;
-	var teams = [], idRank=0, dataRank=[],teamsInfo=[], nbTeams=-1, dataStandings=[],dataStats=[];
-    var url = '';
-	var dataTimeline=[];
-    var teamColor=['#006','#0bc'];
-    var UP = 1;
+	var rwc_index = [[ "1","2","3","4","5","952","1023","1238","1558"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1622","1623","1782","1783","1933","1934"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135","1697","1764","1807","1992"],["1577","2015"],["925","957","971","1006","1072","1130","1166","1235","1273","1569","1653","1769"]]; // rwc , six nation , 4 nations , xx , wrc pacific
     // format ...
     let valFormat = (a) => { 
         let r = (a>100) ? Math.round(a) : ( (a>1)? Math.round(a*100.0)/100 : Math.round(a*1000.0)/1000);
@@ -71,13 +98,13 @@ table {
 //        return r;
         }
 	// Chart dimensions.
-	var margin = {top: 20, right: 20, bottom: 50, left: 50},
+	var margin = {top: 5, right: 20, bottom: 10, left: 50},
 		width = window.innerWidth; // - margin.right-margin.left,
-		height = 1350 - margin.top - margin.bottom;
+		height = 1350; //window.innerHeight;// 1350 - margin.top - margin.bottom;
 	// Create the SVG container and set the origin.
     var svg = d3.select("#chart").append("svg")
         .attr("width", width -5) //+ margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        .attr("height", height) // + margin.top + margin.bottom)
         .attr("position", 2);
 
 	var dispatch = d3.dispatch('load','match','live','rank','timeline');
@@ -88,18 +115,39 @@ table {
     dispatch.on('timeline',affTimeline);
 
 	var UPtriange = [ 'M -20 -10 L -10 10 L -30 10 L -20 -10', 'M -20 10 L -10 -10 L -30 -10 L -20 10'];
-
-	var listeMatchs=[],dataInfo=[];
+    var  selMenu=0;
+    menu(selMenu);
+    var idComp=1, nbComp=rwc_index[idComp].length, iComp=nbComp-1;
+    var idLive=0, clock='';
+    var teams = [], idRank=0, dataRank=[],teamsInfo=[], nbTeams=-1, dataStandings=[],dataStats=[];
+    var url = '';
+    var dataTimeline=[];
+    var teamColor=['#006','#0bc'];
+    var UP = 1, page =0;
+    var listeMatchs=[],dataInfo=[];
     var t = setInterval(cycle,5000), t_veille = setInterval(veille,300000);
+    init();
+
+    d3.select("#comp_select").on("change", change);
+
+//--------------
+// INIT ...
+function init() {
+    idComp=1; nbComp=rwc_index[idComp].length; iComp=nbComp-1;
+    idLive=0; clock='';
+    teams = []; idRank=0; dataRank=[];teamsInfo=[]; nbTeams=-1; dataStandings=[];dataStats=[];
+    url = ''; dataTimeline=[]; teamColor=['#006','#0bc']; UP = 1;
+    listeMatchs=[];dataInfo=[];
+//    t = setInterval(cycle,5000); t_veille = setInterval(veille,300000);
     clearInterval(t);
     standings();
-	menu(selMenu);changeComp();
-    updateComp(1);
+    changeComp();
+    updateComp(1); 
+}
 
 //--------------
 // cycle
 async function cycle() {
-//    updateComp(0);
 	clearInterval(t_veille);
 	var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+idLive+'/summary';
 			//infoMatch=[];
@@ -117,6 +165,7 @@ async function standings() {
     console.log('get standings');
     var urlStandings = 'http://cmsapi.pulselive.com/rugby/event/'+rwc_index[idComp][iComp]+'/standings';
 //    getData(urlStandings,6);
+    dataStandings=[];
     dataStandings = await getData2(urlStandings);
     console.log(dataStandings);
 }
@@ -124,6 +173,7 @@ async function standings() {
 async function timeline(id) {
 	console.log('get Timeline ...', id);
 	var urlTimeline = 'http://cmsapi.pulselive.com/rugby/match/'+id+'/timeline';
+    dataTimeline = [];
     dataTimeline = await getData2(urlTimeline);
     console.log(dataTimeline);
     //	getData(urlTimeline,5);
@@ -131,6 +181,7 @@ async function timeline(id) {
 async function stats(id) {
     console.log('get stats');
     let urlStats = 'https://cmsapi.pulselive.com/rugby/match/25290/stats';
+    dataStats=[];
     dataStats = await getData2(urlStats);
     console.log(dataStats);
 }
@@ -142,45 +193,64 @@ function affTimeline() {
 }
 //--------------
 // update Compétition
-    function updateComp(id) {
+function updateComp(id) {
         if (id==undefined) iComp = (iComp+1) % nbComp;
-        var codeCup = rwc_index[idComp][iComp]; //[1][17];
-        console.log(id,idComp,iComp);
-        var urlRWC = 'http://cmsapi.pulselive.com/rugby/event/'+codeCup+'/schedule';
+        codeCup = rwc_index[idComp][iComp]; //[1][17];
+        console.log(id,idComp,iComp,codeCup);
+        urlRWC = 'http://cmsapi.pulselive.com/rugby/event/'+codeCup+'/schedule';
         getData(urlRWC,1);
 		if (idLive != 0) {
-			var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+idLive+'/summary';
+			urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+idLive+'/summary';
 			infoMatch=[];
 			getData(urlMatch,2);
 		}
-    }
-function inverseSORT() {
-    UP = -UP;
-    d3.select('#updw').attr('fill','red')
-        .attr('d',UPtriange[(1+UP)/2])
-    updateComp(-1);
 }
+function updateCompUP() {
+        iComp = (iComp+1) % nbComp;
+        updateComp(-1)
+}
+function updateCompDOWN() {
+        iComp = iComp>0?(iComp-1):(nbComp-1);
+        updateComp(-1)
+}
+function inverseSORT() {
+        UP = -UP;
+        d3.select('#updw').attr('fill','red')
+            .attr('d',UPtriange[(1+UP)/2])
+        updateComp(-1);
+}
+
+function change() {
+    idComp = d3.select("#comp_select").property("value") - 1;
+    nbComp=rwc_index[idComp].length;
+    iComp=nbComp-1;
+    teams = [];idRank=0; dataRank=[];teamsInfo=[]; nbTeams=-1; dataStandings=[];dataStats=[];
+    url = '';
+    dataTimeline=[];
+    listeMatchs=[];dataInfo=[];
+    clearInterval(t);
+    standings();
+    updateComp(-1); 
+}
+
 //--------------
 // change comp
-    function changeComp() {
+function changeComp() {
+//    d3.select('#intervalle').remove();
+//    d3.select('#retour').remove();
+//    d3.select('body').append('div').attr('id','graphe')
 
     var svgInt = d3.select("#intervalle").append("svg")
         .attr('width',50).attr('height',30)
         .attr("position", 1)
         .append("g").raise()
-        .attr('transform',function (d,i){ return ('translate('+ (30)+','+10+')');});
+        .attr('transform',function (d,i){ return ('translate('+ (30)+','+(10)+')');});
 
 //var interG = svgInt.selectAll('g').data(IntervalData).enter()
 //    .append('g')
 //    .attr('transform',function (d,i){ return ('translate('+ (intWidth-20-i*25)+','+11+')');})
 //    .on('click',click);
         
-    svgInt.append('circle').attr('fill','#2E2D88')
-        .attr('r',10)
-        .on('click',updateComp)
-        .on('mouseover',function(d,i){ d3.select(this).attr('fill','#FE6F5E');})
-        .on('mouseout',function(d,i){ d3.select(this).attr('fill','#2E2D88');});
-
 //    svgInt.append('circle').attr('fill','#2E2D88')
 //        .attr('r',10).attr('cx',-25)
     svgInt.append('path').attr('fill','#2E2D88').attr('id','updw')
@@ -189,30 +259,94 @@ function inverseSORT() {
         .on('mouseover',function(d,i){ d3.select(this).attr('fill','#FE6F5E');})
         .on('mouseout',function(d,i){ d3.select(this).attr('fill','#2E2D88');});
 
-//        .on('mouseout',function(d,i){ d3.select(this).attr('fill',(a)=>{return (i==selInter)?'red':'#2E2D88';});});
- //.attr('cx',(d,i)=>{return width-i*25;}).attr('cy',15)
-//    interG.append('text').attr('fill','white').style('text-anchor','middle')
-//        .attr('dy','0.3em').text(d=>d.t).raise();
+// boutons de défilement ...
+    var svgUP = d3.select("#defilementUP").append("svg")
+        .attr('width',35).attr('height',35)
+        .append("g").raise()
+        .attr('transform',function (d,i){ return ('translate('+ (17)+','+(17)+')');})
+//            .on('mouseover',function(d,i){ d3.select('#retour').selectAll('rect').style('fill','red');
+//                                           d3.select('#retour').selectAll('text').style('fill','white');})
+//            .on('mouseout',function(d,i){ d3.select('#retour').selectAll('rect').style('fill','ivory');
+//                                          d3.select('#retour').selectAll('text').style('fill','#212');})
+                    .on('click',updateCompUP);
 
+    svgUP.append('circle').attr('fill','white')
+        .attr('r',10)
+        .on('mouseover',function(d,i){ d3.select(this).attr('fill','red');})
+        .on('mouseout',function(d,i){ d3.select(this).attr('fill','white');});
+
+    var svgDOWN = d3.select("#defilementDOWN").append("svg")
+        .attr('width',35).attr('height',35)
+        .append("g").raise()
+        .attr('transform',function (d,i){ return ('translate('+ (17)+','+(17)+')');})
+//            .on('mouseover',function(d,i){ d3.select('#retour').selectAll('rect').style('fill','red');
+//                                           d3.select('#retour').selectAll('text').style('fill','white');})
+//            .on('mouseout',function(d,i){ d3.select('#retour').selectAll('rect').style('fill','ivory');
+//                                          d3.select('#retour').selectAll('text').style('fill','#212');})
+                    .on('click',updateCompDOWN);
+
+    svgDOWN.append('circle').attr('fill','white')
+        .attr('r',10)
+        .on('mouseover',function(d,i){ d3.select(this).attr('fill','red');})
+        .on('mouseout',function(d,i){ d3.select(this).attr('fill','white');});
+
+// boutons de retour
+    console.log("bouton retour ...");
+    var svgRet = d3.select("#retour").append("svg")
+        .attr('width',160).attr('height',30)
+        .append("g").raise()
+        .attr('transform',function (d,i){ return ('translate('+ (1)+','+(1)+')');})
+            .on('mouseover',function(d,i){ d3.select('#retour').selectAll('rect').style('fill','red');
+                                           d3.select('#retour').selectAll('text').style('fill','white');})
+            .on('mouseout',function(d,i){ d3.select('#retour').selectAll('rect').style('fill','ivory');
+                                          d3.select('#retour').selectAll('text').style('fill','#212');})
+                    .on('click',retour);
+    svgRet.append('rect').attr('fill','#black')
+            .attr('rx',5).attr('ry',5).style('stroke-width',2).style('stroke','#24a')
+            .attr('width',155).attr('height',25).style('fill','ivory');//.style('stroke-color', (d,i)=>teamColor[i]);
+    svgRet.append('text').attr('x',0) //.attr('y',10)
+            .attr('dx',78).attr('y',15) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
+            //.style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
+            .style('fill','#212')
+            .style('text-anchor', 'middle')
+            .style('font-weight', 'bold').style('dominant-baseline','middle')
+            .text('<< LISTE >>').style('font-size','1.5vw');
+
+    d3.select("#intervalle").selectAll('g').style('visibility',(d)=> {return page===0?'visible':'hidden';})
+    d3.select("#retour").selectAll('g').style('visibility',(d)=> {return page===1?'visible':'hidden';})
+    d3.select("#intervalle").raise();
+    d3.select("#defilementUP").raise();
+    d3.select("#defilementDOWN").raise();
 }
 //----------
-	function selPage(idPage) {
+function retour() {
+    page=0;
+    d3.select("#intervalle").selectAll('g').style('visibility',(d)=> {return page===0?'visible':'hidden';})
+    d3.select("#retour").selectAll('g').style('visibility',(d)=> {return page===1?'visible':'hidden';})
+    d3.select("#intervalle").raise();
+    updateComp(-1);
+} // end retour
+//------------
+function selPage(idPage) {
 		//console.log('Page : '+idPage);
 		selMenu=idPage;
 		switch (idPage) {
 		  case 4 : 
 //		  click(); //epxxx
-	  		try { console.log('live!',dataLive); } catch(e) { console.log('no live!'); dataLive = dataInfo; } /// a enlever !!!
-			livePage();
+	  		try {
+                console.log('selPage : live!',dataLive); } catch(e) { console.log('selPage no live!'); dataLive = dataInfo; } /// a enlever !!!
+dataLive = dataInfo; //by ep
+            livePage();
 			break;
           case 3 :
-                console.log('new page');
-                livePage2();
+            console.log('new page');
+            livePage2();
             break;
 		}
-	}
+}
 // ---------
-    function livePage2() {
+function livePage2() {
+        console.log('livePage2');
         let padding=width/420, margeH = 5;
         var largeur = (width-margin.left-margin.right); //console.log(largeur,width);
         let timeSize=width/40, scoreSize = width/15; //25 - 95;
@@ -222,17 +356,17 @@ function inverseSORT() {
 
         d3.select('#graphe').remove();
         graph=svg.append('g').attr('id','graphe')
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")");
         let listeG = graph.selectAll('g').data(dataLive.match.scores).enter()   /// a changer EP
             .append('g').attr('transform',(d,i)=>{return ('translate('+(i*2*largeur/3)+','+(margeH)+')');}).attr('class','cScores');
         //--------------------------------------
-        console.log('live page ...');
+        console.log('live page 2 ...');
         //nom des équipes
         listeG.append('rect').attr('rx',2*padding).attr('ry',2*padding).style('stroke-width',padding).style('stroke','#668')
             .attr('width',largeur/3).attr('height',timeSize+scoreSize+padding).style('fill','ivory');//.style('stroke-color', (d,i)=>teamColor[i]); //'#0a88ff');
         listeG.append('text').attr('x',0) //.attr('y',10)
             .attr('dx',(d,i)=>{ return largeur/6;}).attr('y',(timeSize+scoreSize)/2) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
-            //.style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'ccc';})
+            //.style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
             .style('fill','#212')
             .style('text-anchor', 'middle')
             .style('font-weight', 'bold').style('dominant-baseline','middle')
@@ -251,18 +385,26 @@ function inverseSORT() {
         let  tlSpace = width/14;
         let ret = affStade(largeur,graph,padding,0);
 
-     }
+}
 // ---------
-	function livePage() {
+// page de live lors de la sélection d'un match depuis la page de la compétition
+//
+function livePage() {
+        console.log('livePage',dataLive);
 		let padding=width/420, space=0.9,centre=1.6, margeH = 5;
 		var largeur = (width-margin.left-margin.right); //console.log(largeur,width);
 		let timeSize=width/40, scoreSize = width/15; //25 - 95;
-        d3.select('#intervalle').remove();
-        d3.select('#infoLive').remove();
+//        d3.select('#intervalle').remove();
+//        d3.select('#infoLive').remove();
+//        changeComp();
 
+    d3.select("#intervalle").selectAll('g').style('visibility',(d)=> {return page===0?'visible':'hidden';})
+    d3.select("#retour").selectAll('g').style('visibility',(d)=> {return page===1?'visible':'hidden';})
+    d3.select("#retour").raise();
         d3.select('#graphe').remove();
 		graph=svg.append('g').attr('id','graphe')
-			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			.attr("transform", "translate(" + margin.left + "," + (margin.top+45) + ")");
+
 
 		let listeG = graph.selectAll('g').data(dataLive.match.scores).enter()   /// a changer EP
 			.append('g').attr('transform',(d,i)=>{return ('translate('+(i*(largeur/2+padding))+','+(margeH)+')');}).attr('class','cScores');
@@ -273,7 +415,7 @@ function inverseSORT() {
             .attr('width',largeur/2).attr('height',timeSize+scoreSize+padding).style('fill', (d,i)=>teamColor[i]); //'#0a88ff');
         listeG.append('text').attr('x',0) //.attr('y',10)
             .attr('dx',(d,i)=>{ return (largeur/2+(2*i-1)*scoreSize)/2;}).attr('y',(timeSize+scoreSize)/2) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
-            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'ccc';}).style('text-anchor', 'middle')
+            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';}).style('text-anchor', 'middle')
             .style('font-weight', 'bold').style('dominant-baseline','middle')
             .text((d,i)=>(dataLive['match']['teams'][i]['name'])).style('font-size','3.5vw');
         // rank
@@ -403,10 +545,10 @@ function inverseSORT() {
         // tableau de Pool !
         if (pool != 'Quarter-Finals') {
         let poolH = ['R','Equipe','Play','Win','Lost','Nul','Pour','Contre','Try','Against','Bonus','Points'];
-        var table =  stadeG.append('g').style('fill','black').attr('transform',(d)=>{ return 'translate('+(stadeSize*(-0.2))+','+(stadeLargeur*1.9)+')';})
+        var table =  stadeG.append('g').style('fill','black').attr('transform',(d)=>{ return 'translate('+(stadeSize*(-0.5))+','+(stadeLargeur*1.9)+')';})
             .append("foreignObject")
-            .attr("width", stadeSize*1.4)
-            .attr("height", '12vw')
+            .attr("width", stadeSize*2)
+            .attr("height", '18vw')
             .style('background-color','#007')
             .append("xhtml:table");
 
@@ -414,9 +556,9 @@ function inverseSORT() {
             thead.append('tr').style('background-color','black').style('color','white').selectAll('th').data(poolH).enter()
                 .append('th').text((d)=>{return d;}).style('padding-right','7px').style('padding-left','7px');
         let tbody = table.append('tbody');
-        let tr = tbody.selectAll('tr').data(f.entries).enter().append('tr').style('background-color','#cbf').style('color','black');
+        let tr = tbody.selectAll('tr').data(f.entries).enter().append('tr').style('background-color',(d,i)=>{return (i%2)===0?'#B3F6FF':'#E5FCFF';}).style('color','#249');
             tr.append('th').text((d)=>{return d.positionLabel;});
-            tr.append('th').text((d)=>{return d.team.name;}).style('font-size','1.1vw').style('text-align','left');
+            tr.append('th').text((d)=>{return d.team.name;}).style('font-size','1.2vw').style('text-align','left');
             tr.append('th').text((d)=>{return d.played;});
             tr.append('th').text((d)=>{return d.won;});
             tr.append('th').text((d)=>{return d.lost;});
@@ -426,7 +568,7 @@ function inverseSORT() {
             tr.append('th').text((d)=>{return d.triesFor;});
             tr.append('th').text((d)=>{return d.triesAgainst;});
             tr.append('th').text((d)=>{return d.bonusPoints;});
-            tr.append('th').text((d)=>{return d.points;}).style('font-size','1.1vw');
+            tr.append('th').text((d)=>{return d.points;}).style('font-size','1.2vw');
         }
 		// on affiche le live
         let x = d3.scaleLinear()
@@ -451,20 +593,20 @@ function inverseSORT() {
 			}
 		catch(e) {console.log('aff timeline out : erreur ->',e);}
 	
-	}
-  	function updateRank() {
+}
+function updateRank() {
         teamsInfo[dataRank.team.id]=dataRank;
         nbTeams--;
         if (nbTeams==0) computeScore();
-    }
-    function computeScore() {
+}
+function computeScore() {
 		//console.log(teamsInfo);
 		console.log('Info team lus');
-	}
+}
 //--------------
 // Affichage de la liste des matches
 //
-	function affListe() {
+function affListe() {
         console.log('affListe : ',listeMatchs);
         let titre = listeMatchs.event.label;
         //------
@@ -472,7 +614,7 @@ function inverseSORT() {
 		idLive=0;
 		for (m in listeMatchs.matches) {
 			if (listeMatchs.matches[m].status != 'U' && listeMatchs.matches[m].status !='C'&& listeMatchs.matches[m].status !='CC') {
-//				console.log(m);
+    //				console.log(m);
 				idLive = listeMatchs.matches[m].matchId;
 				getMatch(idLive);
 				t = setInterval(cycle,5000);
@@ -498,13 +640,14 @@ function inverseSORT() {
 		color_status = { U:'#ffffff', C:'#aaaaaa',L1:'#004',L2:'#000', LHT:'#33ff33', CC:'#8000cc' }
 		color_pool = { "Pool A":'#4078D3',"Pool 1":'#4078D3', "Pool B":'#2E5697',"Pool 2":'#2E5697',
         "Pool C":'#3767B5',"Pool 3":'#3767B5',"Pool D":'#4989F1','Poule 4':'#4989F1',"Pool 4":'#4989F1',"Pool E":'#5999F1',"Quarter-Finals":'#12223C',"Semi-Finals":'#555588',"Bronze Final": '#999','3rd Place Play-Off':'#999',"Final":'#c1a40e' }
-//    svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+((listeVal.length+1)*size));
+        color_tab = ['#5082CF','#3383FF']
+    //    svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+((listeVal.length+1)*size));
 		let size = 26,padding=2, largeur=110, space=0.9,centre=1.6;
 		largeur = (width-margin.left-margin.right) /6; //console.log(largeur,width);
 		var jour = new Date();	//console.log(jour.getTimezoneOffset(), jour);
         d3.select('#graphe').remove();
 		var graph=svg.append('g').attr('id','graphe')
-			.attr("transform", "translate(" + 0 + "," + (margin.top+30) + ")");
+			.attr("transform", "translate(" + 0 + "," + (margin.top+80) + ")");
 
         // on tri les match dans l'ordre UP/DOWN
 		let listeG = graph.selectAll('g').data(listeMatchs.matches.sort((a, b) => (Number(a.time.millis) > Number(b.time.millis)) ? UP : (-1*UP))).enter()
@@ -512,18 +655,18 @@ function inverseSORT() {
 
         //equ 0 - nom
         listeG.append('rect').attr('x',0).attr('id','stat')
-            .attr('width',largeur).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]); //'#0a88ff');
+            .attr('width',largeur).attr('height',size*space).style('fill', (d,i)=>color_tab[i%2]); //color_pool[d.eventPhase]); //'#0a88ff');
         listeG.append('text').attr('x',padding) //.attr('y',10)
             .attr('dx',(largeur-padding)/2).attr('y',size/centre).attr('id',(d)=>{return ('en0_'+d.matchId);})
-            .style('fill', (d) => { return d.scores[0]>=d.scores[1]?'#fff':'ccc';}).style('text-anchor', 'middle')
+            .style('fill', (d) => { return d.scores[0]>=d.scores[1]?'#fff':'#ccc';}).style('text-anchor', 'middle')
             .style('font-weight', (d) => { return d.scores[0]>=d.scores[1]?'bold':'normal';})
             .text((d)=>(d['teams'][0]['name'])).style('font-size','11px');
         //equ 1 - nom
         listeG.append('rect').attr('x',largeur*2).attr('id','stat')
-            .attr('width',largeur).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]);
+            .attr('width',largeur).attr('height',size*space).style('fill', (d,i)=>color_tab[i%2]); //d=>color_pool[d.eventPhase]);
         listeG.append('text').attr('x',padding) //.attr('y',10)
             .attr('dx',2*largeur+(largeur-padding)/2).attr('y',size/centre).attr('id',(d)=>{return ('en1_'+d.matchId);})
-            .style('fill','#fff').style('text-anchor', 'middle').style('fill', (d) => { return d.scores[1]>=d.scores[0]?'#fff':'ccc';})
+            .style('fill','#fff').style('text-anchor', 'middle').style('fill', (d) => { return d.scores[1]>=d.scores[0]?'#fff':'#ccc';})
             .style('font-weight', (d) => { return d.scores[1]>=d.scores[0]?'bold':'normal';})
             .text((d)=>(d['teams'][1]['name'])).style('font-size','12px');
         //equ 0 : score
@@ -531,7 +674,7 @@ function inverseSORT() {
             .attr('width',largeur/3).attr('height',size*space).style('fill',d=>color_pool[d.eventPhase]);
         listeG.append('text').attr('x',padding).attr('id',(d)=>{return ('e0_'+d.matchId);}) //.attr('y',10)
             .attr('dx',largeur+(largeur/3-padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
-            .style('fill', (d) => { return d.scores[0]>=d.scores[1]?'#fff':'ccc';})
+            .style('fill', (d) => { return d.scores[0]>=d.scores[1]?'#fff':'#ccc';})
             .style('font-weight', (d) => { return d.scores[0]>=d.scores[1]?'bold':'normal';})
             .text((d)=>(d['scores'][0])).style('font-size','12px');
         //equ 1 : score
@@ -539,12 +682,12 @@ function inverseSORT() {
             .attr('width',largeur/3).attr('height',size*space).style('fill',d=>color_pool[d.eventPhase]);
         listeG.append('text').attr('x',padding).attr('id',(d)=>{return ('e1_'+d.matchId);}) //.attr('y',10)
             .attr('dx',5*largeur/3+(largeur/3-3*padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
-            .style('fill', (d) => { return d.scores[1]>=d.scores[0]?'#fff':'ccc';})
+            .style('fill', (d) => { return d.scores[1]>=d.scores[0]?'#fff':'#ccc';})
             .style('font-weight', (d) => { return d.scores[1]>=d.scores[0]?'bold':'normal';})
             .text((d)=>(d['scores'][1])).style('font-size','12px');
         //en cours ?
         listeG.append('rect').attr('x',4*largeur/3+2*padding).attr('rx',2*padding).attr('ry',2*padding)
-            .attr('width',largeur/3-4*padding).attr('height',size*space).style('fill',(d)=>{return d.status=='C'?color_pool[d.eventPhase]:color_status[d.status];})
+            .attr('width',largeur/3-4*padding).attr('height',size*space).style('fill',(d,i)=>{return d.status=='C'?color_tab[i%2]:color_status[d.status];})
 			.on('click',getInfo)
 			.on('mouseover',function(d,i){ d3.select(this).style('fill','#FE6F5E');})
 			.on('mouseout',function(d,i){ d3.select(this).style('fill',(d)=>{return d.status=='C'?color_pool[d.eventPhase]:color_status[d.status];});});
@@ -558,39 +701,37 @@ function inverseSORT() {
 
         //date/heure
         listeG.append('rect').attr('x',3*largeur+padding).attr('id','stat')
-            .attr('width',largeur).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]);
+            .attr('width',largeur).attr('height',size*space).style('fill', (d,i)=>color_tab[i%2]); //d=>color_pool[d.eventPhase]);
         listeG.append('text').attr('x',3*largeur +padding) //.attr('y',10)
             .attr('dx',(largeur-padding)/2).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'middle')
             .text((d)=>{ jour.setTime(d.time.millis); return jour.toLocaleDateString()+' / '+jour.toLocaleTimeString();}).style('font-size','11px');
 
         //lieu
         listeG.append('rect').attr('x',4*largeur+2*padding).attr('id','stat')
-            .attr('width',largeur*3).attr('height',size*space).style('fill', d=>color_pool[d.eventPhase]); //'#0a88ff');
+            .attr('width',largeur*3).attr('height',size*space).style('fill', (d,i)=>color_tab[i%2]); //d=>color_pool[d.eventPhase]); //'#0a88ff');
         listeG.append('text').attr('x',4*largeur +4*padding) //.attr('y',10)
             .attr('dx',padding).attr('y',size/centre).style('fill','#fff').style('text-anchor', 'start')
             .text((d)=>{ return d.venue.name+' ['+d.attendance+'] ('+d.venue.city+'/'+d.venue.country+' )';}).style('font-size','11px');
 
-			
-/*    paramG.append('circle').attr('cx',15).attr('cy',size/2).style('r',size/3).style('fill','#fff');
-    paramG.append('svg').attr('width',size/2).attr('height',size/2)
-        .attr('x',size/4).attr('y',size/4).attr('id',(d,i)=>{ return ('sel'+i);})
-        .attr('class',(d)=>{return ('icon fas fa-'+icon[d.select]);}).style('color',d=>{return couleur[d.select];});
-    paramG.append('circle').attr('cx',15).attr('cy',size/2).style('r',size/3).style('fill','#fff')
-        .on('click',selectVal).style('opacity',0.1);
-*/	}
+}// end 
 //--------------
 // Get Info
 async function getInfo(d,i) {
         console.log('getInfo');
+        console.log('match ',d);
+        page=1;
         await timeline(d.matchId);
         await getMatch(d.matchId);
         await stats(d.matchId);
-	}
+        console.log('getInfo -> match ',d);
+}// end getInfo
+//------
 async function getMatch(id) {
     var urlMatch = 'http://cmsapi.pulselive.com/rugby/match/'+id+'/summary';
     dataInfo=[];
     getData(urlMatch,3);
-}
+} // end getMatch
+//------------
 async function affInfo() {
         try { clock=dataInfo.match.clock.label; } catch(e) {clock='00:00';}
         let mId = '#m'+dataInfo.match.matchId;
@@ -599,8 +740,9 @@ async function affInfo() {
         await timeline(dataInfo.match.matchId);
         affInfoLive(dataInfo);
         selPage(4);
-    }
-    function affInfoLive(data) {
+} //end affInfo
+//----------
+function affInfoLive(data) {
         let nTry0 = 0, nTry1=0;
         try { nTry0 = data.teams[0].scoring.Try.length; } catch(e) {nTry0=0;}
         try { nTry1 = data.teams[1].scoring.Try.length; } catch(e) {nTry1=0;}
@@ -617,11 +759,12 @@ async function affInfo() {
             +data.match.teams[1].name+' ['+nTry1+']'+' ['+nPen1+']'+' ['+nDG1+']'
             +'  ...        ([Try][Pen][Drop])'
         d3.select('#infoLive').text(infoStr);
-    }
-    function affLive() {
+} // end affInfoLive
+//------
+function affLive() {
         clock=dataLive.match.clock.label;
         let mId = '#m'+dataLive.match.matchId;
-        console.log(clock,mId,dataLive);
+        console.log("afflive",clock,mId,dataLive);
         d3.select(mId).text(clock);
 		if (dataLive.match.status =='C') {
 			idLive = 0;
@@ -642,7 +785,7 @@ async function affInfo() {
         d3.select(en1Id).text(dataLive.match.teams[1].name+' ['+nTry1+']');
         affInfoLive(dataLive);
 		livePage();
-    }
+} // end affLive
 //---------
 // on affiche le Stade
 function affStade(largeur,graph,padding,tlSpace) {
@@ -701,11 +844,11 @@ function affStade(largeur,graph,padding,tlSpace) {
             } catch(e) {}
         }
     return [stadeG,stadeSize,stadeLargeur];
-}
+} //end affStade
 //--------------
 // Get Data from url
 //
-	function getData(url, type) {
+function getData(url, type) {
 		//console.log(url);
 		var opt = fetch(url, {method: 'GET',headers: new Headers({'Access-Control-Allow-Origin':'*','Accept':'application/json',})})
 		.then(response => { return response.json();})
@@ -721,10 +864,12 @@ function affStade(largeur,graph,padding,tlSpace) {
 						dataLive = data;
 						dispatch.call('live');
 						break;
-                case 3: dataInfo = data;
+                case 3: dataInfo=[];
+                        dataInfo = data;
                         dispatch.call('match');
                         break;
-                case 4: dataRank = data;
+                case 4: dataRank = [];
+                        dataRank = data;
                         dispatch.call('rank');
                         break;
                 case 5: dataTimeline=[];
@@ -742,13 +887,13 @@ function affStade(largeur,graph,padding,tlSpace) {
 		// Do something for an error here
 			console.log(err);
 		});
-	}
+} //en getData
 async function getData2(url) {
         //console.log(url);
         let response = await fetch(url, {method: 'GET',headers: new Headers({'Access-Control-Allow-Origin':'*','Accept':'application/json',})})
         let data = await response.json();
         return data;
-    }
+} //end Getdata2
 </script>
 <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
