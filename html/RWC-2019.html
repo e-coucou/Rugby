@@ -21,8 +21,8 @@
 }
 #intervalle {
     position: absolute;
-    top: 50px;
-    right: 30px;
+    top: 15px;
+    right: 163px;
 }
 #infoLive {
     position: absolute;
@@ -44,7 +44,7 @@
 }
 #defilementDOWN {
     position: absolute;
-    right: 400px;
+    right: 407px;
     top: 10px;
 }
 text {
@@ -63,10 +63,11 @@ table {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 7.01</aside>
+  <aside >Septembre, 2019<br><br>| v 7.05</aside>
   <div id='menu'></div>
   <div id='defilementUP'></div>
   <div id='defilementDOWN'></div>
+  <div id='intervalle'></div>
   <select id="comp_select" class="styledSelect">
         <optgroup label="ChampionShip from IRB.">
         <option value=1>World Cup</option>
@@ -87,7 +88,6 @@ table {
 	<script defer src="../js/all.js"></script>
     <div id="chart"></div>
     <div id="infoLive">Live info ...</div>
-    <div id='intervalle'></div>
     <div id="retour"></div>
   <script type="text/javascript">
 	var rwc_index = [[ "1","2","3","4","5","952","1023","1238","1558"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1622","1623","1782","1783","1933","1934"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135","1697","1764","1807","1992"],["1577","2015"],["925","957","971","1006","1072","1130","1166","1235","1273","1569","1653","1769"]]; // rwc , six nation , 4 nations , xx , wrc pacific
@@ -253,42 +253,44 @@ function changeComp() {
         
 //    svgInt.append('circle').attr('fill','#2E2D88')
 //        .attr('r',10).attr('cx',-25)
-    svgInt.append('path').attr('fill','#2E2D88').attr('id','updw')
+    svgInt.append('path').attr('fill','#B233FF').attr('id','updw')
         .attr('d',UPtriange[(1+UP)/2])
         .on('click',inverseSORT)
-        .on('mouseover',function(d,i){ d3.select(this).attr('fill','#FE6F5E');})
-        .on('mouseout',function(d,i){ d3.select(this).attr('fill','#2E2D88');});
+        .on('mouseover',function(d,i){ d3.select(this).attr('fill','#33E6FF');})
+        .on('mouseout',function(d,i){ d3.select(this).attr('fill','#B233FF');});
 
 // boutons de défilement ...
     var svgUP = d3.select("#defilementUP").append("svg")
         .attr('width',35).attr('height',35)
         .append("g").raise()
-        .attr('transform',function (d,i){ return ('translate('+ (17)+','+(17)+')');})
-//            .on('mouseover',function(d,i){ d3.select('#retour').selectAll('rect').style('fill','red');
-//                                           d3.select('#retour').selectAll('text').style('fill','white');})
-//            .on('mouseout',function(d,i){ d3.select('#retour').selectAll('rect').style('fill','ivory');
-//                                          d3.select('#retour').selectAll('text').style('fill','#212');})
-                    .on('click',updateCompUP);
-
-    svgUP.append('circle').attr('fill','white')
-        .attr('r',10)
-        .on('mouseover',function(d,i){ d3.select(this).attr('fill','red');})
-        .on('mouseout',function(d,i){ d3.select(this).attr('fill','white');});
+        .attr('transform',function (d,i){ return ('translate('+ (5)+','+(4)+')');})
+        .on('mouseover',function(d,i){ d3.select('#defilementUP').selectAll('rect').style('fill','#33CAFF');
+                                       d3.select('#defilementUP').selectAll('text').style('fill','white');})
+        .on('mouseout',function(d,i){ d3.select('#defilementUP').selectAll('rect').style('fill','ivory');
+                                      d3.select('#defilementUP').selectAll('text').style('fill','#212');})
+        .on('click',updateCompUP);
+    svgUP.append('rect').attr('fill','white')
+        .attr('rx',5).attr('ry',5).style('stroke-width',2).style('stroke','#24a')
+        .attr('width',30).attr('height',21).style('fill','ivory');//.style('stroke-color', (d,i)=>teamColor[i]);
+    svgUP.append('text').attr('x',0).attr('dx',15).attr('y',11)
+            .style('fill','#212').style('text-anchor', 'middle').style('font-weight', 'bold').style('dominant-baseline','middle')
+            .text('>>').style('font-size','1.3vw');
 
     var svgDOWN = d3.select("#defilementDOWN").append("svg")
         .attr('width',35).attr('height',35)
         .append("g").raise()
-        .attr('transform',function (d,i){ return ('translate('+ (17)+','+(17)+')');})
-//            .on('mouseover',function(d,i){ d3.select('#retour').selectAll('rect').style('fill','red');
-//                                           d3.select('#retour').selectAll('text').style('fill','white');})
-//            .on('mouseout',function(d,i){ d3.select('#retour').selectAll('rect').style('fill','ivory');
-//                                          d3.select('#retour').selectAll('text').style('fill','#212');})
-                    .on('click',updateCompDOWN);
-
-    svgDOWN.append('circle').attr('fill','white')
-        .attr('r',10)
-        .on('mouseover',function(d,i){ d3.select(this).attr('fill','red');})
-        .on('mouseout',function(d,i){ d3.select(this).attr('fill','white');});
+        .attr('transform',function (d,i){ return ('translate('+ (5)+','+(4)+')');})
+        .on('mouseover',function(d,i){ d3.select('#defilementDOWN').selectAll('rect').style('fill','#33CAFF');
+                                       d3.select('#defilementDOWN').selectAll('text').style('fill','white');})
+        .on('mouseout',function(d,i){ d3.select('#defilementDOWN').selectAll('rect').style('fill','ivory');
+                                      d3.select('#defilementDOWN').selectAll('text').style('fill','#212');})
+        .on('click',updateCompDOWN);
+    svgDOWN.append('rect').attr('fill','white')
+        .attr('rx',5).attr('ry',5).style('stroke-width',2).style('stroke','#24a')
+        .attr('width',30).attr('height',21).style('fill','ivory');//.style('stroke-color', (d,i)=>teamColor[i]);
+    svgDOWN.append('text').attr('x',0).attr('dx',15).attr('y',11) 
+            .style('fill','#212').style('text-anchor', 'middle').style('font-weight', 'bold').style('dominant-baseline','middle')
+            .text('<<').style('font-size','1.3vw');
 
 // boutons de retour
     console.log("bouton retour ...");
@@ -411,7 +413,7 @@ function livePage() {
 		//--------------------------------------
 		console.log('live page ...');
         //nom des équipes
-        listeG.append('rect').attr('rx',3*padding).attr('ry',3*padding)
+        listeG.append('rect').attr('rx',2*padding).attr('ry',2*padding)
             .attr('width',largeur/2).attr('height',timeSize+scoreSize+padding).style('fill', (d,i)=>teamColor[i]); //'#0a88ff');
         listeG.append('text').attr('x',0) //.attr('y',10)
             .attr('dx',(d,i)=>{ return (largeur/2+(2*i-1)*scoreSize)/2;}).attr('y',(timeSize+scoreSize)/2) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
@@ -556,7 +558,7 @@ function livePage() {
             thead.append('tr').style('background-color','black').style('color','white').selectAll('th').data(poolH).enter()
                 .append('th').text((d)=>{return d;}).style('padding-right','7px').style('padding-left','7px');
         let tbody = table.append('tbody');
-        let tr = tbody.selectAll('tr').data(f.entries).enter().append('tr').style('background-color',(d,i)=>{return (i%2)===0?'#B3F6FF':'#E5FCFF';}).style('color','#249');
+        let tr = tbody.selectAll('tr').data(f.entries).enter().append('tr').style('background-color',(d,i)=>{return (i%2)===0?'#A2FFFB':'#8EDFDC';}).style('color','#249');
             tr.append('th').text((d)=>{return d.positionLabel;});
             tr.append('th').text((d)=>{return d.team.name;}).style('font-size','1.2vw').style('text-align','left');
             tr.append('th').text((d)=>{return d.played;});
@@ -637,10 +639,10 @@ function affListe() {
 			//console.log(idLive);
         if (listeMatchs.event.winningTeam!=null) titre += '/' + listeMatchs.event.winningTeam.name;
         d3.select("#h1").text(titre);
-		color_status = { U:'#ffffff', C:'#aaaaaa',L1:'#004',L2:'#000', LHT:'#33ff33', CC:'#8000cc' }
-		color_pool = { "Pool A":'#4078D3',"Pool 1":'#4078D3', "Pool B":'#2E5697',"Pool 2":'#2E5697',
-        "Pool C":'#3767B5',"Pool 3":'#3767B5',"Pool D":'#4989F1','Poule 4':'#4989F1',"Pool 4":'#4989F1',"Pool E":'#5999F1',"Quarter-Finals":'#12223C',"Semi-Finals":'#555588',"Bronze Final": '#999','3rd Place Play-Off':'#999',"Final":'#c1a40e' }
-        color_tab = ['#5082CF','#3383FF']
+		color_status = { U:'ivory',ZZ:'#45CCFF', C:'#456FFF',L1:'#7845FF',L2:'#D545FF', LHT:'#FF45CC', CC:'#bbb' }
+		color_pool = { "Pool A":'#455FFF',"Pool 1":'#455FFF', "Pool B":'#FF45BC',"Pool 2":'#FF45BC',
+        "Pool C":'#FFE545',"Pool 3":'#FFE545',"Pool D":'#45FF88','Poule 4':'#45FF88',"Pool 4":'#45FF88',"Pool E":'#A845FF',"Quarter-Finals":'#12223C',"Semi-Finals":'#555588',"Bronze Final": '#999','3rd Place Play-Off':'#999',"Final":'#c1a40e', null:'#3380FF' }
+        color_tab = ['#3380FF','#4C33FF']
     //    svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+((listeVal.length+1)*size));
 		let size = 26,padding=2, largeur=110, space=0.9,centre=1.6;
 		largeur = (width-margin.left-margin.right) /6; //console.log(largeur,width);
@@ -687,9 +689,9 @@ function affListe() {
             .text((d)=>(d['scores'][1])).style('font-size','12px');
         //en cours ?
         listeG.append('rect').attr('x',4*largeur/3+2*padding).attr('rx',2*padding).attr('ry',2*padding)
-            .attr('width',largeur/3-4*padding).attr('height',size*space).style('fill',(d,i)=>{return d.status=='C'?color_tab[i%2]:color_status[d.status];})
+            .attr('width',largeur/3-4*padding).attr('height',size*space).style('fill',(d)=>{console.log(d.status,d.eventPhase);return d.status=='C'?color_pool[d.eventPhase]:color_status[d.status];})
 			.on('click',getInfo)
-			.on('mouseover',function(d,i){ d3.select(this).style('fill','#FE6F5E');})
+			.on('mouseover',function(d,i){ d3.select(this).style('fill','#33E6FF');})
 			.on('mouseout',function(d,i){ d3.select(this).style('fill',(d)=>{return d.status=='C'?color_pool[d.eventPhase]:color_status[d.status];});});
 
         listeG.append('text').attr('x',padding).attr('id',(d)=>{return ('m'+d.matchId);}) //.attr('y',10)
