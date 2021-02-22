@@ -7,18 +7,21 @@
 <title>COVID-19</title>
 <style>
 @import url(../css/dsp.css);
-	#svg {
+#svg {
 		display: block;
 		margin: auto;
 		background:#f5f5f5;
 	position : relative;
-	}
-	#chart {
+}
+#chart {
 		display: block;
 		margin: auto;
 		background:#f5f5ff;
     position : relative;
-	}
+}
+.rky header {
+    height: 45px;
+}
 .legendDep rect {
   fill:white;
   stroke:black;
@@ -53,6 +56,7 @@
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/numjs/0.16.0/numjs.js"></script>
+    <script src="../js/menu.js" charset="utf-8"></script>
     <script defer src="../js/all.js"></script>
 	<script type="text/javascript" src="../js/ekseerg-tooltip.js"></script>
 	<link rel="stylesheet" href="../css/ekseerg-tooltip.css">
@@ -63,7 +67,11 @@
     <div id="info"></div>
     <!-- href="https://www.data.gouv.fr/fr/datasets/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/">ARS</div></aside>-->
 </footer>
-    <script type="text/javascript">
+<script type="text/javascript">
+// init Menu
+    var  selMenu=3;
+    menu(selMenu);
+
 //====================================================================
 // FONCTIONS
 //
