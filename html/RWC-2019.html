@@ -63,7 +63,7 @@ table {
 <body>
 <header>
   <div id='h1'>Rugby World Cup</div>
-  <aside >Septembre, 2019<br><br>| v 7.11</aside>
+  <aside >Septembre, 2019<br><br>| v 7.12</aside>
   <div id='menu'></div>
   <div id='defilementUP'></div>
   <div id='defilementDOWN'></div>
@@ -627,12 +627,18 @@ function affListe() {
         // s'il ya un match en cours on pass au LIVE !
 		idLive=0;
 		for (m in listeMatchs.matches) {
-			if (listeMatchs.matches[m].status != 'U' && listeMatchs.matches[m].status !='C'&& listeMatchs.matches[m].status !='CC') {
-    //				console.log(m);
+            switch (listeMatchs.matches[m].status) {
+            case 'U':
+            case 'UP':
+            case 'C':
+            case 'CC': break;
+            default :
 				idLive = listeMatchs.matches[m].matchId;
+                console.log('affListe :',idLive,listeMatchs.matches[m]);
 				getMatch(idLive);
 				t = setInterval(cycle,5000);
-				cycle();
+				cycle(); //xx
+                break;
 			}
 		}
 		teams=[];
@@ -651,9 +657,9 @@ function affListe() {
 			//console.log(idLive);
         if (listeMatchs.event.winningTeam!=null) titre += '/' + listeMatchs.event.winningTeam.name;
         d3.select("#h1").text(titre);
-		color_status = { U:'ivory',ZZ:'#45CCFF', C:'#456FFF',L1:'#7845FF',L2:'#D545FF', LHT:'#FF45CC', CC:'#bbb' }
+		color_status = { U:'ivory',ZZ:'#45CCFF', C:'#456FFF',L1:'#7845FF',L2:'#D545FF', LHT:'#FF45CC', CC:'#9433FF',UP:'red' }
 		color_pool = { "Pool A":'#455FFF',"Pool 1":'#455FFF', "Pool B":'#FF45BC',"Pool 2":'#FF45BC',
-        "Pool C":'#FFE545',"Pool 3":'#FFE545',"Pool D":'#45FF88','Poule 4':'#45FF88',"Pool 4":'#45FF88',"Pool E":'#A845FF',"Quarter-Finals":'#12223C',"Semi-Finals":'#555588',"Bronze Final": '#999','3rd Place Play-Off':'#999',"Final":'#c1a40e', null:'#3380FF' }
+        "Pool C":'#FFE545',"Pool 3":'#FFE545',"Pool D":'#45FF88','Poule 4':'#45FF88',"Pool 4":'#45FF88',"Pool E":'#A845FF',"Quarter-Finals":'#72A3B4',"Semi-Finals":'#555588',"Bronze Final": '#999','3rd Place Play-Off':'#999',"Final":'#c1a40e', null:'#3380FF' }
         color_tab = ['#3380FF','#4C33FF']
     //    svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+((listeVal.length+1)*size));
 		let size = 26,padding=2, largeur=110, space=0.9,centre=1.6;

@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<title>COVID-19</title>
+<meta name="description" content="Interactive visualisation COVID-19 Data.">
+<meta name="author" content="e-Coucou">
+<html class="rky">
+<meta charset="utf-8">
+<title>COVID-19</title>
+<style>
+	@import url(../css/new.css);
+.rky header {
+    position: fixed;
+    top:0px;
+    left:0px;
+    width:100%;
+    height: 50px;
+    z-index: 0;
+    background: #101030;
+  color: #fff;
+  font-family: "helvetica neue", sans-serif;
+}
+.rky header #h1 {
+	margin-top: 1vh;
+	margin-left: 2vh;
+    font-size: 1.5vh;
+}
+.rky aside {
+  font-size: 1.5vh;
+  font-family: "helvetica neue", sans-serif;
+  font-weight: 150;
+  text-anchor: end;
+  margin-right: 0.9vh;
+    float: right;
+/*    box-shadow: inset 5px 0 5px -5px #29627e;*/
+}
+.rky h1 {
+  font-family: "helvetica neue", sans-serif;
+  font-size: 5vh;
+  letter-spacing: 0.2vh;
+  margin-left: 0px;
+  margin-bottom: 0px;
+  font-weight: 50;
+  text-rendering: optimizeLegibility;
+}
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+.horizontalGrid {
+	fill : none;
+	shape-rendering : crispEdges;
+	stroke : lightgrey;
+	stroke-width : 1px;
+}
+.verticalLine {
+	fill : none;
+	shape-rendering : crispEdges;
+	stroke : lightgrey;
+	stroke-width : 1px;
+}
+#svg {
+	display: block;
+	margin: auto;
+	opacity: 1;
+	position : relative;
+}
+#region {
+	display: block;
+	margin: auto;
+}
+</style>
+<header>
+  <div id='h1'>COVID-19</div>
+  <div id='h1'>e-Coucou</div>
+  <aside >Mars, 2021</aside><div id="version"></div>
+  <div id='menu'></div>
+</header>
+<body>
+	<script src="https://d3js.org/d3.v5.min.js"></script>
+<section class="textoverpic">
+  <hr><h1>Bienvenu sur e-Coucou</h1>
+  <h1>Pour un tour complet des infos sur le Covid-19</h1>
+  <hr><hr>
+  <div><aside>Les données proviennent de l'opendata du gouvernement Français</aside>
+  	<aside>mise à jour tous les soirs à 19.00 et sont issues des collectes par l'ARS</aside>
+  	<aside>Les données internationales proviennent, elles, du site Johns-Hopkins</aside></div>
+</section>
+<section>
+<div id="chart"></div>
+</section>
+<section class="pop">
+  <div id="val"></div>
+</section>
+<section>
+    <div id="chart_frAll"></div>
+</section>
+<section>
+  <div id="valRegion">les tendances par région</div>
+</section>
+<section>
+    <div id="chart_region"></div>
+</section>
+<section>
+  <div id="valMonde"></div>
+</section>
+<section>
+	<div id="chart_jh"></div>
+</section>
+<section>
+  <h1>Evolution dans le monde de la contamination par le Covid-19</h1>
+</section>
+<section>
+	<div id="chart_jc"></div>
+</section>
+<section>
+  <h1>Une belle simulation ...</h1>
+</section>
+<section>
+	<div id="chart_simul"></div>
+</section>
+<section>
+  <h1>Merci pour cette visite et à Bientot sur e-coucou.com.</h1>
+</section>
+    <script type="text/javascript">
+    //---------------------------------------------------------------
+    // les fonctions ...
+    var locale = {
+        dateTime: "%A, le %e %B %Y, %X",date: "%d/%m/%Y",time: "%H:%M:%S",periods: ["AM","PM"],days: ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"],shortDays: ["dim.","lun.","mar.","mer.","jeu.","ven.","sam."],months: ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"],shortMonths: ["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."]};
+    d3.timeFormatDefaultLocale(locale);
+    var formatTime = d3.timeFormat("%a %d/%m");
+    var formatLongTime = d3.timeFormat("%A %_d %B %Y");
+	var couleur = ['DarkRed','yellowgreen','RebeccaPurple','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
+	const parseTime = d3.timeParse("%d/%m/%Y");
+    const parseTimeH = d3.timeParse("%Y-%m-%d");
+    const parseTimeJH = d3.timeParse("%m/%d/%y");
+	let valFormat = (a) => { 
+        let r = (a>100) ? Math.round(a) : ( (a>1)? Math.round(a*100.0)/100 : Math.round(a*1000.0)/1000);
+        return String(r).replace(/(.)(?=(\d{3})+$)/g,'$1 ');
+//        return r;
+        }
+	let cumul = (array) => array.reduce((a, b) => { return a + b; }); // / array.length;
+	let average = (array) => array.reduce((a, b) => { return a + b; }) / array.length;
+    //---------------------------------------------------------------
+    // les varibales
+    var ti , tm, ra,c, dg, dm,rr, sa, ddm ,da ;
+    var nbSimul = 150;
+    var maj;
+    //----------------------------------------------------------------
+	var margin = {top: 40, right: 40, bottom: 50, left: 100, padding: 30},
+    width = window.innerWidth,
+    height = window.innerHeight, h_header=50;
+    var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
+    var url_final_100 = "../data/final.csv";
+    /*
+	var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f1b3ee1cabd7';
+	var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv",
+	    JH_global_confirmed = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv",
+	    JH_globale_recovered = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv";
+    */
+
+    var interpolate = d3[`interpolate${'Blues'}`];
+    var colors = [];
+    const n=14;
+    dark = d3.lab(interpolate(0)).l < 50;
+    for (let i = 0; i < n; ++i) {
+      colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
+    }
+    let scale=0;
+    if (width>height) {scale=height} else {scale=width}
+
+	const path = d3.geoPath();
+	const projection = d3.geoConicConformal()
+	    .center([2.454071, 46.279229])
+    	.scale(4.0*scale)
+    	.translate([scale/2+1*margin.left, scale / 2]);
+    path.projection(projection);
+	const svg = d3.select('#chart').append("svg")
+    	.attr("id", "svg")//.attr("position", 2)
+    	.attr("width", width)
+    	.attr("height", (height-h_header));
+	const svgJH = d3.select('#chart_jh').append("svg")
+    	.attr("id", "svgJH")//.attr("position", 1)
+    	.attr("width", width)
+    	.attr("height", (height-h_header));
+	const svgJC = d3.select('#chart_jc').append("svg")
+    	.attr("id", "svgJC")//.attr("position", 1)
+    	.attr("width", width)
+    	.attr("height", (height-h_header));
+	const svgfrAll = d3.select('#chart_frAll').append("svg")
+    	.attr("id", "svgJC")//.attr("position", 1)
+    	.attr("width", width)
+    	.attr("height", (height-h_header));
+	const svgSimul = d3.select('#chart_simul').append("svg")
+    	.attr("id", "svgSimul")//.attr("position", 1)
+    	.attr("width", width)
+    	.attr("height", (height-h_header));
+    const svgRegion = d3.select('#chart_region').append("svg")
+        .attr("id", "svgRegion")//.attr("position", 1)
+        .attr("width", width)
+        .attr("height", (height-h_header));
+
+// ajoute la France des départements
+    const depart = svg.append("g")
+        .attr("transform", "translate("+(0)+","+(0)+")");
+
+    var promises=[];
+    var dHist = [], dReg = [], dept = [];
+    var tantile;
+    promises.push( d3.json(url_geoDepart));
+    promises.push( d3.csv(url_final_100));
+//    promises.push( d3.dsv(";",dataGouv));
+//   promises.push( d3.csv(JH_global_death));
+//    promises.push( d3.csv(JH_global_confirmed));
+//    promises.push( d3.csv(JH_globale_recovered));
+//    promises.push(d3.json('../data/covid.json'));
+    promises.forEach((p,i) =>{
+        Promise.resolve(p).then(function(val) {
+        dataRead(val,i);
+        });
+    });
+
+    var dataRegion=[],geojson=[],hopital=[];dataGouv=[];dataGoogle=[],JHDeath=[],JHConfirmed=[],JHRecovered=[],geoDepart=[],globalData=[];
+    var dataFinal = [];
+    var iRead=0;
+    var h_date=[];
+    // definition lies au departement
+    var legendDep = svg.append('g')
+        .attr('transform', function(d) { return 'translate('+(margin.left)+','+( 1*margin.top)+')';})
+        .attr('id', 'legendDep');
+    var legendDepScale = d3.scaleLinear()
+        .domain([0, d3.max(dept, function(e) { return e.value; })])
+        .range([0, 13 * 20]);
+    var legendDepAxis = svg.append("g")
+        .attr("class","legendDep")
+        .attr('transform', function(d) {return 'translate('+( margin.left+20)+','+( 1*margin.top)+')';})
+        .call(d3.axisRight(legendDepScale).ticks(10));
+    	legendDep.selectAll('.colorbar')
+        	.data(d3.range(13))
+       		.enter().append('svg:rect')
+            	.attr('class','legendDep')
+            	.attr('y', function(d) { return d * 20 + 'px'; })
+            	.attr('height', '20px')
+            	.attr('width', '20px')
+            	.attr('x', '0px')
+            	.style('fill',function(d,i) { return colors[i];});    
+    function dataRead(data,i) {
+        switch(i) {
+        case 5:    dataRegion=data; break;
+/*        case 2:    geojson=data; break;
+        case 3:    dataGoogle=data; break; // remplacé par JH endirect
+      case 1:    dataGouv=data; hopital=data;break;*/
+        case 1:    dataFinal = data; break;
+        case 2:    JHDeath=data; break;
+        case 3:    JHConfirmed=data; break;
+        case 4:    JHRecovered=data; break;
+        case 0:    geoDepart=data; break;
+        default:
+            break;
+        }
+        iRead += (1<<i); //console.log(i, iRead, (iRead>>i)&1);
+//        infoGT.select('text').text("Chargement ...");
+//        infoG.selectAll('circle').attr('fill',d=>{return ((iRead>>d)&1!=0)?'white':'red'});
+		let seuil = Math.pow(2,promises.length)-1; // console.log(seuil);
+        if (iRead==seuil) start();
+    }
+    //--------------------------------------------------------------
+	function start() {
+        console.log(dataFinal);
+        h_date = hopital.map(d=>{return d.jour;}).filter(getUnique);
+        let maj= h_date[h_date.length-1];
+        tantile = d3.scaleQuantile()
+        	.domain([ 0,d3.max(dept, function(e) { return e.value; })])//.domain([0, 100])
+        	.range(d3.range(13));
+		getDepartementData();
+/*xxep		updateData();
+		let JH_len =dHist[0].values.length-1, majMonde = dHist[0].values[JH_len].date;
+		aff_JH(); aff_JC();aff_frAll();aff_regions();
+		aff_Simul();
+*/
+    	updateDepart();
+	    d3.select("#val").html("<a>le "+formatLongTime(parseTimeH(maj))+"</a><h1>"+
+	    				"<br>Entrées Hospitalières : "+valFormat(globalData.find(g=>{return g.item==='hosp';})['global'])+
+	    				"<br><br>Personnes en réanimation : "+valFormat(globalData.find(g=>{return g.item==='rea';})['global'])+
+	    				"<br><br>Personnes décédées à l'Hôpital : "+valFormat(globalData.find(g=>{return g.item==='dc';})['global'])+
+						"<br><br>Personnes rentrées chez elles : "+valFormat(globalData.find(g=>{return g.item==='rad';})['global'])+"</h1>");
+	    d3.select("#valMonde").html("<a>data JH Univerty du "+formatLongTime(majMonde)+"</a><h1>"+
+	    				"<br>Personnes contaminées dans le Monde : "+valFormat(dHist[1].values[JH_len].value)+
+	    				"<br><br>Personnes Guéries : "+valFormat(dHist[2].values[JH_len].value)+
+	    				"<br><br>Personnes Décédées : "+valFormat(dHist[0].values[JH_len].value) +
+	    				"</h1><br><a> soit une mortalité de "+Math.round(
+	    				dHist[0].values[JH_len].value/(dHist[2].values[JH_len].value+dHist[0].values[JH_len].value)*100)+" %</a>");
+	}
+    //--------------------------------------------------------------
+	function updateData() {
+		// maj data simulation depuis le fichier json
+        ti = dataRegion.modele.taux_infection, tm=dataRegion.modele.mortalité, ra = dataRegion.modele.asymptomatique,
+        c=dataRegion.modele.contacts_j, dg=dataRegion.modele.delai_guerison, dm=dataRegion.modele.delai_mort,
+        rr=dataRegion.modele.risque_re, sa = dataRegion.modele.sur_risque_asymp, ddm = dataRegion.modele.decl_maladie, 
+        da = dataRegion.modele.delai_asymptomatique;
+		getDepartementData();
+        legendDepScale.domain([0, d3.max(dept, function(e) { return e.value; })]);
+        legendDepAxis.call(d3.axisRight(legendDepScale).ticks(10));
+        d3.selectAll(".deps").transition().duration(1000).style("fill",d=>{
+                let n=dept.findIndex(k => k.dep===d.properties.code); //console.log(n,d.properties.code,dept[n].value, tantile(dept[n].value))
+                return colors[tantile(dept[n].value)];})
+        getJHData(); // Get data from JH via Github
+        getHospData(); // les données de l'ARS (gouv.fr)
+        getGlobalData(h_date[h_date.length-1]);
+        assembleData();
+        simul();
+        console.log(dHist,dReg);
+	}
+	// ici xxx
+	function updateDepart() { //console.log("Département ",geoDepart,dept);
+        depart.selectAll("path")
+            .data(geoDepart.features)
+            .enter()
+            .append("path")
+            .attr('id', function(d) {return "dep" + d.properties.code;})
+            .attr("d", path).style('opacity',1).attr("class","deps")
+//            .style('fill',function(d) { let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
+                //console.log(colors[val],getOpositeColor(colors[val])); 
+//                return colors[val];})
+            .style("fill",d=>{
+//                let n=dept.findIndex(k => k.dep===d.properties.code);
+//                return colors[tantile(dept[n].value)];
+                return colors[tantile(Math.random()*100.0)];
+            })
+            .style('stroke','blue').style('stroke-width',1);
+	}
+    function aff_frAll(){
+        affiche_curve(dReg[getIndexdata('fullFR')].data.slice(),"fullFR",svgfrAll);
+    }
+    function aff_regions(){
+        affiche_curve(dReg[getIndexdata('rea')].data.slice(),"rea",svgRegion);
+    }
+	function aff_JH(){
+		affiche_curve(dReg[getIndexdata('JH_D')].data.slice(),"JH_D",svgJH);
+	}
+	function aff_JC(){
+		affiche_curve(dReg[getIndexdata('JH_C')].data.slice(),"JH_C",svgJC);
+	}
+	function aff_Simul(){
+		affiche_curve(dReg[getIndexdata('simul')].data.slice(),"simul",svgSimul);
+	}
+	function affiche_curve(dMult, selectValue, svgAff) {
+		let w_g=width-margin.left-margin.right-margin.padding, h_g=height-margin.top-margin.bottom-h_header-margin.padding;
+    // ontrace des courbes
+    const x = d3.scaleTime()
+        .range([0, width-margin.left-margin.right-margin.padding]);
+    const y = d3.scaleLinear()
+        .range([height-margin.top-margin.bottom-h_header-margin.padding,0]);
+    const yL = d3.scaleSymlog()
+        .range([height-margin.top-margin.bottom-h_header-margin.padding,0]);
+    var line = d3.line()
+        .x(function(d) { return x(d.date); }) //vep
+        .y(function(d) { return y(d.value);}) //(d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
+        .curve(d3.curveCardinal);
+	x.domain([
+        d3.min(dMult, function(c) {
+        return d3.min(c.values, function(v) {
+        return v.date; });}),
+        d3.max(dMult, function(c) {
+        return d3.max(c.values, function(v) {
+        return v.date; });})]);
+	y.domain([0, d3.max(dMult, function(c) {
+      	return d3.max(c.values, function(v) {
+        return v.value; });})]);
+	yL.domain([0, d3.max(dMult, function(c) {
+      	return d3.max(c.values, function(v) {
+        return v.value; });})]);
+
+    let index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
+//    let indexReg=dReg.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
+	const g_line = svgAff
+	    .append("g")
+	    .attr("class","g_line")
+    	.attr("transform", "translate(" + (margin.left) + "," + (0) + ")");
+    // Ajout de l'axe X
+    g_line.append("g")
+        .attr("transform", "translate(0," + (height-margin.top-margin.bottom-h_header-margin.padding) + ")")
+        .call(d3.axisBottom(x).ticks(dHist[0].values.length-1).tickFormat(d3.timeFormat("%a %d/%m")))
+        .selectAll("text")	
+        	.style("text-anchor", "end")
+        	.attr("dx", "-.8em")
+        	.attr("dy", ".15em")
+        	.attr("transform", "rotate(-65)");
+    // Ajout de l'axe Y et du texte associé pour la légende
+    g_line.append("g")
+        .call(d3.axisLeft(y))
+        .append("text")
+            .attr("fill", "#000")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", "0.71em")
+            .style("text-anchor", "end")
+            .text("#personnes");
+    // on trace toutes les courbes
+    var g_lines = g_line.selectAll(".selected").raise()
+        .data(dMult).enter().append("g")
+        .attr("class", "selected");
+
+    g_lines.append("path")
+        .attr("class", "line")
+        .attr("id",(d,i)=>{return "l"+i;})//.transition().duration(2000)
+        .attr("d", (d)=>{return line(d.values);})
+        .style("stroke", function(d,i) { return couleur[i];});
+    // curseur
+    var class_mpl = 'mpl'+selectValue, class_ml='ml'+selectValue;
+	var mouseG = g_line.append("g").lower()
+  		.attr("class", "mouse-over-effects");
+	mouseG.append("path")
+		.attr("class", class_ml)
+		.style("stroke", "grey")
+		.style("stroke-width", "1px").style("stroke-dasharray",2)
+		.style("opacity", "1");
+	var mousePerLine = mouseG.selectAll('.'+class_mpl)
+		.data(dMult).enter()
+ 		.append("g").attr("class", class_mpl);
+    // reperage du point d'intersection curseur/courbe
+	mousePerLine.append("circle")
+		.attr("r", 3)
+		.style("stroke", function (d,i) { return couleur[i];})
+		.style("fill", "none").style("stroke-width", "2px").style("opacity", "0");
+	mousePerLine.append("text")
+    	.attr("class", "hover-text").style('font-size','1.5vh').style("font-family","HelveticaNeue-Light")
+    	.attr("dy", "0.1em")
+    	.attr("transform", "translate(10,3)");
+	mouseG.append('rect') 
+		.attr('width', w_g) .attr('height', h_g)
+		.attr('fill', 'none')
+		.attr('pointer-events', 'all')
+		.on('mouseout', function () { // on mouse out hide line, circles and text
+  			d3.select("."+class_ml).style("opacity", "0");
+			d3.selectAll("."+class_mpl+" circle").style("opacity", "0");
+			d3.selectAll("."+class_mpl+" text").style("opacity", "0");
+			})
+		.on('mouseover', function () { // on mouse in show line, circles and text
+			d3.select("."+class_ml).style("opacity", "1");
+			d3.selectAll("."+class_mpl+" circle").style("opacity", "1");
+			d3.selectAll("."+class_mpl+" text").style("opacity", "1");
+  			})
+		.on('mousemove', function () { // mouse moving over canvas
+			var mouse = d3.mouse(this);
+				d3.selectAll("."+class_mpl)
+      				.attr("transform", function (d, i) {
+						var xDate = x.invert(mouse[0]),
+							bisect = d3.bisector(function (d) { return d.date; }).left;
+							idx = bisect(d.values, xDate); //console.log(idx);
+                            try {
+                            laDate = d.values[idx].date.toLocaleDateString("fr-FR");//console.log(laDate);
+                            laDateX = x(d.values[idx].date);
+                            d3.select("#laDate").attr("x",laDateX).text(laDate);} catch{}
+                            try {
+							d3.select(this).select('text')
+								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(0))+" "+d.name);
+							d3.select("."+class_ml)
+								.attr("d", function () {
+									var data = "M" + x(d.values[idx].date) + "," + h_g;
+										data += " " + x(d.values[idx].date) + "," + 0; //console.log(data);
+									return data; });
+//					return "translate(" + x(d.values[idx].date) + "," + ((d3.select("#log_i")._groups[0][0].checked)?yL(d.values[idx].value):y(d.values[idx].value)) + ")";
+					return "translate(" + (x(d.values[idx].date)) + "," + (y(d.values[idx].value)) + ")";
+                            } catch {}
+				});
+  			});
+    var legendM = g_lines.append("g")
+        .attr("class","legend")
+        .attr("transform",(d,i)=>{ return "translate(50,"+(30+i*16)+")";});
+        legendM.append('circle')
+            .attr('r',5).attr('cx',1).attr('cy',2).style('fill',(d,i)=>{return couleur[i];})
+            .on('mouseover',function(d,i){ d3.select(this).style('fill','blue').attr('r',7);})
+            .on('mouseout',function(d,i){ d3.select(this).style('fill',couleur[i]).attr('r',5);});
+        legendM.append("text").style("font-size","1.7vh").attr('x',10).attr('y',6).style('text-anchor','start')
+            .text((d)=>{return d.name;});
+
+	}
+    function getDepartementData(date='') {
+        var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
+        values=[];
+        let item='rea'; //selectValue;
+        name='France';
+        if (date == '') {date = h_date[h_date.length-1];}
+        dept=[];
+        hopital.forEach(d=>{ //console.log(d,date);
+            if (d.jour==date && d.sexe==0) {
+                v=Number(d[item]);//console.log(d);
+                dept.push({dep:d.dep,value:v});
+            }
+        });   // console.log('dept rea',dept);
+		tantile.domain([ 0,d3.max(dept, function(e) { return e.value; })]);
+
+    }
+    function getUnique(value, index, self) { 
+        return self.indexOf(value) === index;
+    }
+    function getJHData() {
+//        console.log(JHDeath.columns);
+        let JHDate = JHDeath.columns.slice(4); //console.log(JHDate);
+        let data=[];
+        dataRegion.pays_liste.forEach(p=>{
+          let values=[];
+          JHDeath.forEach(d=>{
+            if (d['Country/Region'].includes(dataRegion.pays_JH[p]))
+                {   JHDate.forEach(v=>{
+                    date= parseTimeJH(v); value =Number(d[v]);
+                    let idx = values.findIndex(e=>{return e.dJH===v;});
+                    if (idx != -1) { values[idx].value += value;
+                        } else { values.push({date,value,dJH:v}); }
+          })}});
+          data.push({name:dataRegion.pays[p],n:p,values});
+        })
+        dReg.push({item:'JH_D',data});
+        values=[]; console.log(JHDeath);
+        JHDate.forEach(d=>{ date= parseTimeJH(d);
+        	value=0;
+        	JHDeath.forEach(v=>{ value += Number(v[d]);})
+         values.push({date,value});
+     	});
+        dHist.push({item:"JH_D","name":"Monde",values});
+        // les confinés
+        data=[];
+        dataRegion.pays_liste.forEach(p=>{
+          let values=[];
+          JHConfirmed.forEach(d=>{
+            if (d['Country/Region'].includes(dataRegion.pays_JH[p]))
+                {   JHDate.forEach(v=>{
+                    date= parseTimeJH(v); value =Number(d[v]);
+                    let idx = values.findIndex(e=>{return e.dJH===v;});
+                    if (idx != -1) { values[idx].value += value;
+                        } else { values.push({date,value,dJH:v}); }
+          })}});
+          data.push({name:dataRegion.pays[p],n:p,values});
+        })
+        dReg.push({item:'JH_C',data});
+        values=[];
+        JHDate.forEach(d=>{ date= parseTimeJH(d); value=0;
+        	JHConfirmed.forEach(v=>{ value += Number(v[d]);})
+         values.push({date,value}); });
+        dHist.push({item:"JH_C","name":"Monde",values});
+        // les recovered
+        data=[];
+        dataRegion.pays_liste.forEach(p=>{
+          let values=[];
+          JHRecovered.forEach(d=>{
+            if (d['Country/Region'].includes(dataRegion.pays_JH[p]))
+                {   JHDate.forEach(v=>{
+                    date= parseTimeJH(v); value =Number(d[v]);
+                    let idx = values.findIndex(e=>{return e.dJH===v;});
+                    if (idx != -1) { values[idx].value += value;
+                        } else { values.push({date,value,dJH:v}); }
+          })}});
+          data.push({name:dataRegion.pays[p],n:p,values});
+        })
+        dReg.push({item:'JH_R',data});
+        values=[];
+        JHDate.forEach(d=>{ date= parseTimeJH(d); value=0;
+        	JHRecovered.forEach(v=>{ value += Number(v[d]);})
+         values.push({date,value}); });
+        dHist.push({item:"JH_R","name":"Monde",values});
+        values=[];data=[];
+        values = dReg[getIndexdata('JH_D')].data[0].values.slice(); data.push({n:'DC',name:'Morts',values});
+        values = dReg[getIndexdata('JH_C')].data[0].values.slice(); data.push({n:'IN',name:'Infectés',values});
+        values = dReg[getIndexdata('JH_R')].data[0].values.slice(); data.push({n:'GU',name:'Guéris',values});
+        values=[];
+        data[1].values.forEach((v,i)=>{
+                date=v.date;
+                value = v.value-data[0].values[i].value - data[2].values[i].value;
+                values.push({date,value});
+            });
+        data.push({n:'MA',name:'Malades',values});
+        dReg.push({item:'frJH',data});
+        values= dHist[getIndexdata('JH_D')].values.slice();
+        dHist.push({item:'frJH',values});
+    }
+    function getGlobalData(selDate) {
+        globalData=[];
+        dataRegion.proprietes.cases.forEach(d=>{
+            let i0=cumul(getDataARS(d,0,selDate)),
+                i1=cumul(getDataARS(d,1,selDate)),
+                i2=cumul(getDataARS(d,2,selDate));
+            globalData.push({item:d,global:i0,hommes:i1,femmes:i2});
+        }); //     console.log('global',globalData);
+    }
+    function getDataARS(item,sexe,date) {
+        let cumR = 0, data =[];
+        dataRegion.regions_deps.forEach((l,j)=> 
+            {   data.push(getDataRegion(item,j,date,sexe));
+            }
+        );
+        return data;
+    }
+    function getDataRegion(item,region,date,sexe) {
+          let cumR=0;
+          dataRegion.regions_deps[region].forEach((r,i)=>{
+
+            let cum = hopital.reduce((a,d)=>{ let v=0;
+            if (d.dep == r && d.jour == date && d.sexe == sexe) {
+                v= Number(d[item]); //console.log(r,a,v);
+            }
+            return (a+v); },0); //console.log(cum);
+            cumR+= cum;
+          });
+          return cumR;
+        }
+    function getHospData() {
+        // données hospitalières france
+        dataRegion.proprietes.cases.forEach( item=> {
+            values=[];
+            name='France';
+            h_date.forEach(function(h) {
+              date = parseTimeH(h);
+              let value = hopital.reduce((a,d)=>{ let v=0;
+                if (d.jour == h && d.sexe == 0) {
+                    v= Number(d[item]);// console.log(a,v);
+                }
+                return (a+v); },0); //console.log(cum);        value = cumul(d.series);
+              values.push({date,value}); // sauvegarde sous forme de hashmap de nos données.
+            });
+            dHist.push({item,name,values});
+            data=[];
+            dataRegion.regions_deps.forEach((r,i)=>{
+                name=dataRegion.regions_nom[i];
+                values=[];
+                h_date.forEach(function(h) {
+                    value=0;
+                    r.forEach( (dep) => {
+                        date = parseTimeH(h); //console.log(h);
+                        let cum = hopital.reduce((a,d)=>{ let v=0;
+                          if (d.dep==dep && d.jour == h && d.sexe == 0) {
+                              v= Number(d[item]);}
+                          return (a+v); },0); //console.log(cum);        value = cumul(d.series);
+                        value += cum;
+                    });
+                    values.push({date,value}); // sauvegarde sous forme de hashmap de nos données.
+                });
+                data.push({name,values});
+            });
+            dReg.push({item,data});
+        });        
+    }
+    function simul() {
+        var infectes = [], malades = [], morts=[], gueris = [], sains =[], assymp=[],cumul_inf=[],cumul_mal=[], cumul_as=[];
+        infectes.push(1000);malades.push(0);morts.push(0);gueris.push(0),sains.push(dataRegion.modele.population),assymp.push(0),
+            cumul_inf.push(0),cumul_as.push(0),cumul_mal.push(0);
+        var date=[];
+        date.push(new Date("03/01/2020"));
+
+        for (let i=0; i<nbSimul;i++){
+            dd = new Date(); dd.setTime(date[i].getTime() + 86400000);//console.log(dd);
+            date.push( dd) ;
+            let cc=c;
+			if (morts[i]<=300) {cc=c*4} else {
+        		if(morts[i]<=5000) {cc=c*2} }
+            delta_D = malades[i]*tm/dm;//console.log(tm,dm,delta_D);
+            delta_G_A = assymp[i]/da;
+            delta_A = infectes[i]*(ra)/dm;
+            delta_G_M = malades[i]*(1-tm)/dg;
+            delta_M = infectes[i]*(1-ra)/ddm;
+            delta_I = (infectes[i]+assymp[i]*sa+gueris[i]*rr)*ti*cc*sains[i]/sains[0]*Math.max(0,(1-2*gueris[i]/sains[0]));
+            cumul_inf.push(cumul_inf[i]+delta_I); 
+            gueris.push(gueris[i]+ delta_G_A +delta_G_M);
+            assymp.push(assymp[i] + delta_A - delta_G_A );
+            morts.push(morts[i]+ delta_D);
+            malades.push(malades[i]+ delta_M - delta_G_M - delta_D);
+            infectes.push( delta_I + infectes[i]-delta_M - delta_A)
+            cumul_mal.push(cumul_mal[i]+delta_M); 
+            cumul_as.push(cumul_as[i]+delta_A); 
+            sains.push(sains[0]-gueris[i+1]-assymp[i+1]-morts[i+1]-malades[i+1]-infectes[i+1]);
+        }
+  //      console.log(gueris,assymp,morts,malades,infectes,date);
+        data=[];
+        values=[];
+        date.forEach(d=>{values.push({date:d,value:0});});
+        let index= dHist.findIndex(d=>d.item=='simul');
+        if (index != -1) dHist.splice(index,1);
+        dHist.push({item:'simul',name:'Global',values});
+        values=[];
+        morts.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'mortalité',n:'DC',values});
+        values=[];
+        malades.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'malades',n:'MA',values});
+        values=[];
+        gueris.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'gueris',n:'GU',values});
+        values=[];
+        infectes.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'infectes',n:'IN',values});
+        values=[];
+        assymp.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'asymptotiques',n:'AS',values});
+        values=[];
+        sains.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'sains',n:'S.',values});
+        values=[];
+        cumul_inf.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'Cumul Inf.',n:'cI',values});
+        values=[];
+        cumul_as.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'Cumul Asymp.',n:'cA',values});
+        values=[];
+        cumul_mal.forEach((d,i)=>{ values.push({date:date[i],value:d});});
+        data.push({name:'Cumul Mal.',n:'cM',values});
+  //      index= dReg.findIndex(d=>d.item=='simul');
+        if (index != -1) dReg.splice(index,1);
+        dReg.push({item:'simul',data});  // console.log(dReg);
+    }
+    function assembleData() {
+        values=[];
+        h_date.forEach(d=>{ date= parseTimeH(d); values.push({date,value:0});});
+        dHist.push({item:"fullFR","name":"France",values});
+        values=[];data=[];
+        values = dHist[getIndexdata('hosp')].values.slice(); data.push({n:'HO',name:'Hospitalisations',values});
+        values = dHist[getIndexdata('rea')].values.slice(); data.push({n:'RE',name:'Réanimations',values});
+        values = dHist[getIndexdata('dc')].values.slice(); data.push({n:'MH',name:'Décés hopital',values});
+        values = dHist[getIndexdata('rad')].values.slice(); data.push({n:'GH',name:'Guérisons Hopital',values});
+        values = dReg[getIndexdata('JH_D')].data[0].values.slice(); data.push({n:'DC',name:'Morts',values});
+        values = dReg[getIndexdata('JH_C')].data[0].values.slice(); data.push({n:'IN',name:'Infectés',values});
+        values = dReg[getIndexdata('JH_R')].data[0].values.slice(); data.push({n:'GU',name:'Guéris',values});
+        values=[];
+        data[5].values.forEach((v,i)=>{
+                date=v.date;
+                value = v.value-data[4].values[i].value - data[6].values[i].value;
+                values.push({date,value});
+            });
+        data.push({n:'MA',name:'Malades',values});
+        dReg.push({item:'fullFR',data});
+    }
+    function getIndexdata(val) {
+        return (dHist.findIndex(d=>d.item==val));
+    }
+
+    </script>
+</body></html>
