@@ -79,7 +79,7 @@
 	<script src="https://d3js.org/d3.v5.min.js"></script>
 <section class="textoverpic">
   <hr><h1>Bienvenu sur e-Coucou</h1>
-  <h1>Pour un tour complet des infos sur le Covid-19</h1>
+  <h1>Pour un tour complet des infos sur la Covid-19</h1>
   <hr><hr>
   <div><aside>Les données proviennent de l'opendata du gouvernement Français</aside>
   	<aside>mise à jour tous les soirs à 19.00 et sont issues des collectes par l'ARS</aside>
@@ -150,7 +150,13 @@
     width = window.innerWidth,
     height = window.innerHeight, h_header=50;
     var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
-    var url_final_100 = "../data/final.csv";
+    var url_final_100 = "../data/final_100.csv";
+    var url_final = "../data/final.csv";
+    var url_fr_final_100 = "../data/fr_final_100.csv";
+    var url_h_date100 = "../data/h_date_100.csv";
+    var url_h_dep = "../data/h_dep.csv";
+    var url_h_last_date = "../data/last_date.csv";
+    var url_h_item = "../data/item.csv";
     /*
 	var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f1b3ee1cabd7';
 	var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv",
@@ -207,7 +213,13 @@
     var dHist = [], dReg = [], dept = [];
     var tantile;
     promises.push( d3.json(url_geoDepart));
+    promises.push( d3.csv(url_final));
+    promises.push( d3.csv(url_fr_final_100));
+    promises.push( d3.csv(url_h_date100));
+    promises.push( d3.csv(url_h_dep));
     promises.push( d3.csv(url_final_100));
+    promises.push( d3.csv(url_h_last_date));
+    promises.push( d3.csv(url_h_item));
 //    promises.push( d3.dsv(";",dataGouv));
 //   promises.push( d3.csv(JH_global_death));
 //    promises.push( d3.csv(JH_global_confirmed));
@@ -220,9 +232,9 @@
     });
 
     var dataRegion=[],geojson=[],hopital=[];dataGouv=[];dataGoogle=[],JHDeath=[],JHConfirmed=[],JHRecovered=[],geoDepart=[],globalData=[];
-    var dataFinal = [];
+    var dataFinal = [], dataFRFinal100=[], dataFinal100 = [];
     var iRead=0;
-    var h_date=[];
+    var h_date=[],h_last_date=[], h_item=[];
     // definition lies au departement
     var legendDep = svg.append('g')
         .attr('transform', function(d) { return 'translate('+(margin.left)+','+( 1*margin.top)+')';})
@@ -245,15 +257,17 @@
             	.style('fill',function(d,i) { return colors[i];});    
     function dataRead(data,i) {
         switch(i) {
-        case 5:    dataRegion=data; break;
+        case 5:    dataFinal100 = data; break; //dataRegion=data; break;
 /*        case 2:    geojson=data; break;
         case 3:    dataGoogle=data; break; // remplacé par JH endirect
       case 1:    dataGouv=data; hopital=data;break;*/
         case 1:    dataFinal = data; break;
-        case 2:    JHDeath=data; break;
-        case 3:    JHConfirmed=data; break;
-        case 4:    JHRecovered=data; break;
+        case 2:    dataFRFinal100 = data; break; //JHDeath=data; break;
+        case 3:    h_date = data; break;//JHConfirmed=data; break;
+        case 4:    h_dep = data; break; //JHRecovered=data; break;
         case 0:    geoDepart=data; break;
+        case 6:    h_last_date=data; break;
+        case 7:    h_item=data; break;
         default:
             break;
         }
@@ -265,19 +279,21 @@
     }
     //--------------------------------------------------------------
 	function start() {
-        console.log(dataFinal);
-        h_date = hopital.map(d=>{return d.jour;}).filter(getUnique);
-        let maj= h_date[h_date.length-1];
+        console.log(dataFRFinal100);
+        //h_date = dataFRFinal100.map(d=>{return d.jour;}).filter(getUnique);
+        console.log('h_date',h_date);
+        let maj= h_date[h_date.length-1]; console.log('maj',maj);
         tantile = d3.scaleQuantile()
-        	.domain([ 0,d3.max(dept, function(e) { return e.value; })])//.domain([0, 100])
-        	.range(d3.range(13));
-		getDepartementData();
+            .domain([ 0,100])//.domain([0, 100])
+            .range(d3.range(13));
+        getDepartementData();
 /*xxep		updateData();
 		let JH_len =dHist[0].values.length-1, majMonde = dHist[0].values[JH_len].date;
 		aff_JH(); aff_JC();aff_frAll();aff_regions();
 		aff_Simul();
 */
     	updateDepart();
+        /*
 	    d3.select("#val").html("<a>le "+formatLongTime(parseTimeH(maj))+"</a><h1>"+
 	    				"<br>Entrées Hospitalières : "+valFormat(globalData.find(g=>{return g.item==='hosp';})['global'])+
 	    				"<br><br>Personnes en réanimation : "+valFormat(globalData.find(g=>{return g.item==='rea';})['global'])+
@@ -289,6 +305,7 @@
 	    				"<br><br>Personnes Décédées : "+valFormat(dHist[0].values[JH_len].value) +
 	    				"</h1><br><a> soit une mortalité de "+Math.round(
 	    				dHist[0].values[JH_len].value/(dHist[2].values[JH_len].value+dHist[0].values[JH_len].value)*100)+" %</a>");
+        */
 	}
     //--------------------------------------------------------------
 	function updateData() {
@@ -322,9 +339,9 @@
                 //console.log(colors[val],getOpositeColor(colors[val])); 
 //                return colors[val];})
             .style("fill",d=>{
-//                let n=dept.findIndex(k => k.dep===d.properties.code);
-//                return colors[tantile(dept[n].value)];
-                return colors[tantile(Math.random()*100.0)];
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                return colors[tantile(dept[n].value)];
+//                return colors[tantile(Math.random()*100.0)];
             })
             .style('stroke','blue').style('stroke-width',1);
 	}
@@ -476,19 +493,25 @@
 
 	}
     function getDepartementData(date='') {
-        var h_dep = hopital.map(d=>{return d.dep;}).filter(getUnique);
+//epxxx        var h_dep = dataFinal.map(d=>{return d.dep;}).filter(getUnique);
+        console.log('h_dep',h_dep)
         values=[];
-        let item='rea'; //selectValue;
+        let item='tx_pos'; //selectValue;
         name='France';
         if (date == '') {date = h_date[h_date.length-1];}
+        console.log('last date',h_last_date);
+        date = h_last_date[h_last_date.findIndex(d=>{return d.item===item;})].date; console.log('last date',date);
         dept=[];
-        hopital.forEach(d=>{ //console.log(d,date);
-            if (d.jour==date && d.sexe==0) {
+        dataFinal.forEach(d=>{ //console.log(d,date);
+            if (d.jour==date ) { //&& d.sexe==0) {
                 v=Number(d[item]);//console.log(d);
                 dept.push({dep:d.dep,value:v});
             }
         });   // console.log('dept rea',dept);
-		tantile.domain([ 0,d3.max(dept, function(e) { return e.value; })]);
+        min = d3.min(dept, function(e) { return e.value; }); 
+        max = d3.max(dept, function(e) { return e.value; }); console.log('min / max',min,max);
+		tantile.domain([ min , max ]);
+        console.log('dept',dept);
 
     }
     function getUnique(value, index, self) { 
