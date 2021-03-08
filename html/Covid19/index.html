@@ -277,7 +277,9 @@
 		let seuil = Math.pow(2,promises.length)-1; // console.log(seuil);
         if (iRead==seuil) start();
     }
-    //--------------------------------------------------------------
+//--------------------------------------------------------------
+//--- CA COMMENCE ICI
+//--------------------------------------------------------------
 	function start() {
         console.log(dataFRFinal100);
         //h_date = dataFRFinal100.map(d=>{return d.jour;}).filter(getUnique);
@@ -287,6 +289,7 @@
             .domain([ 0,100])//.domain([0, 100])
             .range(d3.range(13));
         getDepartementData();
+        assembleCurve('tx_incid');
 /*xxep		updateData();
 		let JH_len =dHist[0].values.length-1, majMonde = dHist[0].values[JH_len].date;
 		aff_JH(); aff_JC();aff_frAll();aff_regions();
@@ -360,7 +363,10 @@
 	function aff_Simul(){
 		affiche_curve(dReg[getIndexdata('simul')].data.slice(),"simul",svgSimul);
 	}
-	function affiche_curve(dMult, selectValue, svgAff) {
+//-------------
+//-
+    function affiche_curve(dMult, selectValue, svgAff) {
+
 		let w_g=width-margin.left-margin.right-margin.padding, h_g=height-margin.top-margin.bottom-h_header-margin.padding;
     // ontrace des courbes
     const x = d3.scaleTime()
@@ -492,11 +498,21 @@
             .text((d)=>{return d.name;});
 
 	}
+    function assembleCurve(item) {
+        data = [];
+        dataFRFinal100.forEach(d=>{
+            date=d.jour;
+            value=d[item];
+            data.push({'date':date,'value':value})
+        });
+        console.log('assemble curve =',data);
+        return data;
+    }
     function getDepartementData(date='') {
 //epxxx        var h_dep = dataFinal.map(d=>{return d.dep;}).filter(getUnique);
         console.log('h_dep',h_dep)
         values=[];
-        let item='tx_pos'; //selectValue;
+        let item='tx_incid'; //selectValue;
         name='France';
         if (date == '') {date = h_date[h_date.length-1];}
         console.log('last date',h_last_date);
