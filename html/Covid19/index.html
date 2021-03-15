@@ -68,12 +68,42 @@
 	display: block;
 	margin: auto;
 }
+#defilementUP {
+    position: absolute;
+    right: 218px;
+    top: 10px;
+}
+#defilementDOWN {
+    position: absolute;
+    right: 407px;
+    top: 10px;
+}
+#dateUP {
+    position: absolute;
+    right: 173px;
+    top: 10px;
+}
+#dateDOWN {
+    position: absolute;
+    right: 450px;
+    top: 10px;
+}
+#item_select {
+    position: absolute;
+    right: 250px;
+    top: 15px;
+}
 </style>
 <header>
   <div id='h1'>COVID-19</div>
   <div id='h1'>e-Coucou</div>
   <aside >Mars, 2021</aside><div id="version"></div>
   <div id='menu'></div>
+  <div id='dateUP'></div>
+  <div id='dateDOWN'></div>
+  <div id='defilementUP'></div>
+  <div id='item_select'></div>
+  <div id='defilementDOWN'></div>
 </header>
 <body>
 	<script src="https://d3js.org/d3.v5.min.js"></script>
@@ -145,6 +175,7 @@
     var ti , tm, ra,c, dg, dm,rr, sa, ddm ,da ;
     var nbSimul = 150;
     var maj;
+    var itemID=0, item = 'tx_incid', offset_date = 0;
     //----------------------------------------------------------------
 	var margin = {top: 40, right: 40, bottom: 50, left: 100, padding: 30},
     width = window.innerWidth,
@@ -153,10 +184,12 @@
     var url_final_100 = "../data/final_100.csv";
     var url_final = "../data/final.csv";
     var url_fr_final_100 = "../data/fr_final_100.csv";
-    var url_h_date100 = "../data/h_date_100.csv";
+    var url_fr_final = "../data/fr_final.csv";
+    var url_h_date = "../data/h_date.csv";
     var url_h_dep = "../data/h_dep.csv";
     var url_h_last_date = "../data/last_date.csv";
     var url_h_item = "../data/item.csv";
+    var url_h_date100 = "../data/h_date_100.csv";
     /*
 	var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f1b3ee1cabd7';
 	var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv",
@@ -164,7 +197,7 @@
 	    JH_globale_recovered = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv";
     */
 
-    var interpolate = d3[`interpolate${'Blues'}`];
+    var interpolate = d3[`interpolate${'Turbo'}`]; //RdYlBu
     var colors = [];
     const n=14;
     dark = d3.lab(interpolate(0)).l < 50;
@@ -215,11 +248,13 @@
     promises.push( d3.json(url_geoDepart));
     promises.push( d3.csv(url_final));
     promises.push( d3.csv(url_fr_final_100));
-    promises.push( d3.csv(url_h_date100));
+    promises.push( d3.csv(url_h_date));
     promises.push( d3.csv(url_h_dep));
     promises.push( d3.csv(url_final_100));
     promises.push( d3.csv(url_h_last_date));
     promises.push( d3.csv(url_h_item));
+    promises.push( d3.csv(url_fr_final));
+    promises.push( d3.csv(url_h_date100));
 //    promises.push( d3.dsv(";",dataGouv));
 //   promises.push( d3.csv(JH_global_death));
 //    promises.push( d3.csv(JH_global_confirmed));
@@ -232,7 +267,7 @@
     });
 
     var dataRegion=[],geojson=[],hopital=[];dataGouv=[];dataGoogle=[],JHDeath=[],JHConfirmed=[],JHRecovered=[],geoDepart=[],globalData=[];
-    var dataFinal = [], dataFRFinal100=[], dataFinal100 = [];
+    var dataFinal = [], dataFRFinal100=[], dataFinal100 = [], dataFRFinal=[], h_date100=[];
     var iRead=0;
     var h_date=[],h_last_date=[], h_item=[];
     // definition lies au departement
@@ -254,7 +289,87 @@
             	.attr('height', '20px')
             	.attr('width', '20px')
             	.attr('x', '0px')
-            	.style('fill',function(d,i) { return colors[i];});    
+            	.style('fill',function(d,i) { return colors[i];});
+// boutons de défilement ...
+    var svgdUP = d3.select("#dateUP").append("svg")
+        .attr('width',35).attr('height',35)
+        .append("g").raise()
+        .attr('transform',function (d,i){ return ('translate('+ (5)+','+(4)+')');})
+        .on('mouseover',function(d,i){ d3.select('#dateUP').selectAll('rect').style('fill','#33CAFF');
+                                       d3.select('#dateUP').selectAll('text').style('fill','white');})
+        .on('mouseout',function(d,i){ d3.select('#dateUP').selectAll('rect').style('fill','ivory');
+                                      d3.select('#dateUP').selectAll('text').style('fill','#212');})
+        .on('click',dateUP);
+    svgdUP.append('rect').attr('fill','white')
+        .attr('rx',5).attr('ry',5).style('stroke-width',2).style('stroke','#24a')
+        .attr('width',30).attr('height',21).style('fill','ivory');
+    svgdUP.append('text').attr('x',0).attr('dx',15).attr('y',11)
+            .style('fill','#212').style('text-anchor', 'middle').style('font-weight', 'bold').style('dominant-baseline','middle')
+            .text('.>').style('font-size','1.3vw');
+
+    var svgdDOWN = d3.select("#dateDOWN").append("svg")
+        .attr('width',35).attr('height',35)
+        .append("g").raise()
+        .attr('transform',function (d,i){ return ('translate('+ (5)+','+(4)+')');})
+        .on('mouseover',function(d,i){ d3.select('#dateDOWN').selectAll('rect').style('fill','#33CAFF');
+                                       d3.select('#dateDOWN').selectAll('text').style('fill','white');})
+        .on('mouseout',function(d,i){ d3.select('#dateDOWN').selectAll('rect').style('fill','ivory');
+                                      d3.select('#dateDOWN').selectAll('text').style('fill','#212');})
+        .on('click',dateDOWN);
+    svgdDOWN.append('rect').attr('fill','white')
+        .attr('rx',5).attr('ry',5).style('stroke-width',2).style('stroke','#24a')
+        .attr('width',30).attr('height',21).style('fill','ivory');
+    svgdDOWN.append('text').attr('x',0).attr('dx',15).attr('y',11) 
+            .style('fill','#212').style('text-anchor', 'middle').style('font-weight', 'bold').style('dominant-baseline','middle')
+            .text('<.').style('font-size','1.3vw');
+    function itemUP() {
+        itemID = (itemID+1) % h_item.length;
+        updateVisu()
+    }
+    function itemDOWN() {
+        itemID = itemID==0?(h_item.length-1):(itemID-1);
+        updateVisu();
+    }
+    var svgUP = d3.select("#defilementUP").append("svg")
+        .attr('width',35).attr('height',35)
+        .append("g").raise()
+        .attr('transform',function (d,i){ return ('translate('+ (5)+','+(4)+')');})
+        .on('mouseover',function(d,i){ d3.select('#defilementUP').selectAll('rect').style('fill','#33CAFF');
+                                       d3.select('#defilementUP').selectAll('text').style('fill','white');})
+        .on('mouseout',function(d,i){ d3.select('#defilementUP').selectAll('rect').style('fill','ivory');
+                                      d3.select('#defilementUP').selectAll('text').style('fill','#212');})
+        .on('click',itemUP);
+    svgUP.append('rect').attr('fill','white')
+        .attr('rx',5).attr('ry',5).style('stroke-width',2).style('stroke','#24a')
+        .attr('width',30).attr('height',21).style('fill','ivory');//.style('stroke-color', (d,i)=>teamColor[i]);
+    svgUP.append('text').attr('x',0).attr('dx',15).attr('y',11)
+            .style('fill','#212').style('text-anchor', 'middle').style('font-weight', 'bold').style('dominant-baseline','middle')
+            .text('>>').style('font-size','1.3vw');
+
+    var svgDOWN = d3.select("#defilementDOWN").append("svg")
+        .attr('width',35).attr('height',35)
+        .append("g").raise()
+        .attr('transform',function (d,i){ return ('translate('+ (5)+','+(4)+')');})
+        .on('mouseover',function(d,i){ d3.select('#defilementDOWN').selectAll('rect').style('fill','#33CAFF');
+                                       d3.select('#defilementDOWN').selectAll('text').style('fill','white');})
+        .on('mouseout',function(d,i){ d3.select('#defilementDOWN').selectAll('rect').style('fill','ivory');
+                                      d3.select('#defilementDOWN').selectAll('text').style('fill','#212');})
+        .on('click',itemDOWN);
+    svgDOWN.append('rect').attr('fill','white')
+        .attr('rx',5).attr('ry',5).style('stroke-width',2).style('stroke','#24a')
+        .attr('width',30).attr('height',21).style('fill','ivory');//.style('stroke-color', (d,i)=>teamColor[i]);
+    svgDOWN.append('text').attr('x',0).attr('dx',15).attr('y',11) 
+            .style('fill','#212').style('text-anchor', 'middle').style('font-weight', 'bold').style('dominant-baseline','middle')
+            .text('<<').style('font-size','1.3vw');
+    function dateUP() {
+        offset_date = offset_date - 1;
+        updateVisu()
+    }
+    function dateDOWN() {
+        offset_date = offset_date + 1;
+        updateVisu();
+    }
+//-----------
     function dataRead(data,i) {
         switch(i) {
         case 5:    dataFinal100 = data; break; //dataRegion=data; break;
@@ -268,6 +383,8 @@
         case 0:    geoDepart=data; break;
         case 6:    h_last_date=data; break;
         case 7:    h_item=data; break;
+        case 8:    dataFRFinal = data; break;
+        case 9:    h_date100 = data; break;//JHConfirmed=data; break;
         default:
             break;
         }
@@ -281,28 +398,29 @@
 //--- CA COMMENCE ICI
 //--------------------------------------------------------------
 	function start() {
-        console.log(dataFRFinal100);
-        //h_date = dataFRFinal100.map(d=>{return d.jour;}).filter(getUnique);
-        console.log('h_date',h_date);
+        //console.log(dataFRFinal);
         let maj= h_date[h_date.length-1]; console.log('maj',maj);
         tantile = d3.scaleQuantile()
             .domain([ 0,100])//.domain([0, 100])
             .range(d3.range(13));
-        getDepartementData();
-        assembleCurve('tx_incid');
+        getDepartementData('',item);
+        assembleCurve(item);
 /*xxep		updateData();
 		let JH_len =dHist[0].values.length-1, majMonde = dHist[0].values[JH_len].date;
 		aff_JH(); aff_JC();aff_frAll();aff_regions();
 		aff_Simul();
 */
+        aff_frAll();
     	updateDepart();
-        /*
-	    d3.select("#val").html("<a>le "+formatLongTime(parseTimeH(maj))+"</a><h1>"+
-	    				"<br>Entrées Hospitalières : "+valFormat(globalData.find(g=>{return g.item==='hosp';})['global'])+
-	    				"<br><br>Personnes en réanimation : "+valFormat(globalData.find(g=>{return g.item==='rea';})['global'])+
-	    				"<br><br>Personnes décédées à l'Hôpital : "+valFormat(globalData.find(g=>{return g.item==='dc';})['global'])+
-						"<br><br>Personnes rentrées chez elles : "+valFormat(globalData.find(g=>{return g.item==='rad';})['global'])+"</h1>");
-	    d3.select("#valMonde").html("<a>data JH Univerty du "+formatLongTime(majMonde)+"</a><h1>"+
+        
+        let date = h_last_date[h_last_date.findIndex(d=>{return d.item==='hosp';})].date; //
+        let index = (h_date.findIndex(d=> { return d.Date===date})) - offset_date; console.log('aff : date/index',date,index,dataFRFinal,h_date);
+	    d3.select("#val").html("<a>le "+formatLongTime(parseTimeH(maj.Date))+"</a><h1>"+
+	    				"<br>Entrées Hospitalières : "+valFormat(dataFRFinal[index].hosp)+
+	    				"<br><br>Personnes en réanimation : "+valFormat(dataFRFinal[index].rea)+
+	    				"<br><br>Personnes décédées à l'Hôpital : "+valFormat(dataFRFinal[index].dc)+
+						"<br><br>Personnes rentrées chez elles : "+valFormat(dataFRFinal[index].rad)+"</h1>");
+	    /*d3.select("#valMonde").html("<a>data JH Univerty du "+formatLongTime(majMonde)+"</a><h1>"+
 	    				"<br>Personnes contaminées dans le Monde : "+valFormat(dHist[1].values[JH_len].value)+
 	    				"<br><br>Personnes Guéries : "+valFormat(dHist[2].values[JH_len].value)+
 	    				"<br><br>Personnes Décédées : "+valFormat(dHist[0].values[JH_len].value) +
@@ -310,6 +428,19 @@
 	    				dHist[0].values[JH_len].value/(dHist[2].values[JH_len].value+dHist[0].values[JH_len].value)*100)+" %</a>");
         */
 	}
+    function updateVisu() {
+        item = h_item[itemID].item;
+        d3.select("#item_select").text(item);
+        getDepartementData('',item);
+        depart.selectAll("path").style("fill",d=>{
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                return colors[tantile(dept[n].value)];
+//                return colors[tantile(Math.random()*100.0)];
+            })
+        assembleCurve(item);
+        aff_frAll();
+//é        updateDepart();
+    }
     //--------------------------------------------------------------
 	function updateData() {
 		// maj data simulation depuis le fichier json
@@ -349,7 +480,9 @@
             .style('stroke','blue').style('stroke-width',1);
 	}
     function aff_frAll(){
-        affiche_curve(dReg[getIndexdata('fullFR')].data.slice(),"fullFR",svgfrAll);
+        svgfrAll.selectAll("g").remove();
+        affiche_curve(dReg[0].data.slice(),"fullFR",svgfrAll);
+//        affiche_curve(dReg[getIndexdata('fullFR')].data.slice(),"fullFR",svgfrAll);
     }
     function aff_regions(){
         affiche_curve(dReg[getIndexdata('rea')].data.slice(),"rea",svgRegion);
@@ -393,7 +526,7 @@
       	return d3.max(c.values, function(v) {
         return v.value; });})]);
 
-    let index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
+//    let index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
 //    let indexReg=dReg.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
 	const g_line = svgAff
 	    .append("g")
@@ -402,7 +535,8 @@
     // Ajout de l'axe X
     g_line.append("g")
         .attr("transform", "translate(0," + (height-margin.top-margin.bottom-h_header-margin.padding) + ")")
-        .call(d3.axisBottom(x).ticks(dHist[0].values.length-1).tickFormat(d3.timeFormat("%a %d/%m")))
+        .call(d3.axisBottom(x).ticks(100).tickFormat(d3.timeFormat("%d/%m/%y")))
+//        .call(d3.axisBottom(x).ticks(dHist[0].values.length-1).tickFormat(d3.timeFormat("%a %d/%m")))
         .selectAll("text")	
         	.style("text-anchor", "end")
         	.attr("dx", "-.8em")
@@ -426,7 +560,7 @@
     g_lines.append("path")
         .attr("class", "line")
         .attr("id",(d,i)=>{return "l"+i;})//.transition().duration(2000)
-        .attr("d", (d)=>{return line(d.values);})
+        .attr("d", (d)=>{console.log(d.values);return line(d.values);})
         .style("stroke", function(d,i) { return couleur[i];});
     // curseur
     var class_mpl = 'mpl'+selectValue, class_ml='ml'+selectValue;
@@ -469,21 +603,21 @@
       				.attr("transform", function (d, i) {
 						var xDate = x.invert(mouse[0]),
 							bisect = d3.bisector(function (d) { return d.date; }).left;
-							idx = bisect(d.values, xDate); //console.log(idx);
+							idx = bisect(d.values, xDate); //console.log(idx,d.values[idx].date);
                             try {
-                            laDate = d.values[idx].date.toLocaleDateString("fr-FR");//console.log(laDate);
-                            laDateX = x(d.values[idx].date);
+                            laDate = d.values[idx].date.toLocaleDateString("fr-FR"); //console.log(laDate);
+                            laDateX = x(d.values[idx].date); //console.log('laDateX',laDateX);
                             d3.select("#laDate").attr("x",laDateX).text(laDate);} catch{}
                             try {
 							d3.select(this).select('text')
-								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(0))+" "+d.name);
+								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(1))+" ["+laDate+"]");
 							d3.select("."+class_ml)
 								.attr("d", function () {
 									var data = "M" + x(d.values[idx].date) + "," + h_g;
 										data += " " + x(d.values[idx].date) + "," + 0; //console.log(data);
 									return data; });
 //					return "translate(" + x(d.values[idx].date) + "," + ((d3.select("#log_i")._groups[0][0].checked)?yL(d.values[idx].value):y(d.values[idx].value)) + ")";
-					return "translate(" + (x(d.values[idx].date)) + "," + (y(d.values[idx].value)) + ")";
+					return "translate(" + (x(d.values[idx].date)) + "," + (y(d.values[idx].value)) + ")"; //(y(d.values[idx].value))
                             } catch {}
 				});
   			});
@@ -499,24 +633,28 @@
 
 	}
     function assembleCurve(item) {
-        data = [];
-        dataFRFinal100.forEach(d=>{
-            date=d.jour;
-            value=d[item];
-            data.push({'date':date,'value':value})
+        data = [];values=[]; dReg=[];dHist=[];
+        dataFRFinal.forEach(d=>{
+            date=parseTimeH(d.jour);
+            value=Number(d[item]);
+            values.push({'date':date,'value':value})
         });
-        console.log('assemble curve =',data);
+        data.push({n:'xFR',name:item,values});
+        dHist.push({item:"fullFR","name":"Monde",values});
+        dReg.push({item:'fullFR',data});
+        console.log('assemble curve =',dReg);
         return data;
     }
-    function getDepartementData(date='') {
+    function getDepartementData(date='',item) {
 //epxxx        var h_dep = dataFinal.map(d=>{return d.dep;}).filter(getUnique);
+        console.log('item',itemID,item)
         console.log('h_dep',h_dep)
         values=[];
-        let item='tx_incid'; //selectValue;
+        //let item='tx_incid'; //selectValue;
         name='France';
-        if (date == '') {date = h_date[h_date.length-1];}
-        console.log('last date',h_last_date);
         date = h_last_date[h_last_date.findIndex(d=>{return d.item===item;})].date; console.log('last date',date);
+        let index = (h_date.findIndex(d=> { return d.Date===date})) - offset_date;
+        date = h_date[index].Date;console.log("la def last_date",date);
         dept=[];
         dataFinal.forEach(d=>{ //console.log(d,date);
             if (d.jour==date ) { //&& d.sexe==0) {
