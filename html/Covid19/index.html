@@ -159,7 +159,7 @@
     d3.timeFormatDefaultLocale(locale);
     var formatTime = d3.timeFormat("%a %d/%m");
     var formatLongTime = d3.timeFormat("%A %_d %B %Y");
-	var couleur = ['DarkRed','yellowgreen','RebeccaPurple','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
+	var couleur = ['darkslateblue','yellowgreen','RebeccaPurple','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
 	const parseTime = d3.timeParse("%d/%m/%Y");
     const parseTimeH = d3.timeParse("%Y-%m-%d");
     const parseTimeJH = d3.timeParse("%m/%d/%y");
@@ -561,7 +561,7 @@
         .attr("class", "line")
         .attr("id",(d,i)=>{return "l"+i;})//.transition().duration(2000)
         .attr("d", (d)=>{console.log(d.values);return line(d.values);})
-        .style("stroke", function(d,i) { return couleur[i];});
+        .style("stroke", function(d,i) { return couleur[i];}).style("stroke-width", "3px");
     // curseur
     var class_mpl = 'mpl'+selectValue, class_ml='ml'+selectValue;
 	var mouseG = g_line.append("g").lower()
