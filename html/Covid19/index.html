@@ -92,6 +92,7 @@
     position: absolute;
     right: 250px;
     top: 15px;
+    text-align: center;
 }
 </style>
 <header>
@@ -259,7 +260,7 @@
 //   promises.push( d3.csv(JH_global_death));
 //    promises.push( d3.csv(JH_global_confirmed));
 //    promises.push( d3.csv(JH_globale_recovered));
-//    promises.push(d3.json('../data/covid.json'));
+    promises.push(d3.json('../data/covid.json'));
     promises.forEach((p,i) =>{
         Promise.resolve(p).then(function(val) {
         dataRead(val,i);
@@ -385,6 +386,7 @@
         case 7:    h_item=data; break;
         case 8:    dataFRFinal = data; break;
         case 9:    h_date100 = data; break;//JHConfirmed=data; break;
+        case 10:   dataRegion= data; break;
         default:
             break;
         }
@@ -403,23 +405,27 @@
         tantile = d3.scaleQuantile()
             .domain([ 0,100])//.domain([0, 100])
             .range(d3.range(13));
-        getDepartementData('',item);
-        assembleCurve(item);
+//        getDepartementData('',item);
+        getAllitem(); // 
+        updateVisu(); 
+//        dReg=[];       assembleCurve(item);
 /*xxep		updateData();
 		let JH_len =dHist[0].values.length-1, majMonde = dHist[0].values[JH_len].date;
 		aff_JH(); aff_JC();aff_frAll();aff_regions();
+        */
+        simul();
 		aff_Simul();
-*/
         aff_frAll();
+        aff_hosp();
     	updateDepart();
         
-        let date = h_last_date[h_last_date.findIndex(d=>{return d.item==='hosp';})].date; //
+        let date = h_last_date[h_last_date.findIndex(d=>{return d.item==='Hospitalisation';})].date; //
         let index = (h_date.findIndex(d=> { return d.Date===date})) - offset_date; console.log('aff : date/index',date,index,dataFRFinal,h_date);
 	    d3.select("#val").html("<a>le "+formatLongTime(parseTimeH(maj.Date))+"</a><h1>"+
-	    				"<br>Entrées Hospitalières : "+valFormat(dataFRFinal[index].hosp)+
-	    				"<br><br>Personnes en réanimation : "+valFormat(dataFRFinal[index].rea)+
-	    				"<br><br>Personnes décédées à l'Hôpital : "+valFormat(dataFRFinal[index].dc)+
-						"<br><br>Personnes rentrées chez elles : "+valFormat(dataFRFinal[index].rad)+"</h1>");
+	    				"<br>Entrées Hospitalières : "+valFormat(dataFRFinal[index].Hospitalisation)+
+	    				"<br><br>Personnes en réanimation : "+valFormat(dataFRFinal[index].Réanimation)+
+	    				"<br><br>Personnes décédées à l'Hôpital : "+valFormat(dataFRFinal[index].Morts)+
+						"<br><br>Personnes rentrées chez elles : "+valFormat(dataFRFinal[index].Guérisons)+"</h1>");
 	    /*d3.select("#valMonde").html("<a>data JH Univerty du "+formatLongTime(majMonde)+"</a><h1>"+
 	    				"<br>Personnes contaminées dans le Monde : "+valFormat(dHist[1].values[JH_len].value)+
 	    				"<br><br>Personnes Guéries : "+valFormat(dHist[2].values[JH_len].value)+
@@ -430,15 +436,14 @@
 	}
     function updateVisu() {
         item = h_item[itemID].item;
-        d3.select("#item_select").text(item);
+        d3.select("#item_select").text(item).style('text-anchor','middle');
         getDepartementData('',item);
         depart.selectAll("path").style("fill",d=>{
                 let n=dept.findIndex(k => k.dep===d.properties.code);
                 return colors[tantile(dept[n].value)];
 //                return colors[tantile(Math.random()*100.0)];
             })
-        assembleCurve(item);
-        aff_frAll();
+        aff_frAll(); //       assembleCurve(item);
 //é        updateDepart();
     }
     //--------------------------------------------------------------
@@ -481,8 +486,16 @@
 	}
     function aff_frAll(){
         svgfrAll.selectAll("g").remove();
-        affiche_curve(dReg[0].data.slice(),"fullFR",svgfrAll);
+        affiche_curve(dReg[itemID].data.slice(),"fullFR",svgfrAll);
 //        affiche_curve(dReg[getIndexdata('fullFR')].data.slice(),"fullFR",svgfrAll);
+    }
+    function aff_hosp(){
+        svgRegion.selectAll("g").remove();
+        dCourbe=[];
+        values =dReg[0].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'urgence' ,values});
+        values =dReg[1].data[0].values.slice() ; dCourbe.push({n:'cor',name:'corona',values});
+        values =dReg[2].data[0].values.slice() ; dCourbe.push({n:'hosp',name:'hospitalisation',values});
+        affiche_curve(dCourbe.slice(),"rea",svgRegion);
     }
     function aff_regions(){
         affiche_curve(dReg[getIndexdata('rea')].data.slice(),"rea",svgRegion);
@@ -500,6 +513,7 @@
 //-
     function affiche_curve(dMult, selectValue, svgAff) {
 
+console.log('dMult',dMult);
 		let w_g=width-margin.left-margin.right-margin.padding, h_g=height-margin.top-margin.bottom-h_header-margin.padding;
     // ontrace des courbes
     const x = d3.scaleTime()
@@ -633,26 +647,37 @@
 
 	}
     function assembleCurve(item) {
-        data = [];values=[]; dReg=[];dHist=[];
+        data = [];values=[];
         dataFRFinal.forEach(d=>{
             date=parseTimeH(d.jour);
             value=Number(d[item]);
             values.push({'date':date,'value':value})
         });
         data.push({n:'xFR',name:item,values});
-        dHist.push({item:"fullFR","name":"Monde",values});
-        dReg.push({item:'fullFR',data});
-        console.log('assemble curve =',dReg);
+//        dHist.push({item:"fullFR","name":"Monde",values});
+        dReg.push({item:item,data});
+//        console.log('assemble curve =',dReg);
         return data;
+    }
+    function getAllitem() {
+        dReg=[];
+        h_item.forEach(d=>{assembleCurve(d.item);})
+        console.log('dReg',dReg);
     }
     function getDepartementData(date='',item) {
 //epxxx        var h_dep = dataFinal.map(d=>{return d.dep;}).filter(getUnique);
         console.log('item',itemID,item)
+        console.log('last_date',h_last_date)
         console.log('h_dep',h_dep)
         values=[];
         //let item='tx_incid'; //selectValue;
         name='France';
-        date = h_last_date[h_last_date.findIndex(d=>{return d.item===item;})].date; console.log('last date',date);
+        try {
+            date = h_last_date[h_last_date.findIndex(d=>{return d.item===item;})].date; console.log('last date',date);
+        }
+        catch{
+            date = '2021-01-01'
+        }
         let index = (h_date.findIndex(d=> { return d.Date===date})) - offset_date;
         date = h_date[index].Date;console.log("la def last_date",date);
         dept=[];
