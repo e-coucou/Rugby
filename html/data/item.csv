@@ -16,6 +16,8 @@ R
 taux_occupation_sae
 Positivité
 tx_reg
+nbReg
+nbDelta
 NbArr
 NbCan
 NbCom

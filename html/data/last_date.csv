@@ -2,14 +2,16 @@ item,date
 Corona,2021-03-16
 Urgence,2021-03-16
 Hosp. Corona,2021-03-16
-n_dose1,2021-03-15
-n_dose2,2021-03-15
-n_cum_dose1,2021-03-15
-n_cum_dose2,2021-03-15
+n_dose1,2021-03-16
+n_dose2,2021-03-16
+n_cum_dose1,2021-03-16
+n_cum_dose2,2021-03-16
 Hospitalisation,2021-03-17
 Réanimation,2021-03-17
 Guérisons,2021-03-17
 Morts,2021-03-17
+nbReg,2021-03-17
+nbDelta,2021-03-17
 Incidence,2021-03-14
 R,2021-03-13
 taux_occupation_sae,2021-03-17
