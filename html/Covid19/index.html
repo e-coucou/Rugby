@@ -105,9 +105,13 @@
   <div id='defilementUP'></div>
   <div id='item_select'></div>
   <div id='defilementDOWN'></div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../js/ekseerg-tooltip.js"></script>
+    <link rel="stylesheet" href="../css/ekseerg-tooltip.css">
 </header>
 <body>
-	<script src="https://d3js.org/d3.v5.min.js"></script>
 <section class="textoverpic">
   <hr><h1>Bienvenu sur e-Coucou</h1>
   <h1>Pour un tour complet des infos sur la Covid-19</h1>
@@ -117,7 +121,8 @@
   	<aside>Les données internationales proviennent, elles, du site Johns-Hopkins</aside></div>
 </section>
 <section>
-<div id="chart"></div>
+    <div id="chart"></div>
+    <div id="tooltipDiv"></div>
 </section>
 <section class="pop">
   <div id="val"></div>
@@ -215,7 +220,7 @@
     	.translate([scale/2+1*margin.left, scale / 2]);
     path.projection(projection);
 	const svg = d3.select('#chart').append("svg")
-    	.attr("id", "svg")//.attr("position", 2)
+    	.attr("id", "svg").attr("position", 2)
     	.attr("width", width)
     	.attr("height", (height-h_header));
 	const svgJH = d3.select('#chart_jh').append("svg")
@@ -232,12 +237,21 @@
     	.attr("height", (height-h_header));
 	const svgSimul = d3.select('#chart_simul').append("svg")
     	.attr("id", "svgSimul")//.attr("position", 1)
-    	.attr("width", width)
-    	.attr("height", (height-h_header));
+    	.attr("width", width/2)
+    	.attr("height", (height/1.6-h_header));
     const svgRegion = d3.select('#chart_region').append("svg")
         .attr("id", "svgRegion")//.attr("position", 1)
         .attr("width", width)
         .attr("height", (height-h_header));
+
+    // on ajoute un tooltip
+    const eetooltip = new EETooltip({
+        'svgId': 'svg',
+        'tooltipId': 'tooltipDiv',
+        'headerText': "Information",
+        'footerText': "Data e-Coucou 2020"
+//        'keepInSVG': true
+    })
 
 // ajoute la France des départements
     const depart = svg.append("g")
@@ -417,6 +431,8 @@
 		aff_Simul();
         aff_frAll();
         aff_hosp();
+        aff_regions();
+        aff_JC();
     	updateDepart();
         
         let date = h_last_date[h_last_date.findIndex(d=>{return d.item==='Hospitalisation';})].date; //
@@ -477,6 +493,21 @@
 //            .style('fill',function(d) { let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
                 //console.log(colors[val],getOpositeColor(colors[val])); 
 //                return colors[val];})
+            .on('mouseout',function(d,i){ d3.select(this).style('opacity',1);eetooltip.hide();eetooltip.removeAllDataBlocks()})
+            .on('mouseover',function(d,i){
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                //console.log(carteVR_ep[n]);
+                d3.select(this).style('opacity',0.2);
+                eetooltip.updateTitle("Information");
+                eetooltip.addDataSeparator();
+                eetooltip.addDataBlock("", d.properties.nom);
+                eetooltip.addDataBlock("code", d.properties.code);
+                eetooltip.addDataBlock(h_item[itemID].item,valFormat(dept[n].value));
+                //eetooltip.addDataBlock("en Réanimation",valFormat(dept[n].rea));
+                //eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
+                eetooltip.updateFooter("Données précalculées");
+                eetooltip.show();
+        })
             .style("fill",d=>{
                 let n=dept.findIndex(k => k.dep===d.properties.code);
                 return colors[tantile(dept[n].value)];
@@ -490,38 +521,49 @@
 //        affiche_curve(dReg[getIndexdata('fullFR')].data.slice(),"fullFR",svgfrAll);
     }
     function aff_hosp(){
-        svgRegion.selectAll("g").remove();
+        svgJH.selectAll("g").remove();
         dCourbe=[];
-        values =dReg[0].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'urgence' ,values});
+        values =dReg[0].data[0].values.slice() ; dCourbe.push({n:'total', name: 'urgence' ,values});
         values =dReg[1].data[0].values.slice() ; dCourbe.push({n:'cor',name:'corona',values});
         values =dReg[2].data[0].values.slice() ; dCourbe.push({n:'hosp',name:'hospitalisation',values});
-        affiche_curve(dCourbe.slice(),"rea",svgRegion);
+        affiche_curve(dCourbe.slice(),"rea",svgJH);
     }
     function aff_regions(){
-        affiche_curve(dReg[getIndexdata('rea')].data.slice(),"rea",svgRegion);
+        svgRegion.selectAll("g").remove();
+        dCourbe=[];
+        values =dReg[getIndexCurve('Incidence')].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'incidence' ,values});
+        affiche_curve(dCourbe.slice(),"Region",svgRegion);
     }
-	function aff_JH(){
-		affiche_curve(dReg[getIndexdata('JH_D')].data.slice(),"JH_D",svgJH);
-	}
 	function aff_JC(){
-		affiche_curve(dReg[getIndexdata('JH_C')].data.slice(),"JH_C",svgJC);
+        svgJC.selectAll("g").remove();
+        dCourbe=[];
+        values =dReg[getIndexCurve('Hospitalisation')].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'Hospitalisation' ,values});
+        affiche_curve(dCourbe.slice(),"Autre",svgJC);
 	}
 	function aff_Simul(){
-		affiche_curve(dReg[getIndexdata('simul')].data.slice(),"simul",svgSimul);
+        svgSimul.selectAll("g").remove();
+        dCourbe=[];
+        values =dReg[getIndexCurve('nbReg')].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'Regions +' ,values});
+        affiche_curve(dCourbe.slice(),"Ok",svgSimul);
 	}
+    function getIndexCurve(val) {
+        return (dReg.findIndex(d=>d.item==val));
+    }    
 //-------------
 //-
     function affiche_curve(dMult, selectValue, svgAff) {
-
-console.log('dMult',dMult);
-		let w_g=width-margin.left-margin.right-margin.padding, h_g=height-margin.top-margin.bottom-h_header-margin.padding;
+    //console.log('dMult',dMult);
+    let w_g = svgAff._groups[0][0].attributes[1].nodeValue-margin.left-margin.right-margin.padding,
+        h_g = svgAff._groups[0][0].attributes[2].nodeValue-margin.top-margin.bottom-h_header-margin.padding;
+    console.log('x',w_g,'y',h_g);
+	//	let w_g=width-margin.left-margin.right-margin.padding, h_g=height-margin.top-margin.bottom-h_header-margin.padding;
     // ontrace des courbes
     const x = d3.scaleTime()
-        .range([0, width-margin.left-margin.right-margin.padding]);
+        .range([0, w_g]); //width-margin.left-margin.right-margin.padding]);
     const y = d3.scaleLinear()
-        .range([height-margin.top-margin.bottom-h_header-margin.padding,0]);
+        .range([h_g,0]);
     const yL = d3.scaleSymlog()
-        .range([height-margin.top-margin.bottom-h_header-margin.padding,0]);
+        .range([h_g,0]);
     var line = d3.line()
         .x(function(d) { return x(d.date); }) //vep
         .y(function(d) { return y(d.value);}) //(d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
@@ -548,7 +590,7 @@ console.log('dMult',dMult);
     	.attr("transform", "translate(" + (margin.left) + "," + (0) + ")");
     // Ajout de l'axe X
     g_line.append("g")
-        .attr("transform", "translate(0," + (height-margin.top-margin.bottom-h_header-margin.padding) + ")")
+        .attr("transform", "translate(0," + (h_g) + ")")
         .call(d3.axisBottom(x).ticks(100).tickFormat(d3.timeFormat("%d/%m/%y")))
 //        .call(d3.axisBottom(x).ticks(dHist[0].values.length-1).tickFormat(d3.timeFormat("%a %d/%m")))
         .selectAll("text")	
