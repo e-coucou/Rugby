@@ -183,7 +183,7 @@
     var maj;
     var itemID=0, item = 'tx_incid', offset_date = 0;
     //----------------------------------------------------------------
-	var margin = {top: 40, right: 40, bottom: 50, left: 100, padding: 30},
+	var margin = {top: 20, right: 20, bottom: 50, left: 50, padding: 30},
     width = window.innerWidth,
     height = window.innerHeight, h_header=50;
     var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
@@ -221,28 +221,28 @@
     path.projection(projection);
 	const svg = d3.select('#chart').append("svg")
     	.attr("id", "svg").attr("position", 2)
-    	.attr("width", width)
-    	.attr("height", (height-h_header));
+    	.attr("width", (width))
+    	.attr("height", (height));
 	const svgJH = d3.select('#chart_jh').append("svg")
     	.attr("id", "svgJH")//.attr("position", 1)
-    	.attr("width", width)
-    	.attr("height", (height-h_header));
+    	.attr("width", (width-margin.padding))
+    	.attr("height", (height-margin.padding));
 	const svgJC = d3.select('#chart_jc').append("svg")
     	.attr("id", "svgJC")//.attr("position", 1)
-    	.attr("width", width)
-    	.attr("height", (height-h_header));
+    	.attr("width", (width-margin.padding))
+    	.attr("height", (height-margin.padding));
 	const svgfrAll = d3.select('#chart_frAll').append("svg")
     	.attr("id", "svgJC")//.attr("position", 1)
-    	.attr("width", width)
-    	.attr("height", (height-h_header));
+    	.attr("width", (width-margin.padding))
+    	.attr("height", (height-margin.padding));
 	const svgSimul = d3.select('#chart_simul').append("svg")
     	.attr("id", "svgSimul")//.attr("position", 1)
-    	.attr("width", width/2)
-    	.attr("height", (height/1.6-h_header));
+    	.attr("width", width/1.5)
+    	.attr("height", (height/1.6));
     const svgRegion = d3.select('#chart_region').append("svg")
         .attr("id", "svgRegion")//.attr("position", 1)
-        .attr("width", width)
-        .attr("height", (height-h_header));
+        .attr("width", (width-margin.padding))
+        .attr("height", (height-margin.padding));
 
     // on ajoute un tooltip
     const eetooltip = new EETooltip({
@@ -553,8 +553,9 @@
 //-
     function affiche_curve(dMult, selectValue, svgAff) {
     //console.log('dMult',dMult);
-    let w_g = svgAff._groups[0][0].attributes[1].nodeValue-margin.left-margin.right-margin.padding,
-        h_g = svgAff._groups[0][0].attributes[2].nodeValue-margin.top-margin.bottom-h_header-margin.padding;
+    let w_g = svgAff._groups[0][0].attributes[1].nodeValue-margin.left-margin.right , //-margin.padding,
+        h_g = svgAff._groups[0][0].attributes[2].nodeValue-margin.top-margin.bottom
+        n_ticks = (w_g/15 | 0); //-h_header;//-margin.padding;
     console.log('x',w_g,'y',h_g);
 	//	let w_g=width-margin.left-margin.right-margin.padding, h_g=height-margin.top-margin.bottom-h_header-margin.padding;
     // ontrace des courbes
@@ -587,11 +588,11 @@
 	const g_line = svgAff
 	    .append("g")
 	    .attr("class","g_line")
-    	.attr("transform", "translate(" + (margin.left) + "," + (0) + ")");
+    	.attr("transform", "translate(" + (margin.left) + "," + (margin.top) + ")");
     // Ajout de l'axe X
     g_line.append("g")
         .attr("transform", "translate(0," + (h_g) + ")")
-        .call(d3.axisBottom(x).ticks(100).tickFormat(d3.timeFormat("%d/%m/%y")))
+        .call(d3.axisBottom(x).ticks(n_ticks).tickFormat(d3.timeFormat("%d/%m/%y")))
 //        .call(d3.axisBottom(x).ticks(dHist[0].values.length-1).tickFormat(d3.timeFormat("%a %d/%m")))
         .selectAll("text")	
         	.style("text-anchor", "end")
