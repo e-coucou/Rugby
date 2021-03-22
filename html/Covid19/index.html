@@ -183,7 +183,7 @@
     var maj;
     var itemID=0, item = 'tx_incid', offset_date = 0;
     //----------------------------------------------------------------
-	var margin = {top: 20, right: 20, bottom: 50, left: 50, padding: 30},
+	var margin = {top: 20, right: 35, bottom: 50, left: 50, padding: 30},
     width = window.innerWidth,
     height = window.innerHeight, h_header=50;
     var url_geoDepart = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
@@ -523,27 +523,27 @@
     function aff_hosp(){
         svgJH.selectAll("g").remove();
         dCourbe=[];
-        values =dReg[0].data[0].values.slice() ; dCourbe.push({n:'total', name: 'urgence' ,values});
-        values =dReg[1].data[0].values.slice() ; dCourbe.push({n:'cor',name:'corona',values});
-        values =dReg[2].data[0].values.slice() ; dCourbe.push({n:'hosp',name:'hospitalisation',values});
+        values =dReg[0].data[0].values.slice() ; dCourbe.push({n:'total', name: 'Corona', scale:1, values});
+        values =dReg[1].data[0].values.slice() ; dCourbe.push({n:'cor',name:'Urgence', scale:0, values});
+        values =dReg[2].data[0].values.slice() ; dCourbe.push({n:'hosp',name:'hosp. Corona', scale:1, values});
         affiche_curve(dCourbe.slice(),"rea",svgJH);
     }
     function aff_regions(){
         svgRegion.selectAll("g").remove();
         dCourbe=[];
-        values =dReg[getIndexCurve('Incidence')].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'incidence' ,values});
+        values =dReg[getIndexCurve('Incidence')].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'incidence', scale:0, values});
         affiche_curve(dCourbe.slice(),"Region",svgRegion);
     }
 	function aff_JC(){
         svgJC.selectAll("g").remove();
         dCourbe=[];
-        values =dReg[getIndexCurve('Hospitalisation')].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'Hospitalisation' ,values});
+        values =dReg[getIndexCurve('Hospitalisation')].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'Hospitalisation', scale:0, values});
         affiche_curve(dCourbe.slice(),"Autre",svgJC);
 	}
 	function aff_Simul(){
         svgSimul.selectAll("g").remove();
         dCourbe=[];
-        values =dReg[getIndexCurve('nbReg')].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'Regions +' ,values});
+        values =dReg[getIndexCurve('nbReg')].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'Regions +', scale:0, values});
         affiche_curve(dCourbe.slice(),"Ok",svgSimul);
 	}
     function getIndexCurve(val) {
@@ -563,11 +563,17 @@
         .range([0, w_g]); //width-margin.left-margin.right-margin.padding]);
     const y = d3.scaleLinear()
         .range([h_g,0]);
+    const yR = d3.scaleLinear() //right scale
+        .range([h_g,0]);
     const yL = d3.scaleSymlog()
         .range([h_g,0]);
     var line = d3.line()
         .x(function(d) { return x(d.date); }) //vep
         .y(function(d) { return y(d.value);}) //(d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
+        .curve(d3.curveCardinal);
+    var lineR = d3.line()
+        .x(function(d) { return x(d.date); }) //vep
+        .y(function(d) { return yR(d.value);}) //(d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
         .curve(d3.curveCardinal);
 	x.domain([
         d3.min(dMult, function(c) {
@@ -581,6 +587,9 @@
         return v.value; });})]);
 	yL.domain([0, d3.max(dMult, function(c) {
       	return d3.max(c.values, function(v) {
+        return v.value; });})]);
+    yR.domain([0, d3.max(dMult, function(c) { //console.log(c);
+        return c.scale==0?0:d3.max(c.values, function(v) {
         return v.value; });})]);
 
 //    let index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
@@ -609,9 +618,9 @@
             .attr("dy", "0.71em")
             .style("text-anchor", "end")
             .text("#personnes");
-    // Ajout de l'axe yL et du texte associé pour la légende
+    // Ajout de l'axe yR et du texte associé pour la légende
     g_line.append("g").attr('transform','translate('+(w_g)+',0)')
-        .call(d3.axisRight(yL))
+        .call(d3.axisRight(yR))
         .append("text")
             .attr("fill", "#000")
             .attr("transform", "rotate(-90)")
@@ -627,7 +636,7 @@
     g_lines.append("path")
         .attr("class", "line")
         .attr("id",(d,i)=>{return "l"+i;})//.transition().duration(2000)
-        .attr("d", (d)=>{console.log(d.values);return line(d.values);})
+        .attr("d", (d)=>{console.log(d);return d.scale==0?line(d.values):lineR(d.values);})
         .style("stroke", function(d,i) { return couleur[i];}).style("stroke-width", "3px");
     // curseur
     var class_mpl = 'mpl'+selectValue, class_ml='ml'+selectValue;
