@@ -20,8 +20,10 @@ nbReg
 nbDelta
 P
 T
+pop
 NbArr
 NbCan
 NbCom
 PopM
 PopT
+dc_by_d

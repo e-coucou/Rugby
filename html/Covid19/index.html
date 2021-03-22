@@ -165,7 +165,7 @@
     d3.timeFormatDefaultLocale(locale);
     var formatTime = d3.timeFormat("%a %d/%m");
     var formatLongTime = d3.timeFormat("%A %_d %B %Y");
-	var couleur = ['darkslateblue','yellowgreen','RebeccaPurple','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
+	var couleur = ['darkslateblue','yellowgreen','red','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
 	const parseTime = d3.timeParse("%d/%m/%Y");
     const parseTimeH = d3.timeParse("%Y-%m-%d");
     const parseTimeJH = d3.timeParse("%m/%d/%y");
@@ -538,12 +538,27 @@
         svgJC.selectAll("g").remove();
         dCourbe=[];
         values =dReg[getIndexCurve('Hospitalisation')].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'Hospitalisation', scale:0, values});
+        values =dReg[getIndexCurve('Réanimation')].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'Réanimation', scale:1, values});
+        values =dReg[getIndexCurve('dc_by_d')].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'Morts/j', scale:1, values});
         affiche_curve(dCourbe.slice(),"Autre",svgJC);
 	}
 	function aff_Simul(){
         svgSimul.selectAll("g").remove();
         dCourbe=[];
-        values =dReg[getIndexCurve('nbReg')].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'Regions +', scale:0, values});
+        console.log('dataFinal100',dataFinal100);
+        h_dep.forEach(l=>{
+            values=[];
+            dataFinal100.forEach(d=>{
+            if (d.dep==l.dep)
+                {
+                    date= parseTimeH(d.jour); value =Number(d.Incidence);
+                    if (value>0) {
+                    values.push({date:date, value:value});}
+                }
+            })
+            dCourbe.push({n:'Incidences', name: l.dep, scale:0, values});
+        });
+//        values =dReg[getIndexCurve('nbReg')].data[0].values.slice() ;
         affiche_curve(dCourbe.slice(),"Ok",svgSimul);
 	}
     function getIndexCurve(val) {
@@ -552,7 +567,7 @@
 //-------------
 //-
     function affiche_curve(dMult, selectValue, svgAff) {
-    //console.log('dMult',dMult);
+    console.log('dMult',dMult);
     let w_g = svgAff._groups[0][0].attributes[1].nodeValue-margin.left-margin.right , //-margin.padding,
         h_g = svgAff._groups[0][0].attributes[2].nodeValue-margin.top-margin.bottom
         n_ticks = (w_g/15 | 0); //-h_header;//-margin.padding;
@@ -570,7 +585,7 @@
     var line = d3.line()
         .x(function(d) { return x(d.date); }) //vep
         .y(function(d) { return y(d.value);}) //(d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
-        .curve(d3.curveCardinal);
+        .curve(d3.curveLinear);
     var lineR = d3.line()
         .x(function(d) { return x(d.date); }) //vep
         .y(function(d) { return yR(d.value);}) //(d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
@@ -636,7 +651,7 @@
     g_lines.append("path")
         .attr("class", "line")
         .attr("id",(d,i)=>{return "l"+i;})//.transition().duration(2000)
-        .attr("d", (d)=>{console.log(d);return d.scale==0?line(d.values):lineR(d.values);})
+        .attr("d", (d)=>{return d.scale==0?line(d.values):lineR(d.values);})
         .style("stroke", function(d,i) { return couleur[i];}).style("stroke-width", "3px");
     // curseur
     var class_mpl = 'mpl'+selectValue, class_ml='ml'+selectValue;
@@ -686,14 +701,14 @@
                             d3.select("#laDate").attr("x",laDateX).text(laDate);} catch{}
                             try {
 							d3.select(this).select('text')
-								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(1))+" ["+laDate+"]");
+								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(1))+" ["+d.name+"]");
 							d3.select("."+class_ml)
 								.attr("d", function () {
 									var data = "M" + x(d.values[idx].date) + "," + h_g;
 										data += " " + x(d.values[idx].date) + "," + 0; //console.log(data);
 									return data; });
 //					return "translate(" + x(d.values[idx].date) + "," + ((d3.select("#log_i")._groups[0][0].checked)?yL(d.values[idx].value):y(d.values[idx].value)) + ")";
-					return "translate(" + (x(d.values[idx].date)) + "," + (y(d.values[idx].value)) + ")"; //(y(d.values[idx].value))
+					return "translate(" + (x(d.values[idx].date)) + "," + (d.scale==0?(y(d.values[idx].value)):(yR(d.values[idx].value)) )+ ")"; //(y(d.values[idx].value))
                             } catch {}
 				});
   			});
