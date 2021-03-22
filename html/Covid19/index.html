@@ -436,7 +436,7 @@
     	updateDepart();
         
         let date = h_last_date[h_last_date.findIndex(d=>{return d.item==='Hospitalisation';})].date; //
-        let index = (h_date.findIndex(d=> { return d.Date===date})) - offset_date; console.log('aff : date/index',date,index,dataFRFinal,h_date);
+        let index = (h_date.findIndex(d=> { return d.Date===date})) - offset_date; //console.log('aff : date/index',date,index,dataFRFinal,h_date);
 	    d3.select("#val").html("<a>le "+formatLongTime(parseTimeH(maj.Date))+"</a><h1>"+
 	    				"<br>Entrées Hospitalières : "+valFormat(dataFRFinal[index].Hospitalisation)+
 	    				"<br><br>Personnes en réanimation : "+valFormat(dataFRFinal[index].Réanimation)+
@@ -556,7 +556,7 @@
     let w_g = svgAff._groups[0][0].attributes[1].nodeValue-margin.left-margin.right , //-margin.padding,
         h_g = svgAff._groups[0][0].attributes[2].nodeValue-margin.top-margin.bottom
         n_ticks = (w_g/15 | 0); //-h_header;//-margin.padding;
-    console.log('x',w_g,'y',h_g);
+    console.log(dMult[0].name,'x',w_g,'y',h_g);
 	//	let w_g=width-margin.left-margin.right-margin.padding, h_g=height-margin.top-margin.bottom-h_header-margin.padding;
     // ontrace des courbes
     const x = d3.scaleTime()
@@ -609,6 +609,16 @@
             .attr("dy", "0.71em")
             .style("text-anchor", "end")
             .text("#personnes");
+    // Ajout de l'axe yL et du texte associé pour la légende
+    g_line.append("g").attr('transform','translate('+(w_g)+',0)')
+        .call(d3.axisRight(yL))
+        .append("text")
+            .attr("fill", "#000")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", "0.71em")
+            .style("text-anchor", "end")
+            .text("#");
     // on trace toutes les courbes
     var g_lines = g_line.selectAll(".selected").raise()
         .data(dMult).enter().append("g")
