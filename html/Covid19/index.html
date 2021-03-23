@@ -118,7 +118,7 @@
   <hr><hr>
   <div><aside>Les données proviennent de l'opendata du gouvernement Français</aside>
   	<aside>mise à jour tous les soirs à 19.00 et sont issues des collectes par l'ARS</aside>
-  	<aside>Les données internationales proviennent, elles, du site Johns-Hopkins</aside></div>
+  	<aside>Les données générales proviennent, elles, de l'INSEE.</aside></div>
 </section>
 <section>
     <div id="chart"></div>
@@ -131,7 +131,7 @@
     <div id="chart_frAll"></div>
 </section>
 <section>
-  <div id="valRegion">les tendances par région</div>
+  <div id="valRegion">Loupe sur l'Incidence !</div>
 </section>
 <section>
     <div id="chart_region"></div>
@@ -143,19 +143,20 @@
 	<div id="chart_jh"></div>
 </section>
 <section>
-  <h1>Evolution dans le monde de la contamination par le Covid-19</h1>
+  <h1>Dans les Hôpitaux, quelle est la situation en Réanimation ?</h1>
 </section>
 <section>
 	<div id="chart_jc"></div>
 </section>
 <section>
-  <h1>Une belle simulation ...</h1>
+  <h1>et dans nos Régions quelle est la tendance ...</h1>
 </section>
 <section>
 	<div id="chart_simul"></div>
 </section>
 <section>
-  <h1>Merci pour cette visite et à Bientot sur e-coucou.com.</h1>
+  <h1>Merci pour cette visite ...</h1>
+  <h1>et à Bientot sur e-coucou.com</h1>
 </section>
     <script type="text/javascript">
     //---------------------------------------------------------------
@@ -165,7 +166,8 @@
     d3.timeFormatDefaultLocale(locale);
     var formatTime = d3.timeFormat("%a %d/%m");
     var formatLongTime = d3.timeFormat("%A %_d %B %Y");
-	var couleur = ['darkslateblue','yellowgreen','red','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
+//	var couleur = ['darkslateblue','yellowgreen','red','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
+    var couleur = ['#F44336','#e91e63','#9c27b0','673ab7','#3f51b5','#2196f3','#03a9f4','#00bcd4','#009688','#4caf50','#8bc34a','#ffeb3b','#ffc107','#ff9800','#ff5722','#795548','#9e9e9e','#cddc39'];
 	const parseTime = d3.timeParse("%d/%m/%Y");
     const parseTimeH = d3.timeParse("%Y-%m-%d");
     const parseTimeJH = d3.timeParse("%m/%d/%y");
@@ -394,7 +396,7 @@
         case 1:    dataFinal = data; break;
         case 2:    dataFRFinal100 = data; break; //JHDeath=data; break;
         case 3:    h_date = data; break;//JHConfirmed=data; break;
-        case 4:    h_dep = data; break; //JHRecovered=data; break;
+        case 4:    h_dep = data;break; //JHRecovered=data; break;console.log('H_DEP',h_dep)
         case 0:    geoDepart=data; break;
         case 6:    h_last_date=data; break;
         case 7:    h_item=data; break;
@@ -545,7 +547,7 @@
 	function aff_Simul(){
         svgSimul.selectAll("g").remove();
         dCourbe=[];
-        console.log('dataFinal100',dataFinal100);
+        console.log('dataFinal100',dataFinal100, h_dep);
         h_dep.forEach(l=>{
             values=[];
             dataFinal100.forEach(d=>{
@@ -1011,4 +1013,5 @@
     }
 
     </script>
-</body></html>
+</body>
+</html>
