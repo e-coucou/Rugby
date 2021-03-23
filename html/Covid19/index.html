@@ -225,24 +225,24 @@
     	.attr("height", (height));
 	const svgJH = d3.select('#chart_jh').append("svg")
     	.attr("id", "svgJH")//.attr("position", 1)
-    	.attr("width", (width-margin.padding))
-    	.attr("height", (height-margin.padding));
+    	.attr("width", (width-margin.padding)/1.2)
+    	.attr("height", (height-margin.padding)/1.2);
 	const svgJC = d3.select('#chart_jc').append("svg")
     	.attr("id", "svgJC")//.attr("position", 1)
-    	.attr("width", (width-margin.padding))
-    	.attr("height", (height-margin.padding));
+    	.attr("width", (width-margin.padding)/1.2)
+    	.attr("height", (height-margin.padding)/1.2);
 	const svgfrAll = d3.select('#chart_frAll').append("svg")
     	.attr("id", "svgJC")//.attr("position", 1)
-    	.attr("width", (width-margin.padding))
-    	.attr("height", (height-margin.padding));
+    	.attr("width", (width-margin.padding)/1.2)
+    	.attr("height", (height-margin.padding)/1.2);
 	const svgSimul = d3.select('#chart_simul').append("svg")
     	.attr("id", "svgSimul")//.attr("position", 1)
-    	.attr("width", width/1.5)
-    	.attr("height", (height/1.6));
+    	.attr("width", width/1.2)
+    	.attr("height", (height/1.2));
     const svgRegion = d3.select('#chart_region').append("svg")
         .attr("id", "svgRegion")//.attr("position", 1)
-        .attr("width", (width-margin.padding))
-        .attr("height", (height-margin.padding));
+        .attr("width", (width-margin.padding)/1.2)
+        .attr("height", (height-margin.padding)/1.2);
 
     // on ajoute un tooltip
     const eetooltip = new EETooltip({
