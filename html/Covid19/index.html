@@ -135,8 +135,10 @@
 </section>
 <section>
     <div id="chart_region"></div>
+    <div id="chart_trend_2"></div>
 </section>
 <section>
+  <div id="titre">Les admissions aux Urgences.</div>
   <div id="valMonde"></div>
 </section>
 <section>
@@ -167,7 +169,8 @@
     var formatTime = d3.timeFormat("%a %d/%m");
     var formatLongTime = d3.timeFormat("%A %_d %B %Y");
 //	var couleur = ['darkslateblue','yellowgreen','red','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
-    var couleur = ['#F44336','#e91e63','#9c27b0','673ab7','#3f51b5','#2196f3','#03a9f4','#00bcd4','#009688','#4caf50','#8bc34a','#ffeb3b','#ffc107','#ff9800','#ff5722','#795548','#9e9e9e','#cddc39'];
+    var couleur = ['#F44336','#e91e63','#9c27b0','673ab7','#3f51b5','#2196f3','#03a9f4','#00bcd4','#009688','#4caf50','#8bc34a','#ffeb3b','#ffc107','#ff9800','#ff5722','#795548','#9e9e9e','#cddc39'],
+        nbCouleur = couleur.length;
 	const parseTime = d3.timeParse("%d/%m/%Y");
     const parseTimeH = d3.timeParse("%Y-%m-%d");
     const parseTimeJH = d3.timeParse("%m/%d/%y");
@@ -243,8 +246,12 @@
     	.attr("height", (height/1.2));
     const svgRegion = d3.select('#chart_region').append("svg")
         .attr("id", "svgRegion")//.attr("position", 1)
-        .attr("width", (width-margin.padding)/1.2)
-        .attr("height", (height-margin.padding)/1.2);
+        .attr("width", (width-margin.padding)/2)
+        .attr("height", (height-margin.padding)/2);
+    const svgTrend2 = d3.select('#chart_trend_2').append("svg")
+        .attr("id", "svgTrend2")//.attr("position", 1)
+        .attr("width", (width-margin.padding)/2)
+        .attr("height", (height-margin.padding)/2);
 
     // on ajoute un tooltip
     const eetooltip = new EETooltip({
@@ -433,7 +440,7 @@
 		aff_Simul();
         aff_frAll();
         aff_hosp();
-        aff_regions();
+        aff_regions();aff_trend_2();
         aff_JC();
     	updateDepart();
         
@@ -533,8 +540,16 @@
     function aff_regions(){
         svgRegion.selectAll("g").remove();
         dCourbe=[];
-        values =dReg[getIndexCurve('Incidence')].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'incidence', scale:0, values});
+        values =dReg[getIndexCurve('Incidence')].data[0].values.slice() ; dCourbe.push({n:'Trend', name: 'Incidence', scale:0, values});
+        values =dReg[getIndexCurve('Positivité')].data[0].values.slice() ; dCourbe.push({n:'Trend', name: 'Positivité', scale:1, values});
+        values =dReg[getIndexCurve('taux_occupation_sae')].data[0].values.slice() ; dCourbe.push({n:'Trend', name: 'Taux Occup.', scale:1, values});
         affiche_curve(dCourbe.slice(),"Region",svgRegion);
+    }
+    function aff_trend_2(){
+        svgTrend2.selectAll("g").remove();
+        dCourbe=[];
+        values =dReg[getIndexCurve('R')].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'R.', scale:0, values});
+        affiche_curve(dCourbe.slice(),"Tendances",svgTrend2);
     }
 	function aff_JC(){
         svgJC.selectAll("g").remove();
@@ -654,7 +669,7 @@
         .attr("class", "line")
         .attr("id",(d,i)=>{return "l"+i;})//.transition().duration(2000)
         .attr("d", (d)=>{return d.scale==0?line(d.values):lineR(d.values);})
-        .style("stroke", function(d,i) { return couleur[i];}).style("stroke-width", "3px");
+        .style("stroke", function(d,i) { return couleur[(i*5)%nbCouleur];}).style("stroke-width", "3px");
     // curseur
     var class_mpl = 'mpl'+selectValue, class_ml='ml'+selectValue;
 	var mouseG = g_line.append("g").lower()
@@ -670,7 +685,7 @@
     // reperage du point d'intersection curseur/courbe
 	mousePerLine.append("circle")
 		.attr("r", 3)
-		.style("stroke", function (d,i) { return couleur[i];})
+		.style("stroke", function (d,i) { return couleur[(i*5)%nbCouleur];})
 		.style("fill", "none").style("stroke-width", "2px").style("opacity", "0");
 	mousePerLine.append("text")
     	.attr("class", "hover-text").style('font-size','1.5vh').style("font-family","HelveticaNeue-Light")
@@ -718,9 +733,9 @@
         .attr("class","legend")
         .attr("transform",(d,i)=>{ return "translate(50,"+(30+i*16)+")";});
         legendM.append('circle')
-            .attr('r',5).attr('cx',1).attr('cy',2).style('fill',(d,i)=>{return couleur[i];})
+            .attr('r',5).attr('cx',1).attr('cy',2).style('fill',(d,i)=>{return couleur[(i*5)%nbCouleur];})
             .on('mouseover',function(d,i){ d3.select(this).style('fill','blue').attr('r',7);})
-            .on('mouseout',function(d,i){ d3.select(this).style('fill',couleur[i]).attr('r',5);});
+            .on('mouseout',function(d,i){ d3.select(this).style('fill',couleur[(i*5)%nbCouleur]).attr('r',5);});
         legendM.append("text").style("font-size","1.7vh").attr('x',10).attr('y',6).style('text-anchor','start')
             .text((d)=>{return d.name;});
 
