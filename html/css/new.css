@@ -47,12 +47,8 @@ section:nth-of-type(odd) {
   -webkit-background-size: cover;
 }
 section:nth-of-type(1) { 
-  background-image: url(../images/IMG_5850.jpeg) center top no-repeat; 
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
+  background-image: url(../images/IMG_5850.jpeg); 
   background-size: cover;
-  height: 100%;
 }
 section:nth-of-type(3) { 
   background-image: url(../images/IMG_6039.jpeg); 
