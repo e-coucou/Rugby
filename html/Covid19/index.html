@@ -138,17 +138,19 @@
     <div id="chart_trend_2"></div>
 </section>
 <section>
-  <div id="titre">Les admissions aux Urgences.</div>
+  <div id="titre">Le suivi de la vaccination en France.</div>
   <div id="valMonde"></div>
 </section>
 <section>
-	<div id="chart_jh"></div>
+    <div id="chart_vacc1"></div>
+    <div id="chart_vacc2"></div>
 </section>
 <section>
   <h1>Dans les Hôpitaux, quelle est la situation en Réanimation ?</h1>
 </section>
 <section>
 	<div id="chart_jc"></div>
+    <div id="chart_jh"></div>
 </section>
 <section>
   <h1>et dans nos Régions quelle est la tendance ...</h1>
@@ -228,14 +230,22 @@
     	.attr("id", "svg").attr("position", 2)
     	.attr("width", (width))
     	.attr("height", (height));
+    const svgVacc1 = d3.select('#chart_vacc1').append("svg")
+        .attr("id", "svgVacc1")//.attr("position", 1)
+        .attr("width", (width-margin.padding)/2)
+        .attr("height", (height-margin.padding)/2);
+    const svgVacc2 = d3.select('#chart_vacc2').append("svg")
+        .attr("id", "svgVacc2")//.attr("position", 1)
+        .attr("width", (width-margin.padding)/2)
+        .attr("height", (height-margin.padding)/2);
 	const svgJH = d3.select('#chart_jh').append("svg")
     	.attr("id", "svgJH")//.attr("position", 1)
-    	.attr("width", (width-margin.padding)/1.2)
-    	.attr("height", (height-margin.padding)/1.2);
+    	.attr("width", (width-margin.padding)/2)
+    	.attr("height", (height-margin.padding)/2);
 	const svgJC = d3.select('#chart_jc').append("svg")
     	.attr("id", "svgJC")//.attr("position", 1)
-    	.attr("width", (width-margin.padding)/1.2)
-    	.attr("height", (height-margin.padding)/1.2);
+    	.attr("width", (width-margin.padding)/2)
+    	.attr("height", (height-margin.padding)/2);
 	const svgfrAll = d3.select('#chart_frAll').append("svg")
     	.attr("id", "svgJC")//.attr("position", 1)
     	.attr("width", (width-margin.padding)/1.2)
@@ -441,8 +451,8 @@
         aff_frAll();
         aff_hosp();
         aff_regions();aff_trend_2();
-        aff_JC();
-    	updateDepart();
+        aff_JC();aff_vacc1();aff_vacc2();
+       	updateDepart();
         
         let date = h_last_date[h_last_date.findIndex(d=>{return d.item==='Hospitalisation';})].date; //
         let index = (h_date.findIndex(d=> { return d.Date===date})) - offset_date; //console.log('aff : date/index',date,index,dataFRFinal,h_date);
@@ -559,6 +569,20 @@
         values =dReg[getIndexCurve('dc_by_d')].data[0].values.slice() ; dCourbe.push({n:'tot', name: 'Morts/j', scale:1, values});
         affiche_curve(dCourbe.slice(),"Autre",svgJC);
 	}
+    function aff_vacc1(){
+        svgVacc1.selectAll("g").remove();
+        dCourbe=[];
+        values =dReg[getIndexCurve('n_dose1')].data[0].values.slice() ; dCourbe.push({n:'Vaccination', name: 'Dose#1', scale:0, values});
+        values =dReg[getIndexCurve('n_dose2')].data[0].values.slice() ; dCourbe.push({n:'Vaccination', name: 'Dose#2', scale:0, values});
+        affiche_curve(dCourbe.slice(),"Vaccination",svgVacc1);
+    }
+    function aff_vacc2(){
+        svgVacc2.selectAll("g").remove();
+        dCourbe=[];
+        values =dReg[getIndexCurve('n_cum_dose1')].data[0].values.slice() ; dCourbe.push({n:'Vaccination', name: 'Cumul #1', scale:0, values});
+        values =dReg[getIndexCurve('n_cum_dose2')].data[0].values.slice() ; dCourbe.push({n:'Vaccination', name: 'Cumul #2', scale:0, values});
+        affiche_curve(dCourbe.slice(),"Vaccination2",svgVacc2);
+    }
 	function aff_Simul(){
         svgSimul.selectAll("g").remove();
         dCourbe=[];
