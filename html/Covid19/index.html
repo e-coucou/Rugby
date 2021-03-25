@@ -94,6 +94,26 @@
     top: 15px;
     text-align: center;
 }
+.pop {
+  margin: 0;
+  padding: 10px;
+  border: 6px solid mediumturquoise;
+}
+.boite {
+  width: 100%;
+  height: 200px;
+  margin: 0;
+  padding: 4px 6px;
+  font: 28px "Marker Felt", "Zapfino", cursive;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.boiteGauche {
+  float: left;
+  background-color: rgb(245, 130, 130);
+  outline: 2px solid darkred;
+}
 </style>
 <header>
   <div id='h1'>COVID-19</div>
@@ -125,7 +145,7 @@
     <div id="tooltipDiv"></div>
 </section>
 <section class="pop">
-  <div id="val"></div>
+    <div class="boite boiteGauche" id="val"></div>
 </section>
 <section>
     <div id="chart_frAll"></div>
@@ -456,11 +476,11 @@
         
         let date = h_last_date[h_last_date.findIndex(d=>{return d.item==='Hospitalisation';})].date; //
         let index = (h_date.findIndex(d=> { return d.Date===date})) - offset_date; //console.log('aff : date/index',date,index,dataFRFinal,h_date);
-	    d3.select("#val").html("<a>le "+formatLongTime(parseTimeH(maj.Date))+"</a><h1>"+
+	    d3.select("#val").html("<a><le "+formatLongTime(parseTimeH(maj.Date))+""+
 	    				"<br>Entrées Hospitalières : "+valFormat(dataFRFinal[index].Hospitalisation)+
 	    				"<br><br>Personnes en réanimation : "+valFormat(dataFRFinal[index].Réanimation)+
 	    				"<br><br>Personnes décédées à l'Hôpital : "+valFormat(dataFRFinal[index].Morts)+
-						"<br><br>Personnes rentrées chez elles : "+valFormat(dataFRFinal[index].Guérisons)+"</h1>");
+						"<br><br>Personnes rentrées chez elles : "+valFormat(dataFRFinal[index].Guérisons)+"<a>");
 	    /*d3.select("#valMonde").html("<a>data JH Univerty du "+formatLongTime(majMonde)+"</a><h1>"+
 	    				"<br>Personnes contaminées dans le Monde : "+valFormat(dHist[1].values[JH_len].value)+
 	    				"<br><br>Personnes Guéries : "+valFormat(dHist[2].values[JH_len].value)+
