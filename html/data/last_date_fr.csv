@@ -1,0 +1,22 @@
+item,date
+Corona,2021-03-26
+Urgence,2021-03-26
+Hosp. Corona,2021-03-26
+n_dose1,2021-03-26
+n_dose2,2021-03-26
+n_cum_dose1,2021-03-26
+n_cum_dose2,2021-03-26
+Hospitalisation,2021-03-27
+Réanimation,2021-03-27
+Guérisons,2021-03-27
+Morts,2021-03-27
+nbReg,2021-03-23
+nbDelta,2021-03-23
+P,2021-03-24
+T,2021-03-24
+Incidence,2021-03-23
+R,2021-03-20
+taux_occupation_sae,2021-03-26
+Positivité,2021-03-23
+tx_reg,2021-03-23
+dc_by_d,2021-03-27

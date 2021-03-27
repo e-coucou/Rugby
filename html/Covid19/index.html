@@ -97,26 +97,26 @@
 .pop {
   margin: 0;
   padding: 10px;
-  border: 6px solid mediumturquoise;
+/*  border: 6px solid mediumturquoise;*/
 }
 .boite {
   width: 70%;
-  height: 220px;
+  height: 40%;
   margin: 0;
   padding: 4px 6px;
+  color: white;
   /*font: 2vw "Marker Felt", "Zapfino", cursive;*/
   font: 2.5vw "helvetica neue", sans-serif;
-  font-weight: 150;
+  font-weight: 100;
   letter-spacing: 0.3vh;
-  display: flex;
+/*  display: flex;*/
   justify-content: center;
   align-items: center;
 }
 .boiteGauche {
   float: left;
-  background-color: #263238;
-  opacity: 0.3;
-  outline: 2px solid darkred;
+  background-color: rgba(38,50,56,0.5);
+/*  outline: 2px solid black;*/
 }
 </style>
 <header>
@@ -149,35 +149,35 @@
     <div id="tooltipDiv"></div>
 </section>
 <section class="pop">
-    <div class="boite boiteGauche" id="val"></div>
+    <div class="boite boiteGauche" id="valdeRien"></div>
 </section>
 <section>
     <div id="chart_frAll"></div>
 </section>
-<section>
-  <div id="valRegion">Loupe sur l'Incidence !</div>
+<section class="pop">
+    <div class="boite boiteGauche" id="valIncidence">Loupe sur l'épidémie ...</div>
 </section>
 <section>
     <div id="chart_region"></div>
     <div id="chart_trend_2"></div>
 </section>
-<section>
-  <div id="titre">Le suivi de la vaccination en France.</div>
+<section class="pop">
+    <div class="boite boiteGauche" id="valVaccination">Suivi de la vaccination ... !</div>
   <div id="valMonde"></div>
 </section>
 <section>
     <div id="chart_vacc1"></div>
     <div id="chart_vacc2"></div>
 </section>
-<section>
-  <h1>Dans les Hôpitaux, quelle est la situation en Réanimation ?</h1>
+<section class="pop">
+    <div class="boite boiteGauche" id="val">Situation dans les Hôpitaux !</div>
 </section>
 <section>
 	<div id="chart_jc"></div>
     <div id="chart_jh"></div>
 </section>
-<section>
-  <h1>et dans nos Régions quelle est la tendance ...</h1>
+<section class="pop">
+    <div class="boite boiteGauche" id="valRegion"></div>
 </section>
 <section>
 	<div id="chart_simul"></div>
@@ -228,6 +228,8 @@
     var url_h_last_date = "../data/last_date.csv";
     var url_h_item = "../data/item.csv";
     var url_h_date100 = "../data/h_date_100.csv";
+    var url_h_last_date_fr = "../data/last_date_fr.csv";
+    var url_h_item_fr = "../data/item_fr.csv";
     /*
 	var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f1b3ee1cabd7';
 	var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv",
@@ -318,11 +320,13 @@
     promises.push( d3.csv(url_h_item));
     promises.push( d3.csv(url_fr_final));
     promises.push( d3.csv(url_h_date100));
+    promises.push(d3.json('../data/covid.json'));
+    promises.push( d3.csv(url_h_last_date_fr));
+    promises.push( d3.csv(url_h_item_fr));
 //    promises.push( d3.dsv(";",dataGouv));
 //   promises.push( d3.csv(JH_global_death));
 //    promises.push( d3.csv(JH_global_confirmed));
 //    promises.push( d3.csv(JH_globale_recovered));
-    promises.push(d3.json('../data/covid.json'));
     promises.forEach((p,i) =>{
         Promise.resolve(p).then(function(val) {
         dataRead(val,i);
@@ -332,7 +336,7 @@
     var dataRegion=[],geojson=[],hopital=[];dataGouv=[];dataGoogle=[],JHDeath=[],JHConfirmed=[],JHRecovered=[],geoDepart=[],globalData=[];
     var dataFinal = [], dataFRFinal100=[], dataFinal100 = [], dataFRFinal=[], h_date100=[];
     var iRead=0;
-    var h_date=[],h_last_date=[], h_item=[];
+    var h_date=[],h_last_date=[], h_item=[], h_last_date_fr=[], h_item_fr=[];
     // definition lies au departement
     var legendDep = svg.append('g')
         .attr('transform', function(d) { return 'translate('+(margin.left)+','+( 1*margin.top)+')';})
@@ -449,6 +453,8 @@
         case 8:    dataFRFinal = data; break;
         case 9:    h_date100 = data; break;//JHConfirmed=data; break;
         case 10:   dataRegion= data; break;
+        case 11:   h_last_date_fr=data; break;
+        case 12:   h_item_fr=data; break;
         default:
             break;
         }
@@ -483,14 +489,12 @@
         aff_regions();aff_trend_2();aff_Simul2();
         aff_JC();aff_vacc1();aff_vacc2();
        	updateDepart();
-        
-        let date = h_last_date[h_last_date.findIndex(d=>{return d.item==='Hospitalisation';})].date; //
-        let index = (h_date.findIndex(d=> { return d.Date===date})) - offset_date; //console.log('aff : date/index',date,index,dataFRFinal,h_date);
-	    d3.select("#val").html("<p><le "+formatLongTime(parseTimeH(maj.Date))+""+
-	    				"<br>Entrées Hospitalières : "+valFormat(dataFRFinal[index].Hospitalisation)+
-	    				"<br><br>Personnes en réanimation : "+valFormat(dataFRFinal[index].Réanimation)+
-	    				"<br><br>Personnes décédées à l'Hôpital : "+valFormat(dataFRFinal[index].Morts)+
-						"<br><br>Personnes rentrées chez elles : "+valFormat(dataFRFinal[index].Guérisons)+"<p>");
+        console.log('data fr',dataFRFinal);
+	    d3.select("#val").html("<h1>Données Hospitalières</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
+	    				"<br><br>Entrées Hospitalières : "+valFormat(data_item_fr('Hospitalisation'))+
+	    				"<br>Personnes en réanimation : "+valFormat(data_item_fr('Réanimation'))+
+	    				"<br>Personnes décédées à l'Hôpital : "+valFormat(data_item_fr('Morts'))+
+						"<br>Personnes rentrées chez elles : "+valFormat(data_item_fr('Guérisons'))+"");
 	    /*d3.select("#valMonde").html("<a>data JH Univerty du "+formatLongTime(majMonde)+"</a><h1>"+
 	    				"<br>Personnes contaminées dans le Monde : "+valFormat(dHist[1].values[JH_len].value)+
 	    				"<br><br>Personnes Guéries : "+valFormat(dHist[2].values[JH_len].value)+
@@ -498,7 +502,25 @@
 	    				"</h1><br><a> soit une mortalité de "+Math.round(
 	    				dHist[0].values[JH_len].value/(dHist[2].values[JH_len].value+dHist[0].values[JH_len].value)*100)+" %</a>");
         */
-	}
+        d3.select("#valIncidence").html("<p><h1>LOUPE sur la Pandémie</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
+                        "<br><br>Indice R0 : "+valFormat(data_item_fr('R'))+
+                        "<br>Incidence : "+valFormat(data_item_fr('Incidence'))+" /100k#"+
+                        "<br>Taux d'occupation hôpitaux : "+valFormat(data_item_fr('taux_occupation_sae'))+"%"+
+                        "<br>Positivité : "+valFormat(data_item_fr('Positivité'))+"%<p>");
+
+        d3.select("#valVaccination").html("<p><h1>Avancement de la Vaccination</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
+                        "<br><br>1er Dose : "+valFormat(data_item_fr('n_cum_dose1'))+
+                        "<br>2eme Dose : "+valFormat(data_item_fr('n_cum_dose2'))+
+                        "<br>Vaccination ce jour : "+valFormat(data_item_fr('n_dose1'))+"<p>");
+        d3.select("#valRegion").html("<p><h1>Situation dans nos Régions ...</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
+                        "<br><br>Départements évolutions nég. : "+valFormat(data_item_fr('nbReg'))+
+                        "<br>Idem en moyenne : "+valFormat(data_item_fr('nbDelta'))+"<p>");
+    }
+    function data_item_fr(item) {
+        let date = h_last_date_fr[h_last_date_fr.findIndex(d=>{return d.item===item;})].date; //
+        let index = (h_date.findIndex(d=> { return d.Date===date})) - offset_date;
+        return dataFRFinal[index][item];
+    }
     function updateVisu() {
         item = h_item[itemID].item;
         d3.select("#item_select").text(item).style('text-anchor','middle');
@@ -617,6 +639,7 @@
         svgSimul2.selectAll("g").remove();
         dCourbe=[];
         values =dReg[getIndexCurve('nbReg')].data[0].values.slice(-30) ; dCourbe.push({n:'Tendances', name: 'Trend+', scale:0, values});
+        values =dReg[getIndexCurve('nbDelta')].data[0].values.slice(-30) ; dCourbe.push({n:'Tendances', name: 'Trend_Moy', scale:0, values});
         affiche_curve(dCourbe.slice(),"simul2",svgSimul2);
     }
 	function aff_Simul(){
