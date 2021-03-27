@@ -101,7 +101,7 @@
 }
 .boite {
   width: 70%;
-  height: 40%;
+  height: 45%;
   margin: 0;
   padding: 4px 6px;
   color: white;
@@ -491,7 +491,7 @@
        	updateDepart();
         console.log('data fr',dataFRFinal);
 	    d3.select("#val").html("<h1>Données Hospitalières</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
-	    				"<br><br>Entrées Hospitalières : "+valFormat(data_item_fr('Hospitalisation'))+
+	    				"<br>Entrées Hospitalières : "+valFormat(data_item_fr('Hospitalisation'))+
 	    				"<br>Personnes en réanimation : "+valFormat(data_item_fr('Réanimation'))+
 	    				"<br>Personnes décédées à l'Hôpital : "+valFormat(data_item_fr('Morts'))+
 						"<br>Personnes rentrées chez elles : "+valFormat(data_item_fr('Guérisons'))+"");
@@ -503,17 +503,17 @@
 	    				dHist[0].values[JH_len].value/(dHist[2].values[JH_len].value+dHist[0].values[JH_len].value)*100)+" %</a>");
         */
         d3.select("#valIncidence").html("<p><h1>LOUPE sur la Pandémie</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
-                        "<br><br>Indice R0 : "+valFormat(data_item_fr('R'))+
+                        "<br>Indice R0 : "+valFormat(data_item_fr('R'))+
                         "<br>Incidence : "+valFormat(data_item_fr('Incidence'))+" /100k#"+
                         "<br>Taux d'occupation hôpitaux : "+valFormat(data_item_fr('taux_occupation_sae'))+"%"+
                         "<br>Positivité : "+valFormat(data_item_fr('Positivité'))+"%<p>");
 
         d3.select("#valVaccination").html("<p><h1>Avancement de la Vaccination</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
-                        "<br><br>1er Dose : "+valFormat(data_item_fr('n_cum_dose1'))+
+                        "<br>1er Dose : "+valFormat(data_item_fr('n_cum_dose1'))+
                         "<br>2eme Dose : "+valFormat(data_item_fr('n_cum_dose2'))+
                         "<br>Vaccination ce jour : "+valFormat(data_item_fr('n_dose1'))+"<p>");
         d3.select("#valRegion").html("<p><h1>Situation dans nos Régions ...</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
-                        "<br><br>Départements évolutions nég. : "+valFormat(data_item_fr('nbReg'))+
+                        "<br>Départements évolutions nég. : "+valFormat(data_item_fr('nbReg'))+
                         "<br>Idem en moyenne : "+valFormat(data_item_fr('nbDelta'))+"<p>");
     }
     function data_item_fr(item) {
