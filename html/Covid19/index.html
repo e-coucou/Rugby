@@ -99,6 +99,13 @@
   padding: 10px;
 /*  border: 6px solid mediumturquoise;*/
 }
+.boite p {
+    font: 2vw "helvetica neue", sans-serif;
+    font-weight: 150;
+    letter-spacing: 0.3vw;
+    justify-content: left;
+    text-align:  left;
+}
 .boite {
   width: 70%;
   height: 45%;
@@ -111,7 +118,6 @@
   letter-spacing: 0.3vh;
 /*  display: flex;*/
   justify-content: center;
-  align-items: center;
 }
 .boiteGauche {
   float: left;
@@ -195,6 +201,7 @@
     d3.timeFormatDefaultLocale(locale);
     var formatTime = d3.timeFormat("%a %d/%m");
     var formatLongTime = d3.timeFormat("%A %_d %B %Y");
+    var formatReverse = d3.timeFormat("%Y-%m-%d");
 //	var couleur = ['darkslateblue','yellowgreen','red','skyblue','steelblue','orange','gold','firebrick','darksalmon','darkcyan','darkslateblue','deeppink','darkgoldenrod','navy'];
     var couleur = ['#F44336','#e91e63','#9c27b0','673ab7','#3f51b5','#2196f3','#03a9f4','#00bcd4','#009688','#4caf50','#8bc34a','#ffeb3b','#ffc107','#ff9800','#ff5722','#795548','#9e9e9e','#cddc39'],
         nbCouleur = couleur.length;
@@ -230,6 +237,8 @@
     var url_h_date100 = "../data/h_date_100.csv";
     var url_h_last_date_fr = "../data/last_date_fr.csv";
     var url_h_item_fr = "../data/item_fr.csv";
+
+    var date ='';
     /*
 	var dataGouv = 'https://www.data.gouv.fr/fr/datasets/r/63352e38-d353-4b54-bfd1-f1b3ee1cabd7';
 	var JH_global_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv",
@@ -239,10 +248,10 @@
 
     var interpolate = d3[`interpolate${'Turbo'}`]; //RdYlBu
     var colors = [];
-    const n=14;
+    const n=8;
     dark = d3.lab(interpolate(0)).l < 50;
-    for (let i = 0; i < n; ++i) {
-      colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
+    for (let i = 1; i <= n; ++i) {
+      colors.push(d3.rgb(interpolate(i / (n ))).hex());
     }
     let scale=0;
     if (width>height) {scale=height} else {scale=width}
@@ -343,13 +352,13 @@
         .attr('id', 'legendDep');
     var legendDepScale = d3.scaleLinear()
         .domain([0, d3.max(dept, function(e) { return e.value; })])
-        .range([0, 13 * 20]);
+        .range([0, (n) * 20]);
     var legendDepAxis = svg.append("g")
         .attr("class","legendDep")
         .attr('transform', function(d) {return 'translate('+( margin.left+20)+','+( 1*margin.top)+')';})
         .call(d3.axisRight(legendDepScale).ticks(10));
     	legendDep.selectAll('.colorbar')
-        	.data(d3.range(13))
+        	.data(d3.range(n))
        		.enter().append('svg:rect')
             	.attr('class','legendDep')
             	.attr('y', function(d) { return d * 20 + 'px'; })
@@ -473,7 +482,7 @@
         let maj= h_date[h_date.length-1]; console.log('maj',maj);
         tantile = d3.scaleQuantile()
             .domain([ 0,100])//.domain([0, 100])
-            .range(d3.range(13));
+            .range(d3.range(n));
 //        getDepartementData('',item);
         getAllitem(); // 
         updateVisu(); 
@@ -495,36 +504,35 @@
 	    				"<br>Personnes en réanimation : "+valFormat(data_item_fr('Réanimation'))+
 	    				"<br>Personnes décédées à l'Hôpital : "+valFormat(data_item_fr('Morts'))+
 						"<br>Personnes rentrées chez elles : "+valFormat(data_item_fr('Guérisons'))+"");
-	    /*d3.select("#valMonde").html("<a>data JH Univerty du "+formatLongTime(majMonde)+"</a><h1>"+
-	    				"<br>Personnes contaminées dans le Monde : "+valFormat(dHist[1].values[JH_len].value)+
-	    				"<br><br>Personnes Guéries : "+valFormat(dHist[2].values[JH_len].value)+
-	    				"<br><br>Personnes Décédées : "+valFormat(dHist[0].values[JH_len].value) +
-	    				"</h1><br><a> soit une mortalité de "+Math.round(
-	    				dHist[0].values[JH_len].value/(dHist[2].values[JH_len].value+dHist[0].values[JH_len].value)*100)+" %</a>");
-        */
-        d3.select("#valLoupe").html("<h1>Un petit point ...</h1>"+
-                        "<p>La tension dans les hôpitaux est forte avec plus de 94%. L'incidence est à 337p/100khab et continu de progresser."+
-                        "près de 80 départements sont en forte progression de l'épidémie avec des augmentations de 60 à 80%."+
-                        "Quant à la vaccination, elle s'amplifie avec 330k personnes vaccinées en 24h qui pourrait déboucher sur une immunité collective en fin Juillet/21."+"<p>");
-        d3.select("#valIncidence").html("<p><h1>LOUPE sur la Pandémie</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
-                        "<br>Indice R0 : "+valFormat(data_item_fr('R'))+
-                        "<br>Incidence : "+valFormat(data_item_fr('Incidence'))+" /100k#"+
-                        "<br>Taux d'occupation hôpitaux : "+valFormat(data_item_fr('taux_occupation_sae'))+"%"+
-                        "<br>Positivité : "+valFormat(data_item_fr('Positivité'))+"%<p>");
+        d3.select("#valLoupe").html("<h1>Actualités du jour ...</h1>"+
+                        "<p>La tension dans les hôpitaux est à <b>"+Math.round(data_item_fr('taux_occupation_sae'))+"%</b> d'occupation.<br>L'incidence est de "+Math.round(data_item_fr('Incidence'))+"p/100khab et elle continue de progresser."+
+                        "<br>L'épidémie progresse dans <b>"+Math.round(data_item_fr('nbReg'))+"</b> départements avec pente de progression de <b>"+Math.round(data_item_fr('tx_reg'))+"°</b>."+
+                        "<br>La vaccination s'amplifie avec <b>"+Math.round(data_item_fr('n_dose1')/1000)+"k</b> personnes vaccinées en 24h. Espoir d'une immunité collective <b>fin juin/21</b>."+"<br>Il y a eu <b>"+Math.round(data_item_fr('dc_by_d'))+"</b> morts ces dernières 24h<p>");
+        d3.select("#valIncidence").html("<h1>LOUPE sur la Pandémie</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
+                        "<br>Indice R0 : <b>"+valFormat(data_item_fr('R'))+"</b>"+
+                        "<br>Incidence : <b>"+valFormat(data_item_fr('Incidence'))+" /100k#</b>"+
+                        "<br>Taux d'occupation hôpitaux : <b>"+valFormat(data_item_fr('taux_occupation_sae'))+"%</b>"+
+                        "<br>Positivité : <b>"+valFormat(data_item_fr('Positivité'))+"%</b>");
         let nbDay = (67063703*0.6-data_item_fr('n_cum_dose1'))/data_item_fr('n_dose1');
-        d3.select("#valVaccination").html("<p><h1>Avancement de la Vaccination</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
+        d3.select("#valVaccination").html("<h1>Avancement de la Vaccination</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
                         "<br>1er Dose : "+valFormat(data_item_fr('n_cum_dose1'))+
                         "<br>2eme Dose : "+valFormat(data_item_fr('n_cum_dose2'))+
                         "<br>Vaccination ce jour : "+valFormat(data_item_fr('n_dose1'))+
-                        "<br><br>encore "+Math.round(nbDay)+" jours pour l'immunité ...<p>");
-        d3.select("#valRegion").html("<p><h1>Situation dans nos Régions ...</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
-                        "<br>Départements évolutions nég. : "+valFormat(data_item_fr('nbReg'))+
-                        "<br>Idem en moyenne : "+valFormat(data_item_fr('nbDelta'))+"<p>");
+                        "<br><br>encore <b>"+Math.round(nbDay)+"</b> jours pour l'immunité ...");
+        d3.select("#valRegion").html("<h1>Situation dans nos Régions ...</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
+                        "<br>Départements évolutions négative ... (2 calculs) <br>Méthode régression : <b>"+valFormat(data_item_fr('nbReg'))+
+                        "</b><br>Moyenne : <b>"+valFormat(data_item_fr('nbDelta'))+"</b>");
     }
     function data_item_fr(item) {
         let date = h_last_date_fr[h_last_date_fr.findIndex(d=>{return d.item===item;})].date; //
-        let index = (h_date.findIndex(d=> { return d.Date===date})) - offset_date;
+        let index = (h_date.findIndex(d=> { return d.Date===date}));
         return dataFRFinal[index][item];
+    }
+    function get_item_date(dep) {
+        let dateRec = formatReverse(date);
+        let index = (dataFinal.findIndex(d=> { return (d.jour===dateRec && d.dep==dep);})) - offset_date;
+//        console.log(index,item,dep,date,dataFinal[index]);
+        return dataFinal[index];
     }
     function updateVisu() {
         item = h_item[itemID].item;
@@ -572,6 +580,7 @@
             .on('mouseout',function(d,i){ d3.select(this).style('opacity',1);eetooltip.hide();eetooltip.removeAllDataBlocks()})
             .on('mouseover',function(d,i){
                 let n=dept.findIndex(k => k.dep===d.properties.code);
+                let info_zoom = get_item_date(d.properties.code);
                 //console.log(carteVR_ep[n]);
                 d3.select(this).style('opacity',0.2);
                 eetooltip.updateTitle("Information");
@@ -579,9 +588,16 @@
                 eetooltip.addDataBlock("", d.properties.nom);
                 eetooltip.addDataBlock("code", d.properties.code);
                 eetooltip.addDataBlock(h_item[itemID].item,valFormat(dept[n].value));
+                eetooltip.addDataSeparator();
+                eetooltip.addDataBlock('Population',valFormat(info_zoom['PopM']));
+                eetooltip.addDataBlock('Réanimation',valFormat(info_zoom['Réanimation']));
+                eetooltip.addDataBlock('Hospitalisation',valFormat(info_zoom['Hospitalisation']));
+                eetooltip.addDataBlock('Taux occupation',valFormat(info_zoom['taux_occupation_sae']));
+                eetooltip.addDataBlock('Morts en 24h',valFormat(info_zoom['dc_by_d']));
+                eetooltip.addDataBlock('Progression ?',valFormat(info_zoom['tx_reg']));
                 //eetooltip.addDataBlock("en Réanimation",valFormat(dept[n].rea));
                 //eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
-                eetooltip.updateFooter("Données précalculées");
+                eetooltip.updateFooter("Data by e-Coucou");
                 eetooltip.show();
         })
             .style("fill",d=>{
