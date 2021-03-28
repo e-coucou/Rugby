@@ -108,7 +108,7 @@
 }
 .boite {
   width: 70%;
-  height: 45%;
+  height: 65%;
   margin: 0;
   padding: 4px 6px;
   color: white;
@@ -506,7 +506,7 @@
 						"<br>Personnes rentrées chez elles : "+valFormat(data_item_fr('Guérisons'))+"");
         d3.select("#valLoupe").html("<h1>Actualités du jour ...</h1>"+
                         "<p>La tension dans les hôpitaux est à <b>"+Math.round(data_item_fr('taux_occupation_sae'))+"%</b> d'occupation.<br>L'incidence est de "+Math.round(data_item_fr('Incidence'))+"p/100khab et elle continue de progresser."+
-                        "<br>L'épidémie progresse dans <b>"+Math.round(data_item_fr('nbReg'))+"</b> départements avec pente de progression de <b>"+Math.round(data_item_fr('tx_reg'))+"°</b>."+
+                        "<br>L'épidémie progresse dans <b>"+Math.round(data_item_fr('nbReg'))+"</b> départements avec une pente de progression de <b>"+Math.round(data_item_fr('tx_reg'))+"°</b>."+
                         "<br>La vaccination s'amplifie avec <b>"+Math.round(data_item_fr('n_dose1')/1000)+"k</b> personnes vaccinées en 24h. Espoir d'une immunité collective <b>fin juin/21</b>."+"<br>Il y a eu <b>"+Math.round(data_item_fr('dc_by_d'))+"</b> morts ces dernières 24h<p>");
         d3.select("#valIncidence").html("<h1>LOUPE sur la Pandémie</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
                         "<br>Indice R0 : <b>"+valFormat(data_item_fr('R'))+"</b>"+
