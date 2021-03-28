@@ -260,19 +260,19 @@
     const svgVacc1 = d3.select('#chart_vacc1').append("svg")
         .attr("id", "svgVacc1")//.attr("position", 1)
         .attr("width", (width-margin.padding)/2)
-        .attr("height", (height-margin.padding)/2);
+        .attr("height", (height-margin.padding)/1.2);
     const svgVacc2 = d3.select('#chart_vacc2').append("svg")
         .attr("id", "svgVacc2")//.attr("position", 1)
         .attr("width", (width-margin.padding)/2)
-        .attr("height", (height-margin.padding)/2);
+        .attr("height", (height-margin.padding)/1.2);
 	const svgJH = d3.select('#chart_jh').append("svg")
     	.attr("id", "svgJH")//.attr("position", 1)
     	.attr("width", (width-margin.padding)/2)
-    	.attr("height", (height-margin.padding)/2);
+    	.attr("height", (height-margin.padding)/1.2);
 	const svgJC = d3.select('#chart_jc').append("svg")
     	.attr("id", "svgJC")//.attr("position", 1)
     	.attr("width", (width-margin.padding)/2)
-    	.attr("height", (height-margin.padding)/2);
+    	.attr("height", (height-margin.padding)/1.2);
 	const svgfrAll = d3.select('#chart_frAll').append("svg")
     	.attr("id", "svgJC")//.attr("position", 1)
     	.attr("width", (width-margin.padding)/1.2)
@@ -288,11 +288,11 @@
     const svgRegion = d3.select('#chart_region').append("svg")
         .attr("id", "svgRegion")//.attr("position", 1)
         .attr("width", (width-margin.padding)/2)
-        .attr("height", (height-margin.padding)/2);
+        .attr("height", (height-margin.padding)/1.2);
     const svgTrend2 = d3.select('#chart_trend_2').append("svg")
         .attr("id", "svgTrend2")//.attr("position", 1)
         .attr("width", (width-margin.padding)/2)
-        .attr("height", (height-margin.padding)/2);
+        .attr("height", (height-margin.padding)/1.2);
 
     // on ajoute un tooltip
     const eetooltip = new EETooltip({
