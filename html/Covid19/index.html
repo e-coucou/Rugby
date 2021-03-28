@@ -149,7 +149,7 @@
     <div id="tooltipDiv"></div>
 </section>
 <section class="pop">
-    <div class="boite boiteGauche" id="valdeRien"></div>
+    <div class="boite boiteGauche" id="valLoupe"></div>
 </section>
 <section>
     <div id="chart_frAll"></div>
@@ -502,16 +502,21 @@
 	    				"</h1><br><a> soit une mortalité de "+Math.round(
 	    				dHist[0].values[JH_len].value/(dHist[2].values[JH_len].value+dHist[0].values[JH_len].value)*100)+" %</a>");
         */
+        d3.select("#valLoupe").html("<h1>Un petit point ...</h1>"+
+                        "<p>La tension dans les hôpitaux est forte avec plus de 94%. L'incidence est à 337p/100khab et continu de progresser."+
+                        "près de 80 départements sont en forte progression de l'épidémie avec des augmentations de 60 à 80%."+
+                        "Quant à la vaccination, elle s'amplifie avec 330k personnes vaccinées en 24h qui pourrait déboucher sur une immunité collective en fin Juillet/21."+"<p>");
         d3.select("#valIncidence").html("<p><h1>LOUPE sur la Pandémie</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
                         "<br>Indice R0 : "+valFormat(data_item_fr('R'))+
                         "<br>Incidence : "+valFormat(data_item_fr('Incidence'))+" /100k#"+
                         "<br>Taux d'occupation hôpitaux : "+valFormat(data_item_fr('taux_occupation_sae'))+"%"+
                         "<br>Positivité : "+valFormat(data_item_fr('Positivité'))+"%<p>");
-
+        let nbDay = (67063703*0.6-data_item_fr('n_cum_dose1'))/data_item_fr('n_dose1');
         d3.select("#valVaccination").html("<p><h1>Avancement de la Vaccination</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
                         "<br>1er Dose : "+valFormat(data_item_fr('n_cum_dose1'))+
                         "<br>2eme Dose : "+valFormat(data_item_fr('n_cum_dose2'))+
-                        "<br>Vaccination ce jour : "+valFormat(data_item_fr('n_dose1'))+"<p>");
+                        "<br>Vaccination ce jour : "+valFormat(data_item_fr('n_dose1'))+
+                        "<br><br>encore "+Math.round(nbDay)+" jours pour l'immunité ...<p>");
         d3.select("#valRegion").html("<p><h1>Situation dans nos Régions ...</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
                         "<br>Départements évolutions nég. : "+valFormat(data_item_fr('nbReg'))+
                         "<br>Idem en moyenne : "+valFormat(data_item_fr('nbDelta'))+"<p>");
