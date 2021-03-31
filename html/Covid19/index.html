@@ -921,31 +921,30 @@ function affiche_bar(dMult,svgAff) {
     svgAff.append('g')
 //        .attr('class', 'grid')
         .attr('transform', `translate(` +(margin.left)+`,0)`)
-        .call(d3.axisLeft(y));
+        .call(d3.axisLeft(y))
+        .append("text")
+            .attr("fill", "#000")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", "0.71em")
+            .style("text-anchor", "end")
+            .text("#personnes");
 
     svgAff.append('g')
         .attr('transform', "translate("+(margin.left)+","+(h_g)+")")
-        .call(d3.axisBottom(x))
+        .call(d3.axisBottom(x).ticks(n_ticks).tickFormat(d3.timeFormat("%d/%m/%y")))
         .selectAll("text")  
             .style("text-anchor", "end")
             .attr("dx", "-.8em")
             .attr("dy", ".15em")
             .attr("transform", "rotate(-65)");
 
-    svgAff.append('g').append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 52).attr('x',-18)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text('unité : '+'e-coucou');
-    
-//  console.log(AllData[v].values);
-//    var dta = AllData[v].values;
+    // Ajout de l'axe Y et du texte associé pour la légende
 
 
     var bars = svgAff.selectAll().data(dMult).enter().append("g")
                 .attr('transform', function(d,i){return ("translate("+(i*1+margin.left)+",0)");})
-                .style('class',"barcol").style('fill',(d,i) => {return i==0?'blue':'red';});
+                .style('class',"barcol").style('fill',(d,i) => {return couleur[(i*5)%nbCouleur];});
 //            .attr('transform', "translate("+(margin.left)+","+(0)+")");
 
     var bar = bars.selectAll('rect').data(d=>d.values).enter()
@@ -1014,7 +1013,18 @@ function affiche_bar(dMult,svgAff) {
           .attr('text-anchor', 'middle')
           .text(d=>{return valFormat(d.value);});
 //          .text(d=>{return d.value>10?Math.round(d.value):Math.round(d.value*100.0)/100;});
-*/    
+*/
+    var legendBar = bars.append("g")
+        .attr("class","legend")
+        .attr("transform",(d,i)=>{ return "translate(50,"+(30+i*16)+")";});
+        legendBar.append('circle')
+            .attr('r',5).attr('cx',1).attr('cy',2).style('fill',(d,i)=>{return couleur[(i*5)%nbCouleur];})
+//            .on('mouseover',function(d,i){ d3.select(this).style('fill','blue').attr('r',7);})
+//            .on('mouseout',function(d,i){ d3.select(this).style('fill',couleur[(i*5)%nbCouleur]).attr('r',5);});
+        legendBar.append("text").style("font-size","1.7vh").attr('x',10).attr('y',6).style('text-anchor','start')
+            .text((d)=>{return d.name;});
+
+
 } // end of graphe Bar
 
 
