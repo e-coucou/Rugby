@@ -92,7 +92,7 @@
     position: absolute;
     right: 250px;
     top: 15px;
-    text-align: center;
+    text-align: left;
 }
 .pop {
   margin: 0;
@@ -237,6 +237,7 @@
     var url_h_date100 = "../data/h_date_100.csv";
     var url_h_last_date_fr = "../data/last_date_fr.csv";
     var url_h_item_fr = "../data/item_fr.csv";
+    var url_geoIDF = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/regions/ile-de-france/departements-ile-de-france.geojson";
 
     var date ='';
     /*
@@ -261,7 +262,14 @@
 	    .center([2.454071, 46.279229])
     	.scale(4.0*scale)
     	.translate([scale/2+1*margin.left, scale / 2]);
+    const pathIDF = d3.geoPath();
+    const projectionIDF = d3.geoConicConformal()
+        .center([2.454071, 46.279229])
+        .scale(10*scale)
+        .translate([scale/2+1*margin.left, scale/4*3 ]);
+//        .translate([scale/2+1*margin.left, scale / 2]);
     path.projection(projection);
+    pathIDF.projection(projectionIDF);
 	const svg = d3.select('#chart').append("svg")
     	.attr("id", "svg").attr("position", 2)
     	.attr("width", (width))
@@ -312,9 +320,11 @@
 //        'keepInSVG': true
     })
 
-// ajoute la France des départements
+// ajoute la France des départements et d 'IDF'
     const depart = svg.append("g")
         .attr("transform", "translate("+(0)+","+(0)+")");
+    const svgIDF = svg.append("g")
+        .attr("transform", "translate("+(300)+","+(-100)+")");
 
     var promises=[];
     var dHist = [], dReg = [], dept = [];
@@ -332,6 +342,7 @@
     promises.push(d3.json('../data/covid.json'));
     promises.push( d3.csv(url_h_last_date_fr));
     promises.push( d3.csv(url_h_item_fr));
+    promises.push( d3.json(url_geoIDF));
 //    promises.push( d3.dsv(";",dataGouv));
 //   promises.push( d3.csv(JH_global_death));
 //    promises.push( d3.csv(JH_global_confirmed));
@@ -343,23 +354,24 @@
     });
 
     var dataRegion=[],geojson=[],hopital=[];dataGouv=[];dataGoogle=[],JHDeath=[],JHConfirmed=[],JHRecovered=[],geoDepart=[],globalData=[];
-    var dataFinal = [], dataFRFinal100=[], dataFinal100 = [], dataFRFinal=[], h_date100=[];
+    var dataFinal = [], dataFRFinal100=[], dataFinal100 = [], dataFRFinal=[], h_date100=[], dataIDF = [];
     var iRead=0;
     var h_date=[],h_last_date=[], h_item=[], h_last_date_fr=[], h_item_fr=[];
     // definition lies au departement
     var legendDep = svg.append('g')
-        .attr('transform', function(d) { return 'translate('+(margin.left)+','+( 1*margin.top)+')';})
+        .attr('transform', function(d) { return 'translate('+(margin.left)+','+( margin.top)+')';})
         .attr('id', 'legendDep');
     var legendDepScale = d3.scaleLinear()
-        .domain([0, d3.max(dept, function(e) { return e.value; })])
+        .domain([0, n])
         .range([0, (n) * 20]);
+    let yAxis = d3.axisRight(legendDepScale).ticks(n);
     var legendDepAxis = svg.append("g")
         .attr("class","legendDep")
-        .attr('transform', function(d) {return 'translate('+( margin.left+20)+','+( 1*margin.top)+')';})
-        .call(d3.axisRight(legendDepScale).ticks(10));
+        .attr('transform', function(d) {return 'translate('+( margin.left+20)+','+( margin.top)+')';})
+        .call(yAxis);
     	legendDep.selectAll('.colorbar')
         	.data(d3.range(n))
-       		.enter().append('svg:rect')
+       		.enter().append('rect')
             	.attr('class','legendDep')
             	.attr('y', function(d) { return d * 20 + 'px'; })
             	.attr('height', '20px')
@@ -464,6 +476,7 @@
         case 10:   dataRegion= data; break;
         case 11:   h_last_date_fr=data; break;
         case 12:   h_item_fr=data; break;
+        case 13:   dataIDF=data; break;
         default:
             break;
         }
@@ -497,7 +510,7 @@
         aff_hosp();
         aff_regions();aff_trend_2();aff_Simul2();
         aff_JC();aff_vacc1();aff_vacc2();
-       	updateDepart();
+       	updateDepart(); updateIDF();
         console.log('data fr',dataFRFinal);
 	    d3.select("#val").html("<h1>Données Hospitalières</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
 	    				"<br>Entrées Hospitalières : "+valFormat(data_item_fr('Hospitalisation'))+
@@ -536,12 +549,20 @@
     }
     function updateVisu() {
         item = h_item[itemID].item;
-        d3.select("#item_select").text(item).style('text-anchor','middle');
+        d3.select("#item_select").text(item).style('text-anchor','left');
         getDepartementData('',item);
+        legendDepScale.domain([d3.min(dept, function(e) { return e.value; }), 
+                            d3.max(dept, function(e) { return e.value; })]);
+        legendDepAxis.call(d3.axisRight(legendDepScale).ticks(n));
+//    console.log('legende dep',dept,legendDepScale);
         depart.selectAll("path").style("fill",d=>{
                 let n=dept.findIndex(k => k.dep===d.properties.code);
                 return colors[tantile(dept[n].value)];
 //                return colors[tantile(Math.random()*100.0)];
+            })
+        svgIDF.selectAll("path").style("fill",d=>{
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                return colors[tantile(dept[n].value)];
             })
         aff_frAll(); //       assembleCurve(item);
 //é        updateDepart();
@@ -555,7 +576,8 @@
         da = dataRegion.modele.delai_asymptomatique;
 		getDepartementData();
         legendDepScale.domain([0, d3.max(dept, function(e) { return e.value; })]);
-        legendDepAxis.call(d3.axisRight(legendDepScale).ticks(10));
+        legendDepAxis.call(d3.axisRight(legendDepScale).ticks(n));
+    console.log('legende dep',dept,legendDepScale);
         d3.selectAll(".deps").transition().duration(1000).style("fill",d=>{
                 let n=dept.findIndex(k => k.dep===d.properties.code); //console.log(n,d.properties.code,dept[n].value, tantile(dept[n].value))
                 return colors[tantile(dept[n].value)];})
@@ -607,6 +629,49 @@
             })
             .style('stroke','blue').style('stroke-width',1);
 	}
+    function updateIDF() { //console.log("Département ",geoDepart,dept);
+        console.log(dataIDF);
+        svgIDF.selectAll("path")
+            .data(dataIDF.features)
+            .enter()
+            .append("path")
+            .attr('id', function(d) {return "dep" + d.properties.code;})
+            .attr("d", pathIDF).style('opacity',1).attr("class","deps")
+//            .style('fill',function(d) { let nid = id(d.properties.code); let val = quantile(data_value[nid]); //console.log(val);
+                //console.log(colors[val],getOpositeColor(colors[val])); 
+//                return colors[val];})
+            .on('mouseout',function(d,i){ d3.select(this).style('opacity',1);eetooltip.hide();eetooltip.removeAllDataBlocks()})
+            .on('mouseover',function(d,i){
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                let info_zoom = get_item_date(d.properties.code);
+                //console.log(carteVR_ep[n]);
+                d3.select(this).style('opacity',0.2);
+                eetooltip.updateTitle("Information");
+                eetooltip.addDataSeparator();
+                eetooltip.addDataBlock("", d.properties.nom);
+                eetooltip.addDataBlock("code", d.properties.code);
+                eetooltip.addDataBlock(h_item[itemID].item,valFormat(dept[n].value));
+                eetooltip.addDataSeparator();
+                eetooltip.addDataBlock('Population',valFormat(info_zoom['PopM']));
+                eetooltip.addDataBlock('Réanimation',valFormat(info_zoom['Réanimation']));
+                eetooltip.addDataBlock('Hospitalisation',valFormat(info_zoom['Hospitalisation']));
+                eetooltip.addDataBlock('Taux occupation',valFormat(info_zoom['taux_occupation_sae']));
+                eetooltip.addDataBlock('Morts en 24h',valFormat(info_zoom['dc_by_d']));
+                eetooltip.addDataBlock('Progression ?',valFormat(info_zoom['tx_reg']));
+                //eetooltip.addDataBlock("en Réanimation",valFormat(dept[n].rea));
+                //eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
+                eetooltip.updateFooter("Data by e-Coucou");
+                eetooltip.show();
+        })
+            .style("fill",d=>{
+                let n=dept.findIndex(k => k.dep===d.properties.code);
+                return colors[tantile(dept[n].value)];
+//                return colors[tantile(Math.random()*100.0)];
+            })
+            .style('stroke','blue').style('stroke-width',1);
+    }
+
+
     function aff_frAll(){
         svgfrAll.selectAll("g").remove();
         affiche_curve(dReg[itemID].data.slice(),"fullFR",svgfrAll);
