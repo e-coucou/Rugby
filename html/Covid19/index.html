@@ -62,7 +62,7 @@
 	display: block;
 	margin: auto;
 	opacity: 1;
-	position : relative;
+/*	position : relative;*/
 }
 #region {
 	display: block;
@@ -90,6 +90,8 @@
 }
 #item_select {
     position: absolute;
+    display: block;
+    width: 150px;
     right: 250px;
     top: 15px;
     text-align: left;
@@ -271,7 +273,7 @@
     path.projection(projection);
     pathIDF.projection(projectionIDF);
 	const svg = d3.select('#chart').append("svg")
-    	.attr("id", "svg").attr("position", 2)
+    	.attr("id", "svg")
     	.attr("width", (width))
     	.attr("height", (height));
     const svgVacc1 = d3.select('#chart_vacc1').append("svg")
@@ -324,7 +326,7 @@
     const depart = svg.append("g")
         .attr("transform", "translate("+(0)+","+(0)+")");
     const svgIDF = svg.append("g")
-        .attr("transform", "translate("+(300)+","+(-100)+")");
+        .attr("transform", "translate("+(220)+","+(-130)+")");
 
     var promises=[];
     var dHist = [], dReg = [], dept = [];
@@ -411,11 +413,13 @@
             .style('fill','#212').style('text-anchor', 'middle').style('font-weight', 'bold').style('dominant-baseline','middle')
             .text('<.').style('font-size','1.3vw');
     function itemUP() {
-        itemID = (itemID+1) % h_item.length;
+        itemID = (itemID+1) % h_last_date.length;
+//        itemID = (itemID+1) % h_item.length;
         updateVisu()
     }
     function itemDOWN() {
-        itemID = itemID==0?(h_item.length-1):(itemID-1);
+        itemID = itemID==0?(h_last_date.length-1):(itemID-1);
+//        itemID = itemID==0?(h_item.length-1):(itemID-1);
         updateVisu();
     }
     var svgUP = d3.select("#defilementUP").append("svg")
@@ -491,7 +495,7 @@
 //--------------------------------------------------------------
 	function start() {
         //console.log(dataFRFinal);
-        itemID=12;
+        itemID=15;
         let maj= h_date[h_date.length-1]; console.log('maj',maj);
         tantile = d3.scaleQuantile()
             .domain([ 0,100])//.domain([0, 100])
@@ -505,6 +509,7 @@
 		aff_JH(); aff_JC();aff_frAll();aff_regions();
         */
         simul();
+        aff_liste(h_last_date);
 		aff_Simul();
         aff_frAll();
         aff_hosp();
@@ -548,8 +553,10 @@
         return dataFinal[index];
     }
     function updateVisu() {
-        item = h_item[itemID].item;
+        item = h_last_date[itemID].item;
+//        item = h_item[itemID].item;
         d3.select("#item_select").text(item).style('text-anchor','left');
+        d3.selectAll("#listeSEL").style('fill',(d,i)=>{return (i===itemID?'#00B':'#DDD');})
         getDepartementData('',item);
         legendDepScale.domain([d3.min(dept, function(e) { return e.value; }), 
                             d3.max(dept, function(e) { return e.value; })]);
@@ -609,7 +616,7 @@
                 eetooltip.addDataSeparator();
                 eetooltip.addDataBlock("", d.properties.nom);
                 eetooltip.addDataBlock("code", d.properties.code);
-                eetooltip.addDataBlock(h_item[itemID].item,valFormat(dept[n].value));
+                eetooltip.addDataBlock(h_last_date[itemID].item,valFormat(dept[n].value));
                 eetooltip.addDataSeparator();
                 eetooltip.addDataBlock('Population',valFormat(info_zoom['PopM']));
                 eetooltip.addDataBlock('Réanimation',valFormat(info_zoom['Réanimation']));
@@ -650,7 +657,7 @@
                 eetooltip.addDataSeparator();
                 eetooltip.addDataBlock("", d.properties.nom);
                 eetooltip.addDataBlock("code", d.properties.code);
-                eetooltip.addDataBlock(h_item[itemID].item,valFormat(dept[n].value));
+                eetooltip.addDataBlock(h_last_date[itemID].item,valFormat(dept[n].value));
                 eetooltip.addDataSeparator();
                 eetooltip.addDataBlock('Population',valFormat(info_zoom['PopM']));
                 eetooltip.addDataBlock('Réanimation',valFormat(info_zoom['Réanimation']));
@@ -670,7 +677,40 @@
             })
             .style('stroke','blue').style('stroke-width',1);
     }
+    function aff_liste(liste_data){
+        console.log('aff liste',liste_data);
 
+        let liste = svg.append('g').selectAll('g').data(liste_data).enter().append('g')
+                        .attr('transform',(d,i)=> {return 'translate(710,'+(15*i+100)+')';})
+                        .on('click',liste_click)
+                        .on('mouseover',(d,i)=> {
+                            d3.selectAll('#listeSEL').style('fill',(e,j)=>{return j===i?'#a00':'DDD';})  })
+                        .on('mouseout',(d)=> {
+                            d3.selectAll('#listeSEL').style('fill',(e,j)=>{return (j===itemID)?'#00B':'#DDD';})  });
+
+        liste.append('rect').attr('id','listeSEL').attr('rx',1).attr('ry',1).attr('x',-6)
+            .attr('width',4).attr('height',14).style('fill', (d,i)=>{return (i===itemID)?'#00B':'#DDD' ;}); //'#0a88ff');
+        liste.append('rect').attr('rx',2).attr('ry',2)
+            .attr('width',100).attr('height',14).style('fill', (d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+        liste.append('text').attr('x',50) //.attr('y',10)
+            .attr('y',7) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
+//            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
+            .style('text-anchor', 'middle')
+            .style('font-weight', 'bold').style('dominant-baseline','middle')
+            .text((d,i)=>(d.item)).style('font-size','0.9vw');
+        liste.append('rect').attr('rx',2).attr('ry',2).attr('x',102)
+            .attr('width',100).attr('height',14).style('fill', (d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+        liste.append('text').attr('x',152) //.attr('y',10)
+            .attr('y',7) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
+//            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
+            .style('text-anchor', 'middle')
+            .style('font-weight', 'bold').style('dominant-baseline','middle')
+            .text((d,i)=>(d.date)).style('font-size','0.9vw');
+       }
+    function liste_click(d,i) {
+        itemID = i;
+        updateVisu();
+      }
 
     function aff_frAll(){
         svgfrAll.selectAll("g").remove();
@@ -680,9 +720,9 @@
     function aff_hosp(){
         svgJH.selectAll("g").remove();
         dCourbe=[];
-        values =dReg[0].data[0].values.slice() ; dCourbe.push({n:'total', name: 'Corona', scale:1, values});
-        values =dReg[1].data[0].values.slice() ; dCourbe.push({n:'cor',name:'Urgence', scale:0, values});
-        values =dReg[2].data[0].values.slice() ; dCourbe.push({n:'hosp',name:'hosp. Corona', scale:1, values});
+        values =dReg[getIndexCurve('Corona')].data[0].values.slice() ; dCourbe.push({n:'total', name: 'Corona', scale:1, values});
+        values =dReg[getIndexCurve('Urgence')].data[0].values.slice() ; dCourbe.push({n:'cor',name:'Urgence', scale:0, values});
+        values =dReg[getIndexCurve('Hosp. Corona')].data[0].values.slice() ; dCourbe.push({n:'hosp',name:'hosp. Corona', scale:1, values});
         affiche_curve(dCourbe.slice(),"rea",svgJH);
     }
     function aff_regions(){
@@ -927,7 +967,7 @@
     }
     function getAllitem() {
         dReg=[];
-        h_item.forEach(d=>{assembleCurve(d.item);})
+        h_last_date.forEach(d=>{assembleCurve(d.item);}) //h_item
         console.log('dReg',dReg);
     }
 
