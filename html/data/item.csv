@@ -11,6 +11,8 @@ Réanimation
 Guérisons
 Morts
 region
+libelle_reg
+libelle_dep
 Incidence
 R
 taux_occupation_sae
@@ -21,6 +23,7 @@ nbDelta
 P
 T
 pop
+Nom
 NbArr
 NbCan
 NbCom

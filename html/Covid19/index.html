@@ -263,12 +263,12 @@
 	const projection = d3.geoConicConformal()
 	    .center([2.454071, 46.279229])
     	.scale(4.0*scale)
-    	.translate([scale/2+1*margin.left, scale / 2]);
+    	.translate([scale/2, scale / 2]);
     const pathIDF = d3.geoPath();
     const projectionIDF = d3.geoConicConformal()
-        .center([2.454071, 46.279229])
-        .scale(10*scale)
-        .translate([scale/2+1*margin.left, scale/4*3 ]);
+        .center([2.34861111111, 48.8533333333]) //46.279229])
+        .scale(9*scale)
+        .translate([scale/2-40, scale/3-20 ]);
 //        .translate([scale/2+1*margin.left, scale / 2]);
     path.projection(projection);
     pathIDF.projection(projectionIDF);
@@ -548,7 +548,14 @@
     }
     function get_item_date(dep) {
         let dateRec = formatReverse(date);
+//        console.log('date selection',dateRec);
         let index = (dataFinal.findIndex(d=> { return (d.jour===dateRec && d.dep==dep);})) - offset_date;
+//        console.log(index,item,dep,date,dataFinal[index]);
+        return dataFinal[index];
+    }
+    function get_dep_item_date(dep,date) {
+//        console.log('date selection',dep,date,item);
+        let index = (dataFinal.findIndex(d=> { return (d.jour===date && d.dep==dep);}));
 //        console.log(index,item,dep,date,dataFinal[index]);
         return dataFinal[index];
     }
@@ -628,6 +635,7 @@
                 //eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
                 eetooltip.updateFooter("Data by e-Coucou");
                 eetooltip.show();
+                update_liste(d.properties.code);
         })
             .style("fill",d=>{
                 let n=dept.findIndex(k => k.dep===d.properties.code);
@@ -669,6 +677,7 @@
                 //eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
                 eetooltip.updateFooter("Data by e-Coucou");
                 eetooltip.show();
+                update_liste(d.properties.code);
         })
             .style("fill",d=>{
                 let n=dept.findIndex(k => k.dep===d.properties.code);
@@ -677,11 +686,15 @@
             })
             .style('stroke','blue').style('stroke-width',1);
     }
+    function update_liste(dep) {
+//        console.log('info_zoom',data);
+        d3.selectAll('#info_liste').text((d,i)=>{let val =get_dep_item_date(dep,d.date)[d.item]; return isNaN(val)?val:valFormat(val);})
+    }
     function aff_liste(liste_data){
         console.log('aff liste',liste_data);
 
         let liste = svg.append('g').selectAll('g').data(liste_data).enter().append('g')
-                        .attr('transform',(d,i)=> {return 'translate(710,'+(15*i+100)+')';})
+                        .attr('transform',(d,i)=> {return 'translate('+(0.67*width)+','+(15*i+40)+')';})
                         .on('click',liste_click)
                         .on('mouseover',(d,i)=> {
                             d3.selectAll('#listeSEL').style('fill',(e,j)=>{return j===i?'#a00':'DDD';})  })
@@ -691,21 +704,29 @@
         liste.append('rect').attr('id','listeSEL').attr('rx',1).attr('ry',1).attr('x',-6)
             .attr('width',4).attr('height',14).style('fill', (d,i)=>{return (i===itemID)?'#00B':'#DDD' ;}); //'#0a88ff');
         liste.append('rect').attr('rx',2).attr('ry',2)
-            .attr('width',100).attr('height',14).style('fill', (d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
-        liste.append('text').attr('x',50) //.attr('y',10)
+            .attr('width','10vw').attr('height',14).style('fill', (d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+        liste.append('text').attr('x','5vw') //.attr('y',10)
             .attr('y',7) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
             .style('text-anchor', 'middle')
             .style('font-weight', 'bold').style('dominant-baseline','middle')
             .text((d,i)=>(d.item)).style('font-size','0.9vw');
-        liste.append('rect').attr('rx',2).attr('ry',2).attr('x',102)
-            .attr('width',100).attr('height',14).style('fill', (d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
-        liste.append('text').attr('x',152) //.attr('y',10)
+        liste.append('rect').attr('rx',2).attr('ry',2).attr('x','10.2vw')
+            .attr('width','6vw').attr('height',14).style('fill', (d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+        liste.append('text').attr('x','13.2vw') //.attr('y',10)
             .attr('y',7) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
             .style('text-anchor', 'middle')
             .style('font-weight', 'bold').style('dominant-baseline','middle')
             .text((d,i)=>(d.date)).style('font-size','0.9vw');
+        liste.append('rect').attr('rx',2).attr('ry',2).attr('x','16.4vw')
+            .attr('width','12vw').attr('height',14).style('fill', (d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+        liste.append('text').attr('x','22.4vw') //.attr('y',10)
+            .attr('y',7).attr('id','info_liste')
+//            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
+            .style('text-anchor', 'middle')
+            .style('font-weight', 'bold').style('dominant-baseline','middle')
+            .text('val ...').style('font-size','0.9vw');
        }
     function liste_click(d,i) {
         itemID = i;
