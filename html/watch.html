@@ -149,7 +149,8 @@ input:focus {
    	var interval = 'PT1M'  // PnYnMnD  TnHnMnS
     var urlRes = '&resolution='+interval;
     var url = '';
-    let listeVal = [{nom:'E-T15021',select:3}];
+    let listeT1 = ['E-T15021','E-T15022','E-T15023','E-T15024','E-T15025','E-T15026','E-T15027','E-T15028','E-T15029','E-T15030','E-T15031','E-T15032']
+    let listeT2 = ['E-T15041','E-T15042','E-T15043','E-T15044','E-T15045','E-T15046','E-T15047','E-T15048','E-T15049','E-T15050','E-T15051','E-T15052']
 	// Chart dimensions.
 	var margin = {top: 20, right: 20, bottom: 30, left: 50},
     	width = window.innerWidth; // - margin.right-margin.left,
@@ -165,11 +166,6 @@ input:focus {
 	//credentials ...
 	let code =btoa(username+':'+password);
 	cred();
-	if (config.credOK==true) {
-		clearSVG();
-		aff_valeur();
-		getValeur();
-	}
 //---------------
 // get Data
 function getValeur() {
@@ -184,24 +180,35 @@ function getValeur() {
 	console.log('heure',now,end);
     urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
     console.log(urlTime);
-    url = urlBase+encodeURIComponent('E-T15021')+urlTime+'&resolution=PT1H';
-    console.log('Url : ', url);
-    getDashData(url,'coucou')
-    console.log(dashData);
+    url = urlBase+encodeURIComponent('E-T15052')+urlTime+'&resolution=PT1H';
+    getDashData(url,'coucou','#info');
+    getValeurListe(urlTime);
+}
+function getValeurListe(urlTime) {
+	listeT1.forEach( tag => {
+		url = urlBase+encodeURIComponent(tag)+urlTime+'&resolution=PT1H';
+		getDashData(url,tag,'#'+tag);
+	});
+	listeT2.forEach( tag => {
+		url = urlBase+encodeURIComponent(tag)+urlTime+'&resolution=PT1H';
+		getDashData(url,tag,'#'+tag);
+	});
+//	console.log(dashData);
 }
 //----------------------------------------------------------------------------------------
 //- lecture du dashboard ...
 //----------------------------------------
 
-function getDashData(urldata,index) {
+function getDashData(urldata,index,id) {
     var opt = fetch(urldata, {method: 'GET',headers: new Headers({'Access-Control-Allow-Origin':'*','Accept':'application/json',
         'mode':'no-cors','credentials':'includes','Authorization':'basic '+code})}).then(response => {
         return response.json();
         })
     .then(data => { 
             dashData[index]=data;
-            console.log(data);
-            d3.selectAll('#info').text(valFormat(data[0].values[0].value)+' '+data[0].unit);
+            let value = data[0].values[0].value;
+//            console.log(id,value);
+            d3.selectAll(id).text(valFormat(value)+' '+data[0].unit);
             d3.selectAll('#date').text(i_c(data[0].values[0].timestamp));
 //            dispatch.call('dashboard');
         })
@@ -275,15 +282,19 @@ function get_connexion() {
 	console.log('connexion',code);
 	clearSVG();
 	aff_valeur();
+	aff_liste_T(listeT1,36);
+	aff_liste_T(listeT2,36+0.8*width);
 	getValeur();
 }
 function refresh() {
 	getValeur();
 }
+//-----------------------
+//
 function aff_valeur() {
 	//on affiche
-    let liste = svg.append('g').selectAll('g').data([0]).enter().append('g')
-                        .attr('transform', (d,i)=> {return 'translate('+(0.14*width)+','+(0.25*height)+')';})
+    let liste = svg.append('g').selectAll('g').data(['E-T15021']).enter().append('g')
+                        .attr('transform', (d,i)=> {return 'translate('+(0.20*width)+','+(0.15*height)+')';})
                         .on('click',refresh)
                         .on('mouseover',(d,i)=> {
                             d3.selectAll('#rect_refresh').style('fill','red')  })
@@ -291,15 +302,39 @@ function aff_valeur() {
                             d3.selectAll('#rect_refresh').style('fill','#337')  });
 
         liste.append('rect').attr('rx',2).attr('ry',2).attr('id','rect_refresh')
-            .attr('width','80vw').attr('height','50vh').style('fill', '#337'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
-        liste.append('text').attr('x','47vw') //.attr('y',10)
-            .attr('y','27vh').attr('id','info') //.attr('id',(d)=>{return ('en0_'+d.matchId);})
+            .attr('width',(width*0.6)).attr('height',(0.6*height)).style('fill', '#337'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+        liste.append('text').attr('x',(0.3*width)) //.attr('y',10)
+            .attr('y',(0.3*height)).attr('id','info') //.attr('id',(d)=>{return ('en0_'+d.matchId);})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
             .style('text-anchor', 'middle').style('fill','white')
             .style('font-weight', 'bold').style('dominant-baseline','middle')
-            .text('val').style('font-size','15vw');
+            .text('val').style('font-size','15vw')
+            .on('mouseover',d=>{d3.select('#info').text(d)})
+            .on('mouseout',d=>{d3.select('#info').text(valFormat(dashData[d][0].values[0].value)+' '+dashData[d][0].unit)});
 }
-
+//--------------
+// on affiche les listes de valeur sur le coté ...
+function aff_liste_T(liste,decalage) {
+	let inc = 0.6*height/12;
+    let liste_T = svg.append('g').selectAll('g').data(liste).enter().append('g')
+                        .attr('transform', (d,i)=> {return 'translate('+(decalage)+','+(0.15*height +i*inc)+')';});
+/*                        .on('click',refresh)
+                        .on('mouseover',(d,i)=> {
+                            d3.selectAll('#rect_refresh').style('fill','red')  })
+                        .on('mouseout',(d)=> {
+                            d3.selectAll('#rect_refresh').style('fill','#337')  });
+*/
+        liste_T.append('rect').attr('rx',1).attr('ry',1)
+            .attr('width',(0.15*width)).attr('height',(inc-2)).style('fill', '#337'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+        liste_T.append('text').attr('x',(0.075*width)) //.attr('y',10)
+            .attr('y',(inc/2+2)).attr('id',d=>{return d}) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
+//            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
+            .style('text-anchor', 'middle').style('fill','white')
+            .style('font-weight', 'bold').style(  'font-family',"helvetica neue")//'dominant-baseline','middle')
+            .text('val').style('font-size','1.3vw')
+            .on('mouseover',d=>{d3.select('#'+d).text(d)})
+            .on('mouseout',d=>{d3.select('#'+d).text(valFormat(dashData[d][0].values[0].value)+' '+dashData[d][0].unit)});
+}
 //----------------------------------------------------------------
 //
 function clearSVG() {
