@@ -4,7 +4,7 @@
 <meta name="author" content="e-Coucou">
 <html class="rky">
 <meta charset="utf-8">
-<title>Watch 2.0</title>
+<title>Pirénées 2.0</title>
 <style>
 @import url(../css/new.css);
 .rky header {
@@ -64,7 +64,7 @@
 }
 .rky footer aside{
     left:20px;
-    width:100%;
+    width:50%;
     height: 20px;
   font-size: 11px;
   float: left;
@@ -120,10 +120,14 @@ input:focus {
   position: absolute;
   border: 3px solid #ff7788;
 }
+#date {
+	right:100px;
+	width: 30%;
+}
 </style>
 <header>
   <div id='h1'>Watch 2.0</div>
-  <aside >April, 2021<br><br> | v 0.01</aside>
+  <aside >April, 2021<br><br> | v 0.11</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -138,8 +142,10 @@ input:focus {
 <!--        <input name="Submit"  type="submit" id="connexion" value="Connexion" > -->
     </form></div>
   <footer>
-    <aside>(c) e-Coucou | y2kL | Avril, 2021</aside>
-    <div id="date"></div>
+  	<div>
+      <aside>(c) e-Coucou | y2kL | Avril, 2021</aside>
+      <aside id="date">time</aside>
+    </div>
   </footer>
   <script type="text/javascript">
     var config = {credOK: false, tagOK:false, dataOK:false, arcOK:false, arbreOK: false};
@@ -151,6 +157,7 @@ input:focus {
     var url = '';
     let listeT1 = ['E-T15021','E-T15022','E-T15023','E-T15024','E-T15025','E-T15026','E-T15027','E-T15028','E-T15029','E-T15030','E-T15031','E-T15032']
     let listeT2 = ['E-T15041','E-T15042','E-T15043','E-T15044','E-T15045','E-T15046','E-T15047','E-T15048','E-T15049','E-T15050','E-T15051','E-T15052']
+    let liste1 = ['E-T15099','E-T15004','E-T15002','E-T15005','E-T15012'];
 	// Chart dimensions.
 	var margin = {top: 20, right: 20, bottom: 30, left: 50},
     	width = window.innerWidth; // - margin.right-margin.left,
@@ -180,7 +187,7 @@ function getValeur() {
 	console.log('heure',now,end);
     urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
     console.log(urlTime);
-    url = urlBase+encodeURIComponent('E-T15052')+urlTime+'&resolution=PT1H';
+    url = urlBase+encodeURIComponent('E-T15099')+urlTime+'&resolution=PT1H';
     getDashData(url,'coucou','#info');
     getValeurListe(urlTime);
 }
@@ -209,7 +216,7 @@ function getDashData(urldata,index,id) {
             let value = data[0].values[0].value;
 //            console.log(id,value);
             d3.selectAll(id).text(valFormat(value)+' '+data[0].unit);
-            d3.selectAll('#date').text(i_c(data[0].values[0].timestamp));
+            d3.selectAll('#date').text('| '+i_c(data[0].values[0].timestamp));
 //            dispatch.call('dashboard');
         })
     .catch(err => {
@@ -223,8 +230,9 @@ function getDashData(urldata,index,id) {
         let r = (a>1000) ? Math.round(a) : ( (a>10)? Math.round(a*10.0)/10 : Math.round(a*100.0)/100);
         return String(r).replace(/(.)(?=(\d{3})+$)/g,'$1 ');
     }
+var format = d3.timeFormat("%H:%M:%S");
     function i_c(d) { 
-    	return new Date(d).getDate();
+    	return format( new Date(d));
     }
 //----------------------------------------------------------------
 // CREDENTIALS
@@ -232,7 +240,7 @@ function getDashData(urldata,index,id) {
 function cred() {
     svg.attr("viewBox", "0 0 "+(width )+" "+(height))
     let connexion = svg.append('g').selectAll('g').data([0]).enter().append('g')
-                        .attr('transform', (d,i)=> {return 'translate('+(0.31*width)+','+(0.6*height)+')';})
+                        .attr('transform', (d,i)=> {return 'translate('+(0.25*width)+','+(0.6*height)+')';})
                         .on('click',get_connexion)
                         .on('mouseover',(d,i)=> {
                             d3.selectAll('#rect_connexion').style('fill','red')  })
@@ -240,13 +248,13 @@ function cred() {
                             d3.selectAll('#rect_connexion').style('fill','#77C')  });
 
         connexion.append('rect').attr('rx',2).attr('ry',2).attr('id','rect_connexion')
-            .attr('width','50vw').attr('height','12vh').style('fill', '#77C'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
-        connexion.append('text').attr('x','25vw') //.attr('y',10)
-            .attr('y','6vh').attr('id','connexion') //.attr('id',(d)=>{return ('en0_'+d.matchId);})
+            .attr('width',(0.5*width)).attr('height',(0.1*height)).style('fill', '#77C'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+        connexion.append('text').attr('x',(0.25*width)) //.attr('y',10)
+            .attr('y',(0.07*height)).attr('id','connexion') //.attr('id',(d)=>{return ('en0_'+d.matchId);})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
             .style('text-anchor', 'middle').style('fill','white')
             .style('font-weight', 'bold').style('dominant-baseline','middle')
-            .text('Connexion').style('font-size','5vw');
+            .text('Connexion').style('font-size','4vw');
     var credential = [
                 {name: 'username', type: 'text', display: 'Username'},
                 {name: 'password', type: 'text', display: 'Password'},
@@ -293,26 +301,26 @@ function refresh() {
 //
 function aff_valeur() {
 	//on affiche
-	console.log(width,height);
+//	console.log(width,height);
 	let h_g= height-50-20;
-    let liste = svg.append('g').selectAll('g').data(['E-T15021']).enter().append('g')
-                        .attr('transform', (d,i)=> {return 'translate('+(0.20*width)+','+(0.02*h_g+50)+')';})
+    let liste = svg.append('g').selectAll('g').data(['E-T15099','futur']).enter().append('g')
+                        .attr('transform', (d,i)=> {return 'translate('+(0.20*width)+','+(0.01*h_g+50 +i*h_g/2)+')';})
                         .on('click',refresh)
                         .on('mouseover',(d,i)=> {
-                            d3.selectAll('#rect_refresh').style('fill','red')  })
-                        .on('mouseout',(d)=> {
-                            d3.selectAll('#rect_refresh').style('fill','#337')  });
+                            d3.selectAll('#rect_refresh'+i).style('fill','red')  })
+                        .on('mouseout',(d,i)=> {
+                            d3.selectAll('#rect_refresh'+i).style('fill','#337')  });
 
-        liste.append('rect').attr('rx',2).attr('ry',2).attr('id','rect_refresh')
-            .attr('width',(width*0.6)).attr('height',(0.96*h_g)).style('fill', '#337'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+        liste.append('rect').attr('rx',2).attr('ry',2).attr('id',(d,i)=>{return 'rect_refresh'+i; })
+            .attr('width',(width*0.6)).attr('height',(0.47*h_g)).style('fill', '#337'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
         liste.append('text').attr('x',(0.3*width)) //.attr('y',10)
-            .attr('y',(0.55*h_g)).attr('id','info') //.attr('id',(d)=>{return ('en0_'+d.matchId);})
+            .attr('y',(0.27*h_g)).attr('id','info') //.attr('id',(d)=>{return ('en0_'+d.matchId);})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
             .style('text-anchor', 'middle').style('fill','white')
             .style('font-weight', 'bold').style('dominant-baseline','middle')
-            .text('val').style('font-size','15vw')
+            .text('val').style('font-size','13vw')
             .on('mouseover',d=>{d3.select('#info').text(d)})
-            .on('mouseout',d=>{d3.select('#info').text(valFormat(dashData[d][0].values[0].value)+' '+dashData[d][0].unit)});
+            .on('mouseout',d=>{d3.select('#info').text(valFormat(dashData['coucou'][0].values[0].value)+' '+dashData['coucou'][0].unit)});
 }
 //--------------
 // on affiche les listes de valeur sur le coté ...
@@ -328,7 +336,7 @@ function aff_liste_T(liste,decalage) {
                             d3.selectAll('#rect_refresh').style('fill','#337')  });
 */
         liste_T.append('rect').attr('rx',1).attr('ry',1)
-            .attr('width',(0.18*width)).attr('height',(inc-2)).style('fill', '#337'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+            .attr('width',(0.18*width)).attr('height',(inc-2)).style('fill', '#1e3F5E'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
         liste_T.append('text').attr('x',(0.09*width)) //.attr('y',10)
             .attr('y',(inc/2+2)).attr('id',d=>{return d}) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
