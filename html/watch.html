@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<title>WATCH 2.0</title>
+<meta name="description" content="Get data a,d keep an eyes on ...">
+<meta name="author" content="e-Coucou">
+<html class="rky">
+<meta charset="utf-8">
+<title>Watch 2.0</title>
+<style>
+@import url(../css/new.css);
+.rky header {
+    position: fixed;
+    top:0px;
+    left:0px;
+    width:100%;
+    height: 50px;
+    z-index: 0;
+    background: #1e3F5E; /*#FE6F5E;/*#b0c4de; /*add8e6; /*f0f8FF;*/
+  color: #fff;
+  font-family: "helvetica neue", sans-serif;
+}
+
+.rky header aside{
+    left:20px;
+    width:100%;
+    height: 20px;
+  font-size: 11px;
+  float: left;
+  margin-right: 0.8em;
+  padding-top: .2em;
+  color: #fff;
+}
+.rky aside {
+  font-size: 1.5vh;
+  font-family: "helvetica neue", sans-serif;
+  font-weight: 150;
+  text-anchor: end;
+  margin-right: 0.9vh;
+    float: right;
+/*    box-shadow: inset 5px 0 5px -5px #29627e;*/
+}
+#svg {
+	display: block;
+	margin: auto;
+	opacity: 1;
+/*	position : relative;*/
+}
+.rky h1 {
+  font-family: "helvetica neue", sans-serif;
+  font-size: 5vh;
+  letter-spacing: 0.2vh;
+  margin-left: 0px;
+  margin-bottom: 0px;
+  font-weight: 50;
+  text-rendering: optimizeLegibility;
+}
+#h1 {
+  font-size: 28px;
+  font-weight: 250;
+  letter-spacing: 2px;
+  margin-left: 150px;
+  margin-top: 5px;
+  position: absolute;
+  text-rendering: optimizeLegibility;
+}
+.rky footer aside{
+    left:20px;
+    width:100%;
+    height: 20px;
+  font-size: 11px;
+  float: left;
+  margin-right: 0.8em;
+  padding-top: .2em;
+  color: #fff;
+}
+.rky footer {
+  position: fixed;
+  bottom: 0px;
+    left:0px;
+    width:100%;
+    height: 20px;
+  font-size: 11px;
+  float: left;
+  margin-right: 0.8em;
+  padding-top: .5em;
+    background: #1e3F5E; /*#FE6F5E;/*#b0c4de; /*add8e6; /*f0f8FF;*/
+}
+.rky footer aside:after {
+  padding-left: .5em;
+  content: "|";
+}
+.rky footer {
+  margin-top: 0.1em;
+}
+#date {
+	left: 100px;
+	color: 'red';
+}
+input#username,
+input#password,
+input#connexion { 
+    border: 1px dotted #ccc;
+    background: white;
+    font-family: monospace;
+    padding: 2% 2%;
+    font-size: 18px;
+    margin: 2% 2% 2% 5%;
+    width : 85%;
+    height: 40%;
+    color: red;
+}
+input:focus { 
+    background-color:#0cf; color: red; outline: none;
+}
+#credentials {
+  left: 30%;
+  top: 100px;
+  margin: 10px;
+  padding: 10px;
+  width: 40%;
+  position: absolute;
+  border: 3px solid #ff7788;
+}
+</style>
+<header>
+  <div id='h1'>Watch 2.0</div>
+  <aside >April, 2021<br><br> | v 0.01</aside>
+  <div id='menu'></div>
+</header>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="https://unpkg.com/d3@5.7.0/dist/d3.min.js" charset="utf-8"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.js" charset="utf-8"></script>
+<body>
+    <div id="chart"></div>
+    <div id="credentials">
+    <form name="saisie" onSubmit="return credClick()">
+        <input type="text" id="username"><br>
+        <input type="text" id="password">
+<!--        <input name="Submit"  type="submit" id="connexion" value="Connexion" > -->
+    </form></div>
+  <footer>
+    <aside>(c) e-Coucou | y2kL | Avril, 2021</aside>
+    <div id="date"></div>
+  </footer>
+  <script type="text/javascript">
+    var config = {credOK: false, tagOK:false, dataOK:false, arcOK:false, arbreOK: false};
+    var urlBase = 'https://cors-rky.herokuapp.com/https://oianalytics-100.optimistik.fr/api/optimistik/data/time_values?dataReferenceList=';
+	var urlBaseOld = 'https://oianalytics-100.optimistik.fr/api/optimistik/data/time_values?dataReferenceList=';
+    var urlTime = '';
+   	var interval = 'PT1M'  // PnYnMnD  TnHnMnS
+    var urlRes = '&resolution='+interval;
+    var url = '';
+    let listeVal = [{nom:'E-T15021',select:3}];
+	// Chart dimensions.
+	var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    	width = window.innerWidth; // - margin.right-margin.left,
+    	height = window.innerHeight; // - margin.top - margin.bottom;
+	var couleur = ['grey','green','violet','cyan','blue','orange','yellow','red'];
+	var dashData=[], username='Username', password='Password';
+	// Create the SVG container and set the origin.
+	const svg = d3.select('#chart').append("svg")
+    	.attr("id", "svg")
+    	.attr("width", (width))
+    	.attr("height", (height));
+
+	//credentials ...
+	let code =btoa(username+':'+password);
+	cred();
+	if (config.credOK==true) {
+		clearSVG();
+		aff_valeur();
+		getValeur();
+	}
+//---------------
+// get Data
+function getValeur() {
+	console.log(code);
+    let refDashboard='';
+    let now = new Date(Date.now());
+    let end = new Date(Date.now());
+//    let offset = now.getTimezoneOffset();
+//    let hour = now.getHours()+offset/60;
+//	now.setHours(hour);
+	now.setMinutes(now.getMinutes()-11);
+	console.log('heure',now,end);
+    urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
+    console.log(urlTime);
+    url = urlBase+encodeURIComponent('E-T15021')+urlTime+'&resolution=PT1H';
+    console.log('Url : ', url);
+    getDashData(url,'coucou')
+    console.log(dashData);
+}
+//----------------------------------------------------------------------------------------
+//- lecture du dashboard ...
+//----------------------------------------
+
+function getDashData(urldata,index) {
+    var opt = fetch(urldata, {method: 'GET',headers: new Headers({'Access-Control-Allow-Origin':'*','Accept':'application/json',
+        'mode':'no-cors','credentials':'includes','Authorization':'basic '+code})}).then(response => {
+        return response.json();
+        })
+    .then(data => { 
+            dashData[index]=data;
+            console.log(data);
+            d3.selectAll('#info').text(valFormat(data[0].values[0].value)+' '+data[0].unit);
+            d3.selectAll('#date').text(i_c(data[0].values[0].timestamp));
+//            dispatch.call('dashboard');
+        })
+    .catch(err => {
+//        infoG.select('text').text("ERREUR : "+err);
+//        infoG.select('circle').attr('fill','black');
+//        config.dataOK=false;
+      console.log(err);
+    })   
+}
+	let valFormat = (a) => { 
+        let r = (a>1000) ? Math.round(a) : ( (a>10)? Math.round(a*10.0)/10 : Math.round(a*100.0)/100);
+        return String(r).replace(/(.)(?=(\d{3})+$)/g,'$1 ');
+    }
+    function i_c(d) { 
+    	return new Date(d).getDate();
+    }
+//----------------------------------------------------------------
+// CREDENTIALS
+//
+function cred() {
+    svg.attr("viewBox", "0 0 "+(width + margin.left + margin.right)+" "+(height + margin.top + margin.bottom))
+    let connexion = svg.append('g').selectAll('g').data([0]).enter().append('g')
+                        .attr('transform', (d,i)=> {return 'translate('+(0.31*width)+','+(0.6*height)+')';})
+                        .on('click',get_connexion)
+                        .on('mouseover',(d,i)=> {
+                            d3.selectAll('#rect_connexion').style('fill','red')  })
+                        .on('mouseout',(d)=> {
+                            d3.selectAll('#rect_connexion').style('fill','#77C')  });
+
+        connexion.append('rect').attr('rx',2).attr('ry',2).attr('id','rect_connexion')
+            .attr('width','50vw').attr('height','12vh').style('fill', '#77C'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+        connexion.append('text').attr('x','25vw') //.attr('y',10)
+            .attr('y','6vh').attr('id','connexion') //.attr('id',(d)=>{return ('en0_'+d.matchId);})
+//            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
+            .style('text-anchor', 'middle').style('fill','white')
+            .style('font-weight', 'bold').style('dominant-baseline','middle')
+            .text('Connexion').style('font-size','5vw');
+    var credential = [
+                {name: 'username', type: 'text', display: 'Username'},
+                {name: 'password', type: 'text', display: 'Password'},
+                {name: 'submit', type: 'submit', display: 'Username'}
+            ];
+    let size={l:200,h:200};
+/*    let credG = graph.append('g')
+        .append('foreignObject').attr('x',10).attr('y',10).attr('width',300).attr('height',150);
+    credG.append('rect').attr('x',width/2-size.l/2+margin.left).attr('y',80)
+        .attr('width',size.l).attr('height',size.h).style('fill','#BCD4E6');
+		*/
+        d3.select('#credentials').attr('width',300).style('display','inline').raise();
+        d3.select('#username').attr('placeholder',username).on('change',credClick);
+        d3.select('#password').attr('placeholder',password).on('change',credClick);
+}
+
+function credClick() {
+    let val = d3.select('#username').property('value');
+    if (val!='') username=val;
+    val = d3.select('#password').property('value');
+    if (val!='') password=val;
+    code =btoa(username+':'+password);
+	if (username!='Username' && password != 'Password') {
+		config.credOK=true;
+	} else {
+		console.log('saisie credential');
+    }
+//	d3.select('#connexion').style('background',"yellow");
+//	console.log(code);
+    return false;
+}
+function get_connexion() {
+	console.log('connexion',code);
+	clearSVG();
+	aff_valeur();
+	getValeur();
+}
+function refresh() {
+	getValeur();
+}
+function aff_valeur() {
+	//on affiche
+    let liste = svg.append('g').selectAll('g').data([0]).enter().append('g')
+                        .attr('transform', (d,i)=> {return 'translate('+(0.14*width)+','+(0.25*height)+')';})
+                        .on('click',refresh)
+                        .on('mouseover',(d,i)=> {
+                            d3.selectAll('#rect_refresh').style('fill','red')  })
+                        .on('mouseout',(d)=> {
+                            d3.selectAll('#rect_refresh').style('fill','#337')  });
+
+        liste.append('rect').attr('rx',2).attr('ry',2).attr('id','rect_refresh')
+            .attr('width','80vw').attr('height','50vh').style('fill', '#337'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+        liste.append('text').attr('x','47vw') //.attr('y',10)
+            .attr('y','27vh').attr('id','info') //.attr('id',(d)=>{return ('en0_'+d.matchId);})
+//            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
+            .style('text-anchor', 'middle').style('fill','white')
+            .style('font-weight', 'bold').style('dominant-baseline','middle')
+            .text('val').style('font-size','15vw');
+}
+
+//----------------------------------------------------------------
+//
+function clearSVG() {
+    d3.select('#credentials').style('display','none');
+    svg.selectAll('g').remove();
+}
+  </script>
+</body>
+</html>
