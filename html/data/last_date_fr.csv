@@ -1,22 +1,22 @@
 item,date
-Corona,2021-04-06
-Urgence,2021-04-06
-Hosp. Corona,2021-04-06
-n_dose1,2021-04-06
-n_dose2,2021-04-06
-n_cum_dose1,2021-04-06
-n_cum_dose2,2021-04-06
-Hospitalisation,2021-04-07
-Réanimation,2021-04-07
-Guérisons,2021-04-07
-Morts,2021-04-07
+Corona,2021-04-07
+Urgence,2021-04-07
+Hosp. Corona,2021-04-07
+n_dose1,2021-04-07
+n_dose2,2021-04-07
+n_cum_dose1,2021-04-07
+n_cum_dose2,2021-04-07
+Hospitalisation,2021-04-08
+Réanimation,2021-04-08
+Guérisons,2021-04-08
+Morts,2021-04-08
 nbReg,2021-04-05
 nbDelta,2021-04-05
-P,2021-04-04
-T,2021-04-04
+P,2021-04-05
+T,2021-04-05
 Incidence,2021-04-05
 R,2021-04-03
 taux_occupation_sae,2021-04-08
 Positivité,2021-04-05
 tx_reg,2021-04-05
-dc_by_d,2021-04-07
+dc_by_d,2021-04-08
