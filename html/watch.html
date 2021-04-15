@@ -337,14 +337,14 @@ function aff_liste_T(liste,decalage) {
 	let inc = 0.96*h_g/liste.length;
 	let w = 0.10;
     let liste_T = svg.append('g').selectAll('g').data(liste).enter().append('g')
-                        .attr('transform', (d,i)=> {return 'translate('+(decalage)+','+(0.02*h_g+50 +i*inc)+')';});
-/*                        .on('click',refresh)
+                        .attr('transform', (d,i)=> {return 'translate('+(decalage)+','+(0.02*h_g+50 +i*inc)+')';})
+                        .on('click',refresh)
                         .on('mouseover',(d,i)=> {
-                            d3.selectAll('#rect_refresh').style('fill','red')  })
-                        .on('mouseout',(d)=> {
-                            d3.selectAll('#rect_refresh').style('fill','#337')  });
-*/
-        liste_T.append('rect').attr('rx',1).attr('ry',1)
+                            d3.selectAll('#rect_refresh'+d).style('fill','red')  })
+                        .on('mouseout',(d,i)=> {
+                            d3.selectAll('#rect_refresh'+d).style('fill','#1e3F5E')  });
+
+        liste_T.append('rect').attr('rx',1).attr('ry',1).attr('id',(d,i) => { return 'rect_refresh'+d; })
             .attr('width',(w*width)).attr('height',(inc-2)).style('fill', '#1e3F5E'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
         liste_T.append('text').attr('x',(w/2*width)) //.attr('y',10)
             .attr('y',(inc/2+2)).attr('id',d=>{return d}) //.attr('id',(d)=>{return ('en0_'+d.matchId);})

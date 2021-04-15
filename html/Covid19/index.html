@@ -619,7 +619,7 @@
                 let info_zoom = get_item_date(d.properties.code);
                 //console.log(carteVR_ep[n]);
                 d3.select(this).style('opacity',0.2);
-                eetooltip.updateTitle("Information");
+/*                eetooltip.updateTitle("Information");
                 eetooltip.addDataSeparator();
                 eetooltip.addDataBlock("", d.properties.nom);
                 eetooltip.addDataBlock("code", d.properties.code);
@@ -635,7 +635,7 @@
                 //eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
                 eetooltip.updateFooter("Data by e-Coucou");
                 eetooltip.show();
-                update_liste(d.properties.code);
+  */              update_liste(d.properties.code);
         })
             .style("fill",d=>{
                 let n=dept.findIndex(k => k.dep===d.properties.code);
@@ -661,7 +661,7 @@
                 let info_zoom = get_item_date(d.properties.code);
                 //console.log(carteVR_ep[n]);
                 d3.select(this).style('opacity',0.2);
-                eetooltip.updateTitle("Information");
+/*                eetooltip.updateTitle("Information");
                 eetooltip.addDataSeparator();
                 eetooltip.addDataBlock("", d.properties.nom);
                 eetooltip.addDataBlock("code", d.properties.code);
@@ -677,7 +677,7 @@
                 //eetooltip.addDataBlock("Décédées",valFormat(dept[n].dc));
                 eetooltip.updateFooter("Data by e-Coucou");
                 eetooltip.show();
-                update_liste(d.properties.code);
+*/                update_liste(d.properties.code);
         })
             .style("fill",d=>{
                 let n=dept.findIndex(k => k.dep===d.properties.code);
@@ -688,7 +688,7 @@
     }
     function update_liste(dep) {
 //        console.log('info_zoom',data);
-        d3.selectAll('#info_liste').text((d,i)=>{let val =get_dep_item_date(dep,d.date)[d.item]; return isNaN(val)?val:valFormat(val);})
+        d3.selectAll('#info_liste').text((d,i)=>{let val =get_dep_item_date(dep,d.date)[d.item]; return isNaN(val)?val:valFormat(val);});
     }
     function aff_liste(liste_data){
         console.log('aff liste',liste_data);
