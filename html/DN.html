@@ -182,6 +182,9 @@ var chroma=15;
 	function updateCarte() {
 		if (round_end<1) {
 			d3.selectAll('#Nom_1_t').text(joueur[0][round_ind1].Nom);
+			for (i=1;i<=data_criteres.length;i++) { //console.log(joueur[j][round_ind1][data_criteres[i]]);
+					d3.selectAll('#c_0'+i).text(joueur[0][round_ind1][data_criteres[i]]);
+			}
 			switch (round_level) {
 				case 3 :
 					d3.selectAll('#Nom_2_t').text('???');
@@ -191,8 +194,11 @@ var chroma=15;
 					break
 				case 2 :
 					d3.selectAll('#Nom_2_t').text('???');
-					for (i=1;i<=data_criteres.length;i++) { //console.log(joueur[j][round_ind1][data_criteres[i]]);
+					for (i=1;i<data_criteres.length;i++) { //console.log(joueur[j][round_ind1][data_criteres[i]]);
 						d3.selectAll('#c_1'+i).text('?');
+						console.log(joueur[0][round_ind1][data_criteres[i]]);
+						let p =probabilite(joueur[1],data_criteres[i],Number(joueur[0][round_ind1][data_criteres[i]].replace(',','.')));
+						d3.selectAll('#c_0'+i).text(joueur[0][round_ind1][data_criteres[i]]+' / '+Math.round(p*100));
 					}
 					break;
 				case 1 :
@@ -208,9 +214,6 @@ var chroma=15;
 					}
 					break;
 				}
-			for (i=1;i<=data_criteres.length;i++) { //console.log(joueur[j][round_ind1][data_criteres[i]]);
-					d3.selectAll('#c_0'+i).text(joueur[0][round_ind1][data_criteres[i]]);
-			}
 			if (joueurID==1)
 			{
 					d3.selectAll('#Nom_2_t').text(joueur[1][round_ind2].Nom);
