@@ -14,7 +14,7 @@
     width:100%;
     height: 50px;
     z-index: 0;
-    background: #1e3F5E; /*#FE6F5E;/*#b0c4de; /*add8e6; /*f0f8FF;*/
+    background: hsl(120,40%,30%);/*#1e3F5E; /*#FE6F5E;/*#b0c4de; /*add8e6; /*f0f8FF;*/
   color: #fff;
   font-family: "helvetica neue", sans-serif;
 }
@@ -82,7 +82,7 @@
   float: left;
   margin-right: 0.8em;
   padding-top: .5em;
-    background: #1e3F5E; /*#FE6F5E;/*#b0c4de; /*add8e6; /*f0f8FF;*/
+    background: hsl(120,40%,30%); /*#1e3F5E; /*#FE6F5E;/*#b0c4de; /*add8e6; /*f0f8FF;*/
 }
 .rky footer aside:after {
   padding-left: .5em;
@@ -137,6 +137,10 @@ const svg = d3.select('#chart').append("svg")
     .attr("height", (height));
 aff_trame();
 
+var couleur = ['#F44336','#e91e63','#9c27b0','673ab7','#3f51b5','#2196f3','#03a9f4','#00bcd4','#009688','#4caf50','#8bc34a','#ffeb3b','#ffc107','#ff9800','#ff5722','#795548','#9e9e9e','#cddc39'];
+//var chromatique = ['#00FFFF','','#EE82EE','','#FF00FF','','#FFA500','','#FFFF00','','#008000',''];
+var chromatique = ['#ffff00','#ffcc00','#ff9900','#ff6600','#FF3300','#ff0000','#990000','#993300','#996600','#999900','#99cc00','#99ff00','#33ff00','#33cc00','#339900','#336600','#333300','#330000'];
+var chroma=15;
 // end Main
 //------------
 //
@@ -155,6 +159,8 @@ aff_trame();
     }
     function start()
     {	
+	   	visu_main(0);visu_main(1);
+	   	visu_level(0); visu_level(1);
     	reset();
     	console.log(data_criteres);
     	console.log(round_n,data_DN,joueur[0],joueur[1]);
@@ -212,22 +218,24 @@ aff_trame();
 						d3.selectAll('#c_1'+i).text(joueur[1][round_ind2][data_criteres[i]]);
 					}
 			}
+		} else {
+//			d3.selectAll('#JOUE').style('fill','hsl(120,0%,100%)');
 		}
 		if (joueurID==1) {
-	        d3.selectAll('#carteSEL1').style('fill',(e,j)=>{return (j===(carteID))?'#00B':'#FFF';});
+	        d3.selectAll('#carteSEL1').style('fill',(e,j)=>{return (j===(carteID))?"hsl(90,50%,50%":'#FFF';});
 	        d3.selectAll('#carteSEL').style('fill','#FFF');
 	    } else {
-	        d3.selectAll('#carteSEL').style('fill',(e,j)=>{return (j===(carteID))?'#00B':'#FFF';});
+	        d3.selectAll('#carteSEL').style('fill',(e,j)=>{return (j===(carteID))?'hsl(180,50%,50%':'#FFF';});
 	        d3.selectAll('#carteSEL1').style('fill','#FFF');
 	    }
-	    d3.selectAll('#main_0').style('fill',(d,i)=>{return (i<joueur[0].length)?'#00b':'#fff';});
-	    d3.selectAll('#main_1').style('fill',(d,i)=>{return (i<joueur[1].length)?'#00b':'#fff';});
-        d3.selectAll('#MiniP').style('fill',() => {return joueurID==0?'blue':'#888';});
-        d3.selectAll('#Ordinateur').style('fill',() => {return joueurID==1?'blue':'#888';});
+	    d3.selectAll('#main_0').style('fill',(d,i)=>{return (i<joueur[0].length)?"hsl("+(i*chroma)+",100%,50%)":'#fff';});
+	    d3.selectAll('#main_1').style('fill',(d,i)=>{return (i<joueur[1].length)?"hsl("+(chroma*i)+",100%,50%)":'#fff';});
+        d3.selectAll('#MiniP').style('fill',() => {return joueurID==0?'hsl(180,50%,50%)':'#888';});
+        d3.selectAll('#Ordinateur').style('fill',() => {return joueurID==1?'hsl(90,50%,50%':'#888';});
 		d3.selectAll('#Count_1_t').text(round_n1);
 		d3.selectAll('#Count_2_t').text(round_n2);
-		d3.selectAll('#level_0').style('fill',(d)=>{return d<=round_level?'#00b':'#FFF';});
-		d3.selectAll('#level_1').style('fill',(d)=>{return d<=round_computer?'#00b':'#FFF';});
+		d3.selectAll('#level_0').style('fill',(d,i)=>{return d<=round_level?'hsl(180,'+(40+15*i)+'%,50%)':'#FFF';});
+		d3.selectAll('#level_1').style('fill',(d,i)=>{return d<=round_computer?'hsl(90,'+(40+15*i)+'%,50%)':'#FFF';});
 //		console.log('Joueur 0',joueur[0][round_ind1]);
 //		console.log('Joueur 1',joueur[1][round_ind2]);
 	}
@@ -282,8 +290,8 @@ function aff_trame() {
 	aff_joueur(['MiniP','Ordinateur'],0.05,0.18,0.05*width);
 	aff_joueur(['Nom_1','Nom_2'],0.25,0.1,0.02*width);
 	aff_joueur(['Count_1','Count_2'],0.7,0.1,0.02*width);
-	bouton(['reset'],10,height*0.85,width*0.15,height*0.1);
-	bouton(['JOUE'],width*0.425,height*0.85,width*0.15,height*0.1);
+	bouton(['Reset'],width*0.05,height*0.85,width*0.15,height*0.1);
+	bouton(['JOUE'],width*0.4,height*0.85,width*0.2,height*0.1);
 	bouton(['Auto'],width*0.8,height*0.85,width*0.15,height*0.1);
 }
 function aff_joueur(data,y,dy,format) {
@@ -299,7 +307,7 @@ function aff_joueur(data,y,dy,format) {
                             d3.selectAll('#rect_refresh'+i).style('fill','#337')  });
 */
         svg_joueur.append('rect').attr('rx',2).attr('ry',2).attr('id',(d,i)=>{return d; })
-            .attr('width',(width*0.4)).attr('height',(dy*h_g)).style('fill', '#337'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+            .attr('width',(width*0.4)).attr('height',(dy*h_g)).style('fill', (d,i)=> {return 'hsl('+(180-i*90)+',50%,50%)';}); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
         svg_joueur.append('text').attr('x',(0.2*width)) //.attr('y',10)
             .attr('y',(dy/1.95*h_g)).attr('id',(d)=>{return (d+'_t');})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
@@ -321,19 +329,18 @@ function reset() {
 	d3.selectAll('#MiniP').style('fill','#337');
 	d3.selectAll('#Ordinateur').style('fill','#337');
 	d3.selectAll('#laCarte').remove();
-    
+
     data_criteres = data_DN.columns; round_critere=0;
 	aff_carte(data_criteres.slice(1),0,1);
    	aff_carte(data_criteres.slice(1),1,1);
-   	visu_main(0);visu_main(1);
-   	visu_level(0); visu_level(1);
     // on distribue les cartes aléatoirement
     melange(data_DN);
     joueur = distribution(data_DN);
     round_ind1=0; round_ind2=0;round_n=0;round_end=0;round_n1=0; round_n2 = 0;
     // initialisation à déplacer ...
-    round_level = 2; joueurID=0; //toujours Minip qui commence
-    round_computer=2; // 0: poids, 1: aléatoire, 2: probabilité, 3: probabilité%main 4: GAGNE 
+    round_level = 0;
+	joueurID=0; //toujours Minip qui commence
+//    round_computer=0; // 0: poids, 1: aléatoire, 2: probabilité, 3: probabilité%main 4: GAGNE 
     updateCarte();
 }
 function auto(){
@@ -345,10 +352,12 @@ function auto(){
 }
 function win() {
 	if (joueur[0].length>joueur[1].length) {
-        d3.selectAll('#MiniP').style('fill','green');
+        d3.selectAll('#MiniP').style('fill','hsl(180,100%,50%)');
+        d3.selectAll('#Ordinateur').style('fill','hsl(90,10%,80%)');
 //    	console.log('joueur 1 Vainqueur');
     	} else {
-        d3.selectAll('#Ordinateur').style('fill','green');
+        d3.selectAll('#Ordinateur').style('fill','hsl(90,100%,50%)');
+        d3.selectAll('#MiniP').style('fill','hsl(180,10%,80%)');
 //    	console.log('joueur 2 Vainqueur');
     }
 }
@@ -356,16 +365,16 @@ function bouton(data,x,y,l,h) {
 	//on affiche
 //	console.log(width,height);
 	let format = h*0.3;
-    let svg_btn = svg.append('g').selectAll('g').data(data).enter().append('g')
+    let svg_btn = svg.append('g').selectAll('g').data(data).enter().append('g').attr('id',data[0])
                         .attr('transform', (d,i)=> {return 'translate('+(x)+','+(y)+')';})
                         .on('click',refresh)
                         .on('mouseover',(d,i)=> {
-                            d3.selectAll('#'+d).style('fill','red')  })
+                            d3.selectAll('#'+d).style('fill','hsl(120,20%,30%)')  })
                         .on('mouseout',(d,i)=> {
-                            d3.selectAll('#'+d).style('fill','#337')  });
+                            d3.selectAll('#'+d).style('fill','hsl(120,50%,50%)')  });
 
         svg_btn.append('rect').attr('rx',4).attr('ry',4).attr('id',(d,i)=>{return d; })
-            .attr('width',(l)).attr('height',(h)).style('fill', '#337'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+            .attr('width',(l)).attr('height',(h)).style('fill', 'hsl(120,70%,50%)'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
         svg_btn.append('text').attr('x',(l/2)) //.attr('y',10)
             .attr('y',(h/1.95)).attr('id',(d)=>{return (d+'_t');})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
@@ -382,7 +391,7 @@ function bouton(data,x,y,l,h) {
         let main = svg.append('g').selectAll('g').data(data_DN).enter().append('g').attr('id','lamain_'+qui)
                         .attr('transform',(d,i)=> {return 'translate('+(x+(i*0.008*width))+','+(y)+')';});
         main.append('rect').attr('id','main_'+qui)//.attr('x',(d,i)=>i*3)//.attr('rx',1).attr('ry',1) //.attr('x',-6)
-            .attr('width',(0.006*width)).attr('height',(0.03*height)).style('fill', '#fff').style('stroke','#BBB');
+            .attr('width',(0.006*width)).attr('height',(0.03*height)).style('stroke','#BBB');
 	}
 
 //----------
@@ -394,8 +403,8 @@ function bouton(data,x,y,l,h) {
         level.append('rect').attr('id','level_'+qui)//.attr('x',(d,i)=>i*3)//.attr('rx',1).attr('ry',1) //.attr('x',-6)
             .attr('width',(0.03*width)).attr('height',(0.037*height)).style('fill', '#fff').style('stroke','#BBB')
             .on('click',select_level)
-  			.on('mouseover',(d,i)=> { d3.selectAll('#level_'+qui).style('fill',(e,j)=>{return e===d?'#a00':'DDD';})  })
-	        .on('mouseout',(d)=> { d3.selectAll('#level_'+qui).style('fill',(e,j)=>{return (e<=(qui==0?round_level:round_computer))?'#00B':'#FFF';})  });
+  			.on('mouseover',(d,i)=> { d3.selectAll('#level_'+qui).style('fill',(e,j)=>{return (e==d)?"#hsl(180,"+(40+15*j)+"%,50%)":'DDD';})  })
+	        .on('mouseout',(d)=> { d3.selectAll('#level_'+qui).style('fill',(e,j)=>{return (e<=(qui==0?round_level:round_computer))?"#hsl(180,"+(40+15*j)+"%,50%)":'#FFF';})  });
 	}
 	function select_level(d,i,f) {
 		console.log(d,i,f[0].id);
@@ -423,14 +432,14 @@ function bouton(data,x,y,l,h) {
                         .attr('transform',(d,i)=> {return 'translate('+(x)+','+(y*i+0.4*height)+')';})
                         .on('click',select_Carte)
                         .on('mouseover',(d,i)=> {
-                            d3.selectAll('#carteSEL').style('fill',(e,j)=>{return j===i?'#a00':'DDD';})  })
+                            d3.selectAll('#carteSEL').style('fill',(e,j)=>{return j===i?'hsl(180,100%,60%)':'DDD';})  })
                         .on('mouseout',(d)=> {
-                            d3.selectAll('#carteSEL').style('fill',(e,j)=>{return (j===(carteID))?'#00B':'#FFF';})  });
+                            d3.selectAll('#carteSEL').style('fill',(e,j)=>{return (j===(carteID))?'hsl(180,50%,50%)':'#FFF';})  });
 
         carte.append('rect').attr('id',(qui==0)?'carteSEL':'carteSEL1').attr('rx',1).attr('ry',1) //.attr('x',-6)
-            .attr('width',0.02*width).attr('height',(y-1)).style('fill', (d,i)=>{return (i===(carteID))?'#00B':'#FFF' ;}).style('stroke','#bbb');
+            .attr('width',0.02*width).attr('height',(y-1)).style('fill', (d,i)=>{return (i===(carteID))?'#b00':'#b00' ;}).style('stroke','#bbb');
         carte.append('rect').attr('rx',2).attr('ry',2).style('x',0.02*width+2)
-            .attr('width',0.26*width).attr('height',(y-1)).style('fill', (d,i)=>{return (i%2)?'#BBB':'#DDD' ;}); //'#0a88ff');
+            .attr('width',0.26*width).attr('height',(y-1)).style('fill', (d,i)=>{return 'hsl('+(180-qui*90)+','+((i%2)*30+30)+'%,50%)' ;}); //'#0a88ff');
         carte.append('text').attr('x',0.15*width+4) //.attr('y',10)
             .attr('y',y/1.9) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
@@ -439,7 +448,7 @@ function bouton(data,x,y,l,h) {
             .text(d=>d).style('font-size',font);
 //            .text((d,i)=>(data_criteres[i+1])).style('font-size',font);
         carte.append('rect').attr('rx',2).attr('ry',2).attr('x', 0.28*width+4)
-            .attr('width',0.115*width).attr('height',(y-1)).style('fill', (d,i)=>{return (i%2)?'#BBB':'#DDD' ;}); //'#0a88ff');
+            .attr('width',0.115*width).attr('height',(y-1)).style('fill', (d,i)=>{return 'hsl('+(180-qui*90)+','+((i%2)*30+30)+'%,50%)' ;}); //'#0a88ff');
         carte.append('text').attr('x',0.34*width+4) //.attr('y',10)
             .attr('y',y/1.9).attr('id',(d,i)=>{return ('c_'+qui+(i+1));})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
@@ -462,12 +471,14 @@ function select_Carte(d,i) {
 	carteID=i;
 }
 function joue() {
-	round(joueurID);
+	if (round_end<1) round(joueurID);
 }
 function computer_play() {
 	let chance = []; //console.log(joueur[1][round_ind2]);
 	switch (round_computer) {
-		case 0 : carteID=Math.floor(Math.random()*5+1); break;
+		case 0 : carteID=Math.floor(Math.random()*5); 
+				console.log(carteID);
+				break;
 		case 1 : 
 			for (let i=1; i<data_criteres.length;i++) { //console.log(data_criteres[i]);
 				chance.push(probabilite(data_DN,data_criteres[i],Number(joueur[1][round_ind2][data_criteres[i]].replace(',','.'))));
