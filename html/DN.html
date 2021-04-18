@@ -135,12 +135,21 @@ const svg = d3.select('#chart').append("svg")
     .attr("id", "svg")
    	.attr("width", (width))
     .attr("height", (height));
-aff_trame();
-
+/*
 var couleur = ['#F44336','#e91e63','#9c27b0','673ab7','#3f51b5','#2196f3','#03a9f4','#00bcd4','#009688','#4caf50','#8bc34a','#ffeb3b','#ffc107','#ff9800','#ff5722','#795548','#9e9e9e','#cddc39'];
 //var chromatique = ['#00FFFF','','#EE82EE','','#FF00FF','','#FFA500','','#FFFF00','','#008000',''];
 var chromatique = ['#ffff00','#ffcc00','#ff9900','#ff6600','#FF3300','#ff0000','#990000','#993300','#996600','#999900','#99cc00','#99ff00','#33ff00','#33cc00','#339900','#336600','#333300','#330000'];
-var chroma=15;
+*/
+var chroma_inc=7, chroma_init=180;
+function chroma_value(init) {
+	switch (init) {
+		case 0 : ret = chroma_init; break;
+		case 1 : ret = (360+chroma_init-90*init)%360;
+		case 2 : ret = (360+chroma_init - 45)%360;
+	}
+	return ret;
+}
+aff_trame();
 // end Main
 //------------
 //
@@ -225,20 +234,20 @@ var chroma=15;
 //			d3.selectAll('#JOUE').style('fill','hsl(120,0%,100%)');
 		}
 		if (joueurID==1) {
-	        d3.selectAll('#carteSEL1').style('fill',(e,j)=>{return (j===(carteID))?"hsl(90,50%,50%":'#FFF';});
+	        d3.selectAll('#carteSEL1').style('fill',(e,j)=>{return (j===(carteID))?"hsl("+(chroma_value(1))+",50%,50%":'#FFF';});
 	        d3.selectAll('#carteSEL').style('fill','#FFF');
 	    } else {
-	        d3.selectAll('#carteSEL').style('fill',(e,j)=>{return (j===(carteID))?'hsl(180,50%,50%':'#FFF';});
+	        d3.selectAll('#carteSEL').style('fill',(e,j)=>{return (j===(carteID))?'hsl('+(chroma_value(0))+',50%,50%':'#FFF';});
 	        d3.selectAll('#carteSEL1').style('fill','#FFF');
 	    }
-	    d3.selectAll('#main_0').style('fill',(d,i)=>{return (i<joueur[0].length)?"hsl("+(i*chroma)+",100%,50%)":'#fff';});
-	    d3.selectAll('#main_1').style('fill',(d,i)=>{return (i<joueur[1].length)?"hsl("+(chroma*i)+",100%,50%)":'#fff';});
-        d3.selectAll('#MiniP').style('fill',() => {return joueurID==0?'hsl(180,50%,50%)':'#888';});
-        d3.selectAll('#Ordinateur').style('fill',() => {return joueurID==1?'hsl(90,50%,50%':'#888';});
+	    d3.selectAll('#main_0').style('fill',(d,i)=>{return (i<joueur[0].length)?"hsl("+(i*chroma_inc)+",100%,50%)":'#fff';});
+	    d3.selectAll('#main_1').style('fill',(d,i)=>{return (i<joueur[1].length)?"hsl("+(chroma_inc*i)+",100%,50%)":'#fff';});
+        d3.selectAll('#MiniP').style('fill',() => {return joueurID==0?'hsl('+(chroma_value(0))+',50%,50%)':'#888';});
+        d3.selectAll('#Ordinateur').style('fill',() => {return joueurID==1?'hsl('+chroma_value(1)+',50%,50%':'#888';});
 		d3.selectAll('#Count_1_t').text(round_n1);
 		d3.selectAll('#Count_2_t').text(round_n2);
-		d3.selectAll('#level_0').style('fill',(d,i)=>{return d<=round_level?'hsl(180,'+(40+15*i)+'%,50%)':'#FFF';});
-		d3.selectAll('#level_1').style('fill',(d,i)=>{return d<=round_computer?'hsl(90,'+(40+15*i)+'%,50%)':'#FFF';});
+		d3.selectAll('#level_0').style('fill',(d,i)=>{return d<=round_level?'hsl('+(chroma_value(0))+','+(40+15*i)+'%,50%)':'#FFF';});
+		d3.selectAll('#level_1').style('fill',(d,i)=>{return d<=round_computer?'hsl('+chroma_value(1)+','+(40+15*i)+'%,50%)':'#FFF';});
 //		console.log('Joueur 0',joueur[0][round_ind1]);
 //		console.log('Joueur 1',joueur[1][round_ind2]);
 	}
@@ -310,7 +319,7 @@ function aff_joueur(data,y,dy,format) {
                             d3.selectAll('#rect_refresh'+i).style('fill','#337')  });
 */
         svg_joueur.append('rect').attr('rx',2).attr('ry',2).attr('id',(d,i)=>{return d; })
-            .attr('width',(width*0.4)).attr('height',(dy*h_g)).style('fill', (d,i)=> {return 'hsl('+(180-i*90)+',50%,50%)';}); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+            .attr('width',(width*0.4)).attr('height',(dy*h_g)).style('fill', (d,i)=> {return 'hsl('+(chroma_value(i))+',50%,50%)';}); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
         svg_joueur.append('text').attr('x',(0.2*width)) //.attr('y',10)
             .attr('y',(dy/1.95*h_g)).attr('id',(d)=>{return (d+'_t');})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
@@ -323,7 +332,7 @@ function aff_joueur(data,y,dy,format) {
 function refresh(d,i,n) {
 //	console.log(d);
 	switch (d) {
-		case 'reset' : reset(); break;
+		case 'Reset' : reset(); break;
 		case 'JOUE' : joue(); break;
 		case 'Auto' : auto(); break;
 	}
@@ -332,7 +341,7 @@ function reset() {
 	d3.selectAll('#MiniP').style('fill','#337');
 	d3.selectAll('#Ordinateur').style('fill','#337');
 	d3.selectAll('#laCarte').remove();
-
+console.log('reset');
     data_criteres = data_DN.columns; round_critere=0;
 	aff_carte(data_criteres.slice(1),0,1);
    	aff_carte(data_criteres.slice(1),1,1);
@@ -341,7 +350,7 @@ function reset() {
     joueur = distribution(data_DN);
     round_ind1=0; round_ind2=0;round_n=0;round_end=0;round_n1=0; round_n2 = 0;
     // initialisation à déplacer ...
-    round_level = 0;
+  //  round_level = 0;
 	joueurID=0; //toujours Minip qui commence
 //    round_computer=0; // 0: poids, 1: aléatoire, 2: probabilité, 3: probabilité%main 4: GAGNE 
     updateCarte();
@@ -355,12 +364,12 @@ function auto(){
 }
 function win() {
 	if (joueur[0].length>joueur[1].length) {
-        d3.selectAll('#MiniP').style('fill','hsl(180,100%,50%)');
-        d3.selectAll('#Ordinateur').style('fill','hsl(90,10%,80%)');
+        d3.selectAll('#MiniP').style('fill','hsl('+(chroma_value(0))+',100%,50%)');
+        d3.selectAll('#Ordinateur').style('fill','hsl('+(chroma_value(1))+',10%,80%)');
 //    	console.log('joueur 1 Vainqueur');
     	} else {
-        d3.selectAll('#Ordinateur').style('fill','hsl(90,100%,50%)');
-        d3.selectAll('#MiniP').style('fill','hsl(180,10%,80%)');
+        d3.selectAll('#Ordinateur').style('fill','hsl('+(chroma_value(1))+',100%,50%)');
+        d3.selectAll('#MiniP').style('fill','hsl('+(chroma_value(0))+',10%,80%)');
 //    	console.log('joueur 2 Vainqueur');
     }
 }
@@ -368,16 +377,18 @@ function bouton(data,x,y,l,h) {
 	//on affiche
 //	console.log(width,height);
 	let format = h*0.3;
-    let svg_btn = svg.append('g').selectAll('g').data(data).enter().append('g').attr('id',data[0])
-                        .attr('transform', (d,i)=> {return 'translate('+(x)+','+(y)+')';})
+    let svg_btn = svg.append('g').selectAll('g').data(data).enter().append('g').attr('id',data[0]+'g')
+                        .attr('transform','translate('+(x)+','+(y)+')')
                         .on('click',refresh)
                         .on('mouseover',(d,i)=> {
-                            d3.selectAll('#'+d).style('fill','hsl(120,20%,30%)')  })
+                            d3.selectAll('#'+d).style('fill','hsl('+chroma_value(2)+',20%,30%)');
+                            d3.selectAll('#'+d+'g').attr('transform',()=> { return 'translate('+(x*0.975)+','+(y*1)+') scale(1.1)';});  })
                         .on('mouseout',(d,i)=> {
-                            d3.selectAll('#'+d).style('fill','hsl(120,50%,50%)')  });
+                            d3.selectAll('#'+d).style('fill','hsl('+chroma_value(2)+',40%,50%)');
+                            d3.selectAll('#'+d+'g').attr('transform',()=> { return 'translate('+(x)+','+(y)+') scale(1.0)';});  });
 
         svg_btn.append('rect').attr('rx',4).attr('ry',4).attr('id',(d,i)=>{return d; })
-            .attr('width',(l)).attr('height',(h)).style('fill', 'hsl(120,70%,50%)'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+            .attr('width',(l)).attr('height',(h)).style('fill', "hsl("+(chroma_value(2))+",40%,50%)"); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
         svg_btn.append('text').attr('x',(l/2)) //.attr('y',10)
             .attr('y',(h/1.95)).attr('id',(d)=>{return (d+'_t');})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
@@ -406,8 +417,8 @@ function bouton(data,x,y,l,h) {
         level.append('rect').attr('id','level_'+qui)//.attr('x',(d,i)=>i*3)//.attr('rx',1).attr('ry',1) //.attr('x',-6)
             .attr('width',(0.03*width)).attr('height',(0.037*height)).style('fill', '#fff').style('stroke','#BBB')
             .on('click',select_level)
-  			.on('mouseover',(d,i)=> { d3.selectAll('#level_'+qui).style('fill',(e,j)=>{return (e==d)?"#hsl(180,"+(40+15*j)+"%,50%)":'DDD';})  })
-	        .on('mouseout',(d)=> { d3.selectAll('#level_'+qui).style('fill',(e,j)=>{return (e<=(qui==0?round_level:round_computer))?"#hsl(180,"+(40+15*j)+"%,50%)":'#FFF';})  });
+  			.on('mouseover',(d,i)=> { d3.selectAll('#level_'+qui).style('fill',(e,j)=>{return (e==d)?"#hsl("+(chroma_value(0))+","+(40+15*j)+"%,50%)":'DDD';})  })
+	        .on('mouseout',(d)=> { d3.selectAll('#level_'+qui).style('fill',(e,j)=>{return (e<=(qui==0?round_level:round_computer))?"#hsl("+chroma_value(0)+","+(40+15*j)+"%,50%)":'#FFF';})  });
 	}
 	function select_level(d,i,f) {
 		console.log(d,i,f[0].id);
@@ -435,14 +446,14 @@ function bouton(data,x,y,l,h) {
                         .attr('transform',(d,i)=> {return 'translate('+(x)+','+(y*i+0.4*height)+')';})
                         .on('click',select_Carte)
                         .on('mouseover',(d,i)=> {
-                            d3.selectAll('#carteSEL').style('fill',(e,j)=>{return j===i?'hsl(180,100%,60%)':'DDD';})  })
+                            d3.selectAll('#carteSEL').style('fill',(e,j)=>{return j===i?'hsl('+chroma_value(0)+',100%,60%)':'DDD';})  })
                         .on('mouseout',(d)=> {
-                            d3.selectAll('#carteSEL').style('fill',(e,j)=>{return (j===(carteID))?'hsl(180,50%,50%)':'#FFF';})  });
+                            d3.selectAll('#carteSEL').style('fill',(e,j)=>{return (j===(carteID))?'hsl('+chroma_value(0)+',50%,50%)':'#FFF';})  });
 
         carte.append('rect').attr('id',(qui==0)?'carteSEL':'carteSEL1').attr('rx',1).attr('ry',1) //.attr('x',-6)
             .attr('width',0.02*width).attr('height',(y-1)).style('fill', (d,i)=>{return (i===(carteID))?'#b00':'#b00' ;}).style('stroke','#bbb');
         carte.append('rect').attr('rx',2).attr('ry',2).style('x',0.02*width+2)
-            .attr('width',0.26*width).attr('height',(y-1)).style('fill', (d,i)=>{return 'hsl('+(180-qui*90)+','+((i%2)*30+30)+'%,50%)' ;}); //'#0a88ff');
+            .attr('width',0.26*width).attr('height',(y-1)).style('fill', (d,i)=>{return 'hsl('+chroma_value(qui)+','+((i%2)*30+30)+'%,50%)' ;}); //'#0a88ff');
         carte.append('text').attr('x',0.15*width+4) //.attr('y',10)
             .attr('y',y/1.9) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
@@ -451,7 +462,7 @@ function bouton(data,x,y,l,h) {
             .text(d=>d).style('font-size',font);
 //            .text((d,i)=>(data_criteres[i+1])).style('font-size',font);
         carte.append('rect').attr('rx',2).attr('ry',2).attr('x', 0.28*width+4)
-            .attr('width',0.115*width).attr('height',(y-1)).style('fill', (d,i)=>{return 'hsl('+(180-qui*90)+','+((i%2)*30+30)+'%,50%)' ;}); //'#0a88ff');
+            .attr('width',0.115*width).attr('height',(y-1)).style('fill', (d,i)=>{return 'hsl('+chroma_value(qui)+','+((i%2)*30+30)+'%,50%)' ;}); //'#0a88ff');
         carte.append('text').attr('x',0.34*width+4) //.attr('y',10)
             .attr('y',y/1.9).attr('id',(d,i)=>{return ('c_'+qui+(i+1));})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})

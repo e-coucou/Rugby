@@ -157,7 +157,7 @@ input:focus {
     var url = '';
     let listeT1 = ['E-T15021','E-T15022','E-T15023','E-T15024','E-T15025','E-T15026','E-T15027','E-T15028','E-T15029','E-T15030','E-T15031','E-T15032']
     let listeT2 = ['E-T15041','E-T15042','E-T15043','E-T15044','E-T15045','E-T15046','E-T15047','E-T15048','E-T15049','E-T15050','E-T15051','E-T15052']
-    let liste1 = ['E-T15099','E-T15004','E-T15002','E-T15005','E-T15012','E-T15001','E-F15154','E-PS15007','E-PS15011','E-PS15505','E-PS15605'];
+    let liste1 = ['E-T15099','E-TS19801','E-T19908','E-LX19901','E-TX19902','E-AO19993','E-F15154','E-PS15007','E-PS15011','E-PS15505','E-PS15605'];
     let liste2 = ['E-PS15007','E-T15006','E-TC15002','E-TC15005','E-TY15004','E-T15401'];
     let liste3 = ['E-F15154','E-FC15167','E-P15104','E-P16151','E-PO16151','E-T15106','E-TC15103'];
 	// Chart dimensions.
@@ -293,12 +293,15 @@ function credClick() {
 function get_connexion() {
 	console.log('connexion',code);
 	clearSVG();
-	aff_valeur();
+/*	aff_valeur();
 	aff_liste_T(listeT1,0.01*width);
 	aff_liste_T(listeT2,0.81*width);
 	aff_liste_T(liste1,0.20*width);
 	aff_liste_T(liste2,0.39*width);
 	aff_liste_T(liste3,0.6*width);
+*/	
+	shape_cuve(100,100,5,'R19900','M 0,5 Q 8,0 16,5 L 16,25 Q 8,30 0,25 Z',0)
+	shape_cuve(200,300,5,'R19900','M 0,5 Q 8,0 16,5 L 16,25 Q 8,30 0,25 Z',90)
 	getValeur();
 }
 function refresh() {
@@ -307,6 +310,12 @@ function refresh() {
 }
 //-----------------------
 //
+function shape_cuve (x,y,ech,id,forme,rot) {
+	let shape= svg.append('g').selectAll('g').data([0]).enter().append('g')
+					.attr('transform','translate('+x+','+y+') scale('+ech+') rotate('+rot+')');
+		shape.append('path').attr('d', forme).style('stroke-width',1/ech).style('stroke','#666').style('fill','#EEE');
+		return;
+}
 function aff_valeur() {
 	//on affiche
 //	console.log(width,height);
