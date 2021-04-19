@@ -175,15 +175,16 @@ aff_trame();
     	console.log(round_n,data_DN,joueur[0],joueur[1]);
 	}
 	function round(player) { 
-		switch (player) {
-			case 0 : round_critere=carteID+1; break;
-			case 1 : round_critere=carteID+1; break;
+		console.log('round',player,round_critere,carteID);
+		if (player==0) {
+			round_critere=carteID+1;
+//			case 1 : round_critere=carteID+1; break;
 			}
 		round_n += 1;
     	joueurID = gagne(data_criteres[round_critere]);
 //    	console.log(result,round_n,data_criteres[round_critere],joueur[0][round_ind1][data_criteres[round_critere]],joueur[1][round_ind2][data_criteres[round_critere]]);
     	echange(joueurID);
-		if (joueurID==1) computer_play();
+		if (joueurID==1) round_critere = computer_play();
     	updateCarte();
 //    	console.log('vanqueur)', joueurID);
 //    	if (joueurID==1) round(1);
@@ -290,7 +291,7 @@ aff_trame();
     	console.log(critere,joueur[0][round_ind1][critere],joueur[1][round_ind2][critere]);
 		let v0 = joueur[0][round_ind1][critere].replace(',','.'); //console.log('v0',v0,Number(v0));
 		let v1 = joueur[1][round_ind2][critere].replace(',','.'); //console.log('v1',v1,Number(v1));
-		if (Number(v0) > Number(v1))
+		if (Number(v0) >= Number(v1))
 			{ 	round_n1 +=1 ;
 				return 0; } else 
 			{ 	round_n2 +=1 ;
@@ -431,16 +432,10 @@ function bouton(data,x,y,l,h) {
 
 // liste des caratéristiques
     function aff_carte(data,qui,prive){
-/*    	let data=[];
-    	for(let c=1;c<data_criteres.length;c++) {
-    		data.push(data_source[data_criteres[c]]);
-    	}
- */
 //  		console.log('La carte',data);
 //  		console.log(data_criteres);
         let x= ((qui*0.5)+0.05)*width , y= 0.06*height;
         let font = 0.03*height;
-//        console.log(x,y,font);
 
         let carte = svg.append('g').selectAll('g').data(data).enter().append('g').attr('id','laCarte')
                         .attr('transform',(d,i)=> {return 'translate('+(x)+','+(y*i+0.4*height)+')';})
@@ -470,15 +465,7 @@ function bouton(data,x,y,l,h) {
             .style('font-weight', 'bold').style('dominant-baseline','middle')
 //            .text(d=>{return prive?d:'-'}).style('font-size',font);
             .text('?').style('font-size',font);
-/*        liste.append('rect').attr('rx',2).attr('ry',2).attr('x','16.')
-            .attr('width','12vw').attr('height',14).style('fill', (d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
-        liste.append('text').attr('x','22.4vw') //.attr('y',10)
-            .attr('y',7).attr('id','info_liste')
-//            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
-            .style('text-anchor', 'middle')
-            .style('font-weight', 'bold').style('dominant-baseline','middle')
-            .text('val ...').style('font-size','0.9vw');
- */      }
+    }
 
 //-----
 function select_Carte(d,i) {
@@ -507,6 +494,7 @@ function computer_play() {
 			break
 	}
 	console.log('Computer PLay',chance, carteID, data_criteres[carteID+1]);
+	return (carteID+1);
 }
 //--------------------
 // fonction statistique ....

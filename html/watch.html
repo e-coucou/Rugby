@@ -157,7 +157,7 @@ input:focus {
     var url = '';
     let listeT1 = ['E-T15021','E-T15022','E-T15023','E-T15024','E-T15025','E-T15026','E-T15027','E-T15028','E-T15029','E-T15030','E-T15031','E-T15032']
     let listeT2 = ['E-T15041','E-T15042','E-T15043','E-T15044','E-T15045','E-T15046','E-T15047','E-T15048','E-T15049','E-T15050','E-T15051','E-T15052']
-    let liste1 = ['E-T15099','E-TS19801','E-T19908','E-LX19901','E-TX19902','E-AO19993','E-F15154','E-PS15007','E-PS15011','E-PS15505','E-PS15605'];
+    let liste1 = ['E-T15099','E-TS19801','E-T19908','E-LX19901','E-TX19902','E-AO19991','E-F15154','E-PS15007','E-PS15011','E-PS15505','E-PS15605','E-AO19992','E-AO19993','E-AO19994'];
     let liste2 = ['E-PS15007','E-T15006','E-TC15002','E-TC15005','E-TY15004','E-T15401'];
     let liste3 = ['E-F15154','E-FC15167','E-P15104','E-P16151','E-PO16151','E-T15106','E-TC15103'];
 	// Chart dimensions.
@@ -219,6 +219,7 @@ function getDashData(urldata,index,id) {
             d3.selectAll(id).text(valFormat(value)+' '+data[0].unit);
             d3.selectAll(id+'_c').style('fill','#0f0');
             d3.selectAll('#date').text('| '+i_c(data[0].values[0].timestamp));
+            update_level(id,value,true);
 //            dispatch.call('dashboard');
         })
     .catch(err => {
@@ -230,10 +231,10 @@ function getDashData(urldata,index,id) {
       console.log(err);
     })   
 }
-	let valFormat = (a) => { 
+let valFormat = (a) => { 
         let r = (a>1000) ? Math.round(a) : ( (a>10)? Math.round(a*10.0)/10 : Math.round(a*100.0)/100);
         return String(r).replace(/(.)(?=(\d{3})+$)/g,'$1 ');
-    }
+}
 var format = d3.timeFormat("%H:%M:%S");
     function i_c(d) { 
     	return format( new Date(d));
@@ -300,8 +301,16 @@ function get_connexion() {
 	aff_liste_T(liste2,0.39*width);
 	aff_liste_T(liste3,0.6*width);
 */	
-	shape_cuve(100,100,5,'R19900','M 0,5 Q 8,0 16,5 L 16,25 Q 8,30 0,25 Z',0)
-	shape_cuve(200,300,5,'R19900','M 0,5 Q 8,0 16,5 L 16,25 Q 8,30 0,25 Z',90)
+	shape_cuve(100,100,7,'R19900','M 0,5 Q 8,0 16,5 L 16,25 Q 8,30 0,25 Z',0)
+	shape_cuve(400,300,9,'R19900','M 5,0 L 35,0 Q 40,8 35,16 L 5,16 Q 0,8 5,0 Z',0)
+	shape_level(550,300,9,14,4,'E-LX19901',50,false);
+	shape_temp(450,330,5,4,7,'E-T19908',50,false);
+	shape_temp(450,360,5,4,7,'E-TS19801',50,false);
+	shape_temp(450,390,5,4,7,'E-TX19902',50,false);
+	shape_temp(750,200,5,4,7,'E-AO19993',50,false);
+	shape_temp(750,230,5,4,7,'E-AO19994',50,false);
+	shape_temp(750,260,5,4,7,'E-AO19991',50,false);
+	shape_temp(750,290,5,4,7,'E-AO19992',50,false);
 	getValeur();
 }
 function refresh() {
@@ -315,6 +324,33 @@ function shape_cuve (x,y,ech,id,forme,rot) {
 					.attr('transform','translate('+x+','+y+') scale('+ech+') rotate('+rot+')');
 		shape.append('path').attr('d', forme).style('stroke-width',1/ech).style('stroke','#666').style('fill','#EEE');
 		return;
+}
+function shape_level (x,y,ech,h,l,id,val,status) {
+	let level = svg.append('g').selectAll('g').data([0]).enter().append('g')
+					.attr('transform','translate('+x+','+y+') scale('+ech+')').raise();
+		level.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',1).style('stroke-width',1/ech).style('stroke','#666').style('fill','#fff');
+		level.append('rect').attr('width',(l*0.8)).attr('x',1.4).attr('y',(h*(100-val)/100)+1).attr('height',(h*val/100))
+			.attr('id',id+'_val')
+			.style('stroke-width',1/ech).style('stroke','#666').style('fill',status?'#00b':'#ccc');
+		level.append('text').text(val).attr('id',id+'_txt')
+			.attr('x',(0.7*l)).attr('y',(0.5*h))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',2)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+		return;
+}
+function shape_temp (x,y,ech,h,l,id,val,status) {
+	let temp = svg.append('g').selectAll('g').data([0]).enter().append('g')
+					.attr('transform','translate('+x+','+y+') scale('+ech+')').raise();
+		temp.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',1).style('stroke-width',1/ech).style('stroke','#666').style('fill','#fff');
+		temp.append('text').text(val).attr('id',id+'_txt')
+			.attr('x',(0.6*l)).attr('y',(0.7*h))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',2)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+		return;
+}
+function update_level(id,val,status){
+	d3.selectAll(id+'_val').attr('y',(14*(100-val)/100)+1).attr('height',(14*val/100)).style('fill',status?'#0e0':'black');
+	d3.selectAll(id+'_txt').text(valFormat(val));
 }
 function aff_valeur() {
 	//on affiche
