@@ -235,6 +235,7 @@ aff_trame();
 //			d3.selectAll('#JOUE').style('fill','hsl(120,0%,100%)');
 		}
 		if (joueurID==1) {
+//ajout ici
 	        d3.selectAll('#carteSEL1').style('fill',(e,j)=>{return (j===(carteID))?"hsl("+(chroma_value(1))+",50%,50%":'#FFF';});
 	        d3.selectAll('#carteSEL').style('fill','#FFF');
 	    } else {
@@ -311,7 +312,7 @@ function aff_joueur(data,y,dy,format) {
 	//on affiche
 //	console.log(width,height);
 	let h_g= height-50-20;
-    let svg_joueur = svg.append('g').selectAll('g').data(data).enter().append('g')
+    let svg_joueur = svg.append('g').selectAll('g').data(data).enter().append('g').attr('id',d=>{return d+'_g';})
                         .attr('transform', (d,i)=> {return 'translate('+((0.05+i*0.5)*width)+','+(y*h_g+50)+')';});
 /*                        .on('click',refresh)
                         .on('mouseover',(d,i)=> {
