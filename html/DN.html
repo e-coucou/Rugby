@@ -244,8 +244,8 @@ aff_trame();
 	    }
 	    d3.selectAll('#main_0').style('fill',(d,i)=>{return (i<joueur[0].length)?"hsl("+(i*chroma_inc)+",100%,50%)":'#fff';});
 	    d3.selectAll('#main_1').style('fill',(d,i)=>{return (i<joueur[1].length)?"hsl("+(chroma_inc*i)+",100%,50%)":'#fff';});
-        d3.selectAll('#MiniP').style('fill',() => {return joueurID==0?'hsl('+(chroma_value(0))+',50%,50%)':'#888';});
-        d3.selectAll('#Ordinateur').style('fill',() => {return joueurID==1?'hsl('+chroma_value(1)+',50%,50%':'#888';});
+        d3.selectAll('#MiniP').transition().duration(2000).style('fill',(d) => {return joueurID===0?'hsl('+(chroma_value(0))+',50%,50%)':'#888';});
+        d3.selectAll('#Ordinateur').style('fill',(d) => {return joueurID===1?'hsl('+chroma_value(1)+',50%,50%':'#888';});
 		d3.selectAll('#Count_1_t').text(round_n1);
 		d3.selectAll('#Count_2_t').text(round_n2);
 		d3.selectAll('#level_0').style('fill',(d,i)=>{return d<=round_level?'hsl('+(chroma_value(0))+','+(40+15*i)+'%,50%)':'#FFF';});
@@ -343,7 +343,7 @@ function reset() {
 	d3.selectAll('#MiniP').style('fill','#337');
 	d3.selectAll('#Ordinateur').style('fill','#337');
 	d3.selectAll('#laCarte').remove();
-console.log('reset');
+	//console.log('reset');
     data_criteres = data_DN.columns; round_critere=0;
 	aff_carte(data_criteres.slice(1),0,1);
    	aff_carte(data_criteres.slice(1),1,1);

@@ -12,7 +12,8 @@ menu = { 1:"Matchs" , 2:"Evenements" , 3:"Classement" ,4:"Duels", 5:"MAJ WRC2105
 DEBUG = 0
 
 def get_data(url):
-    requete = s.get(url,proxies=p)
+    requete = s.get(url)
+#    requete = s.get(url,proxies=p)
 #    print requete.content
     code = requete.status_code
     while code<>200:
@@ -138,7 +139,7 @@ def get_result(l_pts,v_pts,l_score,v_score,wc):
 
 # Recupere les information sur les duels
 def get_duel(t1,t2,startDate,endDate):
-    url ='http://cmsapi.pulselive.com/rugby/match'
+    url ='https://cmsapi.pulselive.com/rugby/match'
     pageSize='100'
     page=0
     i=0
@@ -216,7 +217,7 @@ def get_team(j):
 
 # Recupere les information sur le match
 def get_match(match):
-    url = 'http://cmsapi.pulselive.com/rugby/match/'
+    url = 'https://cmsapi.pulselive.com/rugby/match/'
     u = url+match+'/summary?language=en&client=pulse'
     j = get_data(u)
     print u
@@ -258,7 +259,7 @@ def get_match(match):
     return
 def get_json():
     EVENT = '1238'
-    base_u = 'http://cmsapi.pulselive.com/rugby/event'
+    base_u = 'https://cmsapi.pulselive.com/rugby/event'
     event = str(raw_input("Choisir le numero de l'evenement ["+EVENT+"]: ")) or EVENT
     u = base_u +'/'+event+'/schedule?language=en&client=pulse'+'&status=C'
     print u
@@ -316,7 +317,7 @@ def get_json():
 
 def get_event(startDate,endDate):
     global EVENT 
-    base_u = 'http://cmsapi.pulselive.com/rugby/event'
+    base_u = 'https://cmsapi.pulselive.com/rugby/event'
     pageSize='100'
     page=0
     i=0
@@ -340,7 +341,7 @@ def get_event(startDate,endDate):
     for e in j['matches']:
         t = time.gmtime(e['time']['millis']/1000+7200)
         d= time.strftime('%Y-%m-%d', t)
-        u_rk = 'http://cmsapi.pulselive.com/rugby/rankings/'+args.source+'?date='+d
+        u_rk = 'https://cmsapi.pulselive.com/rugby/rankings/'+args.source+'?date='+d
         j_rk = get_data(u_rk)
         f0 = get_rk(j_rk['entries'],e['teams'][0]['abbreviation'])
         f1 = get_rk(j_rk['entries'],e['teams'][1]['abbreviation'])
@@ -400,7 +401,7 @@ def get_args():
 def rank():
     l = 'A quelle date souhaitez vous le classement : ['+args.Date+']: '
     d = str(raw_input(l)) or args.Date
-    u = 'http://cmsapi.pulselive.com/rugby/rankings/'+args.source+'?date='+d
+    u = 'https://cmsapi.pulselive.com/rugby/rankings/'+args.source+'?date='+d
     j = get_date(u)
 def event():
     startDate = str(raw_input('Date de debut [2015-01-01] :')) or '2015-01-01'
@@ -431,9 +432,9 @@ if __name__ == "__main__":
     s = requests.Session()
     t0 = time.time()
     #   u = 'http://cmsapi.pulselive.com/rugby/rankings/mru?language=en&client=pulse'
-    u = 'http://cmsapi.pulselive.com/rugby/rankings/'+args.source+'?date='
-    uu = 'http://cmsapi.pulselive.com/rugby/match?endDate=2015-10-13&startDate=2015-07-12&sort=desc&states=C&pageSize=10&client=pulse'
-    uv = 'http://cmsapi.pulselive.com/rugby/match?startDate=2015-10-12&endDate=2019-01-12&states=U,L&pageSize=10&client=pulse'
+    u = 'https://cmsapi.pulselive.com/rugby/rankings/'+args.source+'?date='
+    uu = 'https://cmsapi.pulselive.com/rugby/match?endDate=2015-10-13&startDate=2015-07-12&sort=desc&states=C&pageSize=10&client=pulse'
+    uv = 'https://cmsapi.pulselive.com/rugby/match?startDate=2015-10-12&endDate=2019-01-12&states=U,L&pageSize=10&client=pulse'
 
     mode = args.mode.lower()
     if args.input <> None : mode = 'input'

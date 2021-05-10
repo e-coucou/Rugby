@@ -534,7 +534,7 @@
         let nbDay = (67063703*0.6-data_item_fr('n_cum_dose1'))/data_item_fr('n_dose1');
         d3.select("#valVaccination").html("<h1>Avancement de la Vaccination</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
                         "<br>1er Dose : "+valFormat(data_item_fr('n_cum_dose1'))+
-                        "<br>2eme Dose : "+valFormat(data_item_fr('n_cum_dose2'))+
+                        "<br>2eme Dose : "+valFormat(data_item_fr('n_cum_complet'))+
                         "<br>Vaccination ce jour : "+valFormat(data_item_fr('n_dose1'))+
                         "<br><br>encore <b>"+Math.round(nbDay)+"</b> jours pour l'immunité ...");
         d3.select("#valRegion").html("<h1>Situation dans nos Régions ...</h1><aside>("+formatLongTime(parseTimeH(maj.Date))+")</aside>"+
@@ -772,7 +772,7 @@
         svgVacc1.selectAll("g").remove();
         dCourbe=[];
         values =dReg[getIndexCurve('n_dose1')].data[0].values.slice(-100) ; dCourbe.push({n:'Vaccination', name: 'Dose#1', scale:0, values});
-        values =dReg[getIndexCurve('n_dose2')].data[0].values.slice(-100) ; dCourbe.push({n:'Vaccination', name: 'Dose#2', scale:0, values});
+        values =dReg[getIndexCurve('n_complet')].data[0].values.slice(-100) ; dCourbe.push({n:'Vaccination', name: 'Dose#2', scale:0, values});
 //        affiche_curve(dCourbe.slice(),"Vaccination",svgVacc1);
         affiche_bar(dCourbe.slice(),svgVacc1);
     }
@@ -780,7 +780,7 @@
         svgVacc2.selectAll("g").remove();
         dCourbe=[];
         values =dReg[getIndexCurve('n_cum_dose1')].data[0].values.slice(-100) ; dCourbe.push({n:'Vaccination', name: 'Cumul #1', scale:0, values});
-        values =dReg[getIndexCurve('n_cum_dose2')].data[0].values.slice(-100) ; dCourbe.push({n:'Vaccination', name: 'Cumul #2', scale:0, values});
+        values =dReg[getIndexCurve('n_cum_complet')].data[0].values.slice(-100) ; dCourbe.push({n:'Vaccination', name: 'Cumul #2', scale:0, values});
         affiche_curve(dCourbe.slice(),"Vaccination2",svgVacc2);
     }
     function aff_Simul2(){

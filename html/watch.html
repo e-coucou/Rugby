@@ -178,7 +178,6 @@ input:focus {
 //---------------
 // get Data
 function getValeur() {
-	console.log(code);
     let refDashboard='';
     let now = new Date(Date.now());
     let end = new Date(Date.now());
@@ -191,10 +190,10 @@ function getValeur() {
     console.log(urlTime);
     url = urlBase+encodeURIComponent('E-T15099')+urlTime+'&resolution=PT1H';
     getDashData(url,'coucou','#info');
-    getValeurListe(urlTime,listeT1);
-    getValeurListe(urlTime,listeT2);
-    getValeurListe(urlTime,liste1);
-    getValeurListe(urlTime,liste2);
+//    getValeurListe(urlTime,listeT1);
+//    getValeurListe(urlTime,listeT2);
+//    getValeurListe(urlTime,liste1);
+//    getValeurListe(urlTime,liste2);
     getValeurListe(urlTime,liste3);
 }
 function getValeurListe(urlTime,liste) {
@@ -214,12 +213,13 @@ function getDashData(urldata,index,id) {
         })
     .then(data => { 
             dashData[index]=data;
-            let value = data[0].values[0].value;
+            let value = data[0].values[0].value, unit = data[0].unit;
 //            console.log(id,value);
             d3.selectAll(id).text(valFormat(value)+' '+data[0].unit);
             d3.selectAll(id+'_c').style('fill','#0f0');
+            d3.selectAll(id+'_r').style('stroke','#00f');
             d3.selectAll('#date').text('| '+i_c(data[0].values[0].timestamp));
-            update_level(id,value,true);
+            update_level(id,value,unit,true);
 //            dispatch.call('dashboard');
         })
     .catch(err => {
@@ -292,65 +292,125 @@ function credClick() {
     return false;
 }
 function get_connexion() {
-	console.log('connexion',code);
+	console.log('Code sécurisé de connexion :',code);
 	clearSVG();
+	affiche_trame();
 /*	aff_valeur();
 	aff_liste_T(listeT1,0.01*width);
 	aff_liste_T(listeT2,0.81*width);
 	aff_liste_T(liste1,0.20*width);
 	aff_liste_T(liste2,0.39*width);
-	aff_liste_T(liste3,0.6*width);
-*/	
-	shape_cuve(100,100,7,'R19900','M 0,5 Q 8,0 16,5 L 16,25 Q 8,30 0,25 Z',0)
-	shape_cuve(400,300,9,'R19900','M 5,0 L 35,0 Q 40,8 35,16 L 5,16 Q 0,8 5,0 Z',0)
-	shape_level(550,300,9,14,4,'E-LX19901',50,false);
-	shape_temp(450,330,5,4,7,'E-T19908',50,false);
-	shape_temp(450,360,5,4,7,'E-TS19801',50,false);
-	shape_temp(450,390,5,4,7,'E-TX19902',50,false);
-	shape_temp(750,200,5,4,7,'E-AO19993',50,false);
-	shape_temp(750,230,5,4,7,'E-AO19994',50,false);
-	shape_temp(750,260,5,4,7,'E-AO19991',50,false);
-	shape_temp(750,290,5,4,7,'E-AO19992',50,false);
+*/	aff_liste_T(liste3,0.9*width);
+	
 	getValeur();
+}
+var shape = { cuveV : 'M 0,0 L 1,0 M 0,0 L 0,1 Q 3,-1 6,1 L 6,12 Q 3,14 0,12 Z', cuveH : 'M 0,0 L 1,0 M 0,0 L 0,1 M 5,0 L 35,0 Q 40,8 35,16 L 5,16 Q 0,8 5,0 Z' }
+function affiche_trame() {
+	const {h,l} = shape_cuve(500,500,7,'R19900',shape.cuveH,0)
+	shape_level(500+l-5*7,500,7,h,15,'E-LX19901',50,false);
+	shape_temp(450,330,5,3,8,'E-T19908',50,false);
+	shape_temp(450,360,5,3,8,'E-TS19801',50,false);
+	shape_temp(450,390,5,3,8,'E-TX19902',50,false);
+	shape_temp(750,200,5,3,8,'E-AO19993',50,false);
+	shape_temp(750,230,5,3,8,'E-AO19994',50,false);
+	shape_temp(750,260,5,3,8,'E-AO19991',50,false);
+	shape_temp(750,290,5,3,8,'E-AO19992',50,false);
+	// rechauffeur Electrique
+	let Ex1 = {x:43, y:80, e: 10};
+	with (Ex1) {
+		let i =0;
+		const {h,l} = shape_cuve(x,y,e,'E15400',shape.cuveV,0); y += 5; x += 3;// console.log('size : ',h,l)
+		y = shape_temp(x,y,e,0,0,'E-T15408',50,false);
+		y = shape_temp(x,y,e,0,0,'E-J15406',50,false);
+		y = shape_temp(x,y,e,3,e,'E-TS15409',50,false);
+		y = shape_temp(x,y,e,3,e,'E-TDX15407',50,false);
+	}
+	// réacteur K15000
+	let Ex2 = {x:150, y:80, e: 20};
+	with (Ex2) {
+		let i =0;
+		const {h,l} = shape_cuve(150,80,20,'K15000',shape.cuveV,0); y += 5; x += 3;
+		y = shape_temp(x,y,e,e/3,e/2,'E-T15021',50,false);
+		y = shape_temp(x,y,e,e/3,e/2,'E-T15008',50,false);
+		y = shape_temp(x,y,e,e/3,e/2,'E-TC15019',50,false);
+		y = shape_temp(x,y,e,e/3,e/2,'E-TY15012',50,false);
+	}
+	// GV 40
+	let Ex3 = {x:350, y:80, e: 15};
+	with (Ex3) {
+		let i =0;
+		const {h,l} = shape_cuve(x,y,e,'E15500',shape.cuveV,0); y += 5, x += 3;
+		shape_level(x+l-15,y,e,h-e*2,10,'E-LC15504',50,false);
+		y = shape_temp(x,y,e,e/3,e/2,'E-PC15506',50,false);
+		y = shape_temp(x,y,e,e/3,e/2,'E-LS15503',50,false);
+	}
+	// GV 10
+	let Ex4 = {x:350, y:280, e: 12};
+	with (Ex4) {
+		let i =0;
+		const {h,l} = shape_cuve(x,y,e,'E15600',shape.cuveV,0); y += 5, x += 3;
+		shape_level(x+l-15,y,e,h-e*2,10,'E-LC15604',50,false);
+		y = shape_temp(x,y,e,e/3,e/2,'E-PC15606',50,false);
+		y = shape_temp(x,y,e,e/3,e/2,'E-LS15603',50,false);
+	}
+
 }
 function refresh() {
 	d3.selectAll('circle').style('fill','black');
+	d3.selectAll('rect').style('stroke','black');
 	getValeur();
 }
 //-----------------------
 //
 function shape_cuve (x,y,ech,id,forme,rot) {
 	let shape= svg.append('g').selectAll('g').data([0]).enter().append('g')
-					.attr('transform','translate('+x+','+y+') scale('+ech+') rotate('+rot+')');
-		shape.append('path').attr('d', forme).style('stroke-width',1/ech).style('stroke','#666').style('fill','#EEE');
-		return;
+					.attr('transform','translate('+x+','+(y)+') scale('+ech+')'); // rotate('+rot+')');
+		shape.append('path').attr('d', forme).style('stroke-width',1/ech).style('stroke','#666').style('fill','#EEE').attr('id',id+'_p');
+	let rect = document.getElementById(id+'_p').getBoundingClientRect();
+	let h = rect.height;
+	let l = rect.width;
+ 	return {h: h, l: l};
 }
 function shape_level (x,y,ech,h,l,id,val,status) {
+	liste3.push(id);// ech = 5;// h= ech *10; l=2*ech;
 	let level = svg.append('g').selectAll('g').data([0]).enter().append('g')
-					.attr('transform','translate('+x+','+y+') scale('+ech+')').raise();
-		level.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',1).style('stroke-width',1/ech).style('stroke','#666').style('fill','#fff');
-		level.append('rect').attr('width',(l*0.8)).attr('x',1.4).attr('y',(h*(100-val)/100)+1).attr('height',(h*val/100))
+					.attr('transform','translate('+x+','+y+')').raise(); // scale('+ech+')').raise();
+		level.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',1).style('stroke-width',1)
+			 .style('stroke','#666').style('fill','#fff').attr('id',id+'_s');
+		level.append('rect').attr('width',(l-2)).attr('x',2).attr('y',(h*(100-val)/100)+1).attr('height',(h*val/100)).raise()
 			.attr('id',id+'_val')
-			.style('stroke-width',1/ech).style('stroke','#666').style('fill',status?'#00b':'#ccc');
-		level.append('text').text(val).attr('id',id+'_txt')
+			.style('stroke-width',1).style('stroke','#666').style('fill',status?'#00b':'#ccc');
+		level.append('text').text(val).attr('id',id+'_txt').raise()
 			.attr('x',(0.7*l)).attr('y',(0.5*h))
-            .style('text-anchor', 'middle').style('fill','black').style('font-size',2)
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',1.5*5)
             .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
 		return;
 }
 function shape_temp (x,y,ech,h,l,id,val,status) {
+	liste3.push(id); ech = 5; h= ech *3.7; l=9*ech;
 	let temp = svg.append('g').selectAll('g').data([0]).enter().append('g')
-					.attr('transform','translate('+x+','+y+') scale('+ech+')').raise();
-		temp.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',1).style('stroke-width',1/ech).style('stroke','#666').style('fill','#fff');
+					.attr('transform','translate('+x+','+y+')').raise(); // scale('+ech+')').raise();
+		temp.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',1).style('stroke-width',1).style('stroke','#666').style('fill','#fff').style('rx',1).style('ry',1).attr('id',id+'_r');
 		temp.append('text').text(val).attr('id',id+'_txt')
-			.attr('x',(0.6*l)).attr('y',(0.7*h))
-            .style('text-anchor', 'middle').style('fill','black').style('font-size',2)
+			.attr('x',(0.52*l)).attr('y',(0.8*h))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',1.5*ech)
             .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
-		return;
+		temp.append('text').text(val) // no id
+			.attr('x',(0.52*l)).attr('y',(0.4*h))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',1.5*ech)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue")
+            .text(id);
+//        temp.append('circle').attr('r',1).attr('cx',1).attr('cy',1).style('fill','red').attr('id',id+'_c');
+		return (y+h*1.1);
 }
-function update_level(id,val,status){
-	d3.selectAll(id+'_val').attr('y',(14*(100-val)/100)+1).attr('height',(14*val/100)).style('fill',status?'#0e0':'black');
-	d3.selectAll(id+'_txt').text(valFormat(val));
+function update_level(id,val,unit,status){ //console.log('rect_s',id);
+	try {
+		let h = d3.select(id+'_s').node().getBoundingClientRect().height; 
+		d3.selectAll(id+'_val').attr('y',(h*(100-val)/100)+1).attr('height',(h*val/100)).style('fill',status?'#0e0':'black');
+	} catch (error) {
+	  // not level
+	}
+	d3.selectAll(id+'_txt').text(valFormat(val)+' '+unit);
 }
 function aff_valeur() {
 	//on affiche
@@ -360,11 +420,12 @@ function aff_valeur() {
                         .attr('transform', (d,i)=> {return 'translate('+(0.20*width)+','+(0.01*h_g+50 +i*h_g/2)+')';})
                         .on('click',refresh)
                         .on('mouseover',(d,i)=> {
-                            d3.selectAll('#rect_refresh'+i).style('fill','red')  })
+                            d3.selectAll('#rect_refresh'+i).style('fill','red');
+                            console.log(d,i);  })
                         .on('mouseout',(d,i)=> {
                             d3.selectAll('#rect_refresh'+i).style('fill','#337')  });
 
-        liste.append('rect').attr('rx',2).attr('ry',2).attr('id',(d,i)=>{return 'rect_refresh'+i; })
+        liste.append('rect').style('rx',5).style('ry',5).attr('id',(d,i)=>{return 'rect_refresh'+i; })
             .attr('width',(width*0.6)).attr('height',(0.47*h_g)).style('fill', '#337'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
         liste.append('text').attr('x',(0.3*width)) //.attr('y',10)
             .attr('y',(0.27*h_g)).attr('id','info') //.attr('id',(d)=>{return ('en0_'+d.matchId);})
@@ -385,9 +446,11 @@ function aff_liste_T(liste,decalage) {
                         .attr('transform', (d,i)=> {return 'translate('+(decalage)+','+(0.02*h_g+50 +i*inc)+')';})
                         .on('click',refresh)
                         .on('mouseover',(d,i)=> {
-                            d3.selectAll('#rect_refresh'+d).style('fill','red')  })
+                            d3.selectAll('#rect_refresh'+d).style('fill','red');
+                            d3.selectAll('#'+d+'_r').style('fill','red');  })
                         .on('mouseout',(d,i)=> {
-                            d3.selectAll('#rect_refresh'+d).style('fill','#1e3F5E')  });
+                            d3.selectAll('#rect_refresh'+d).style('fill','#1e3F5E');
+                            d3.selectAll('#'+d+'_r').style('fill','white');  });
 
         liste_T.append('rect').attr('rx',1).attr('ry',1).attr('id',(d,i) => { return 'rect_refresh'+d; })
             .attr('width',(w*width)).attr('height',(inc-2)).style('fill', '#1e3F5E'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
