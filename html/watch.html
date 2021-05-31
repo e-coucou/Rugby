@@ -386,44 +386,45 @@ function get_connexion() {
 }
 var shape = { cuveV : 'M 0,0 L 1,0 M 0,0 L 0,1 Q 3,-1 6,1 L 6,12 Q 3,14 0,12 Z', cuveH : 'M 0,0 L 1,0 M 0,0 L 0,1 M 5,0 L 35,0 Q 40,8 35,16 L 5,16 Q 0,8 5,0 Z' }
 function affiche_trame() {
-
-	let alim = {x:30, y:60, e: 4};
+	//intervalles largeur / hauteur
+	let w_i = (width/2/8) ; h_i = height/2/15;
+	let alim = {x:w_i*0.2, y:60, e: 4};
 	with (alim) {
 //		const {h,l} = shape_cuve(x,y,e,'R19900',shape.cuveH,1)
 //		shape_level(x+l-5*7,y,7,h,15,'E-LX19901',50,false);
 //off gaz
 		y1 = shape_temp(x,y,e,3,8,'E-FS31053',50,false);
 		y1 = shape_temp(x,y1,e,3,8,'E-PS31052',50,false);
-		y1 = shape_temp(x,y1,e,3,8,'E-TS31051',50,false) + 30;
+		y1 = shape_temp(x,y1,e,3,8,'E-TS31051',50,false) + h_i;
 		y2 = shape_temp(x,y1,e,3,8,'E-FC12001',50,false);
 // compresseur
-		x += 100;
+		x += w_i;
 		y2 = shape_vanne(x,y1,e,3,8,'E-CV12086A',50,false)+10;
 		y2 = shape_temp(x,y2,e,3,8,'E-I12000',50,false);
 		y2 = shape_temp(x,y2,e,3,8,'E-TY12008',50,false);
 		y2 = shape_vanne(x,y2,e,3,8,'E-CV12086B',50,false);
 //debit d'air
-		x += 60; y2=y1;
+		x += w_i; y2=y1;
 		y1 = shape_temp(x,y1,e,3,8,'E-FCS12085',50,false);
 //débit Eau
-		y3 = shape_vanne(x-60,y1+70,e,3,8,'E-FCV14325',50,false);
+		y3 = shape_vanne(x-w_i,y1+70,e,3,8,'E-FCV14325',50,false);
 		y1 = shape_temp(x,y1+70,e,3,8,'E-FCS14325',50,false);
 //débit C3
-		y3 = shape_vanne(x-60,y1+20,e,3,8,'E-CV16325A',50,false);
-		y3 = shape_vanne(x-60,y1+40,e,3,8,'E-CV16325B',50,false);
+		y3 = shape_vanne(x-w_i,y1+20,e,3,8,'E-CV16325A',50,false);
+		y3 = shape_vanne(x-w_i,y1+40,e,3,8,'E-CV16325B',50,false);
 		y1 = shape_temp(x,y1+30,e,3,8,'E-FC16325',50,false);
 //réchauffeur
-		x += 90; y1=y2;
+		x += w_i*1.5; y1=y2;
 		y2 = shape_temp(x,y1,e,3,8,'E-TC17601',50,false);
 //débits
-		x += 60;
+		x += w_i;
 		y2 = shape_temp(x,y1-20,e,3,8,'E-FC18167',50,false) +30;
 		y2 = shape_temp(x,y2,e,3,8,'E-FC15167',50,false);
 		y2 = shape_temp(x,y2,e,3,8,'E-F15161',50,false);
 		y2 = shape_temp(x,y2,e,3,8,'E-PY15071',50,false);
 		y2 = shape_temp(x,y1-42,e,3,8,'E-PY18071',50,false);
 // ouverture
-		x += 60;
+		x += w_i;
 		y2 = shape_vanne(x,y1-20,e,1,2,'E-CV18167',50,false) +30;
 		y2 = shape_vanne(x,y2,e,1,2,'E-CV15167A',50,false);
 		y2 = shape_vanne(x,y2,e,1,2,'E-CV15167B',50,false);
@@ -470,7 +471,7 @@ function affiche_trame() {
 		y2 = shape_temp(x+l-l/7,y+h/15,e,e/3,e/2,'E-PS18007',50,false);
 	}
 // bache à sel Py
-	let R19900 = {x:(K15000.x-170), y:540, e: 4};
+	let R19900 = {x:(K15000.x-170), y:(height*0.72), e: 4};
 	with (R19900) {
 		const {h,l} = shape_cuve(x,y,e,'R19900',shape.cuveH,1)
 		shape_level(x+l-5*7,y,7,h,15,'E-LX19901',50,false);
@@ -483,7 +484,7 @@ function affiche_trame() {
 		shape_temp(x,y-40,5,3,8,'E-AO19992',50,false);
 	}
 // bache à sel E2
-	let R19000 = {x:(K18000.x-170), y:240, e: 4};
+	let R19000 = {x:(K18000.x-170), y:(height*0.22), e: 4};
 	with (R19000) {
 		const {h,l} = shape_cuve(x,y,e,'R19000',shape.cuveH,1)
 		shape_level(x+l-5*7,y,7,h,15,'E-LX19001',50,false);
@@ -495,7 +496,7 @@ function affiche_trame() {
 //		shape_temp(x-50,y+40,5,3,8,'E-AO19991',50,false);
 //		shape_temp(x-50,y+60,5,3,8,'E-AO19992',50,false);
 	}	// rechauffeur Electrique
-	let E15400 = {x:(K15000.x-80), y:370, e: 10};
+	let E15400 = {x:(K15000.x-80), y:(K15000.y), e: 10};
 	with (E15400) {
 		let i =0;
 		const {h,l} = shape_cuve(x,y,e,'E15400',shape.cuveV,0.8); y += 12; x += 3;// console.log('size : ',h,l)
@@ -505,7 +506,7 @@ function affiche_trame() {
 		y = shape_temp(x,y,e,3,e,'E-TDX15407',50,false);
 	}
 	// rechauffeur Electrique
-	let E18400 = {x:(K18000.x-80), y:100, e: 10};
+	let E18400 = {x:(K18000.x-80), y:(K18000.y), e: 10};
 	with (E18400) {
 		let i =0;
 		const {h,l} = shape_cuve(x,y,e,'E18400',shape.cuveV,0.8); y += 12; x += 3;// console.log('size : ',h,l)
@@ -515,7 +516,7 @@ function affiche_trame() {
 		y = shape_temp(x,y,e,3,e,'E-TDX18407',50,false);
 	}
 	// GV 40
-	let E15500 = {x:(K15000.xl+80), y:K15000.y, e: 11};
+	let E15500 = {x:(K15000.xl+80), y:(K15000.y), e: 11};
 	with (E15500) {
 		let i =0;
 		const {h,l} = shape_cuve(x,y,e,'E15500',shape.cuveV,0.7); y += 12, x += 3;
