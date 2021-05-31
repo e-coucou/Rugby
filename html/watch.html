@@ -428,54 +428,9 @@ function affiche_trame() {
 		y2 = shape_vanne(x,y2,e,1,2,'E-CV15167A',50,false);
 		y2 = shape_vanne(x,y2,e,1,2,'E-CV15167B',50,false);
 	}
-// bache à sel Py
-	let R19900 = {x:630, y:540, e: 4};
-	with (R19900) {
-		const {h,l} = shape_cuve(x,y,e,'R19900',shape.cuveH,1)
-		shape_level(x+l-5*7,y,7,h,15,'E-LX19901',50,false);
-		shape_temp(x+20,y,5,3,8,'E-T19908',50,false);
-		shape_temp(x+20,y+20,5,3,8,'E-TS19801',50,false);
-		shape_temp(x+20,y+40,5,3,8,'E-TX19902',50,false);
-		shape_temp(x,y-100,5,3,8,'E-AO19993',50,false);
-		shape_temp(x,y-80,5,3,8,'E-AO19994',50,false);
-		shape_temp(x,y-60,5,3,8,'E-AO19991',50,false);
-		shape_temp(x,y-40,5,3,8,'E-AO19992',50,false);
-	}
-// bache à sel E2
-	let R19000 = {x:630, y:240, e: 4};
-	with (R19000) {
-		const {h,l} = shape_cuve(x,y,e,'R19000',shape.cuveH,1)
-		shape_level(x+l-5*7,y,7,h,15,'E-LX19001',50,false);
-		shape_temp(x+20,y,5,3,8,'E-T19008',50,false);
-		shape_temp(x+20,y+20,5,3,8,'E-TS19001',50,false);
-		shape_temp(x+20,y+40,5,3,8,'E-TX19002',50,false);
-//		shape_temp(x-50,y,5,3,8,'E-AO19993',50,false);
-//		shape_temp(x-50,y+20,5,3,8,'E-AO19994',50,false);
-//		shape_temp(x-50,y+40,5,3,8,'E-AO19991',50,false);
-//		shape_temp(x-50,y+60,5,3,8,'E-AO19992',50,false);
-	}
-	// rechauffeur Electrique
-	let E15400 = {x:700, y:370, e: 10};
-	with (E15400) {
-		let i =0;
-		const {h,l} = shape_cuve(x,y,e,'E15400',shape.cuveV,0.8); y += 12; x += 3;// console.log('size : ',h,l)
-		y = shape_temp(x,y,e,0,0,'E-T15408',50,false);
-		y = shape_temp(x,y,e,0,0,'E-J15406',50,false);
-		y = shape_temp(x,y,e,3,e,'E-TS15409',50,false);
-		y = shape_temp(x,y,e,3,e,'E-TDX15407',50,false);
-	}
-	// rechauffeur Electrique
-	let E18400 = {x:700, y:100, e: 10};
-	with (E18400) {
-		let i =0;
-		const {h,l} = shape_cuve(x,y,e,'E18400',shape.cuveV,0.8); y += 12; x += 3;// console.log('size : ',h,l)
-		y = shape_temp(x,y,e,0,0,'E-T18408',50,false);
-		y = shape_temp(x,y,e,0,0,'E-J18406',50,false);
-		y = shape_temp(x,y,e,3,e,'E-TS18409',50,false);
-		y = shape_temp(x,y,e,3,e,'E-TDX18407',50,false);
-	}
+
 	// réacteur K15000
-	let K15000 = {x:800, y:370, e: 15, xl:0};
+	let K15000 = {x:(width*0.65), y:(height/2+20), e: 15, xl:0};
 	with (K15000) {
 		let i =0;
 		const {h,l} = shape_cuve(x,y,e,'Pyrénées',shape.cuveV,1); xl = x+l;y1 = y+ h/8; x += 3;
@@ -495,7 +450,7 @@ function affiche_trame() {
 		y2 = shape_temp(x+l-l/7,y+h/15,e,e/3,e/2,'E-PS15007',50,false);
 	}
 	// réacteur K18000
-	let K18000 = {x:800, y:70, e: 15, xl: 0};
+	let K18000 = {x:(width*0.65), y:(60), e: 15, xl: 0};
 	with (K18000) {
 		let i =0;
 		const {h,l} = shape_cuve(x,y,e,'Europe 2',shape.cuveV,1); xl = x+l; y1 = y+ h/8; x += 3;
@@ -513,6 +468,51 @@ function affiche_trame() {
 		y2 = shape_temp(x+3*l/4,y2,e,e/3,e/2,'E-TC18005',50,false);
 		y2 = shape_temp(x+l,y2,e,e/3,e/2,'E-T18099',50,false);
 		y2 = shape_temp(x+l-l/7,y+h/15,e,e/3,e/2,'E-PS18007',50,false);
+	}
+// bache à sel Py
+	let R19900 = {x:(K15000.x-170), y:540, e: 4};
+	with (R19900) {
+		const {h,l} = shape_cuve(x,y,e,'R19900',shape.cuveH,1)
+		shape_level(x+l-5*7,y,7,h,15,'E-LX19901',50,false);
+		shape_temp(x+20,y,5,3,8,'E-T19908',50,false);
+		shape_temp(x+20,y+20,5,3,8,'E-TS19801',50,false);
+		shape_temp(x+20,y+40,5,3,8,'E-TX19902',50,false);
+		shape_temp(x,y-100,5,3,8,'E-AO19993',50,false);
+		shape_temp(x,y-80,5,3,8,'E-AO19994',50,false);
+		shape_temp(x,y-60,5,3,8,'E-AO19991',50,false);
+		shape_temp(x,y-40,5,3,8,'E-AO19992',50,false);
+	}
+// bache à sel E2
+	let R19000 = {x:(K18000.x-170), y:240, e: 4};
+	with (R19000) {
+		const {h,l} = shape_cuve(x,y,e,'R19000',shape.cuveH,1)
+		shape_level(x+l-5*7,y,7,h,15,'E-LX19001',50,false);
+		shape_temp(x+20,y,5,3,8,'E-T19008',50,false);
+		shape_temp(x+20,y+20,5,3,8,'E-TS19001',50,false);
+		shape_temp(x+20,y+40,5,3,8,'E-TX19002',50,false);
+//		shape_temp(x-50,y,5,3,8,'E-AO19993',50,false);
+//		shape_temp(x-50,y+20,5,3,8,'E-AO19994',50,false);
+//		shape_temp(x-50,y+40,5,3,8,'E-AO19991',50,false);
+//		shape_temp(x-50,y+60,5,3,8,'E-AO19992',50,false);
+	}	// rechauffeur Electrique
+	let E15400 = {x:(K15000.x-80), y:370, e: 10};
+	with (E15400) {
+		let i =0;
+		const {h,l} = shape_cuve(x,y,e,'E15400',shape.cuveV,0.8); y += 12; x += 3;// console.log('size : ',h,l)
+		y = shape_temp(x,y,e,0,0,'E-T15408',50,false);
+		y = shape_temp(x,y,e,0,0,'E-J15406',50,false);
+		y = shape_temp(x,y,e,3,e,'E-TS15409',50,false);
+		y = shape_temp(x,y,e,3,e,'E-TDX15407',50,false);
+	}
+	// rechauffeur Electrique
+	let E18400 = {x:(K18000.x-80), y:100, e: 10};
+	with (E18400) {
+		let i =0;
+		const {h,l} = shape_cuve(x,y,e,'E18400',shape.cuveV,0.8); y += 12; x += 3;// console.log('size : ',h,l)
+		y = shape_temp(x,y,e,0,0,'E-T18408',50,false);
+		y = shape_temp(x,y,e,0,0,'E-J18406',50,false);
+		y = shape_temp(x,y,e,3,e,'E-TS18409',50,false);
+		y = shape_temp(x,y,e,3,e,'E-TDX18407',50,false);
 	}
 	// GV 40
 	let E15500 = {x:(K15000.xl+80), y:K15000.y, e: 11};
