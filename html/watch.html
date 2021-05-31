@@ -95,6 +95,23 @@
 	left: 100px;
 	color: 'red';
 }
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+.horizontalGrid {
+	fill : none;
+	shape-rendering : crispEdges;
+	stroke : lightgrey;
+	stroke-width : 1px;
+}
+.verticalLine {
+	fill : none;
+	shape-rendering : crispEdges;
+	stroke : lightgrey;
+	stroke-width : 1px;
+}
 input#username,
 input#password,
 input#connexion { 
@@ -135,6 +152,7 @@ input:focus {
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.js" charset="utf-8"></script>
 <body>
     <div id="chart"></div>
+    <div id="histo"></div>
     <div id="credentials">
     <form name="saisie" onSubmit="return credClick()">
         <input type="text" id="username"><br>
@@ -155,24 +173,49 @@ input:focus {
    	var interval = 'PT1M'  // PnYnMnD  TnHnMnS
     var urlRes = '&resolution='+interval;
     var url = '';
+    /*
     let listeT1 = ['E-T15021','E-T15022','E-T15023','E-T15024','E-T15025','E-T15026','E-T15027','E-T15028','E-T15029','E-T15030','E-T15031','E-T15032']
     let listeT2 = ['E-T15041','E-T15042','E-T15043','E-T15044','E-T15045','E-T15046','E-T15047','E-T15048','E-T15049','E-T15050','E-T15051','E-T15052']
     let liste1 = ['E-T15099','E-TS19801','E-T19908','E-LX19901','E-TX19902','E-AO19991','E-F15154','E-PS15007','E-PS15011','E-PS15505','E-PS15605','E-AO19992','E-AO19993','E-AO19994'];
     let liste2 = ['E-PS15007','E-T15006','E-TC15002','E-TC15005','E-TY15004','E-T15401'];
+    */
     let liste3 = []; //['E-F15154','E-FC15167','E-P15104','E-P16151','E-PO16151','E-T15106','E-TC15103'];
+    let pathData = [{source:'E-FCS14325',cible:'E-TC17601'},
+    				{source:'E-FCS12085',cible:'E-TC17601'},
+    				{source:'E-FC16325',cible:'E-TC17601'},
+    				{source:'E-FC12001',cible:'E-CV12086A'},
+    				{source:'E-CV12086A',cible:'E-FCS12085'},
+    				{source:'E-FS31053',cible:'E-CV12086A'},
+    				{source:'E-TC17601',cible:'E-FC18167'},
+    				{source:'E-TC17601',cible:'E-FC15167'},
+    				{source:'E-FC15167',cible:'E-CV15167A'},
+    				{source:'E-FC18167',cible:'E-CV18167'},
+    				{source:'E-CV15167A',cible:'Pyrénées'},
+    				{source:'E-CV18167',cible:'Europe 2'}
+    				];
+    let itemData = [];
 	// Chart dimensions.
 	var margin = {top: 20, right: 20, bottom: 30, left: 50},
     	width = window.innerWidth; // - margin.right-margin.left,
     	height = window.innerHeight; // - margin.top - margin.bottom;
-	var couleur = ['grey','green','violet','cyan','blue','orange','yellow','red'];
-	var dashData=[], username='Username', password='Password';
+	var couleur = ['grey','green','violet','cyan','blue','orange','yellow','red'],
+	    nbCouleur = couleur.length;
+
+	var dashData=[],histData=[]; username='Username', password='Password';
 	// Create the SVG container and set the origin.
 	const svg = d3.select('#chart').append("svg")
     	.attr("id", "svg")
     	.attr("width", (width))
     	.attr("height", (height));
+	const svgHisto = d3.select('#histo').append("svg")
+    	.attr("id", "svgHisto")//.attr("position", 1)
+    	.attr("width", (width/2))
+    	.attr("height", (height/2));
+//    	.append('g').attr('transform','translate('+0+','+(height/2.0)+')').raise();
+	var dispatch = d3.dispatch('histo');
+    dispatch.on('histo',aff_histo);
 
-	//credentials ...
+//credentials ...
 	let code =btoa(username+':'+password);
 	cred();
 //---------------
@@ -202,6 +245,23 @@ function getValeurListe(urlTime,liste) {
 		getDashData(url,tag,'#'+tag);
 	});
 }
+function getHistorique(d) {
+	console.log(d);
+    let now = new Date(Date.now());
+    let end = new Date(Date.now());
+//    let offset = now.getTimezoneOffset();
+//    let hour = now.getHours()+offset/60;
+//	now.setHours(hour);
+	now.setHours(now.getHours()-48);
+	end.setHours(end.getHours()+0.2);
+	console.log('heure',now,end);
+    urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
+    console.log(urlTime);
+	url = urlBase+encodeURIComponent(d)+urlTime+'&resolution=PT15M'; // PnYnMnD  TnHnMnS
+	console.log(urlTime,url);
+	getHistData(url,d,'#'+d);
+	console.log('data read ?');
+}
 //----------------------------------------------------------------------------------------
 //- lecture du dashboard ...
 //----------------------------------------
@@ -220,7 +280,8 @@ function getDashData(urldata,index,id) {
             d3.selectAll(id+'_r').style('stroke','#00f');
             d3.selectAll('#date').text('| '+i_c(data[0].values[0].timestamp));
             update_level(id,value,unit,true);
-//            dispatch.call('dashboard');
+            update_vanne(id,value,unit,true);
+//            dispatch.call('histo');
         })
     .catch(err => {
 //        infoG.select('text').text("ERREUR : "+err);
@@ -231,6 +292,25 @@ function getDashData(urldata,index,id) {
       console.log(err);
     })   
 }
+//--------------------------
+//- Lecture de l'historique
+//
+function getHistData(urldata,index,id) {
+    var opt = fetch(urldata, {method: 'GET',headers: new Headers({'Access-Control-Allow-Origin':'*','Accept':'application/json',
+        'mode':'no-cors','credentials':'includes','Authorization':'basic '+code})}).then(response => {
+        return response.json();
+        })
+    .then(data => { 
+            histData=data;
+//            console.log(data);
+//            aff_histo();
+            dispatch.call('histo');
+        })
+    .catch(err => {
+      console.log(err);
+    })   
+}
+
 let valFormat = (a) => { 
         let r = (a>1000) ? Math.round(a) : ( (a>10)? Math.round(a*10.0)/10 : Math.round(a*100.0)/100);
         return String(r).replace(/(.)(?=(\d{3})+$)/g,'$1 ');
@@ -306,49 +386,76 @@ function get_connexion() {
 }
 var shape = { cuveV : 'M 0,0 L 1,0 M 0,0 L 0,1 Q 3,-1 6,1 L 6,12 Q 3,14 0,12 Z', cuveH : 'M 0,0 L 1,0 M 0,0 L 0,1 M 5,0 L 35,0 Q 40,8 35,16 L 5,16 Q 0,8 5,0 Z' }
 function affiche_trame() {
-	let alim = {x:30, y:100, e: 4};
+
+	let alim = {x:30, y:60, e: 4};
 	with (alim) {
 //		const {h,l} = shape_cuve(x,y,e,'R19900',shape.cuveH,1)
 //		shape_level(x+l-5*7,y,7,h,15,'E-LX19901',50,false);
-		y1 = shape_temp(x+60,y,e,3,8,'E-FS31053',50,false);
-		y1 = shape_temp(x+60,y1,e,3,8,'E-PS31052',50,false);
-		y1 = shape_temp(x+60,y1,e,3,8,'E-TS31051',50,false) + 30;
+//off gaz
+		y1 = shape_temp(x,y,e,3,8,'E-FS31053',50,false);
+		y1 = shape_temp(x,y1,e,3,8,'E-PS31052',50,false);
+		y1 = shape_temp(x,y1,e,3,8,'E-TS31051',50,false) + 30;
 		y2 = shape_temp(x,y1,e,3,8,'E-FC12001',50,false);
+// compresseur
 		x += 100;
-		y2 = shape_temp(x,y1,e,3,8,'E-I12000',50,false);
-		y2 = shape_temp(x,y1,e,3,8,'E-TY12008',50,false);
-		x += 60;
+		y2 = shape_vanne(x,y1,e,3,8,'E-CV12086A',50,false)+10;
+		y2 = shape_temp(x,y2,e,3,8,'E-I12000',50,false);
+		y2 = shape_temp(x,y2,e,3,8,'E-TY12008',50,false);
+		y2 = shape_vanne(x,y2,e,3,8,'E-CV12086B',50,false);
+//debit d'air
+		x += 60; y2=y1;
 		y1 = shape_temp(x,y1,e,3,8,'E-FCS12085',50,false);
-		y1 = shape_temp(x,y1,e,3,8,'E-FCS14325',50,false);
-		y1 = shape_temp(x,y1,e,3,8,'E-FC16325',50,false);
-		x += 60;
+//débit Eau
+		y3 = shape_vanne(x-60,y1+70,e,3,8,'E-FCV14325',50,false);
+		y1 = shape_temp(x,y1+70,e,3,8,'E-FCS14325',50,false);
+//débit C3
+		y3 = shape_vanne(x-60,y1+20,e,3,8,'E-CV16325A',50,false);
+		y3 = shape_vanne(x-60,y1+40,e,3,8,'E-CV16325B',50,false);
+		y1 = shape_temp(x,y1+30,e,3,8,'E-FC16325',50,false);
+//réchauffeur
+		x += 90; y1=y2;
 		y2 = shape_temp(x,y1,e,3,8,'E-TC17601',50,false);
+//débits
 		x += 60;
-		y2 = shape_temp(x,y1-20,e,3,8,'E-F18161',50,false) +30;
+		y2 = shape_temp(x,y1-20,e,3,8,'E-FC18167',50,false) +30;
 		y2 = shape_temp(x,y2,e,3,8,'E-FC15167',50,false);
 		y2 = shape_temp(x,y2,e,3,8,'E-F15161',50,false);
-		x += 60;
-		y2 = shape_temp(x,y1-20,e,3,8,'E-PY18071',50,false) +30;
 		y2 = shape_temp(x,y2,e,3,8,'E-PY15071',50,false);
+		y2 = shape_temp(x,y1-42,e,3,8,'E-PY18071',50,false);
+// ouverture
 		x += 60;
-		y2 = shape_temp(x,y1-20,e,3,8,'E-CV18167',50,false) +30;
-		y2 = shape_temp(x,y2,e,3,8,'E-CV15167A',50,false);
-		y2 = shape_temp(x,y2,e,3,8,'E-CV15167B',50,false);
+		y2 = shape_vanne(x,y1-20,e,1,2,'E-CV18167',50,false) +30;
+		y2 = shape_vanne(x,y2,e,1,2,'E-CV15167A',50,false);
+		y2 = shape_vanne(x,y2,e,1,2,'E-CV15167B',50,false);
 	}
-	let R19900 = {x:530, y:540, e: 4};
+// bache à sel Py
+	let R19900 = {x:630, y:540, e: 4};
 	with (R19900) {
 		const {h,l} = shape_cuve(x,y,e,'R19900',shape.cuveH,1)
 		shape_level(x+l-5*7,y,7,h,15,'E-LX19901',50,false);
 		shape_temp(x+20,y,5,3,8,'E-T19908',50,false);
 		shape_temp(x+20,y+20,5,3,8,'E-TS19801',50,false);
 		shape_temp(x+20,y+40,5,3,8,'E-TX19902',50,false);
-		shape_temp(x-50,y,5,3,8,'E-AO19993',50,false);
-		shape_temp(x-50,y+20,5,3,8,'E-AO19994',50,false);
-		shape_temp(x-50,y+40,5,3,8,'E-AO19991',50,false);
-		shape_temp(x-50,y+60,5,3,8,'E-AO19992',50,false);
+		shape_temp(x,y-100,5,3,8,'E-AO19993',50,false);
+		shape_temp(x,y-80,5,3,8,'E-AO19994',50,false);
+		shape_temp(x,y-60,5,3,8,'E-AO19991',50,false);
+		shape_temp(x,y-40,5,3,8,'E-AO19992',50,false);
+	}
+// bache à sel E2
+	let R19000 = {x:630, y:240, e: 4};
+	with (R19000) {
+		const {h,l} = shape_cuve(x,y,e,'R19000',shape.cuveH,1)
+		shape_level(x+l-5*7,y,7,h,15,'E-LX19001',50,false);
+		shape_temp(x+20,y,5,3,8,'E-T19008',50,false);
+		shape_temp(x+20,y+20,5,3,8,'E-TS19001',50,false);
+		shape_temp(x+20,y+40,5,3,8,'E-TX19002',50,false);
+//		shape_temp(x-50,y,5,3,8,'E-AO19993',50,false);
+//		shape_temp(x-50,y+20,5,3,8,'E-AO19994',50,false);
+//		shape_temp(x-50,y+40,5,3,8,'E-AO19991',50,false);
+//		shape_temp(x-50,y+60,5,3,8,'E-AO19992',50,false);
 	}
 	// rechauffeur Electrique
-	let E15400 = {x:600, y:400, e: 10};
+	let E15400 = {x:700, y:370, e: 10};
 	with (E15400) {
 		let i =0;
 		const {h,l} = shape_cuve(x,y,e,'E15400',shape.cuveV,0.8); y += 12; x += 3;// console.log('size : ',h,l)
@@ -358,7 +465,7 @@ function affiche_trame() {
 		y = shape_temp(x,y,e,3,e,'E-TDX15407',50,false);
 	}
 	// rechauffeur Electrique
-	let E18400 = {x:600, y:100, e: 10};
+	let E18400 = {x:700, y:100, e: 10};
 	with (E18400) {
 		let i =0;
 		const {h,l} = shape_cuve(x,y,e,'E18400',shape.cuveV,0.8); y += 12; x += 3;// console.log('size : ',h,l)
@@ -368,72 +475,95 @@ function affiche_trame() {
 		y = shape_temp(x,y,e,3,e,'E-TDX18407',50,false);
 	}
 	// réacteur K15000
-	let K15000 = {x:700, y:400, e: 15};
+	let K15000 = {x:800, y:370, e: 15, xl:0};
 	with (K15000) {
 		let i =0;
-		const {h,l} = shape_cuve(x,y,e,'K15000',shape.cuveV,1); y1 = y+ h/8; x += 3;
+		const {h,l} = shape_cuve(x,y,e,'Pyrénées',shape.cuveV,1); xl = x+l;y1 = y+ h/8; x += 3;
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T15008',50,false);
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-P15162',50,false);
 //		y1 = shape_temp(x,y1,e,e/3,e/2,'E-P15071',50,false);
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-PD15010',50,false)+h/15;
-		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T15021',50,false);
+		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T15021',50,false);y2=y1;
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T15024',50,false);
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T15028',50,false);
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T15032',50,false);
 		y1 = shape_temp(x+l+20,y+h+5,e,e/3,e/2,'E-TY15012',50,false);
 		y1 = shape_temp(x+l/2,y+h+5,e,e/3,e/2,'E-TC15019',50,false);
+		y2 = shape_temp(x+3*l/4,y2,e,e/3,e/2,'E-T15006',50,false);
+		y2 = shape_temp(x+3*l/4,y2,e,e/3,e/2,'E-TC15005',50,false);
+		y2 = shape_temp(x+l,y2,e,e/3,e/2,'E-T15099',50,false);
+		y2 = shape_temp(x+l-l/7,y+h/15,e,e/3,e/2,'E-PS15007',50,false);
 	}
 	// réacteur K18000
-	let K18000 = {x:700, y:100, e: 15};
+	let K18000 = {x:800, y:70, e: 15, xl: 0};
 	with (K18000) {
 		let i =0;
-		const {h,l} = shape_cuve(x,y,e,'K18000',shape.cuveV,1); y1 = y+ h/8; x += 3;
+		const {h,l} = shape_cuve(x,y,e,'Europe 2',shape.cuveV,1); xl = x+l; y1 = y+ h/8; x += 3;
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T18008',50,false);
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-P18162',50,false);
 //		y1 = shape_temp(x,y1,e,e/3,e/2,'E-PC18071',50,false);
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-PD18010',50,false)+h/15;
-		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T18021',50,false);
+		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T18021',50,false);y2=y1;
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T18024',50,false);
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T18028',50,false);
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T18032',50,false);
 		y1 = shape_temp(x+l+20,y+h+5,e,e/3,e/2,'E-TY18012',50,false);
 		y1 = shape_temp(x+l/2,y+h+5,e,e/3,e/2,'E-TC18019',50,false);
+		y2 = shape_temp(x+3*l/4,y2,e,e/3,e/2,'E-T18006',50,false);
+		y2 = shape_temp(x+3*l/4,y2,e,e/3,e/2,'E-TC18005',50,false);
+		y2 = shape_temp(x+l,y2,e,e/3,e/2,'E-T18099',50,false);
+		y2 = shape_temp(x+l-l/7,y+h/15,e,e/3,e/2,'E-PS18007',50,false);
 	}
 	// GV 40
-	let E15500 = {x:800, y:400, e: 11};
+	let E15500 = {x:(K15000.xl+80), y:K15000.y, e: 11};
 	with (E15500) {
 		let i =0;
-		const {h,l} = shape_cuve(x,y,e,'E15500',shape.cuveV,0.5); y += 12, x += 3;
+		const {h,l} = shape_cuve(x,y,e,'E15500',shape.cuveV,0.7); y += 12, x += 3;
 		shape_level(x+l-15,y,e,h-e*2,10,'E-LC15504',50,false);
 		y = shape_temp(x,y,e,e/3,e/2,'E-PC15506',50,false);
 		y = shape_temp(x,y,e,e/3,e/2,'E-LS15503',50,false);
 	}
 	// GV 10
-	let E15600 = {x:880, y:430, e: 11};
+	let E15600 = {x:(K15000.xl+160), y:(K15000.y+90), e: 11};
 	with (E15600) {
 		let i =0;
-		const {h,l} = shape_cuve(x,y,e,'E15600',shape.cuveV,0.5); y += 12, x += 3;
+		const {h,l} = shape_cuve(x,y,e,'E15600',shape.cuveV,0.7); y += 12, x += 3;
 		shape_level(x+l-15,y,e,h-e*2,10,'E-LC15604',50,false);
 		y = shape_temp(x,y,e,e/3,e/2,'E-PC15606',50,false);
 		y = shape_temp(x,y,e,e/3,e/2,'E-LS15603',50,false);
 	}
 	// GV 40
-	let E18500 = {x:800, y:100, e: 11};
+	let E18500 = {x:(K18000.xl+80), y:K18000.y, e: 11};
 	with (E18500) {
 		let i =0;
-		const {h,l} = shape_cuve(x,y,e,'E18500',shape.cuveV,0.5); y += 12, x += 3;
+		const {h,l} = shape_cuve(x,y,e,'E18500',shape.cuveV,0.7); y += 12, x += 3;
 		shape_level(x+l-15,y,e,h-e*2,10,'E-LC18504',50,false);
 		y = shape_temp(x,y,e,e/3,e/2,'E-PC18506',50,false);
 		y = shape_temp(x,y,e,e/3,e/2,'E-LS18503',50,false);
 	}
 	// GV 10
-	let E18600 = {x:880, y:130, e: 11};
+	let E18600 = {x:(K18000.xl+160), y:(K18000.y+90), e: 11};
 	with (E18600) {
 		let i =0;
-		const {h,l} = shape_cuve(x,y,e,'E18600',shape.cuveV,0.5); y += 12, x += 3;
+		const {h,l} = shape_cuve(x,y,e,'E18600',shape.cuveV,0.7); y += 12, x += 3;
 		shape_level(x+l-15,y,e,h-e*2,10,'E-LC18604',50,false);
 		y = shape_temp(x,y,e,e/3,e/2,'E-PC18606',50,false);
 		y = shape_temp(x,y,e,e/3,e/2,'E-LS18603',50,false);
+	}
+	// Condenseur
+	let E15100 = {x:(K15000.x+100), y:(K15000.y+235), e: 2};
+	with (E15100) {
+		const {h,l} = shape_cuve(x,y,e,'E15100',shape.cuveH,1)
+		shape_temp(x+l/4,y+h/4,5,3,8,'E-T15101',50,false);
+		shape_temp(x+l,y-h/4,5,3,8,'E-P15104',50,false);
+//		shape_temp(x+20,y+40,5,3,8,'E-TC15102',50,false);
+	}
+	let E18100 = {x:(K18000.x+100), y:(K18000.y+235), e: 2};
+	with (E18100) {
+		const {h,l} = shape_cuve(x,y,e,'E18100',shape.cuveH,1)
+		shape_temp(x+l/4,y+h/4,5,3,8,'E-T18101',50,false);
+		shape_temp(x+l,y-h/4,5,3,8,'E-P15104',50,false);
+//		shape_temp(x+20,y+40,5,3,8,'E-TC15102',50,false);
 	}
 
 }
@@ -455,12 +585,14 @@ function shape_cuve (x,y,ech,id,forme,rot) {
 			.attr('x',(0.5*l/ech)).attr('y',(0.5*h/ech/7))
             .style('text-anchor', 'middle').style('fill','black').style('font-size',10/ech)
             .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+        itemData[id] = {x:(x+l/2),y:y,h:h,l:0};
  	return {h: h, l: l};
 }
 function shape_level (x,y,ech,h,l,id,val,status) {
 	liste3.push(id);// ech = 5;// h= ech *10; l=2*ech;
-	let level = svg.append('g').selectAll('g').data([0]).enter().append('g')
-					.attr('transform','translate('+x+','+y+')').raise(); // scale('+ech+')').raise();
+	let level = svg.append('g').selectAll('g').data([id]).enter().append('g')
+					.attr('transform','translate('+x+','+y+')').raise()
+					.on('click',getHistorique); // scale('+ech+')').raise();
 		level.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',1).style('stroke-width',1)
 			 .style('stroke','#666').style('fill','#fff').attr('id',id+'_s');
 		level.append('rect').attr('width',(l-2)).attr('x',2).attr('y',(h*(100-val)/100)+1).attr('height',(h*val/100)).raise()
@@ -470,29 +602,89 @@ function shape_level (x,y,ech,h,l,id,val,status) {
 			.attr('x',(0.7*l)).attr('y',(0.5*h))
             .style('text-anchor', 'middle').style('fill','black').style('font-size',1.5*5)
             .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+        itemData[id] = {x:x,y:y,h:h,l:l};
 		return;
 }
+function shape_vanne (x,y,ech,h,l,id,val,status) {
+	liste3.push(id);// 
+	h= ech ; l=10.2*ech;
+	let vanne = svg.append('g').selectAll('g').data([id]).enter().append('g')
+					.attr('transform','translate('+x+','+y+')').raise()
+					.on('click',getHistorique); // scale('+ech+')').raise();
+		vanne.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',ech*2).style('stroke-width',1)
+			 .style('stroke','#666').style('fill','#fff').attr('id',id+'_v');
+		vanne.append('rect').attr('height',(h)).attr('y',ech*2).attr('x',1).attr('width',(l*val/100)).raise()
+			.attr('id',id+'_val')
+			.style('stroke-width',1).style('stroke','#666').style('fill',status?'#00b':'#ccc');
+		vanne.append('text').text(val).attr('id',id+'_txt').raise()
+			.attr('x',(0.5*l)).attr('y',(0.5*h*2))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',1.5*5)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+
+        itemData[id] = {x:x,y:y,h:ech*4,l:l};
+		return (y+h*4);
+}
 function shape_temp (x,y,ech,h,l,id,val,status) {
-	liste3.push(id); ech = 5; h= ech *3.7; l=9*ech;
-	let temp = svg.append('g').selectAll('g').data([0]).enter().append('g')
-					.attr('transform','translate('+x+','+y+')').raise(); // scale('+ech+')').raise();
-		temp.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',1).style('stroke-width',1).style('stroke','#666').style('fill','#fff').style('rx',1).style('ry',1).attr('id',id+'_r');
+	liste3.push(id); ech = 5; h= ech *3.9; l=10.2*ech;
+	let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
+					.attr('transform','translate('+x+','+y+')').raise()
+					.on('click',getHistorique)
+					.on('mouseover',(d) => {
+                            d3.selectAll('#'+d+'_r').style('fill','red');  })
+					.on('mouseout',(d) => {
+                            d3.selectAll('#'+d+'_r').style('fill','white');  }); // scale('+ech+')').raise();
+		temp.append('rect').attr('width',l).attr('height',h).attr('x',0).attr('y',0).style('stroke-width',1).style('stroke','#666').style('fill','#fff').style('rx',1).style('ry',1).attr('id',id+'_r');
 		temp.append('text').text(val).attr('id',id+'_txt')
 			.attr('x',(0.52*l)).attr('y',(0.8*h))
-            .style('text-anchor', 'middle').style('fill','black').style('font-size',1.5*ech)
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',1.7*ech)
             .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
 		temp.append('text').text(val) // no id
 			.attr('x',(0.52*l)).attr('y',(0.4*h))
-            .style('text-anchor', 'middle').style('fill','black').style('font-size',1.5*ech)
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',1.7*ech)
             .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue")
             .text(id);
 //        temp.append('circle').attr('r',1).attr('cx',1).attr('cy',1).style('fill','red').attr('id',id+'_c');
+        itemData[id] = {x:x,y:y,h:h,l:l};
 		return (y+h*1.1);
+}
+function path_item () {
+	let lineP = d3.line()
+    	.x((d) => { return d.x;})
+    	.y((d) => { return d.y;})
+        .curve(d3.curveMonotoneX);
+
+    let data2=[], data3 = [];
+    pathData.forEach((a)=>{
+    	console.log(a);
+    	data2=[];
+    	data2.push({x:(itemData[a.source].x + itemData[a.source].l),y:(itemData[a.source].y+(itemData[a.source].l==0?0:0.5)*itemData[a.source].h)});
+    	data2.push({x:(itemData[a.cible].x), y:(itemData[a.cible].y+(itemData[a.cible].l==0?0:0.5)*itemData[a.cible].h)});
+    	data3.push({values:data2});
+    });
+//    let data3 = [{values:data2}];
+
+console.log('PATH',data3);
+	d3.select('#flow').remove();
+	let path = svg.append('g').attr('id','flow').attr("fill", "none").attr("stroke", "currentColor")
+	.selectAll('path').data(data3).enter()
+	.append('path')
+		.attr('class','g_line')
+    	.attr("d", d => { return lineP(d.values);})
+        .style("stroke", '#103060').style("stroke-width", "3px");
 }
 function update_level(id,val,unit,status){ //console.log('rect_s',id);
 	try {
 		let h = d3.select(id+'_s').node().getBoundingClientRect().height; 
 		d3.selectAll(id+'_val').attr('y',(h*(100-val)/100)+1).attr('height',(h*val/100)).style('fill',status?'#0e0':'black');
+	} catch (error) {
+	  // not level
+	}
+	d3.selectAll(id+'_txt').text(valFormat(val)+' '+unit);
+}
+function update_vanne(id,val,unit,status){ //console.log('rect_s',id);
+	try {
+		let l = d3.select(id+'_v').node().getBoundingClientRect().width; 
+		d3.selectAll(id+'_val').attr('x',1).attr('width',(l*val/100)).style('fill',status?'#0e0':'black');
 	} catch (error) {
 	  // not level
 	}
@@ -525,11 +717,11 @@ function aff_valeur() {
 //--------------
 // on affiche les listes de valeur sur le coté ...
 function aff_liste_T(liste,decalage) {
-	let h_g= height-50-20;
-	let inc = 0.96*h_g/liste.length;
-	let w = 0.10;
+	let h_g= height-65;
+	let inc = 0.97*h_g/liste.length;
+	let w = 0.06; decalage = (1-w)*width;
     let liste_T = svg.append('g').selectAll('g').data(liste).enter().append('g')
-                        .attr('transform', (d,i)=> {return 'translate('+(decalage)+','+(0.02*h_g+50 +i*inc)+')';})
+                        .attr('transform', (d,i)=> {return 'translate('+(decalage)+','+(51+i*inc)+')';})
                         .on('click',refresh)
                         .on('mouseover',(d,i)=> {
                             d3.selectAll('#rect_refresh'+d).style('fill','red');
@@ -541,16 +733,191 @@ function aff_liste_T(liste,decalage) {
         liste_T.append('rect').attr('rx',1).attr('ry',1).attr('id',(d,i) => { return 'rect_refresh'+d; })
             .attr('width',(w*width)).attr('height',(inc-2)).style('fill', '#1e3F5E'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
         liste_T.append('text').attr('x',(w/2*width)) //.attr('y',10)
-            .attr('y',(inc/2+2)).attr('id',d=>{return d}) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
+            .attr('y',(inc/2+1)).attr('id',d=>{return d}) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
             .style('text-anchor', 'middle').style('fill','white')
-            .style('font-weight', 'normal').style(  'font-family',"helvetica neue")//'dominant-baseline','middle')
-            .text('val').style('font-size','0.9vw')
+            .style('font-weight', 'normal').style(  'font-family','arial') //"helvetica neue")//'dominant-baseline','middle')
+            .text('val').style('font-size','0.6vw')
             .on('mouseover',d=>{d3.select('#'+d).text(d)})
             .on('mouseout',d=>{d3.select('#'+d).text(valFormat(dashData[d][0].values[0].value)+' '+dashData[d][0].unit)});
         liste_T.append('circle').attr('cx',5).attr('cy',5).attr('id',d=>{return (d+'_c')})
             .attr('r',(4)).style('fill', 'yellow'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
 }
+//------
+    function aff_histo (){
+        d3.select("#histo").remove();
+        console.log('histData',histData);
+        affiche_curve(histData[0],"Histo",svg);
+//        affiche_curve(dReg[getIndexdata('fullFR')].data.slice(),"fullFR",svgfrAll);
+	path_item();
+    }
+
+//-----------------------------------------------------------
+//-  CURVE / LINE CHART STANDARD
+//-----
+//
+    function affiche_curve(dMult, selectValue, svgAff) {
+//    console.log('dMult',dMult);
+    //console.log(svgAff);
+//    let w_g = svgAff._groups[0][0].attributes[1].nodeValue-margin.left-margin.right , //-margin.padding,
+//        h_g = svgAff._groups[0][0].attributes[2].nodeValue-margin.top-margin.bottom
+	let w_g = (width/2)-100, h_g = (height/2)-100,
+        n_ticks = (w_g/15 | 0); //-h_header;//-margin.padding;
+    //console.log(dMult[0].name,'x',w_g,'y',h_g);
+	//	let w_g=width-margin.left-margin.right-margin.padding, h_g=height-margin.top-margin.bottom-h_header-margin.padding;
+    // ontrace des courbes
+    const x = d3.scaleLinear()
+        .range([0, w_g]); //width-margin.left-margin.right-margin.padding]);
+    const y = d3.scaleLinear()
+        .range([h_g,0]);
+//    const yR = d3.scaleLinear() //right scale
+ //       .range([h_g,0]);
+//    const yL = d3.scaleSymlog()
+//        .range([h_g,0]);
+    var line = d3.line()
+        .x(function(d) { return x(d.timestamp); }) //vep
+        .y(function(d) { return y(d.value);}) //(d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
+        .curve(d3.curveLinear);
+/*    var lineR = d3.line()
+        .x(function(d) { return x(d.timestamp); }) //vep
+        .y(function(d) { return yR(d.value);}) //(d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
+        .curve(d3.curveCardinal);*/
+	x.domain([
+        d3.min(histData, function(c) {
+        return d3.min(c.values, function(v) {
+        return v.timestamp; });}),
+        d3.max(histData, function(c) {
+        return d3.max(c.values, function(v) {
+        return v.timestamp; });})]);
+	y.domain([0, d3.max(histData, function(c) {
+      	return d3.max(c.values, function(v) { //console.log(v);
+        return v.value; });})]);
+/*	yL.domain([0, d3.max(dMult, function(c) {
+      	return d3.max(c.values, function(v) {
+        return v.value; });})]);
+
+    yR.domain([0, d3.max(dMult, function(c) { //console.log(c);
+        return c.scale==0?0:d3.max(c.values, function(v) {
+        return v.value; });})]);
+*/
+//    let index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
+//    let indexReg=dReg.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
+//console.log(line(histData[0].values));
+	const g_line = svgAff
+	    .append("g").attr('id','histo')
+	    .attr("class","g_line")
+    	.attr("transform", "translate(" + (45) + "," + (height/2) + ")");
+    // Ajout de l'axe X
+    g_line.append("g")
+        .attr("transform", "translate(0," + (h_g) + ")")
+        .call(d3.axisBottom(x).ticks(n_ticks).tickFormat(d3.timeFormat("%d/ %H:%M")))
+//        .call(d3.axisBottom(x).ticks(dHist[0].values.length-1).tickFormat(d3.timeFormat("%a %d/%m")))
+        .selectAll("text")	
+        	.style("text-anchor", "end")
+        	.attr("dx", "-.8em")
+        	.attr("dy", ".15em")
+        	.attr("transform", "rotate(-65)");
+    // Ajout de l'axe Y et du texte associé pour la légende
+    g_line.append("g")
+        .call(d3.axisLeft(y))
+        .append("text")
+            .attr("fill", "#000")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", "0.71em")
+            .style("text-anchor", "end")
+            .text(histData[0].unit);
+    // Ajout de l'axe yR et du texte associé pour la légende
+/*    g_line.append("g").attr('transform','translate('+(w_g)+',0)')
+        .call(d3.axisRight(yR))
+        .append("text")
+            .attr("fill", "#000")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", "0.71em")
+            .style("text-anchor", "end")
+            .text("#");*/
+    // on trace toutes les courbes
+//    console.log(dMult.values[0],y(dMult.values[0].value),x(dMult.values[0].timestamp));
+    var g_lines = g_line.selectAll(".selected").raise()
+        .data(histData).enter().append("g")
+        .attr("class", "selected");
+
+    g_lines.append("path")
+        .attr("class", "line")
+        .attr("id",(d,i)=>{return "l"+i;})//.transition().duration(2000)
+        .attr("d", (d)=>{ return line(histData[0].values);})
+//        .attr("d", (d)=>{return d.scale==0?line(d.values):lineR(d.values);})
+        .style("stroke", function(d,i) { return couleur[(i*5)%nbCouleur];}).style("stroke-width", "3px");
+    // curseur
+    var class_mpl = 'mpl'+selectValue, class_ml='ml'+selectValue;
+	var mouseG = g_line.append("g").lower()
+  		.attr("class", "mouse-over-effects");
+	mouseG.append("path")
+		.attr("class", class_ml)
+		.style("stroke", "grey")
+		.style("stroke-width", "1px").style("stroke-dasharray",2)
+		.style("opacity", "1");
+	var mousePerLine = mouseG.selectAll('.'+class_mpl)
+		.data(histData).enter()
+ 		.append("g").attr("class", class_mpl);
+    // reperage du point d'intersection curseur/courbe
+	mousePerLine.append("circle")
+		.attr("r", 3)
+		.style("stroke", function (d,i) { return couleur[(i*5)%nbCouleur];})
+		.style("fill", "none").style("stroke-width", "2px").style("opacity", "0");
+	mousePerLine.append("text")
+    	.attr("class", "hover-text").style('font-size','1.5vh').style("font-family","arial") //"HelveticaNeue-Light")
+    	.attr("dy", "0.1em")
+    	.attr("transform", "translate(10,3)");
+	mouseG.append('rect') 
+		.attr('width', w_g) .attr('height', h_g)
+		.attr('fill', 'none')
+		.attr('pointer-events', 'all')
+		.on('mouseout', function () { // on mouse out hide line, circles and text
+  			d3.select("."+class_ml).style("opacity", "0");
+			d3.selectAll("."+class_mpl+" circle").style("opacity", "0");
+			d3.selectAll("."+class_mpl+" text").style("opacity", "0");
+			})
+		.on('mouseover', function () { // on mouse in show line, circles and text
+			d3.select("."+class_ml).style("opacity", "1");
+			d3.selectAll("."+class_mpl+" circle").style("opacity", "1");
+			d3.selectAll("."+class_mpl+" text").style("opacity", "1");
+  			})
+		.on('mousemove', function () { // mouse moving over canvas
+			var mouse = d3.mouse(this);
+				d3.selectAll("."+class_mpl)
+      				.attr("transform", function (d, i) {
+						var xDate = x.invert(mouse[0]),
+							bisect = d3.bisector(function (d) { return d.timestamp; }).left;
+							idx = bisect(d.values, xDate); //console.log(idx,d.values[idx].date);
+                            try {
+                            laDate = d.values[idx].timestamp; //ep .toLocaleDateString("fr-FR"); //console.log(laDate);
+                            laDateX = x(d.values[idx].timestamp); //console.log('laDateX',laDateX);
+                            d3.select("#laDate").attr("x",laDateX).text(laDate);} catch{ console.log('erreur 1');}
+                            try {
+							  d3.select(this).select('text')
+								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(1))+" ["+d.dataReference+"]");
+							  d3.select("."+class_ml)
+								.attr("d", function () {
+									var data = "M" + x(d.values[idx].timestamp) + "," + h_g;
+										data += " " + x(d.values[idx].timestamp) + "," + 0; //console.log(data);
+									return data; });
+							  return "translate(" + (x(histData[0].values[idx].timestamp)) + "," + ((y(histData[0].values[idx].value)) )+ ")";
+                            } catch {console.log('erreur2');}
+					});
+  			});
+    var legendM = g_lines.append("g")
+        .attr("class","legend")
+        .attr("transform",(d,i)=>{ return "translate(50,"+(30+i*16)+")";});
+        legendM.append('circle')
+            .attr('r',5).attr('cx',1).attr('cy',2).style('fill',(d,i)=>{return couleur[(i*5)%nbCouleur];})
+            .on('mouseover',function(d,i){ d3.select(this).style('fill','blue').attr('r',7);})
+            .on('mouseout',function(d,i){ d3.select(this).style('fill',couleur[(i*5)%nbCouleur]).attr('r',5);});
+        legendM.append("text").style("font-size","1.7vh").attr('x',10).attr('y',6).style('text-anchor','start').style("font-family","arial")
+            .text((d)=>{return d.dataReference;});
+
+	}
 //----------------------------------------------------------------
 //
 function clearSVG() {
