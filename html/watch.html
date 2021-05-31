@@ -191,7 +191,10 @@ input:focus {
     				{source:'E-FC15167',cible:'E-CV15167A'},
     				{source:'E-FC18167',cible:'E-CV18167'},
     				{source:'E-CV15167A',cible:'Pyrénées'},
-    				{source:'E-CV18167',cible:'Europe 2'}
+    				{source:'E-CV18167',cible:'Europe 2'},
+    				{source:'E-FCV14325',cible:'E-FCS14325'},
+    				{source:'E-CV16325A',cible:'E-FC16325'},
+    				{source:'E-CV16325B',cible:'E-FC16325'}
     				];
     let itemData = [];
 	// Chart dimensions.
@@ -471,7 +474,7 @@ function affiche_trame() {
 		y2 = shape_temp(x+l-l/7,y+h/15,e,e/3,e/2,'E-PS18007',50,false);
 	}
 // bache à sel Py
-	let R19900 = {x:(K15000.x-170), y:(height*0.72), e: 4};
+	let R19900 = {x:(K15000.x*0.8), y:(height*0.72), e: 4};
 	with (R19900) {
 		const {h,l} = shape_cuve(x,y,e,'R19900',shape.cuveH,1)
 		shape_level(x+l-5*7,y,7,h,15,'E-LX19901',50,false);
@@ -484,7 +487,7 @@ function affiche_trame() {
 		shape_temp(x,y-40,5,3,8,'E-AO19992',50,false);
 	}
 // bache à sel E2
-	let R19000 = {x:(K18000.x-170), y:(height*0.22), e: 4};
+	let R19000 = {x:(K18000.x*0.8), y:(height*0.22+50), e: 4};
 	with (R19000) {
 		const {h,l} = shape_cuve(x,y,e,'R19000',shape.cuveH,1)
 		shape_level(x+l-5*7,y,7,h,15,'E-LX19001',50,false);
@@ -808,8 +811,9 @@ function aff_liste_T(liste,decalage) {
 	    .append("g").attr('id','histo')
 	    .attr("class","g_line")
     	.attr("transform", "translate(" + (45) + "," + (height/2) + ")");
+//    g_line.append('rect').attr('width',w_g).attr('height',h_g).style('fill','#333').style('opacity',0.2);
     // Ajout de l'axe X
-    g_line.append("g")
+    g_line.append("g").raise()
         .attr("transform", "translate(0," + (h_g) + ")")
         .call(d3.axisBottom(x).ticks(n_ticks).tickFormat(d3.timeFormat("%d/ %H:%M")))
 //        .call(d3.axisBottom(x).ticks(dHist[0].values.length-1).tickFormat(d3.timeFormat("%a %d/%m")))
