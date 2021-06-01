@@ -180,21 +180,25 @@ input:focus {
     let liste2 = ['E-PS15007','E-T15006','E-TC15002','E-TC15005','E-TY15004','E-T15401'];
     */
     let liste3 = []; //['E-F15154','E-FC15167','E-P15104','E-P16151','E-PO16151','E-T15106','E-TC15103'];
-    let pathData = [{source:'E-FCS14325',cible:'E-TC17601'},
-    				{source:'E-FCS12085',cible:'E-TC17601'},
-    				{source:'E-FC16325',cible:'E-TC17601'},
-    				{source:'E-FC12001',cible:'E-CV12086A'},
-    				{source:'E-CV12086A',cible:'E-FCS12085'},
-    				{source:'E-FS31053',cible:'E-CV12086A'},
-    				{source:'E-TC17601',cible:'E-FC18167'},
-    				{source:'E-TC17601',cible:'E-FC15167'},
-    				{source:'E-FC15167',cible:'E-CV15167A'},
-    				{source:'E-FC18167',cible:'E-CV18167'},
-    				{source:'E-CV15167A',cible:'Pyrénées'},
-    				{source:'E-CV18167',cible:'Europe 2'},
-    				{source:'E-FCV14325',cible:'E-FCS14325'},
-    				{source:'E-CV16325A',cible:'E-FC16325'},
-    				{source:'E-CV16325B',cible:'E-FC16325'}
+    let pathData = [{source:'E-FCS14325',cible:'E-TC17601',color:'blue', i:0,o:0},
+    				{source:'E-FCS12085',cible:'E-TC17601',color:'black', i:0,o:0},
+    				{source:'E-FC16325',cible:'E-TC17601',color:'red', i:0,o:0},
+    				{source:'E-FC12001',cible:'E-CV12086A',color:'black', i:0,o:0},
+    				{source:'E-CV12086A',cible:'E-FCS12085',color:'black', i:0,o:0},
+    				{source:'E-FS31053',cible:'E-CV12086A',color:'grey', i:0,o:0},
+    				{source:'E-TC17601',cible:'E-CV18167',color:'green', i:0,o:0},
+    				{source:'E-TC17601',cible:'E-CV15167A',color:'green', i:0,o:0},
+                    {source:'E-TC17601',cible:'E-CV15167B',color:'green', i:0,o:0},
+    				{source:'E-CV15167A',cible:'E-FC15167',color:'green', i:0,o:0},
+                    {source:'E-CV15167B',cible:'E-FC15167',color:'green', i:0,o:0},
+                    {source:'E-CV18167',cible:'E-F18161',color:'green', i:0,o:0},
+    				{source:'E-FC15167',cible:'Pyrénées',color:'green', i:0,o:1},
+    				{source:'E-F18161',cible:'Europe 2',color:'green', i:0,o:1},
+    				{source:'E-FCV14325',cible:'E-FCS14325',color:'blue', i:0,o:0},
+    				{source:'E-CV16325A',cible:'E-FC16325',color:'red', i:0,o:0},
+    				{source:'E-CV16325B',cible:'E-FC16325',color:'red', i:0,o:0},
+                    {source:'Pyrénées',cible:'E15100',color:'yellow', i:1,o:0},
+                    {source:'Europe 2',cible:'E18100',color:'yellow', i:1,o:0}
     				];
     let itemData = [];
 	// Chart dimensions.
@@ -231,9 +235,9 @@ function getValeur() {
 //    let hour = now.getHours()+offset/60;
 //	now.setHours(hour);
 	now.setMinutes(now.getMinutes()-11);
-	console.log('heure',now,end);
+//	console.log('heure',now,end);
     urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
-    console.log(urlTime);
+//    console.log(urlTime);
     url = urlBase+encodeURIComponent('E-T15099')+urlTime+'&resolution=PT1H';
     getDashData(url,'coucou','#info');
 //    getValeurListe(urlTime,listeT1);
@@ -241,6 +245,7 @@ function getValeur() {
 //    getValeurListe(urlTime,liste1);
 //    getValeurListe(urlTime,liste2);
     getValeurListe(urlTime,liste3);
+    getHistorique('E-T15008');
 }
 function getValeurListe(urlTime,liste) {
 	liste.forEach( tag => {
@@ -249,7 +254,7 @@ function getValeurListe(urlTime,liste) {
 	});
 }
 function getHistorique(d) {
-	console.log(d);
+//	console.log(d);
     let now = new Date(Date.now());
     let end = new Date(Date.now());
 //    let offset = now.getTimezoneOffset();
@@ -257,13 +262,13 @@ function getHistorique(d) {
 //	now.setHours(hour);
 	now.setHours(now.getHours()-48);
 	end.setHours(end.getHours()+0.2);
-	console.log('heure',now,end);
+//	console.log('heure',now,end);
     urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
-    console.log(urlTime);
+//    console.log(urlTime);
 	url = urlBase+encodeURIComponent(d)+urlTime+'&resolution=PT15M'; // PnYnMnD  TnHnMnS
-	console.log(urlTime,url);
+//	console.log(urlTime,url);
 	getHistData(url,d,'#'+d);
-	console.log('data read ?');
+//	console.log('data read ?');
 }
 //----------------------------------------------------------------------------------------
 //- lecture du dashboard ...
@@ -419,18 +424,18 @@ function affiche_trame() {
 //réchauffeur
 		x += w_i*1.5; y1=y2;
 		y2 = shape_temp(x,y1,e,3,8,'E-TC17601',50,false);
+// ouverture
+        x += w_i;
+        y2 = shape_vanne(x,y1-20,e,1,2,'E-CV18167',50,false) +30;
+        y2 = shape_vanne(x,y2,e,1,2,'E-CV15167A',50,false);
+        y2 = shape_vanne(x,y2,e,1,2,'E-CV15167B',50,false);
 //débits
 		x += w_i;
-		y2 = shape_temp(x,y1-20,e,3,8,'E-FC18167',50,false) +30;
+		y2 = shape_temp(x,y1-20,e,3,8,'E-F18161',50,false) +30;
 		y2 = shape_temp(x,y2,e,3,8,'E-FC15167',50,false);
 		y2 = shape_temp(x,y2,e,3,8,'E-F15161',50,false);
 		y2 = shape_temp(x,y2,e,3,8,'E-PY15071',50,false);
 		y2 = shape_temp(x,y1-42,e,3,8,'E-PY18071',50,false);
-// ouverture
-		x += w_i;
-		y2 = shape_vanne(x,y1-20,e,1,2,'E-CV18167',50,false) +30;
-		y2 = shape_vanne(x,y2,e,1,2,'E-CV15167A',50,false);
-		y2 = shape_vanne(x,y2,e,1,2,'E-CV15167B',50,false);
 	}
 
 	// réacteur K15000
@@ -566,8 +571,42 @@ function affiche_trame() {
 	with (E18100) {
 		const {h,l} = shape_cuve(x,y,e,'E18100',shape.cuveH,1)
 		shape_temp(x+l/4,y+h/4,5,3,8,'E-T18101',50,false);
-		shape_temp(x+l,y-h/4,5,3,8,'E-P15104',50,false);
+		shape_temp(x+l,y-h/4,5,3,8,'E-P18104',50,false);
 //		shape_temp(x+20,y+40,5,3,8,'E-TC15102',50,false);
+	}
+	let E15300 = {x:(K15000.x*1.12), y:(K15000.y+height/8.7), e: 2};
+	with (E15300) {
+		shape_level(x,y-35,e,24,6,'E-LS15301',50,false);
+		shape_level(x+w_i/2,y-35,e,24,6,'E-LS15302',50,false);
+		shape_motor(x+w_i/4,y-35,e,10,2,'E-JY15306',50,false);
+		y1=shape_temp(x,y,5,3,8,'E-T15307',50,false);
+		y1=shape_temp(x,y1,5,3,8,'E-T15308',50,false);
+//		shape_temp(x+20,y+40,5,3,8,'E-TC15102',50,false);
+	}
+	let E15700 = {x:(K15000.x*1.21), y:(K15000.y+height/4.7), e: 2};
+	with (E15700) {
+		shape_level(x,y-35,e,24,6,'E-LS15701',50,false);
+//		shape_level(x+w_i/2,y-35,e,24,6,'E-LS15302',50,false);
+		shape_motor(x+w_i/4,y-35,e,10,2,'E-JY15706',50,false);
+		y1=shape_temp(x,y,5,3,8,'E-T15707',50,false);
+		y1=shape_temp(x,y1,5,3,8,'E-T15708',50,false);
+	}
+	let E18300 = {x:(K18000.x*1.12), y:(K18000.y+height/8.7), e: 2};
+	with (E18300) {
+		shape_level(x,y-35,e,24,6,'E-LS18301',50,false);
+		shape_level(x+w_i/2,y-35,e,24,6,'E-LS18302',50,false);
+		shape_motor(x+w_i/4,y-35,e,10,2,'E-JY18306',50,false);
+		y1=shape_temp(x,y,5,3,8,'E-T18307',50,false);
+		y1=shape_temp(x,y1,5,3,8,'E-T18308',50,false);
+//		shape_temp(x+20,y+40,5,3,8,'E-TC15102',50,false);
+	}
+	let E18700 = {x:(K18000.x*1.21), y:(K18000.y+height/4.7), e: 2};
+	with (E18700) {
+		shape_level(x,y-35,e,24,6,'E-LS18701',50,false);
+//		shape_level(x+w_i/2,y-35,e,24,6,'E-LS15302',50,false);
+		shape_motor(x+w_i/4,y-35,e,10,2,'E-JY18706',50,false);
+		y1=shape_temp(x,y,5,3,8,'E-T18707',50,false);
+		y1=shape_temp(x,y1,5,3,8,'E-T18708',50,false);
 	}
 
 }
@@ -589,7 +628,7 @@ function shape_cuve (x,y,ech,id,forme,rot) {
 			.attr('x',(0.5*l/ech)).attr('y',(0.5*h/ech/7))
             .style('text-anchor', 'middle').style('fill','black').style('font-size',10/ech)
             .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
-        itemData[id] = {x:(x+l/2),y:y,h:h,l:0};
+        itemData[id] = {x:x,y:y,h:h,l:l};
  	return {h: h, l: l};
 }
 function shape_level (x,y,ech,h,l,id,val,status) {
@@ -608,6 +647,25 @@ function shape_level (x,y,ech,h,l,id,val,status) {
             .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
         itemData[id] = {x:x,y:y,h:h,l:l};
 		return;
+}
+function shape_motor (x,y,ech,h,l,id,val,status) {
+	liste3.push(id);// 
+	h= ech ;
+	let vanne = svg.append('g').selectAll('g').data([id]).enter().append('g')
+					.attr('transform','translate('+(x+h)+','+(y+h)+')').raise()
+					.on('click',getHistorique); // scale('+ech+')').raise();
+//		vanne.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',ech*2).style('stroke-width',1)
+//			 .style('stroke','#666').style('fill','#fff').attr('id',id+'_v');
+		vanne.append('circle').attr('r',h*ech).raise()
+			.attr('id',id+'_val')
+			.style('stroke-width',1).style('stroke','#666').style('fill',status?'#00b':'#ccc');
+		vanne.append('text').text(val).attr('id',id+'_txt').raise()
+			.attr('x',(0.5*l)).attr('y',(0.5*h*2))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',1.5*5)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+
+        itemData[id] = {x:x,y:y,h:ech*4,l:l};
+		return (y+h*4);
 }
 function shape_vanne (x,y,ech,h,l,id,val,status) {
 	liste3.push(id);// 
@@ -659,22 +717,30 @@ function path_item () {
 
     let data2=[], data3 = [];
     pathData.forEach((a)=>{
-    	console.log(a);
+//    	console.log(a);
     	data2=[];
-    	data2.push({x:(itemData[a.source].x + itemData[a.source].l),y:(itemData[a.source].y+(itemData[a.source].l==0?0:0.5)*itemData[a.source].h)});
-    	data2.push({x:(itemData[a.cible].x), y:(itemData[a.cible].y+(itemData[a.cible].l==0?0:0.5)*itemData[a.cible].h)});
-    	data3.push({values:data2});
+        let x1 = (itemData[a.source].x + itemData[a.source].l * (a.i==0?1:0.5) ), 
+            y1 = (itemData[a.source].y + itemData[a.source].h * (a.i==0?0.5:1));
+        let x2 = (itemData[a.cible].x  + itemData[a.cible].l  * (a.o==0?0.0:0.5) ),
+            y2 = (itemData[a.cible].y  + itemData[a.cible].h  * (a.o==0?0.5:0));
+//        let x1 = (itemData[a.source].x + itemData[a.source].l), y1 = (itemData[a.source].y+(itemData[a.source].l==0?0:0.5)*itemData[a.source].h);
+//        let x2 = (itemData[a.cible].x), y2 = (itemData[a.cible].y+(itemData[a.cible].l==0?0:0.5)*itemData[a.cible].h);
+    	data2.push({x:x1,y:y1});
+        data2.push({x:x1+(a.i==0?3:0),y:y1+(a.i==0?0:8)});
+        data2.push({x:x2-(a.o==0?3:0),y:y2-(a.o==0?0:8)});
+    	data2.push({x:x2, y:y2});
+    	data3.push({values:data2,color:a.color});
     });
 //    let data3 = [{values:data2}];
 
-console.log('PATH',data3);
+//  console.log('PATH',data3);
 	d3.select('#flow').remove();
 	let path = svg.append('g').attr('id','flow').attr("fill", "none").attr("stroke", "currentColor")
 	.selectAll('path').data(data3).enter()
 	.append('path')
 		.attr('class','g_line')
     	.attr("d", d => { return lineP(d.values);})
-        .style("stroke", '#103060').style("stroke-width", "3px");
+        .style("stroke", d=>d.color).style("stroke-width", "2px");
 }
 function update_level(id,val,unit,status){ //console.log('rect_s',id);
 	try {
@@ -703,7 +769,7 @@ function aff_valeur() {
                         .on('click',refresh)
                         .on('mouseover',(d,i)=> {
                             d3.selectAll('#rect_refresh'+i).style('fill','red');
-                            console.log(d,i);  })
+                              })
                         .on('mouseout',(d,i)=> {
                             d3.selectAll('#rect_refresh'+i).style('fill','#337')  });
 
@@ -853,7 +919,7 @@ function aff_liste_T(liste,decalage) {
         .attr("id",(d,i)=>{return "l"+i;})//.transition().duration(2000)
         .attr("d", (d)=>{ return line(histData[0].values);})
 //        .attr("d", (d)=>{return d.scale==0?line(d.values):lineR(d.values);})
-        .style("stroke", function(d,i) { return couleur[(i*5)%nbCouleur];}).style("stroke-width", "3px");
+        .style("stroke", function(d,i) { return couleur[(i*5)%nbCouleur];}).style("stroke-width", "1px");
     // curseur
     var class_mpl = 'mpl'+selectValue, class_ml='ml'+selectValue;
 	var mouseG = g_line.append("g").lower()
@@ -897,12 +963,15 @@ function aff_liste_T(liste,decalage) {
 							bisect = d3.bisector(function (d) { return d.timestamp; }).left;
 							idx = bisect(d.values, xDate); //console.log(idx,d.values[idx].date);
                             try {
-                            laDate = d.values[idx].timestamp; //ep .toLocaleDateString("fr-FR"); //console.log(laDate);
+                            laDate = new Date(d.values[idx].timestamp); //.toLocaleDateString("fr-FR");
+                            laDateText = laDate.getHours()+':'+laDate.getMinutes();
+//                            console.log(laDate.getHours());
                             laDateX = x(d.values[idx].timestamp); //console.log('laDateX',laDateX);
-                            d3.select("#laDate").attr("x",laDateX).text(laDate);} catch{ console.log('erreur 1');}
+                        //    d3.select("#laDate").attr("x",laDateX).text(laDate);
+                        } catch{ console.log('erreur 1');}
                             try {
 							  d3.select(this).select('text')
-								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(1))+" ["+d.dataReference+"]");
+								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(1))+" ["+(laDateText)+"]"); //d.dataReference
 							  d3.select("."+class_ml)
 								.attr("d", function () {
 									var data = "M" + x(d.values[idx].timestamp) + "," + h_g;
