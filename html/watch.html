@@ -4,7 +4,7 @@
 <meta name="author" content="e-Coucou">
 <html class="rky">
 <meta charset="utf-8">
-<title>Pirénées 2.0</title>
+<title>Pyrénées 2.0</title>
 <style>
 @import url(../css/new.css);
 .rky header {
@@ -144,7 +144,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Watch 2.0</div>
-  <aside >April, 2021<br><br> | v 0.11</aside>
+  <aside >April, 2021<br><br> | v 0.20</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -396,6 +396,7 @@ var shape = { cuveV : 'M 0,0 L 1,0 M 0,0 L 0,1 Q 3,-1 6,1 L 6,12 Q 3,14 0,12 Z',
 function affiche_trame() {
 	//intervalles largeur / hauteur
 	let w_i = (width/2/8) ; h_i = height/2/15;
+    let init_w = width/6;
 	let alim = {x:w_i*0.2, y:60, e: 4};
 	with (alim) {
 //		const {h,l} = shape_cuve(x,y,e,'R19900',shape.cuveH,1)
@@ -439,7 +440,7 @@ function affiche_trame() {
 	}
 
 	// réacteur K15000
-	let K15000 = {x:(width*0.65), y:(height/2+20), e: 15, xl:0};
+	let K15000 = {x:(width*0.63), y:(height/2+20), e: 15, xl:0};
 	with (K15000) {
 		let i =0;
 		const {h,l} = shape_cuve(x,y,e,'Pyrénées',shape.cuveV,1); xl = x+l;y1 = y+ h/8; x += 3;
@@ -459,7 +460,7 @@ function affiche_trame() {
 		y2 = shape_temp(x+l-l/7,y+h/15,e,e/3,e/2,'E-PS15007',50,false);
 	}
 	// réacteur K18000
-	let K18000 = {x:(width*0.65), y:(60), e: 15, xl: 0};
+	let K18000 = {x:(width*0.63), y:(60), e: 15, xl: 0};
 	with (K18000) {
 		let i =0;
 		const {h,l} = shape_cuve(x,y,e,'Europe 2',shape.cuveV,1); xl = x+l; y1 = y+ h/8; x += 3;
@@ -479,7 +480,7 @@ function affiche_trame() {
 		y2 = shape_temp(x+l-l/7,y+h/15,e,e/3,e/2,'E-PS18007',50,false);
 	}
 // bache à sel Py
-	let R19900 = {x:(K15000.x*0.8), y:(height*0.72), e: 4};
+	let R19900 = {x:(width*0.48), y:(height*0.72), e: 4};
 	with (R19900) {
 		const {h,l} = shape_cuve(x,y,e,'R19900',shape.cuveH,1)
 		shape_level(x+l-5*7,y,7,h,15,'E-LX19901',50,false);
@@ -492,7 +493,7 @@ function affiche_trame() {
 		shape_temp(x,y-40,5,3,8,'E-AO19992',50,false);
 	}
 // bache à sel E2
-	let R19000 = {x:(K18000.x*0.8), y:(height*0.22+50), e: 4};
+	let R19000 = {x:(width*0.48), y:(height*0.22+50), e: 4};
 	with (R19000) {
 		const {h,l} = shape_cuve(x,y,e,'R19000',shape.cuveH,1)
 		shape_level(x+l-5*7,y,7,h,15,'E-LX19001',50,false);
@@ -524,7 +525,7 @@ function affiche_trame() {
 		y = shape_temp(x,y,e,3,e,'E-TDX18407',50,false);
 	}
 	// GV 40
-	let E15500 = {x:(K15000.xl+80), y:(K15000.y), e: 11};
+	let E15500 = {x:(width * 7/9), y:(K15000.y), e: 11};
 	with (E15500) {
 		let i =0;
 		const {h,l} = shape_cuve(x,y,e,'E15500',shape.cuveV,0.7); y += 12, x += 3;
@@ -533,7 +534,7 @@ function affiche_trame() {
 		y = shape_temp(x,y,e,e/3,e/2,'E-LS15503',50,false);
 	}
 	// GV 10
-	let E15600 = {x:(K15000.xl+160), y:(K15000.y+90), e: 11};
+	let E15600 = {x:(width*5/6), y:(K15000.y+90), e: 11};
 	with (E15600) {
 		let i =0;
 		const {h,l} = shape_cuve(x,y,e,'E15600',shape.cuveV,0.7); y += 12, x += 3;
@@ -542,7 +543,7 @@ function affiche_trame() {
 		y = shape_temp(x,y,e,e/3,e/2,'E-LS15603',50,false);
 	}
 	// GV 40
-	let E18500 = {x:(K18000.xl+80), y:K18000.y, e: 11};
+	let E18500 = {x:(width*7/9), y:K18000.y, e: 11};
 	with (E18500) {
 		let i =0;
 		const {h,l} = shape_cuve(x,y,e,'E18500',shape.cuveV,0.7); y += 12, x += 3;
@@ -551,7 +552,7 @@ function affiche_trame() {
 		y = shape_temp(x,y,e,e/3,e/2,'E-LS18503',50,false);
 	}
 	// GV 10
-	let E18600 = {x:(K18000.xl+160), y:(K18000.y+90), e: 11};
+	let E18600 = {x:(width*5/6), y:(K18000.y+90), e: 11};
 	with (E18600) {
 		let i =0;
 		const {h,l} = shape_cuve(x,y,e,'E18600',shape.cuveV,0.7); y += 12, x += 3;
@@ -560,21 +561,21 @@ function affiche_trame() {
 		y = shape_temp(x,y,e,e/3,e/2,'E-LS18603',50,false);
 	}
 	// Condenseur
-	let E15100 = {x:(K15000.x+100), y:(K15000.y+235), e: 2};
+	let E15100 = {x:(K15000.x*1.1), y:(K15000.y+235), e: 2};
 	with (E15100) {
 		const {h,l} = shape_cuve(x,y,e,'E15100',shape.cuveH,1)
 		shape_temp(x+l/4,y+h/4,5,3,8,'E-T15101',50,false);
 		shape_temp(x+l,y-h/4,5,3,8,'E-P15104',50,false);
 //		shape_temp(x+20,y+40,5,3,8,'E-TC15102',50,false);
 	}
-	let E18100 = {x:(K18000.x+100), y:(K18000.y+235), e: 2};
+	let E18100 = {x:(K18000.x*1.1), y:(K18000.y+235), e: 2};
 	with (E18100) {
 		const {h,l} = shape_cuve(x,y,e,'E18100',shape.cuveH,1)
 		shape_temp(x+l/4,y+h/4,5,3,8,'E-T18101',50,false);
 		shape_temp(x+l,y-h/4,5,3,8,'E-P18104',50,false);
 //		shape_temp(x+20,y+40,5,3,8,'E-TC15102',50,false);
 	}
-	let E15300 = {x:(K15000.x*1.12), y:(K15000.y+height/8.7), e: 2};
+	let E15300 = {x:(width*0.72), y:(K15000.y+height/8.7), e: 2};
 	with (E15300) {
 		shape_level(x,y-35,e,24,6,'E-LS15301',50,false);
 		shape_level(x+w_i/2,y-35,e,24,6,'E-LS15302',50,false);
@@ -583,7 +584,7 @@ function affiche_trame() {
 		y1=shape_temp(x,y1,5,3,8,'E-T15308',50,false);
 //		shape_temp(x+20,y+40,5,3,8,'E-TC15102',50,false);
 	}
-	let E15700 = {x:(K15000.x*1.21), y:(K15000.y+height/4.7), e: 2};
+	let E15700 = {x:(width*0.78), y:(K15000.y+height/4.7), e: 2};
 	with (E15700) {
 		shape_level(x,y-35,e,24,6,'E-LS15701',50,false);
 //		shape_level(x+w_i/2,y-35,e,24,6,'E-LS15302',50,false);
@@ -591,7 +592,7 @@ function affiche_trame() {
 		y1=shape_temp(x,y,5,3,8,'E-T15707',50,false);
 		y1=shape_temp(x,y1,5,3,8,'E-T15708',50,false);
 	}
-	let E18300 = {x:(K18000.x*1.12), y:(K18000.y+height/8.7), e: 2};
+	let E18300 = {x:(width*0.72), y:(K18000.y+height/8.7), e: 2};
 	with (E18300) {
 		shape_level(x,y-35,e,24,6,'E-LS18301',50,false);
 		shape_level(x+w_i/2,y-35,e,24,6,'E-LS18302',50,false);
@@ -600,7 +601,7 @@ function affiche_trame() {
 		y1=shape_temp(x,y1,5,3,8,'E-T18308',50,false);
 //		shape_temp(x+20,y+40,5,3,8,'E-TC15102',50,false);
 	}
-	let E18700 = {x:(K18000.x*1.21), y:(K18000.y+height/4.7), e: 2};
+	let E18700 = {x:(width*0.78), y:(K18000.y+height/4.7), e: 2};
 	with (E18700) {
 		shape_level(x,y-35,e,24,6,'E-LS18701',50,false);
 //		shape_level(x+w_i/2,y-35,e,24,6,'E-LS15302',50,false);
