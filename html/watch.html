@@ -144,7 +144,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Watch 2.0</div>
-  <aside >April, 2021<br><br> | v 0.20</aside>
+  <aside >April, 2021<br><br> | v 0.21</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -180,25 +180,27 @@ input:focus {
     let liste2 = ['E-PS15007','E-T15006','E-TC15002','E-TC15005','E-TY15004','E-T15401'];
     */
     let liste3 = []; //['E-F15154','E-FC15167','E-P15104','E-P16151','E-PO16151','E-T15106','E-TC15103'];
-    let pathData = [{source:'E-FCS14325',cible:'E-TC17601',color:'blue', i:0,o:0},
-    				{source:'E-FCS12085',cible:'E-TC17601',color:'black', i:0,o:0},
-    				{source:'E-FC16325',cible:'E-TC17601',color:'red', i:0,o:0},
-    				{source:'E-FC12001',cible:'E-CV12086A',color:'black', i:0,o:0},
-    				{source:'E-CV12086A',cible:'E-FCS12085',color:'black', i:0,o:0},
-    				{source:'E-FS31053',cible:'E-CV12086A',color:'grey', i:0,o:0},
-    				{source:'E-TC17601',cible:'E-CV18167',color:'green', i:0,o:0},
-    				{source:'E-TC17601',cible:'E-CV15167A',color:'green', i:0,o:0},
-                    {source:'E-TC17601',cible:'E-CV15167B',color:'green', i:0,o:0},
-    				{source:'E-CV15167A',cible:'E-FC15167',color:'green', i:0,o:0},
-                    {source:'E-CV15167B',cible:'E-FC15167',color:'green', i:0,o:0},
-                    {source:'E-CV18167',cible:'E-F18161',color:'green', i:0,o:0},
-    				{source:'E-FC15167',cible:'Pyrénées',color:'green', i:0,o:1},
-    				{source:'E-F18161',cible:'Europe 2',color:'green', i:0,o:1},
-    				{source:'E-FCV14325',cible:'E-FCS14325',color:'blue', i:0,o:0},
-    				{source:'E-CV16325A',cible:'E-FC16325',color:'red', i:0,o:0},
-    				{source:'E-CV16325B',cible:'E-FC16325',color:'red', i:0,o:0},
-                    {source:'Pyrénées',cible:'E15100',color:'yellow', i:1,o:0},
-                    {source:'Europe 2',cible:'E18100',color:'yellow', i:1,o:0}
+    let pathData = [{source:'E-FCS14325',cible:'E-TC17601',color:'blue', i:0,o:0,e:3},
+    				{source:'E-FCS12085',cible:'E-TC17601',color:'black', i:0,o:0,e:5},
+    				{source:'E-FC16325',cible:'E-TC17601',color:'red', i:0,o:0,e:2},
+    				{source:'E-FC12001',cible:'E-CV12086A',color:'black', i:0,o:0,e:5},
+    				{source:'E-CV12086A',cible:'E-FCS12085',color:'black', i:0,o:0,e:6},
+    				{source:'E-FS31053',cible:'E-CV12086A',color:'grey', i:0,o:0,e:2},
+    				{source:'E-TC17601',cible:'E-CV18167',color:'green', i:0,o:0,e:5},
+    				{source:'E-TC17601',cible:'E-CV15167A',color:'green', i:0,o:0,e:3},
+                    {source:'E-TC17601',cible:'E-CV15167B',color:'green', i:0,o:0,e:2},
+    				{source:'E-CV15167A',cible:'E-FC15167',color:'green', i:0,o:0,e:3},
+                    {source:'E-CV15167B',cible:'E-FC15167',color:'green', i:0,o:0,e:2},
+                    {source:'E-CV18167',cible:'E-F18161',color:'green', i:0,o:0,e:5},
+    				{source:'E-FC15167',cible:'Pyrénées',color:'green', i:0,o:1,e:4},
+    				{source:'E-F18161',cible:'Europe 2',color:'green', i:0,o:1,e:5},
+    				{source:'E-FCV14325',cible:'E-FCS14325',color:'blue', i:0,o:0,e:3},
+    				{source:'E-CV16325A',cible:'E-FC16325',color:'red', i:0,o:0,e:1},
+    				{source:'E-CV16325B',cible:'E-FC16325',color:'red', i:0,o:0,e:1},
+                    {source:'Pyrénées',cible:'E15100',color:'yellow', i:1,o:0,e:4},
+                    {source:'Europe 2',cible:'E18100',color:'yellow', i:1,o:0,e:5},
+                    {source:'E15100',cible:'E-TC15202',color:'yellow', i:0,o:0,e:4},
+                    {source:'E18100',cible:'E-TC18202',color:'yellow', i:0,o:0,e:5}
     				];
     let itemData = [];
 	// Chart dimensions.
@@ -567,14 +569,14 @@ function affiche_trame() {
 		const {h,l} = shape_cuve(x,y,e,'E15100',shape.cuveH,1)
 		shape_temp(x+l/4,y+h/4,5,3,8,'E-T15101',50,false);
 		shape_temp(x+l,y-h/4,5,3,8,'E-P15104',50,false);
-//		shape_temp(x+20,y+40,5,3,8,'E-TC15102',50,false);
+		shape_temp(x+l*3,y,5,3,8,'E-TC15202',50,false);
 	}
 	let E18100 = {x:(K18000.x*1.1), y:(K18000.y+235), e: 2};
 	with (E18100) {
 		const {h,l} = shape_cuve(x,y,e,'E18100',shape.cuveH,1)
 		shape_temp(x+l/4,y+h/4,5,3,8,'E-T18101',50,false);
 		shape_temp(x+l,y-h/4,5,3,8,'E-P18104',50,false);
-//		shape_temp(x+20,y+40,5,3,8,'E-TC15102',50,false);
+        shape_temp(x+l*3,y,5,3,8,'E-TC18202',50,false);
 	}
 	let E15300 = {x:(width*0.72), y:(K15000.y+height/8.7), e: 2};
 	with (E15300) {
@@ -729,10 +731,14 @@ function path_item () {
 //        let x1 = (itemData[a.source].x + itemData[a.source].l), y1 = (itemData[a.source].y+(itemData[a.source].l==0?0:0.5)*itemData[a.source].h);
 //        let x2 = (itemData[a.cible].x), y2 = (itemData[a.cible].y+(itemData[a.cible].l==0?0:0.5)*itemData[a.cible].h);
     	data2.push({x:x1,y:y1});
-        data2.push({x:x1+(a.i==0?3:0),y:y1+(a.i==0?0:8)});
-        data2.push({x:x2-(a.o==0?3:0),y:y2-(a.o==0?0:8)});
+        data2.push({x:x1+(a.i==0?3:0),y:y1+(a.i==0?0:5)});
+        if (a.o==1) {
+            let x3 = x1 + (x2-x1) /3 , y3 = y1 + 2*(y2-y1)/3;
+            data2.push({x:x3,y:y3});
+        }
+        data2.push({x:x2-(a.o==0?3:0),y:y2-(a.o==0?0:5)});
     	data2.push({x:x2, y:y2});
-    	data3.push({values:data2,color:a.color});
+    	data3.push({values:data2,color:a.color, stroke:a.e});
     });
 //    let data3 = [{values:data2}];
 
@@ -743,7 +749,7 @@ function path_item () {
 	.append('path')
 		.attr('class','g_line')
     	.attr("d", d => { return lineP(d.values);})
-        .style("stroke", d=>d.color).style("stroke-width", "2px");
+        .style("stroke", d=>d.color).style("stroke-width", d=>d.stroke);
 }
 function update_level(id,val,unit,status){ //console.log('rect_s',id);
 	try {
