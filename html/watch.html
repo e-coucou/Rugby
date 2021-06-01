@@ -447,6 +447,7 @@ function affiche_trame() {
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T15008',50,false);
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-P15162',50,false);
 //		y1 = shape_temp(x,y1,e,e/3,e/2,'E-P15071',50,false);
+        shape_temp(x+0.6*l,y1,e,e/3,e/2,'ROC_PY_Temp_Pt_Chaud_Max_Sonde1',50,false);
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-PD15010',50,false)+h/15;
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T15021',50,false);y2=y1;
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T15024',50,false);
@@ -701,7 +702,8 @@ function shape_temp (x,y,ech,h,l,id,val,status) {
 			.attr('x',(0.52*l)).attr('y',(0.8*h))
             .style('text-anchor', 'middle').style('fill','black').style('font-size',1.7*ech)
             .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
-		temp.append('text').text(val) // no id
+        if (id.length>15) {id='PtChaud';}
+		temp.append('text') // no id
 			.attr('x',(0.52*l)).attr('y',(0.4*h))
             .style('text-anchor', 'middle').style('fill','black').style('font-size',1.7*ech)
             .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue")
