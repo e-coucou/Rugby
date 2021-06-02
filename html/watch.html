@@ -144,7 +144,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Watch 2.0</div>
-  <aside >April, 2021<br><br> | v 0.31</aside>
+  <aside >April, 2021<br><br> | v 0.33</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -262,12 +262,12 @@ function getHistorique(d) {
 //    let offset = now.getTimezoneOffset();
 //    let hour = now.getHours()+offset/60;
 //	now.setHours(hour);
-	now.setHours(now.getHours()-48);
-	end.setHours(end.getHours()+0.2);
+	now.setHours(now.getHours()-12);
+	end.setHours(end.getHours()+0.0);
 //	console.log('heure',now,end);
     urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
 //    console.log(urlTime);
-	url = urlBase+encodeURIComponent(d)+urlTime+'&resolution=PT15M'; // PnYnMnD  TnHnMnS
+	url = urlBase+encodeURIComponent(d)+urlTime+'&resolution=PT1M'; // PnYnMnD  TnHnMnS
 //	console.log(urlTime,url);
 	getHistData(url,d,'#'+d);
 //	console.log('data read ?');
@@ -740,8 +740,9 @@ function path_item () {
             data2.push({x:x3,y:y3});
         }
         let color = '#777', stroke = 1;
-        if (dashData[a.anim].values.value>1)
-            { color = color, stroke = a.e ;
+        console.log(a.anim, dashData[a.anim][0]);
+        if (dashData[a.anim][0].values[0].value>0.1)
+            { color = a.color, stroke = a.e ;
             }
         data2.push({x:x2-(a.o==0?3:0),y:y2-(a.o==0?0:5)});
     	data2.push({x:x2, y:y2});
