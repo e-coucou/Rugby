@@ -144,7 +144,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Watch 2.0</div>
-  <aside >April, 2021<br><br> | v 0.42</aside>
+  <aside >April, 2021<br><br> | v 0.51</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -262,8 +262,8 @@ function getHistorique(d) {
 //    let offset = now.getTimezoneOffset();
 //    let hour = now.getHours()+offset/60;
 //	now.setHours(hour);
-	now.setHours(now.getHours()-12);
-	end.setHours(end.getHours()+0.0);
+	now.setHours(now.getHours()-48);
+	end.setHours(end.getHours()+0.1);
 //	console.log('heure',now,end);
     urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
 //    console.log(urlTime);
@@ -879,7 +879,11 @@ function aff_liste_T(liste,decalage) {
         d3.max(histData, function(c) {
         return d3.max(c.values, function(v) {
         return v.timestamp; });})]);
-	y.domain([0, d3.max(histData, function(c) {
+	y.domain([
+        d3.min(histData, function(c) {
+        return d3.min(c.values, function(v) {
+        return v.value; });})
+        , d3.max(histData, function(c) {
       	return d3.max(c.values, function(v) { //console.log(v);
         return v.value; });})]);
 /*	yL.domain([0, d3.max(dMult, function(c) {
