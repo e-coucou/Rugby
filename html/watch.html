@@ -144,7 +144,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Watch 2.0</div>
-  <aside >April, 2021<br><br> | v 0.33</aside>
+  <aside >April, 2021<br><br> | v 0.42</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -311,7 +311,7 @@ function getHistData(urldata,index,id) {
         return response.json();
         })
     .then(data => { 
-            histData=data;
+        histData = data;
 //            console.log(data);
 //            aff_histo();
             dispatch.call('histo');
@@ -581,39 +581,39 @@ function affiche_trame() {
 		shape_temp(x+l,y-h/4,5,3,8,'E-P18104',50,false);
         shape_temp(x+l*3,y+h/2,5,3,8,'E-TC18202',50,false);
 	}
-	let E15300 = {x:(width*0.72), y:(K15000.y+height/8.7), e: 2};
+	let E15300 = {x:(width*0.74), y:(K15000.y+height/8.7), e: 2};
 	with (E15300) {
-		shape_level(x,y-35,e,24,6,'E-LS15301',50,false);
-		shape_level(x+w_i/2,y-35,e,24,6,'E-LS15302',50,false);
-		shape_motor(x+w_i/4,y-35,e,10,2,'E-JY15306',50,false);
-		y1=shape_temp(x,y,5,3,8,'E-T15307',50,false);
-		y1=shape_temp(x,y1,5,3,8,'E-T15308',50,false);
+		shape_level(x-w_i/8,y-27,e,24,6,'E-LS15301',50,false);
+		shape_level(x+w_i/8,y-27,e,24,6,'E-LS15302',50,false);
+		shape_motor(x,y-35,e,10,2,'E-JY15306',50,false);
+		y1=shape_temp(x-w_i/4,y,5,3,8,'E-T15307',50,false);
+		y1=shape_temp(x-w_i/4,y1,5,3,8,'E-T15308',50,false);
 //		shape_temp(x+20,y+40,5,3,8,'E-TC15102',50,false);
 	}
-	let E15700 = {x:(width*0.78), y:(K15000.y+height/4.7), e: 2};
+	let E15700 = {x:(width*0.79), y:(K15000.y+height/4.7), e: 2};
 	with (E15700) {
-		shape_level(x,y-35,e,24,6,'E-LS15701',50,false);
+		shape_level(x-w_i/8,y-27,e,24,6,'E-LS15701',50,false);
 //		shape_level(x+w_i/2,y-35,e,24,6,'E-LS15302',50,false);
-		shape_motor(x+w_i/4,y-35,e,10,2,'E-JY15706',50,false);
-		y1=shape_temp(x,y,5,3,8,'E-T15707',50,false);
-		y1=shape_temp(x,y1,5,3,8,'E-T15708',50,false);
+		shape_motor(x,y-35,e,10,2,'E-JY15706',50,false);
+		y1=shape_temp(x-w_i/4,y,5,3,8,'E-T15707',50,false);
+		y1=shape_temp(x-w_i/4,y1,5,3,8,'E-T15708',50,false);
 	}
-	let E18300 = {x:(width*0.72), y:(K18000.y+height/8.7), e: 2};
+	let E18300 = {x:(width*0.74), y:(K18000.y+height/8.7), e: 2};
 	with (E18300) {
-		shape_level(x,y-35,e,24,6,'E-LS18301',50,false);
-		shape_level(x+w_i/2,y-35,e,24,6,'E-LS18302',50,false);
-		shape_motor(x+w_i/4,y-35,e,10,2,'E-JY18306',50,false);
-		y1=shape_temp(x,y,5,3,8,'E-T18307',50,false);
-		y1=shape_temp(x,y1,5,3,8,'E-T18308',50,false);
+		shape_level(x-w_i/8,y-27,e,24,6,'E-LS18301',50,false);
+		shape_level(x+w_i/8,y-27,e,24,6,'E-LS18302',50,false);
+		shape_motor(x,y-35,e,10,2,'E-JY18306',50,false);
+		y1=shape_temp(x-w_i/4,y,5,3,8,'E-T18307',50,false);
+		y1=shape_temp(x-w_i/4,y1,5,3,8,'E-T18308',50,false);
 //		shape_temp(x+20,y+40,5,3,8,'E-TC15102',50,false);
 	}
-	let E18700 = {x:(width*0.78), y:(K18000.y+height/4.7), e: 2};
+	let E18700 = {x:(width*0.79), y:(K18000.y+height/4.7), e: 2};
 	with (E18700) {
-		shape_level(x,y-35,e,24,6,'E-LS18701',50,false);
+		shape_level(x-w_i/8,y-27,e,24,6,'E-LS18701',50,false);
 //		shape_level(x+w_i/2,y-35,e,24,6,'E-LS15302',50,false);
-		shape_motor(x+w_i/4,y-35,e,10,2,'E-JY18706',50,false);
-		y1=shape_temp(x,y,5,3,8,'E-T18707',50,false);
-		y1=shape_temp(x,y1,5,3,8,'E-T18708',50,false);
+		shape_motor(x,y-35,e,10,2,'E-JY18706',50,false);
+		y1=shape_temp(x-w_i/4,y,5,3,8,'E-T18707',50,false);
+		y1=shape_temp(x-w_i/4,y1,5,3,8,'E-T18708',50,false);
 	}
 
 }
@@ -663,7 +663,7 @@ function shape_motor (x,y,ech,h,l,id,val,status) {
 					.on('click',getHistorique); // scale('+ech+')').raise();
 //		vanne.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',ech*2).style('stroke-width',1)
 //			 .style('stroke','#666').style('fill','#fff').attr('id',id+'_v');
-		vanne.append('circle').attr('r',h*ech).raise()
+		vanne.append('circle').attr('r',1).raise()
 			.attr('id',id+'_val')
 			.style('stroke-width',1).style('stroke','#666').style('fill',status?'#00b':'#ccc');
 		vanne.append('text').text(val).attr('id',id+'_txt').raise()
@@ -740,7 +740,7 @@ function path_item () {
             data2.push({x:x3,y:y3});
         }
         let color = '#777', stroke = 1;
-        console.log(a.anim, dashData[a.anim][0]);
+//        console.log(a.anim, dashData[a.anim][0]);
         if (dashData[a.anim][0].values[0].value>0.1)
             { color = a.color, stroke = a.e ;
             }
@@ -761,6 +761,7 @@ function path_item () {
 }
 function update_level(id,val,unit,status){ //console.log('rect_s',id);
 	try {
+        if (unit == "Ø") { val = val *100; unit = "%"}
 		let h = d3.select(id+'_s').node().getBoundingClientRect().height; 
 		d3.selectAll(id+'_val').attr('y',(h*(100-val)/100)+1).attr('height',(h*val/100)).style('fill',status?'#0e0':'black');
 	} catch (error) {
@@ -770,6 +771,7 @@ function update_level(id,val,unit,status){ //console.log('rect_s',id);
 }
 function update_vanne(id,val,unit,status){ //console.log('rect_s',id);
 	try {
+        if (unit == "Ø") { val = val *100; unit = "%"}
 		let l = d3.select(id+'_v').node().getBoundingClientRect().width; 
 		d3.selectAll(id+'_val').attr('x',1).attr('width',(l*val/100)).style('fill',status?'#0e0':'black');
 	} catch (error) {
@@ -805,10 +807,11 @@ function aff_valeur() {
 // on affiche les listes de valeur sur le coté ...
 function aff_liste_T(liste,decalage) {
 	let h_g= height-65;
-	let inc = 0.97*h_g/liste.length;
-	let w = 0.06; decalage = (1-w)*width;
+	let inc = Math.round(0.97*h_g/(liste.length/2));
+	let w = 0.03; decalage = (1-(w+0.0)*2)*width;
     let liste_T = svg.append('g').selectAll('g').data(liste).enter().append('g')
-                        .attr('transform', (d,i)=> {return 'translate('+(decalage)+','+(51+i*inc)+')';})
+                        .attr('transform', (d,i)=> 
+                            {return 'translate('+(decalage+(Math.round(i/liste.length)* (w * width +2)))+','+(51+ (i%(liste.length/2))*inc)+')';})
                         .on('click',refresh)
                         .on('mouseover',(d,i)=> {
                             d3.selectAll('#rect_refresh'+d).style('fill','red');
@@ -931,10 +934,14 @@ function aff_liste_T(liste,decalage) {
         .data(histData).enter().append("g")
         .attr("class", "selected");
 
+let tempData = histData;
+        tempData = tempData.map( o => { return o.values.filter( v=> { return v.value != null; }) });
+// console.log(tempData[0]);
+// console.log(histData[0].values);
     g_lines.append("path")
         .attr("class", "line")
         .attr("id",(d,i)=>{return "l"+i;})//.transition().duration(2000)
-        .attr("d", (d)=>{ return line(histData[0].values);})
+        .attr("d", (d)=>{ return line( tempData[0]); })       //histData[0].values);})
 //        .attr("d", (d)=>{return d.scale==0?line(d.values):lineR(d.values);})
         .style("stroke", function(d,i) { return couleur[(i*5)%nbCouleur];}).style("stroke-width", "1px");
     // curseur
