@@ -144,7 +144,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Watch 2.0</div>
-  <aside >April, 2021<br><br> | v 0.25</aside>
+  <aside >April, 2021<br><br> | v 0.31</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -247,7 +247,7 @@ function getValeur() {
 //    getValeurListe(urlTime,liste1);
 //    getValeurListe(urlTime,liste2);
     getValeurListe(urlTime,liste3);
-    getHistorique('E-T15008');
+    getHistorique('E-TC15002');
 }
 function getValeurListe(urlTime,liste) {
 	liste.forEach( tag => {
@@ -460,7 +460,8 @@ function affiche_trame() {
 		y2 = shape_temp(x+3*l/4,y2,e,e/3,e/2,'E-T15006',50,false);
 		y2 = shape_temp(x+3*l/4,y2,e,e/3,e/2,'E-TC15005',50,false);
 		y2 = shape_temp(x+l,y2,e,e/3,e/2,'E-T15099',50,false);
-		y2 = shape_temp(x+l-l/7,y+h/15,e,e/3,e/2,'E-PS15007',50,false);
+		y2 = shape_temp(x+l-l/7,y,e,e/3,e/2,'E-PS15007',50,false);
+        y2 = shape_temp(x+l-l/7,y2,e,e/3,e/2,'E-TC15002',50,false);
 	}
 	// réacteur K18000
 	let K18000 = {x:(width*0.63), y:(60), e: 15, xl: 0};
@@ -481,7 +482,8 @@ function affiche_trame() {
 		y2 = shape_temp(x+3*l/4,y2,e,e/3,e/2,'E-T18006',50,false);
 		y2 = shape_temp(x+3*l/4,y2,e,e/3,e/2,'E-TC18005',50,false);
 		y2 = shape_temp(x+l,y2,e,e/3,e/2,'E-T18099',50,false);
-		y2 = shape_temp(x+l-l/7,y+h/15,e,e/3,e/2,'E-PS18007',50,false);
+		y2 = shape_temp(x+l-l/7,y,e,e/3,e/2,'E-PS18007',50,false);
+        y2 = shape_temp(x+l-l/7,y2,e,e/3,e/2,'E-TC18002',50,false);
 	}
 // bache à sel Py
 	let R19900 = {x:(width*0.48), y:(height*0.72), e: 4};
