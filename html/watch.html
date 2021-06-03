@@ -144,7 +144,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Watch 2.0</div>
-  <aside >April, 2021<br><br> | v 0.51</aside>
+  <aside >April, 2021<br><br> | v 0.60</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -211,6 +211,7 @@ input:focus {
 	    nbCouleur = couleur.length;
 
 	var dashData=[],histData=[]; username='Username', password='Password';
+    var histList = ['E-TC15002'];
 	// Create the SVG container and set the origin.
 	const svg = d3.select('#chart').append("svg")
     	.attr("id", "svg")
@@ -223,6 +224,7 @@ input:focus {
 //    	.append('g').attr('transform','translate('+0+','+(height/2.0)+')').raise();
 	var dispatch = d3.dispatch('histo');
     dispatch.on('histo',aff_histo);
+    var t_cycle = setInterval(refreshData,60000);
 
 //credentials ...
 	let code =btoa(username+':'+password);
@@ -247,7 +249,7 @@ function getValeur() {
 //    getValeurListe(urlTime,liste1);
 //    getValeurListe(urlTime,liste2);
     getValeurListe(urlTime,liste3);
-    getHistorique('E-TC15002');
+    getHistorique(histList[0]);
 }
 function getValeurListe(urlTime,liste) {
 	liste.forEach( tag => {
@@ -257,12 +259,13 @@ function getValeurListe(urlTime,liste) {
 }
 function getHistorique(d) {
 //	console.log(d);
+    histList[0] = d;
     let now = new Date(Date.now());
     let end = new Date(Date.now());
 //    let offset = now.getTimezoneOffset();
 //    let hour = now.getHours()+offset/60;
 //	now.setHours(hour);
-	now.setHours(now.getHours()-48);
+	now.setHours(now.getHours()-24);
 	end.setHours(end.getHours()+0.1);
 //	console.log('heure',now,end);
     urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
@@ -621,6 +624,9 @@ function refresh() {
 	d3.selectAll('circle').style('fill','black');
 	d3.selectAll('rect').style('stroke','black');
 	getValeur();
+}
+function refreshData() {
+    refresh();
 }
 //-----------------------
 //
