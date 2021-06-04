@@ -149,7 +149,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Watch 2.0</div>
-  <aside >April, 2021<br><br> | v 0.89</aside>
+  <aside >April, 2021<br><br> | v 1.01</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -232,12 +232,13 @@ input:focus {
     var t_cycle = setInterval(refreshData,60000);
 // menu
 const data_menu = [
-        { n:0, x:-280, m:'trophy', a: 168 , val: '',http:'/RWC-2019.html'},  //th
-        { n:1, x:-280, m:'trophy', a: 48 , val: '',http:'/RWC-2019.html'},  //th
-        { n:2, x:-280, m:'trophy', a: 24 , val: '',http:'/RWC-2019.html'},  //th
-        { n:3, x:-280, m:'trophy', a: 12 , val: '',http:'/RWC-2019.html'},  //th
-        { n:4, x:-280, m:'trophy', a: 6 , val: '',http:'/RWC-2019.html'},  //th
-        { n:5, x:-280, m:'trophy', a: 2 , val: '',http:'/RWC-2019.html'},  //th
+        { n:0, x:-280, m:'trophy', a: 168 , val: '7j',http:'/RWC-2019.html'},  //th
+        { n:1, x:-280, m:'trophy', a: 48 , val: '48h',http:'/RWC-2019.html'},  //th
+        { n:2, x:-280, m:'trophy', a: 24 , val: '24h',http:'/RWC-2019.html'},  //th
+        { n:3, x:-280, m:'trophy', a: 12 , val: '12h',http:'/RWC-2019.html'},  //th
+        { n:4, x:-280, m:'trophy', a: 6 , val: '6h',http:'/RWC-2019.html'},  //th
+        { n:5, x:-280, m:'trophy', a: 2 , val: '2h',http:'/RWC-2019.html'},  //th
+ //       { n:7, x:-280, m:'trophy', a: 336 , val: '15j',http:'/RWC-2019.html'},  //th
     ];
 var svgMenu = d3.select("#menu").append("svg")
     .attr('width',45*data_menu.length).attr('height',40);
@@ -245,7 +246,7 @@ var menuG = svgMenu.selectAll('g').data(data_menu).enter()
         .append('g')
         .attr('transform',(d,i)=>{return 'translate('+(i*40+20)+',10)';})
         .on('click',clickMenu);
-let selGraphe = 1;
+let selGraphe = 3;
 var menuCircle=false, histTime = 48;
     menuG.append('rect').style('fill',(d,i)=>(d.n==selGraphe)?'#B233FF':'#4C33FF').attr('id','menuRect')
         .attr('r',17).attr('width',38).attr('height',39).attr('x',-8).attr('y',-9)
@@ -255,11 +256,16 @@ var menuCircle=false, histTime = 48;
         menuG.append('circle').style('fill',(d,i)=>(d.n==selGraphe)?'red':'#FE6FcE')
             .attr('r',17).attr('cx',(d,i)=>{return 10;}).attr('cy',10);
     }
+    menuG.append('text').attr('x',(13)) //.attr('y',10)
+            .attr('y',13).style('text-anchor', 'middle').style('fill','white')
+            .style('font-weight', 'bold').style('dominant-baseline','middle')
+            .text(f=>{return f.val;}).style('font-size','1vw');
 function clickMenu (d) {
     console.log(d);
     histTime = d.a; selGraphe = d.n;
+    d3.select('#menu').selectAll('rect').style('fill',(f,i)=>(f.n==selGraphe)?'#B233FF':'#4C33FF');
     switch (d.n) {
-        case 0 : refreshData(); break;
+        case 0 : break;
     }
     getHistorique(histList[0]);
 }
@@ -279,7 +285,7 @@ function getValeur() {
 //	console.log('heure',now,end);
     urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
 //    console.log(urlTime);
-    url = urlBase+encodeURIComponent('E-T15099')+urlTime+'&resolution=PT1H';
+    url = urlBase+encodeURIComponent('E-T15099')+urlTime+'&resolution=PT1M';
     getDashData(url,'coucou','#info');
 //    getValeurListe(urlTime,listeT1);
 //    getValeurListe(urlTime,listeT2);
@@ -290,7 +296,7 @@ function getValeur() {
 }
 function getValeurListe(urlTime,liste) {
 	liste.forEach( tag => {
-		url = urlBase+encodeURIComponent(tag)+urlTime+'&resolution=PT1H';
+		url = urlBase+encodeURIComponent(tag)+urlTime+'&resolution=PT1M';
 		getDashData(url,tag,'#'+tag);
 	});
 }
@@ -323,7 +329,10 @@ function getDashData (urldata,index,id) {
         })
     .then(data => { 
             dashData[index]=data;
-            let value = data[0].values[0].value, unit = data[0].unit;
+            let num = data[0].values.findIndex(x => x.value==null)-1;
+            //console.log('getData',data,test.lastIndexOf(null)); //data[0].values.lastIndexOf(x=>{ console.log(x);return x.value==null;}));
+            //console.log('getData', temp, num, data[0].values[num]);
+            let value = data[0].values[num].value, unit = data[0].unit;
 //            console.log(id,value);
             if (value != null) {
                 d3.selectAll(id+'_c').style('fill','#0f0');
@@ -343,6 +352,7 @@ function getDashData (urldata,index,id) {
 //        config.dataOK=false;
 		dashData[index]=[{values:[{timestamp:0,value:-1}],unit:' xxx'}];
         d3.selectAll(id).text(valFormat(-1)+' '+'xxx');
+        d3.selectAll(id+'_c').style('fill','#ff0');
       console.log(err);
     })   
 }
@@ -366,7 +376,7 @@ function getHistData(urldata,index,id) {
 }
 
 let valFormat = (a) => { 
-        let r = (a>1000) ? Math.round(a) : ( (a>10)? Math.round(a*10.0)/10 : Math.round(a*100.0)/100);
+        let r = (a>10) ? Math.round(a) : ( (a>1)? Math.round(a*10.0)/10 : Math.round(a*100.0)/100);
         return String(r).replace(/(.)(?=(\d{3})+$)/g,'$1 ');
 }
 var format = d3.timeFormat("%H:%M:%S");
@@ -447,6 +457,15 @@ function affiche_trame() {
 	with (alim) {
 //		const {h,l} = shape_cuve(x,y,e,'R19900',shape.cuveH,1)
 //		shape_level(x+l-5*7,y,7,h,15,'E-LX19901',50,false);
+//diver
+        yx = shape_temp(10,height/2-60,e,3,8,'ROC_Coef_Encra_Reacteur_PYRENEES',50,false);
+        yx = shape_temp(10,yx,e,3,8,'ROC_Coef_Encra_Reacteur_Europe2',50,false);
+        yx = shape_temp(10,yx,e,3,8,'ROC_E2_Prod_MMP_brut',50,false);
+        yx = shape_temp(w_i,height/2-60,e,3,8,'ROC_E2_QUR_Propyl'+'\u00e8'+'ne',50,false);
+        yx = shape_temp(w_i,yx,e,3,8,'ROC_K150_Cumul_C3H6',50,false);
+        yx = shape_temp(w_i,yx,e,3,8,'ROC_K180_Cumul_C3H6',50,false);
+        yx = shape_temp(2*w_i,height/2-60,e,3,8,'E-A15211-TCONV',50,false);
+        yx = shape_temp(2*w_i,yx,e,3,8,'E-A18211-TCONV',50,false);
 //off gaz
 		y1 = shape_temp(x,y,e,3,8,'E-FS31053',50,false);
 		y1 = shape_temp(x,y1,e,3,8,'E-PS31052',50,false);
@@ -886,7 +905,7 @@ function aff_liste_T(liste,decalage) {
         console.log('histData',histData);
         affiche_curve(histData[0],"Histo",svg);
 //        affiche_curve(dReg[getIndexdata('fullFR')].data.slice(),"fullFR",svgfrAll);
-	path_item();
+    path_item();
     }
 
 //-----------------------------------------------------------
@@ -1046,7 +1065,7 @@ let tempData = histData;
                         } catch{ console.log('erreur 1');}
                             try {
 							  d3.select(this).select('text')
-								.text(valFormat(y.invert(y(d.values[idx].value)).toFixed(1))+" ["+(laDateText)+"]"); //d.dataReference
+								.text((y.invert(y(d.values[idx].value)).toFixed(2))+" ["+(laDateText)+"]"); //d.dataReference avant valformat
 							  d3.select("."+class_ml)
 								.attr("d", function () {
 									var data = "M" + x(d.values[idx].timestamp) + "," + h_g;
