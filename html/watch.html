@@ -9,7 +9,7 @@
 @import url(../css/new.css);
 #menu {
     position : absolute;
-    left: 75%;
+    left: 65%;
     margin-top: 5px;
 }
 .rky header {
@@ -148,8 +148,8 @@ input:focus {
 }
 </style>
 <header>
-  <div id='h1'>Watch 2.0</div>
-  <aside >April, 2021<br><br> | v 1.01</aside>
+  <div id='h1'>Pyrénées/Pirineos</div>
+  <aside >April, 2021<br><br> | v 1.21</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -166,7 +166,7 @@ input:focus {
     </form></div>
   <footer>
   	<div>
-      <aside>(c) e-Coucou | y2kL | Avril, 2021</aside>
+      <aside>(c) e-Coucou | y2kL | Juin, 2021</aside>
       <aside id="date">time</aside>
     </div>
   </footer>
@@ -187,7 +187,7 @@ input:focus {
     let liste3 = []; //['E-F15154','E-FC15167','E-P15104','E-P16151','E-PO16151','E-T15106','E-TC15103'];
     let pathData = [{source:'E-FCS14325',cible:'E-TC17601',color:'blue', i:0,o:0,e:3,anim:'E-FCV14325'},
     				{source:'E-FCS12085',cible:'E-TC17601',color:'black', i:0,o:0,e:5,anim:'E-CV12086A'},
-    				{source:'E-FC16325',cible:'E-TC17601',color:'red', i:0,o:0,e:2,anim:'E-CV16325A'},
+    				{source:'E-FC16325',cible:'E-TC17601',color:'red', i:0,o:0,e:4,anim:'E-CV16325A'},
     				{source:'E-FC12001',cible:'E-CV12086A',color:'black', i:0,o:0,e:5,anim:'E-CV12086A'},
     				{source:'E-CV12086A',cible:'E-FCS12085',color:'black', i:0,o:0,e:6,anim:'E-CV12086A'},
     				{source:'E-FS31053',cible:'E-CV12086A',color:'grey', i:0,o:0,e:2,anim:'E-CV12086A'},
@@ -201,7 +201,7 @@ input:focus {
     				{source:'E-F18161',cible:'Europe 2',color:'green', i:0,o:1,e:5,anim:'E-CV18167'},
     				{source:'E-FCV14325',cible:'E-FCS14325',color:'blue', i:0,o:0,e:3,anim:'E-FCV14325'},
     				{source:'E-CV16325A',cible:'E-FC16325',color:'red', i:0,o:0,e:1,anim:'E-CV16325A'},
-    				{source:'E-CV16325B',cible:'E-FC16325',color:'red', i:0,o:0,e:1,anim:'E-CV16325B'},
+    				{source:'E-CV16325B',cible:'E-FC16325',color:'red', i:0,o:0,e:2,anim:'E-CV16325B'},
                     {source:'Pyrénées',cible:'E15100',color:'yellow', i:1,o:0,e:4,anim:'E-CV15167A'},
                     {source:'Europe 2',cible:'E18100',color:'yellow', i:1,o:0,e:5,anim:'E-CV18167'},
                     {source:'E15100',cible:'E-TC15202',color:'yellow', i:0,o:0,e:4,anim:'E-CV15167A'},
@@ -229,15 +229,17 @@ input:focus {
 //    	.append('g').attr('transform','translate('+0+','+(height/2.0)+')').raise();
 	var dispatch = d3.dispatch('histo');
     dispatch.on('histo',aff_histo);
-    var t_cycle = setInterval(refreshData,60000);
+    var t_cycle = setInterval(refreshData,300000);
 // menu
 const data_menu = [
-        { n:0, x:-280, m:'trophy', a: 168 , val: '7j',http:'/RWC-2019.html'},  //th
-        { n:1, x:-280, m:'trophy', a: 48 , val: '48h',http:'/RWC-2019.html'},  //th
-        { n:2, x:-280, m:'trophy', a: 24 , val: '24h',http:'/RWC-2019.html'},  //th
-        { n:3, x:-280, m:'trophy', a: 12 , val: '12h',http:'/RWC-2019.html'},  //th
-        { n:4, x:-280, m:'trophy', a: 6 , val: '6h',http:'/RWC-2019.html'},  //th
-        { n:5, x:-280, m:'trophy', a: 2 , val: '2h',http:'/RWC-2019.html'},  //th
+        { n:0, x:-320, m:'trophy', a: 720 , val: '30j',http:'/RWC-2019.html'},  //th
+        { n:1, x:-280, m:'trophy', a: 168 , val: '7j',http:'/RWC-2019.html'},  //th
+        { n:2, x:-280, m:'trophy', a: 72 , val: '72h',http:'/RWC-2019.html'},  //th
+        { n:3, x:-280, m:'trophy', a: 48 , val: '48h',http:'/RWC-2019.html'},  //th
+        { n:4, x:-280, m:'trophy', a: 24 , val: '24h',http:'/RWC-2019.html'},  //th
+        { n:5, x:-280, m:'trophy', a: 12 , val: '12h',http:'/RWC-2019.html'},  //th
+        { n:6, x:-280, m:'trophy', a: 6 , val: '6h',http:'/RWC-2019.html'},  //th
+        { n:7, x:-280, m:'trophy', a: 2 , val: '2h',http:'/RWC-2019.html'},  //th
  //       { n:7, x:-280, m:'trophy', a: 336 , val: '15j',http:'/RWC-2019.html'},  //th
     ];
 var svgMenu = d3.select("#menu").append("svg")
@@ -458,14 +460,26 @@ function affiche_trame() {
 //		const {h,l} = shape_cuve(x,y,e,'R19900',shape.cuveH,1)
 //		shape_level(x+l-5*7,y,7,h,15,'E-LX19901',50,false);
 //diver
-        yx = shape_temp(10,height/2-60,e,3,8,'ROC_Coef_Encra_Reacteur_PYRENEES',50,false);
-        yx = shape_temp(10,yx,e,3,8,'ROC_Coef_Encra_Reacteur_Europe2',50,false);
-        yx = shape_temp(10,yx,e,3,8,'ROC_E2_Prod_MMP_brut',50,false);
-        yx = shape_temp(w_i,height/2-60,e,3,8,'ROC_E2_QUR_Propyl'+'\u00e8'+'ne',50,false);
-        yx = shape_temp(w_i,yx,e,3,8,'ROC_K150_Cumul_C3H6',50,false);
-        yx = shape_temp(w_i,yx,e,3,8,'ROC_K180_Cumul_C3H6',50,false);
-        yx = shape_temp(2*w_i,height/2-60,e,3,8,'E-A15211-TCONV',50,false);
-        yx = shape_temp(2*w_i,yx,e,3,8,'E-A18211-TCONV',50,false);
+        yx = shape_temp(10,height/2-65,e,3,8,'ROC_Coef_Encra_Reacteur_PYRENEES',50,false,'Enc Py');
+        yx = shape_temp(10,yx,e,3,8,'ROC_Coef_Encra_Reacteur_Europe2',50,false,'Enc E2');
+        yx = shape_temp(10,yx,e,3,8,'ROC_E2_Prod_MMP_brut',50,false,'MMP B');
+        yx = shape_temp(w_i,height/2-65,e,3,8,'ROC_MMP_PROD_BRUT_TOT'+'\u00e8'+'ne',50,false,'MMP B');
+//        yx = shape_temp(w_i,height/2-65,e,3,8,'ROC_E2_QUR_Propyl'+'\u00e8'+'ne',50,false,'QUR C3 E3');
+        yx = shape_temp(w_i,yx,e,3,8,'ROC_K150_Cumul_C3H6',50,false,'C3 Py');
+        yx = shape_temp(w_i,yx,e,3,8,'ROC_K180_Cumul_C3H6',50,false,'C3 E2');
+        yx = shape_temp(2*w_i,height/2-65,e,3,8,'E-A15211-TCONV',50,false,'Tconv Py');
+        yx = shape_temp(2*w_i,yx,e,3,8,'E-A18211-TCONV',50,false,'TConv E2');
+        yx = shape_temp(3*w_i,height/2-65,e,3,8,'ROC_Masse_MMP_Net_Produite_MMPE2',50,false,'MMP');
+        yx = shape_temp(3*w_i,yx,e,3,8,'ROC_PY_Temp_Pt_Chaud_Max_SondPY_ZoneG2',50,false,'PY PtC G2');
+        yx = shape_temp(3*w_i,yx,e,3,8,'ROC_PY_Temp_Pt_Chaud_Max_SondPY_ZoneH1',50,false,'PY PtC H1');
+        yx = shape_temp(4*w_i,height/2-65,e,3,8,'ROC_Masse_MMP_Net_Produite_MMPE2',50,false,'MMP');
+        yx = shape_temp(4*w_i,yx,e,3,8,'ROC_E2_Temp_Pt_Chaud_Max_Sonde4_ZoneG2',50,false,'E2 PtC G2');
+        yx = shape_temp(4*w_i,yx,e,3,8,'ROC_E2_Temp_Pt_Chaud_Max_Sonde4_ZoneH1',50,false,'E2 PtC H1');
+        yx = shape_temp(5*w_i,height/2-65,e,3,8,'ROC_Masse_MMP_Net_Produite_MMPE2',50,false,'MMP');
+        yx = shape_temp(5*w_i,yx,e,3,8,'ROC_S1_Temp_Pt_Chaud_Max_Toutes_Sondes_ZoneG2',50,false,'S1 PtC G2');
+        yx = shape_temp(5*w_i,yx,e,3,8,'ROC_S1_Temp_Pt_Chaud_Max_Toutes_Sondes_ZoneH1',50,false,'S1 Ptc H1');
+        yx = shape_temp(6*w_i,height/2-65,e,3,8,'E-QUR-E2',50,false,'QUR E2');
+
 //off gaz
 		y1 = shape_temp(x,y,e,3,8,'E-FS31053',50,false);
 		y1 = shape_temp(x,y1,e,3,8,'E-PS31052',50,false);
@@ -484,12 +498,16 @@ function affiche_trame() {
 		y3 = shape_vanne(x-w_i,y1+70,e,3,8,'E-FCV14325',50,false);
 		y1 = shape_temp(x,y1+70,e,3,8,'E-FCS14325',50,false);
 //débit C3
+        y3 = shape_temp(10,y1+20,e,3,8,'E-FC16325-CPT',50,false,'Cpt C3');
 		y3 = shape_vanne(x-w_i,y1+20,e,3,8,'E-CV16325A',50,false);
 		y3 = shape_vanne(x-w_i,y1+40,e,3,8,'E-CV16325B',50,false);
 		y1 = shape_temp(x,y1+30,e,3,8,'E-FC16325',50,false);
 //réchauffeur
 		x += w_i*1.5; y1=y2;
 		y2 = shape_temp(x,y1,e,3,8,'E-TC17601',50,false);
+        y2 = shape_temp(x,y2,e,3,8,'ROC_Debit_massique_entree_Reacteur_Europe2',50,false,'F Total');
+        y2 = shape_temp(x,y2,e,3,8,'E-CONS-UCS17501',50,false,'C3/O2');
+        y2 = shape_temp(x,y2,e,3,8,'E-CONS-UCS17001',50,false,'O2/Inerte');
 // ouverture
         x += w_i;
         y2 = shape_vanne(x,y1-20,e,1,2,'E-CV18167',50,false) +30;
@@ -512,12 +530,28 @@ function affiche_trame() {
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T15008',50,false);
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-P15162',50,false);
 //		y1 = shape_temp(x,y1,e,e/3,e/2,'E-P15071',50,false);
-        shape_temp(x+0.6*l,y1,e,e/3,e/2,'ROC_PY_Temp_Pt_Chaud_Max_Sonde1',50,false);
-		y1 = shape_temp(x,y1,e,e/3,e/2,'E-PD15010',50,false)+h/15;
-		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T15021',50,false);y2=y1;
-		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T15024',50,false);
-		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T15028',50,false);
-		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T15032',50,false);
+        shape_temp(x+0.6*l,y1,e,e/3,e/2,'ROC_PY_Temp_Pt_Chaud_Max_Sonde1',50,false,'Py PtC');
+		y1 = shape_temp(x,y1-5,e,e/3,e/2,'E-PD15010',50,false)+h/15;y3=y1;
+		y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15221',50,false);y2=y1; //021
+		y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15222',50,false); //024
+		y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15223',50,false); // 28
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15224',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15225',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15226',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15227',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15228',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15229',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15230',50,false); //32
+        y1 = shape_sonde(x+l/3,y3,e,e/3,e/2,'E-T15241',50,false); //y2=y1; //021
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15242',50,false); //024
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15243',50,false); // 28
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15244',50,false); //32
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15245',50,false); //32
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15246',50,false); //32
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15247',50,false); //32
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15248',50,false); //32
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15249',50,false); //32
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15250',50,false); //32
 		y1 = shape_temp(x+l+20,y+h+5,e,e/3,e/2,'E-TY15012',50,false);
 		y1 = shape_temp(x+l/2,y+h+5,e,e/3,e/2,'E-TC15019',50,false);
 		y2 = shape_temp(x+3*l/4,y2,e,e/3,e/2,'E-T15006',50,false);
@@ -534,12 +568,32 @@ function affiche_trame() {
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T18008',50,false);
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-P18162',50,false);
 //		y1 = shape_temp(x,y1,e,e/3,e/2,'E-PC18071',50,false);
-        shape_temp(x+0.6*l,y1,e,e/3,e/2,'ROC_E2_Temp_Pt_Chaud_Max_Sonde1',50,false);
-		y1 = shape_temp(x,y1,e,e/3,e/2,'E-PD18010',50,false)+h/15;
-		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T18021',50,false);y2=y1;
-		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T18024',50,false);
-		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T18028',50,false);
-		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T18032',50,false);
+        shape_temp(x+0.6*l,y1,e,e/3,e/2,'ROC_E2_Temp_Pt_Chaud_Max_Toutes_Sondes',50,false);
+		y1 = shape_temp(x,y1,e,e/3,e/2,'E-PD18010',50,false)+h/15;y3=y1
+//		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T18021',50,false);y2=y1;
+//		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T18024',50,false);
+//		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T18028',50,false);
+//		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T18032',50,false);
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T18221',50,false);y2=y1; //021
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T18222',50,false); //024
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T18233',50,false); // 28
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T18224',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T18225',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T18226',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T18227',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T18228',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T18229',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T18230',50,false); //32
+        y1 = shape_sonde(x+l/3,y3,e,e/3,e/2,'E-T18241',50,false); //y2=y1; //021
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T18242',50,false); //024
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T18243',50,false); // 28
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T18244',50,false); //32
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T18245',50,false); //32
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T18246',50,false); //32
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T18247',50,false); //32
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T18248',50,false); //32
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T18249',50,false); //32
+        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T18250',50,false); //32
 		y1 = shape_temp(x+l+20,y+h+5,e,e/3,e/2,'E-TY18012',50,false);
 		y1 = shape_temp(x+l/2,y+h+5,e,e/3,e/2,'E-TC18019',50,false);
 		y2 = shape_temp(x+3*l/4,y2,e,e/3,e/2,'E-T18006',50,false);
@@ -548,6 +602,20 @@ function affiche_trame() {
 		y2 = shape_temp(x+l-l/7,y,e,e/3,e/2,'E-PS18007',50,false);
         y2 = shape_temp(x+l-l/7,y2,e,e/3,e/2,'E-TC18002',50,false);
 	}
+// Samourai
+ y1=60; x=width*0.9;e=15;
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18041',50,false);; //021
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18042',50,false); //024
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18043',50,false); // 28
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18044',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18045',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18046',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18047',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18048',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18049',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18050',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S1_QUR_CAMPAGNE',50,false); //32
+
 // bache à sel Py
 	let R19900 = {x:(width*0.48), y:(height*0.72), e: 4};
 	with (R19900) {
@@ -759,7 +827,7 @@ function shape_vanne (x,y,ech,h,l,id,val,status) {
         itemData[id] = {x:x,y:y,h:ech*4,l:l};
 		return (y+h*4);
 }
-function shape_temp (x,y,ech,h,l,id,val,status) {
+function shape_temp (x,y,ech,h,l,id,val,status,libelle) {
 	liste3.push(id); ech = 5; h= ech *3.9; l=10.2*ech;
 	let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
 					.attr('transform','translate('+x+','+y+')').raise()
@@ -773,16 +841,43 @@ function shape_temp (x,y,ech,h,l,id,val,status) {
 			.attr('x',(0.52*l)).attr('y',(0.8*h))
             .style('text-anchor', 'middle').style('fill','black').style('font-size',1.7*ech)
             .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
-        if (id.length>15) {id='PtChaud';}
+//        if (libelle == '') {libelle=id;}
+        libelle = (typeof libelle !== 'undefined') ? libelle : id;
 		temp.append('text') // no id
 			.attr('x',(0.52*l)).attr('y',(0.4*h))
             .style('text-anchor', 'middle').style('fill','black').style('font-size',1.7*ech)
             .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue")
-            .text(id);
+            .text(libelle);
 //        temp.append('circle').attr('r',1).attr('cx',1).attr('cy',1).style('fill','red').attr('id',id+'_c');
         itemData[id] = {x:x,y:y,h:h,l:l};
 		return (y+h*1.1);
 }
+function shape_sonde (x,y,ech,h,l,id,val,status) {
+    liste3.push(id); ech = 5; h= ech *1.9; l=10.2*ech;
+    let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
+                    .attr('transform','translate('+(x-ech)+','+y+')').raise()
+                    .on('click',getHistorique);
+//                    .on('mouseover',(d) => {
+//                            d3.selectAll('#'+d+'_r').style('fill','red');  })
+//                    .on('mouseout',(d) => {
+//                            d3.selectAll('#'+d+'_r').style('fill','white');  }); // scale('+ech+')').raise();
+//        temp.append('rect').attr('width',l).attr('height',h).attr('x',0).attr('y',0).style('stroke-width',1).style('stroke','#666').style('fill','#fff').style('rx',1).style('ry',1).attr('id',id+'_r');
+        temp.append('text').text(val).attr('id',id+'_txt')
+            .attr('x',(0.30*l)).attr('y',(0))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',1.7*ech)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+//        if (libelle == '') {libelle=id;}
+//        libelle = (typeof libelle !== 'undefined') ? libelle : id;
+/*        temp.append('text') // no id
+            .attr('x',(0.52*l)).attr('y',(0.4*h))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',1.7*ech)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue")
+            .text(libelle);
+//        temp.append('circle').attr('r',1).attr('cx',1).attr('cy',1).style('fill','red').attr('id',id+'_c');
+*/        itemData[id] = {x:x,y:y,h:h,l:l};
+        return (y+h*1.1);
+}
+
 function path_item () {
 	let lineP = d3.line()
     	.x((d) => { return d.x;})
