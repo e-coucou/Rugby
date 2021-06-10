@@ -149,7 +149,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Pyrénées/Pirineos</div>
-  <aside >April, 2021<br><br> | v 1.22</aside>
+  <aside >April, 2021<br><br> | v 1.31</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -526,7 +526,9 @@ function affiche_trame() {
 	let K15000 = {x:(width*0.63), y:(height/2+20), e: 15, xl:0};
 	with (K15000) {
 		let i =0;
-		const {h,l} = shape_cuve(x,y,e,'Pyrénées',shape.cuveV,1); xl = x+l;y1 = y+ h/8; x += 3;
+//		const {h,l} = shape_cuve(x,y,e,'Pyrénées',shape.cuveV,1); xl = x+l;y1 = y+ h/8; x += 3;
+//function shape_cuve (x,y,id,forme,l,h) {
+        const {h,l} = shape_cuve_new(x,y,'Pyrénées','V',width*0.08,height*0.35); xl = x+l;y1 = y+ h/8; x += 3;
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T15008',50,false);
 		y1 = shape_temp(x,y1,e,e/3,e/2,'E-P15162',50,false);
 //		y1 = shape_temp(x,y1,e,e/3,e/2,'E-P15071',50,false);
@@ -769,8 +771,29 @@ function shape_cuve (x,y,ech,id,forme,rot) {
 			.attr('x',(0.5*l/ech)).attr('y',(0.5*h/ech/7))
             .style('text-anchor', 'middle').style('fill','black').style('font-size',10/ech)
             .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
-        itemData[id] = {x:x,y:y,h:h,l:l};
+        itemData[id] = {x:rect.x,y:rect.y,h:h,l:l};
  	return {h: h, l: l};
+}
+function compute_cuve(forme,l,h) {
+//var shape = { cuveV : 'M 0,2 Q 3,0 6,2 L 6,13 Q 3,15 0,13 Z', cuveH : 'M 0,1 M 5,0 L 35,0 Q 40,8 35,16 L 5,16 Q 0,8 5,0 Z' }
+    let h_i = Math.round(h*0.11);
+    let shape = 'M 0,'+h_i+' Q '+l/2+',0 '+l+','+h_i+' L '+l+','+(h-h_i)+' Q '+l/2+','+h+' 0,'+(h-h_i)+' Z'
+    return shape;
+}
+function shape_cuve_new (x,y,id,forme,l,h) {
+    console.log(x,y,l,h);
+    let shape= svg.append('g').selectAll('g').data([0]).enter().append('g')
+                    .attr('transform','translate('+x+','+(y)+')');
+        shape.append('path').attr('d', compute_cuve(forme,l,h)).style('stroke-width',1).style('stroke','#666').style('fill','#EEE').attr('id',id+'_p');
+        shape.append('text').text(id).raise()
+            .attr('x',(0.5*l)).attr('y',(0.1*h))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',10)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style('font-family',"helvetica neue");
+    let rect = document.getElementById(id+'_p').getBoundingClientRect();
+//    console.log(rect);
+        itemData[id] = {x:rect.x,y:rect.y,h:rect.height,l:rect.width};
+//console.log(id,itemData[id]);
+    return {h: h, l: l};
 }
 function shape_level (x,y,ech,h,l,id,val,status) {
 	liste3.push(id);// ech = 5;// h= ech *10; l=2*ech;
@@ -899,6 +922,9 @@ function path_item () {
         if (a.o==1) {
             let x3 = x1 + (x2-x1) /3 , y3 = y1 + 2*(y2-y1)/3;
             data2.push({x:x3,y:y3});
+        }
+        if (a.i==1) {
+            console.log(itemData[a.source],x1,y1,x2,y2);
         }
         let color = '#777', stroke = 1;
 //        console.log(a.anim, dashData[a.anim][0]);
@@ -1126,7 +1152,7 @@ let tempData = histData;
 		.attr("r", 3)
 		.style("stroke", function (d,i) { return couleur[(i*5)%nbCouleur];})
 		.style("fill", "none").style("stroke-width", "2px").style("opacity", "0");
-	mousePerLine.append("text")
+	mousePerLine.append('text')
     	.attr("class", "hover-text").style('font-size','1.5vh').style("font-family","arial") //"HelveticaNeue-Light")
     	.attr("dy", "0.1em")
     	.attr("transform", "translate(10,3)");
