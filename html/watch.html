@@ -456,6 +456,9 @@ function affiche_trame() {
 	let w_i = (width/2/8) ; h_i = height/2/15;
     let init_w = width/6;
 	let alim = {x:w_i*0.2, y:60, e: 4};
+    let hT=0.012*height, lT=0.03*width;
+    let hC=0.027*height, lC=0.03*width;
+
 	with (alim) {
 //		const {h,l} = shape_cuve(x,y,e,'R19900',shape.cuveH,1)
 //		shape_level(x+l-5*7,y,7,h,15,'E-LX19901',50,false);
@@ -523,44 +526,57 @@ function affiche_trame() {
 	}
 
 	// réacteur K15000
-	let K15000 = {x:(width*0.63), y:(height/2+20), e: 15, xl:0};
+	let K15000 = {x:(width*0.63), y:(height/2+20), li: (width*0.08), hi : (height*0.32) ,e: 15, xl:0};
 	with (K15000) {
 		let i =0;
-//		const {h,l} = shape_cuve(x,y,e,'Pyrénées',shape.cuveV,1); xl = x+l;y1 = y+ h/8; x += 3;
-//function shape_cuve (x,y,id,forme,l,h) {
-        const {h,l} = shape_cuve_new(x,y,'Pyrénées','V',width*0.08,height*0.35); xl = x+l;y1 = y+ h/8; x += 3;
-		y1 = shape_temp(x,y1,e,e/3,e/2,'E-T15008',50,false);
-		y1 = shape_temp(x,y1,e,e/3,e/2,'E-P15162',50,false);
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'Pyrénées','V',li,hi); console.log('K15000',xr,yr,h,l);
+        xl = xr+l; y = yr; y1 = yr+ h/8; x = xr+3;
+		y1 = shape_temp_v1(x,y1,hC,lC,'E-T15008',50,false);
+		y1 = shape_temp_v1(x,y1,hC,lC,'E-P15162',50,false);
+        y1 = shape_temp_v1(x,y1,hC,lC,'E-PD15010',50,false)+h/15;y3=y1;
+        y1 = shape_temp_v1(x+l/2,yr+h/8,hC,lC,'E-TC15002',50,false);
+        y1 = shape_temp_v1(x+l/2,y1,hC,lC,'E-T15006',50,false);
+        y1 = shape_temp_v1(x+l/2,y1,hC,lC,'E-TC15005',50,false);
+
 //		y1 = shape_temp(x,y1,e,e/3,e/2,'E-P15071',50,false);
-        shape_temp(x+0.6*l,y1,e,e/3,e/2,'ROC_PY_Temp_Pt_Chaud_Max_Sonde1',50,false,'Py PtC');
-		y1 = shape_temp(x,y1-5,e,e/3,e/2,'E-PD15010',50,false)+h/15;y3=y1;
-		y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15221',50,false);y2=y1; //021
-		y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15222',50,false); //024
-		y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15223',50,false); // 28
-        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15224',50,false); //32
-        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15225',50,false); //32
-        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15226',50,false); //32
-        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15227',50,false); //32
-        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15228',50,false); //32
-        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15229',50,false); //32
-        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-T15230',50,false); //32
-        y1 = shape_sonde(x+l/3,y3,e,e/3,e/2,'E-T15241',50,false); //y2=y1; //021
-        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15242',50,false); //024
-        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15243',50,false); // 28
-        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15244',50,false); //32
-        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15245',50,false); //32
-        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15246',50,false); //32
-        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15247',50,false); //32
-        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15248',50,false); //32
-        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15249',50,false); //32
-        y1 = shape_sonde(x+l/3,y1,e,e/3,e/2,'E-T15250',50,false); //32
-		y1 = shape_temp(x+l+20,y+h+5,e,e/3,e/2,'E-TY15012',50,false);
-		y1 = shape_temp(x+l/2,y+h+5,e,e/3,e/2,'E-TC15019',50,false);
-		y2 = shape_temp(x+3*l/4,y2,e,e/3,e/2,'E-T15006',50,false);
-		y2 = shape_temp(x+3*l/4,y2,e,e/3,e/2,'E-TC15005',50,false);
-		y2 = shape_temp(x+l,y2,e,e/3,e/2,'E-T15099',50,false);
-		y2 = shape_temp(x+l-l/7,y,e,e/3,e/2,'E-PS15007',50,false);
-        y2 = shape_temp(x+l-l/7,y2,e,e/3,e/2,'E-TC15002',50,false);
+//ep        shape_temp(x+0.6*l,y1,e,e/3,e/2,'ROC_PY_Temp_Pt_Chaud_Max_Sonde1',50,false,'Py PtC');
+		y1 = shape_sonde_v1(x,yr+h/2,hT,lT,'E-T15221',50,false);y2=y1; //021
+		y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15222',50,false); //024
+		y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15223',50,false); // 28
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15224',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15225',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15226',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15227',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15228',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15229',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15230',50,false); //32
+
+        y1 = shape_sonde_v1(x+l/3,yr+h/2,hT,lT,'E-T15241',50,false); //y2=y1; //021
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15242',50,false); //024
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15243',50,false); // 28
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15244',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15245',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15246',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15247',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15248',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15249',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15250',50,false); //32
+
+        y1 = shape_sonde_v1(x+2*l/3,yr+h/2,hT,lT,'E-T15261',50,false); //y2=y1; //021
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15262',50,false); //024
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15263',50,false); // 28
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15264',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15265',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15266',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15267',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15268',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15269',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15270',50,false); //32
+
+		y1 = shape_temp_v1(xr+1,yr+h*0.92,hC,lC,'E-TY15012',50,false);
+		y1 = shape_temp_v1(xr+2*l/3,yr+h*0.92,hC,lC,'E-TC15019',50,false);
+		y1 = shape_temp_v1(xr+2*l/3,y1,hC,lC,'E-T15099',50,false);
+		y2 = shape_temp_v1(x+l-l/7,y,hC,lC,'E-PS15007',50,false);
 	}
 	// réacteur K18000
 	let K18000 = {x:(width*0.63), y:(60), e: 15, xl: 0};
@@ -626,10 +642,10 @@ function affiche_trame() {
 		shape_temp(x+20,y,5,3,8,'E-T19908',50,false);
 		shape_temp(x+20,y+20,5,3,8,'E-TS19801',50,false);
 		shape_temp(x+20,y+40,5,3,8,'E-TX19902',50,false);
-		shape_temp(x,y-100,5,3,8,'E-AO19993',50,false);
-		shape_temp(x,y-80,5,3,8,'E-AO19994',50,false);
-		shape_temp(x,y-60,5,3,8,'E-AO19991',50,false);
-		shape_temp(x,y-40,5,3,8,'E-AO19992',50,false);
+		y1 = shape_sonde_v1(x,y*0.93,hT,lT,'E-AO19993',50,false);
+		y1 = shape_sonde_v1(x,y1,hT,lT,'E-AO19994',50,false);
+		y1 = shape_sonde_v1(x,y1,hT,lT,'E-AO19991',50,false);
+		y1 = shape_sonde_v1(x,y1,hT,lT,'E-AO19992',50,false);
 	}
 // bache à sel E2
 	let R19000 = {x:(width*0.48), y:(height*0.22+50), e: 4};
@@ -644,14 +660,15 @@ function affiche_trame() {
 //		shape_temp(x-50,y+40,5,3,8,'E-AO19991',50,false);
 //		shape_temp(x-50,y+60,5,3,8,'E-AO19992',50,false);
 	}	// rechauffeur Electrique
-	let E15400 = {x:(K15000.x-80), y:(K15000.y), e: 10};
+	let E15400 = {x:(K15000.x-80), y:(K15000.y), li: (width*0.036), hi : (height*0.17), e: 10};
 	with (E15400) {
 		let i =0;
-		const {h,l} = shape_cuve(x,y,e,'E15400',shape.cuveV,0.8); y += 12; x += 3;// console.log('size : ',h,l)
-		y = shape_temp(x,y,e,0,0,'E-T15408',50,false);
-		y = shape_temp(x,y,e,0,0,'E-J15406',50,false);
-		y = shape_temp(x,y,e,3,e,'E-TS15409',50,false);
-		y = shape_temp(x,y,e,3,e,'E-TDX15407',50,false);
+		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E15400','V',li,hi); y += 12; x += 3;// console.log('size : ',h,l)
+        hC=0.027*height, lC=0.03*width;
+		y = shape_temp_v1(x,yr+h/6,hC,lC,'E-T15408',50,false);
+		y = shape_temp_v1(x,y,hC,lC,'E-J15406',50,false);
+		y = shape_temp_v1(x,y,hC,lC,'E-TS15409',50,false);
+		y = shape_temp_v1(x,y,hC,lC,'E-TDX15407',50,false);
 	}
 	// rechauffeur Electrique
 	let E18400 = {x:(K18000.x-80), y:(K18000.y), e: 10};
@@ -780,8 +797,8 @@ function compute_cuve(forme,l,h) {
     let shape = 'M 0,'+h_i+' Q '+l/2+',0 '+l+','+h_i+' L '+l+','+(h-h_i)+' Q '+l/2+','+h+' 0,'+(h-h_i)+' Z'
     return shape;
 }
-function shape_cuve_new (x,y,id,forme,l,h) {
-    console.log(x,y,l,h);
+function shape_cuve_v1 (x,y,id,forme,l,h) {
+//    console.log(x,y,l,h);
     let shape= svg.append('g').selectAll('g').data([0]).enter().append('g')
                     .attr('transform','translate('+x+','+(y)+')');
         shape.append('path').attr('d', compute_cuve(forme,l,h)).style('stroke-width',1).style('stroke','#666').style('fill','#EEE').attr('id',id+'_p');
@@ -793,7 +810,7 @@ function shape_cuve_new (x,y,id,forme,l,h) {
 //    console.log(rect);
         itemData[id] = {x:rect.x,y:rect.y,h:rect.height,l:rect.width};
 //console.log(id,itemData[id]);
-    return {h: h, l: l};
+    return {h: rect.height, l: rect.width, xr: rect.x, yr: rect.y};
 }
 function shape_level (x,y,ech,h,l,id,val,status) {
 	liste3.push(id);// ech = 5;// h= ech *10; l=2*ech;
@@ -875,6 +892,32 @@ function shape_temp (x,y,ech,h,l,id,val,status,libelle) {
         itemData[id] = {x:x,y:y,h:h,l:l};
 		return (y+h*1.1);
 }
+function shape_temp_v1 (x,y,h,l,id,val,status,libelle) {
+    liste3.push(id);
+    console.log(id,x,y,h,l);
+    let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
+                    .attr('transform','translate('+x+','+y+')').raise()
+                    .on('click',getHistorique)
+                    .on('mouseover',(d) => {
+                            d3.selectAll('#'+d+'_r').style('fill','red');  })
+                    .on('mouseout',(d) => {
+                            d3.selectAll('#'+d+'_r').style('fill','white');  }); // scale('+ech+')').raise();
+        temp.append('rect').attr('width',l).attr('height',h).attr('x',0).attr('y',0).style('stroke-width',1).style('stroke','#666').style('fill','#fff').style('rx',1).style('ry',1).attr('id',id+'_r');
+        temp.append('text').text(val).attr('id',id+'_txt')
+            .attr('x',(0.52*l)).attr('y',(0.8*h))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',8)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+//        if (libelle == '') {libelle=id;}
+        libelle = (typeof libelle !== 'undefined') ? libelle : id;
+        temp.append('text') // no id
+            .attr('x',(0.52*l)).attr('y',(0.4*h))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',8)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue")
+            .text(libelle.substring(2));
+//        temp.append('circle').attr('r',1).attr('cx',1).attr('cy',1).style('fill','red').attr('id',id+'_c');
+        itemData[id] = {x:x,y:y,h:h,l:l};
+        return (y+h*1.05);
+}
 function shape_sonde (x,y,ech,h,l,id,val,status) {
     liste3.push(id); ech = 5; h= ech *1.9; l=10.2*ech;
     let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
@@ -900,7 +943,18 @@ function shape_sonde (x,y,ech,h,l,id,val,status) {
 */        itemData[id] = {x:x,y:y,h:h,l:l};
         return (y+h*1.1);
 }
-
+function shape_sonde_v1 (x,y,h,l,id,val,status) {
+    liste3.push(id);
+    let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
+                    .attr('transform','translate('+(x)+','+y+')').raise()
+                    .on('click',getHistorique);
+        temp.append('text').text(val).attr('id',id+'_txt')
+            .attr('x',(0.30*l)).attr('y',(0))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',8)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+        itemData[id] = {x:x,y:y,h:h,l:l};
+        return (y+h*1.02);
+}
 function path_item () {
 	let lineP = d3.line()
     	.x((d) => { return d.x;})
