@@ -149,7 +149,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Pyrénées/Pirineos</div>
-  <aside >April, 2021<br><br> | v 2.01</aside>
+  <aside >April, 2021<br><br> | v 2.11</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -208,7 +208,7 @@ input:focus {
                     {source:'E18100',cible:'E-TC18202',color:'yellow', i:0,o:0,e:5,anim:'E-CV18167'}
     				];
     let itemData = [];
-    let surface = {x1:0,x2:0,data:[],flip:0, area:0};
+    let surface = {x1:0,x2:0,data:[],flip:0, area:0, mean:0};
 	// Chart dimensions.
 	var margin = {top: 20, right: 20, bottom: 30, left: 50},
     	width = window.innerWidth; // - margin.right-margin.left,
@@ -636,13 +636,13 @@ function affiche_trame() {
         y1 = shape_sonde(x,y1,e,e/3,e/2,'S1_QUR_CAMPAGNE',50,false); //32
 
 // bache à sel Py
-	let R19900 = {x:(width*0.48), y:(height*0.72), e: 4};
+	let R19900 = {x:(width*0.5), y:(height*0.72), li : (width*0.11), hi: (height*0.08), e: 4};
 	with (R19900) {
-		const {h,l} = shape_cuve(x,y,e,'R19900',shape.cuveH,1)
-		shape_level(x+l-5*7,y,7,h,15,'E-LX19901',50,false);
-		shape_temp(x+20,y,5,3,8,'E-T19908',50,false);
-		shape_temp(x+20,y+20,5,3,8,'E-TS19801',50,false);
-		shape_temp(x+20,y+40,5,3,8,'E-TX19902',50,false);
+		const {h,l,xr,yr} = shape_cuve_v1(x,y,'R19900','H',li,hi);
+		shape_level(x+l+l-li,y,7,h,15,'E-LX19901',50,false);
+//		shape_temp(2*x-xr,y,5,3,8,'E-T19908',50,false);
+//		shape_temp(2*x-xr,y+20,5,3,8,'E-TS19801',50,false);
+//		shape_temp(2*x-xr,y+40,5,3,8,'E-TX19902',50,false);
 		y1 = shape_sonde_v1(x,y*0.93,hT,lT,'E-AO19993',50,false);
 		y1 = shape_sonde_v1(x,y1,hT,lT,'E-AO19994',50,false);
 		y1 = shape_sonde_v1(x,y1,hT,lT,'E-AO19991',50,false);
@@ -795,8 +795,13 @@ function shape_cuve (x,y,ech,id,forme,rot) {
 }
 function compute_cuve(forme,l,h) {
 //var shape = { cuveV : 'M 0,2 Q 3,0 6,2 L 6,13 Q 3,15 0,13 Z', cuveH : 'M 0,1 M 5,0 L 35,0 Q 40,8 35,16 L 5,16 Q 0,8 5,0 Z' }
-    let h_i = Math.round(h*0.11);
-    let shape = 'M 0,'+h_i+' Q '+l/2+',0 '+l+','+h_i+' L '+l+','+(h-h_i)+' Q '+l/2+','+h+' 0,'+(h-h_i)+' Z'
+    let h_i = Math.round(h*0.11), l_i = Math.round(l*0.11), shape = '';
+    switch(forme) {
+        case 'V' : shape = 'M 0,'+h_i+' Q '+l/2+',0 '+l+','+h_i+' L '+l+','+(h-h_i)+' Q '+l/2+','+h+' 0,'+(h-h_i)+' Z';
+                    break;
+        case 'H' : shape = 'M '+l_i+',0 L '+(l-2*l_i)+',0 Q '+(l)+','+(h/2)+' '+(l-2*l_i)+','+h+' L '+l_i+','+h+' Q 0,'+(h/2)+' '+l_i+',0 Z' ;
+                    break;
+    }
     return shape;
 }
 function shape_cuve_v1 (x,y,id,forme,l,h) {
@@ -1217,19 +1222,20 @@ let tempData = histData;
 		.attr('fill', 'none')
 		.attr('pointer-events', 'all')
         .on('click', function (g,i) {
-    let mouse = d3.mouse(this); console.log(g,i,mouse);
+    let mouse = d3.mouse(this); // console.log(g,i,mouse);
     let xDate = x.invert(mouse[0]);
     switch (surface.flip) {
         case 1: surface.flip += 1;
                 surface.x2 = xDate;
                 with (surface) {
                     data = histData[0].values.filter(v=>{ return (v.timestamp>=x1 & v.timestamp<=x2);})
-                    area = compute_surface(data);
+                    val = compute_surface(data);
+                    area = val[0], mean = val[1];
                 }
                 break;
-        case 2: surface.flip =0;
-                surface.data =[];
-                surface.area=0;
+        case 2: surface.flip =0; surface.x1 =0; 
+                surface.data =[]; surface.x2 = 0;
+                surface.area=0; surface.mean = 0;
         case 0: surface.flip += 1;
                 surface.x1 = xDate;
                 break;
@@ -1293,7 +1299,7 @@ function compute_surface (data_surface) {
     polyArea.push([(end-start),0]);
     let area = d3.polygonArea(polyArea);
     console.log(polyArea,start,end,area,(area/(end-start)));
-    return area;
+    return [Math.round(area/1000), area/(end-start)];
 }
 //----------------------------------------------------------------
 //
