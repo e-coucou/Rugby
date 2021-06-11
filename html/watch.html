@@ -149,7 +149,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Pyrénées/Pirineos</div>
-  <aside >April, 2021<br><br> | v 1.31</aside>
+  <aside >April, 2021<br><br> | v 1.50</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -717,7 +717,8 @@ function affiche_trame() {
 		y = shape_temp(x,y,e,e/3,e/2,'E-LS18603',50,false);
 	}
 	// Condenseur
-	let E15100 = {x:(K15000.x*1.1), y:(K15000.y+235), e: 2};
+//    console.log(K15000);
+	let E15100 = {x:(K15000.x*1.1), y:(K15000.y+K15000.hi*1.05), e: 2};
 	with (E15100) {
 		const {h,l} = shape_cuve(x,y,e,'E15100',shape.cuveH,1)
 		shape_temp(x+l/4,y+h/4,5,3,8,'E-T15101',50,false);
