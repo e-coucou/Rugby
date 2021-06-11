@@ -149,7 +149,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Pyrénées/Pirineos</div>
-  <aside >April, 2021<br><br> | v 1.50</aside>
+  <aside >April, 2021<br><br> | v 2.01</aside>
   <div id='menu'></div>
 </header>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -208,6 +208,7 @@ input:focus {
                     {source:'E18100',cible:'E-TC18202',color:'yellow', i:0,o:0,e:5,anim:'E-CV18167'}
     				];
     let itemData = [];
+    let surface = {x1:0,x2:0,data:[],flip:0, area:0};
 	// Chart dimensions.
 	var margin = {top: 20, right: 20, bottom: 30, left: 50},
     	width = window.innerWidth; // - margin.right-margin.left,
@@ -1114,7 +1115,7 @@ function aff_liste_T(liste,decalage) {
         .x(function(d) { return x(d.timestamp); }) //vep
         .y(function(d) { return yR(d.value);}) //(d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
         .curve(d3.curveCardinal);*/
-	x.domain([
+	 x.domain([
         d3.min(histData, function(c) {
         return d3.min(c.values, function(v) {
         return v.timestamp; });}),
@@ -1215,6 +1216,27 @@ let tempData = histData;
 		.attr('width', w_g) .attr('height', h_g)
 		.attr('fill', 'none')
 		.attr('pointer-events', 'all')
+        .on('click', function (g,i) {
+    let mouse = d3.mouse(this); console.log(g,i,mouse);
+    let xDate = x.invert(mouse[0]);
+    switch (surface.flip) {
+        case 1: surface.flip += 1;
+                surface.x2 = xDate;
+                with (surface) {
+                    data = histData[0].values.filter(v=>{ return (v.timestamp>=x1 & v.timestamp<=x2);})
+                    area = compute_surface(data);
+                }
+                break;
+        case 2: surface.flip =0;
+                surface.data =[];
+                surface.area=0;
+        case 0: surface.flip += 1;
+                surface.x1 = xDate;
+                break;
+    }
+    console.log(surface);
+}            )
+//        .on('click',get_surface)
 		.on('mouseout', function () { // on mouse out hide line, circles and text
   			d3.select("."+class_ml).style("opacity", "0");
 			d3.selectAll("."+class_mpl+" circle").style("opacity", "0");
@@ -1262,6 +1284,17 @@ let tempData = histData;
             .text((d)=>{return d.dataReference;});
 
 	}
+function compute_surface (data_surface) {
+    polyArea = [];
+    let start= data_surface[0].timestamp,
+        end = data_surface[data_surface.length-1].timestamp;
+    polyArea.push([0,0]);
+    data_surface.forEach(v=>{ polyArea.push([(v.timestamp-start),v.value])});
+    polyArea.push([(end-start),0]);
+    let area = d3.polygonArea(polyArea);
+    console.log(polyArea,start,end,area,(area/(end-start)));
+    return area;
+}
 //----------------------------------------------------------------
 //
 function clearSVG() {
