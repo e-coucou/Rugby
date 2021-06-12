@@ -14,7 +14,7 @@
 }
 #compute {
     position : absolute;
-    left: 75%;
+    left: 65%;
     margin-bottom: 0px;
     color: white;
 }
@@ -172,7 +172,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Pyrénées/Pirineos</div>
-  <aside >April, 2021<br><br> | v 2.33</aside>
+  <aside >April, 2021<br><br> | v 2.72</aside>
         <div>
         <form name="saisie" onSubmit="return credClick()">
         <input type="text" id="search">
@@ -224,19 +224,21 @@ input:focus {
                     {source:'E-TC17601',cible:'E-CV15167B',color:'green', i:0,o:0,e:2,anim:'E-CV15167B'},
     				{source:'E-CV15167A',cible:'E-FC15167',color:'green', i:0,o:0,e:3,anim:'E-CV15167A'},
                     {source:'E-CV15167B',cible:'E-FC15167',color:'green', i:0,o:0,e:2,anim:'E-CV15167B'},
-                    {source:'E-CV18167',cible:'E-F18161',color:'green', i:0,o:0,e:5,anim:'E-CV18167'},
+                    {source:'E-CV18167',cible:'ROC_Debit_massique_entree_Reacteur_Europe2',color:'green', i:0,o:0,e:5,anim:'E-CV18167'},
     				{source:'E-FC15167',cible:'Pyrénées',color:'green', i:0,o:1,e:4,anim:'E-CV15167A'},
-    				{source:'E-F18161',cible:'Europe 2',color:'green', i:0,o:1,e:5,anim:'E-CV18167'},
+    				{source:'ROC_Debit_massique_entree_Reacteur_Europe2',cible:'Europe 2',color:'green', i:0,o:1,e:5,anim:'E-CV18167'},
     				{source:'E-FCV14325',cible:'E-FCS14325',color:'blue', i:0,o:0,e:3,anim:'E-FCV14325'},
     				{source:'E-CV16325A',cible:'E-FC16325',color:'red', i:0,o:0,e:1,anim:'E-CV16325A'},
     				{source:'E-CV16325B',cible:'E-FC16325',color:'red', i:0,o:0,e:2,anim:'E-CV16325B'},
                     {source:'Pyrénées',cible:'E15100',color:'yellow', i:1,o:0,e:4,anim:'E-CV15167A'},
                     {source:'Europe 2',cible:'E18100',color:'yellow', i:1,o:0,e:5,anim:'E-CV18167'},
-                    {source:'E15100',cible:'E-TC15202',color:'yellow', i:0,o:0,e:4,anim:'E-CV15167A'},
-                    {source:'E18100',cible:'E-TC18202',color:'yellow', i:0,o:0,e:5,anim:'E-CV18167'}
+                    {source:'E15100',cible:'Ct1',color:'yellow', i:0,o:0,e:4,anim:'E-CV15167A'},
+                    {source:'Ct1',cible:'Ct2',color:'yellow', i:0,o:0,e:4,anim:'E-CV15167A'},
+                    {source:'E18100',cible:'Ct2',color:'yellow', i:0,o:0,e:5,anim:'E-CV18167'},
+                    {source:'Ct2',cible:'D210',color:'yellow', i:0,o:0,e:4,anim:'E-CV15167A'}
     				];
     let itemData = [];
-    let surface = {x1:0,x2:0,data:[],flip:0, area:0, mean:0, day: 0};
+    let surface = {x1:0,x2:0,data:[],flip:0, area:0, mean:0, day: 0, elapse:0, trend:0, delta:0};
 	// Chart dimensions.
 	var margin = {top: 20, right: 20, bottom: 30, left: 50},
     	width = window.innerWidth; // - margin.right-margin.left,
@@ -260,15 +262,17 @@ input:focus {
     dispatch.on('histo',aff_histo);
     var t_cycle = setInterval(refreshData,300000);
 // menu
+let ii=0
 const data_menu = [
-        { n:0, x:-320, m:'trophy', a: 336 , val: '14j',http:'/RWC-2019.html'},  //th
-        { n:1, x:-280, m:'trophy', a: 168 , val: '7j',http:'/RWC-2019.html'},  //th
-        { n:2, x:-280, m:'trophy', a: 72 , val: '72h',http:'/RWC-2019.html'},  //th
-        { n:3, x:-280, m:'trophy', a: 48 , val: '48h',http:'/RWC-2019.html'},  //th
-        { n:4, x:-280, m:'trophy', a: 24 , val: '24h',http:'/RWC-2019.html'},  //th
-        { n:5, x:-280, m:'trophy', a: 12 , val: '12h',http:'/RWC-2019.html'},  //th
-        { n:6, x:-280, m:'trophy', a: 6 , val: '6h',http:'/RWC-2019.html'},  //th
-        { n:7, x:-280, m:'trophy', a: 2 , val: '2h',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-320, m:'trophy', a: (30*24) , val: '30j',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-320, m:'trophy', a: (14*24) , val: '14j',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-280, m:'trophy', a: (7*24) , val: '7j',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-280, m:'trophy', a: 72 , val: '72h',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-280, m:'trophy', a: 48 , val: '48h',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-280, m:'trophy', a: 24 , val: '24h',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-280, m:'trophy', a: 12 , val: '12h',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-280, m:'trophy', a: 6 , val: '6h',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-280, m:'trophy', a: 2 , val: '2h',http:'/RWC-2019.html'},  //th
  //       { n:7, x:-280, m:'trophy', a: 336 , val: '15j',http:'/RWC-2019.html'},  //th
     ];
 var svgMenu = d3.select("#menu").append("svg")
@@ -278,7 +282,7 @@ var menuG = svgMenu.selectAll('g').data(data_menu).enter()
         .attr('transform',(d,i)=>{return 'translate('+(i*40+20)+',10)';})
         .on('click',clickMenu);
 let selGraphe = 3;
-var menuCircle=false, histTime = 48;
+var menuCircle=false, histTime = data_menu[selGraphe].a;
     menuG.append('rect').style('fill',(d,i)=>(d.n==selGraphe)?'#B233FF':'#4C33FF').attr('id','menuRect')
         .attr('r',17).attr('width',38).attr('height',39).attr('x',-8).attr('y',-9)
         .on('mouseover',function(d) {d3.select(this).style('fill','#33CAFF')})
@@ -499,25 +503,26 @@ function affiche_trame() {
 //		const {h,l} = shape_cuve(x,y,e,'R19900',shape.cuveH,1)
 //		shape_level(x+l-5*7,y,7,h,15,'E-LX19901',50,false);
 //diver
-        yx = shape_temp(10,height/2-65,e,3,8,'ROC_Coef_Encra_Reacteur_PYRENEES',50,false,'Enc Py');
+let ligne1 = height*0.37;
+        yx = shape_temp(10,ligne1,e,3,8,'ROC_Coef_Encra_Reacteur_PYRENEES',50,false,'Enc Py');
         yx = shape_temp(10,yx,e,3,8,'ROC_Coef_Encra_Reacteur_Europe2',50,false,'Enc E2');
         yx = shape_temp(10,yx,e,3,8,'ROC_E2_Prod_MMP_brut',50,false,'MMP B');
-        yx = shape_temp(w_i,height/2-65,e,3,8,'ROC_MMP_PROD_BRUT_TOT'+'\u00e8'+'ne',50,false,'MMP B');
+        yx = shape_temp(w_i,ligne1,e,3,8,'ROC_MMP_PROD_BRUT_TOT'+'\u00e8'+'ne',50,false,'MMP B');
 //        yx = shape_temp(w_i,height/2-65,e,3,8,'ROC_E2_QUR_Propyl'+'\u00e8'+'ne',50,false,'QUR C3 E3');
         yx = shape_temp(w_i,yx,e,3,8,'ROC_K150_Cumul_C3H6',50,false,'C3 Py');
         yx = shape_temp(w_i,yx,e,3,8,'ROC_K180_Cumul_C3H6',50,false,'C3 E2');
-        yx = shape_temp(2*w_i,height/2-65,e,3,8,'E-A15211-TCONV',50,false,'Tconv Py');
+        yx = shape_temp(2*w_i,ligne1,e,3,8,'E-A15211-TCONV',50,false,'Tconv Py');
         yx = shape_temp(2*w_i,yx,e,3,8,'E-A18211-TCONV',50,false,'TConv E2');
-        yx = shape_temp(3*w_i,height/2-65,e,3,8,'ROC_Masse_MMP_Net_Produite_MMPE2',50,false,'MMP');
+        yx = shape_temp(3*w_i,ligne1,e,3,8,'ROC_Masse_MMP_Net_Produite_MMPE2',50,false,'MMP');
         yx = shape_temp(3*w_i,yx,e,3,8,'ROC_PY_Temp_Pt_Chaud_Max_SondPY_ZoneG2',50,false,'PY PtC G2');
         yx = shape_temp(3*w_i,yx,e,3,8,'ROC_PY_Temp_Pt_Chaud_Max_SondPY_ZoneH1',50,false,'PY PtC H1');
-        yx = shape_temp(4*w_i,height/2-65,e,3,8,'ROC_Masse_MMP_Net_Produite_MMPE2',50,false,'MMP');
+        yx = shape_temp(4*w_i,ligne1,e,3,8,'ROC_Masse_MMP_Net_Produite_MMPE2',50,false,'MMP');
         yx = shape_temp(4*w_i,yx,e,3,8,'ROC_E2_Temp_Pt_Chaud_Max_Sonde4_ZoneG2',50,false,'E2 PtC G2');
         yx = shape_temp(4*w_i,yx,e,3,8,'ROC_E2_Temp_Pt_Chaud_Max_Sonde4_ZoneH1',50,false,'E2 PtC H1');
-        yx = shape_temp(5*w_i,height/2-65,e,3,8,'ROC_Masse_MMP_Net_Produite_MMPE2',50,false,'MMP');
+        yx = shape_temp(5*w_i,ligne1,e,3,8,'ROC_Masse_MMP_Net_Produite_MMPE2',50,false,'MMP');
         yx = shape_temp(5*w_i,yx,e,3,8,'ROC_S1_Temp_Pt_Chaud_Max_Toutes_Sondes_ZoneG2',50,false,'S1 PtC G2');
         yx = shape_temp(5*w_i,yx,e,3,8,'ROC_S1_Temp_Pt_Chaud_Max_Toutes_Sondes_ZoneH1',50,false,'S1 Ptc H1');
-        yx = shape_temp(6*w_i,height/2-65,e,3,8,'E-QUR-E2',50,false,'QUR E2');
+        yx = shape_temp(6*w_i,ligne1,e,3,8,'E-QUR-E2',50,false,'QUR E2');
 
 //off gaz
 		y1 = shape_temp(x,y,e,3,8,'E-FS31053',50,false);
@@ -545,7 +550,6 @@ function affiche_trame() {
 //réchauffeur
 		x += w_i*1.5; y1=y+2*h_i;
 		y2 = shape_temp(x,y1,e,3,8,'E-TC17601',50,false);
-        y2 = shape_temp(x,y2,e,3,8,'ROC_Debit_massique_entree_Reacteur_Europe2',50,false,'F Total');
         y2 = shape_temp(x,y2,e,3,8,'E-CONS-UCS17501',50,false,'C3/O2');
         y2 = shape_temp(x,y2,e,3,8,'E-CONS-UCS17001',50,false,'O2/Inerte');
 // ouverture
@@ -555,7 +559,8 @@ function affiche_trame() {
         y2 = shape_vanne(x,y2,e,1,2,'E-CV15167B',50,false);
 //débits
 		x += w_i;
-		y2 = shape_temp(x,y1-20,e,3,8,'E-F18161',50,false) +30;
+//		y2 = shape_temp(x,y1-20,e,3,8,'E-F18161',50,false) +30;
+        y2 = shape_temp(x,y1-20,e,3,8,'ROC_Debit_massique_entree_Reacteur_Europe2',50,false,'F- E2') +30;
 		y2 = shape_temp(x,y2,e,3,8,'E-FC15167',50,false);
 		y2 = shape_temp(x,y2,e,3,8,'E-F15161',50,false);
 		y2 = shape_temp(x,y2,e,3,8,'E-PY15071',50,false);
@@ -563,7 +568,8 @@ function affiche_trame() {
 	}
 
 	// réacteur K15000
-	let K15000 = {x:(width*0.55), y:(height*0.25), li: (width*0.08), hi : (height*0.32) ,e: 15, xl:0};
+    let Kx = width*0.18, Kx2 = Kx + width*.13, Ky = height*0.5;
+	let K15000 = {x:Kx, y:Ky, li: (width*0.08), hi : (height*0.32) ,e: 15, xl:0};
 	with (K15000) {
 		let i =0;
         const {h,l,xr,yr} = shape_cuve_v1(x,y,'Pyrénées','V',li,hi,'#ffb'); console.log('K15000',xr,yr,h,l);
@@ -616,7 +622,7 @@ function affiche_trame() {
 		y2 = shape_temp_v1(x+l-l/7,y,hC,lC,'E-PS15007',50,false);
 	}
 	// réacteur K18000
-	let K18000 = {x:(width*0.68), y:(height*0.25), li: K15000.li, hi : K15000.hi,e: 15, xl:0};
+	let K18000 = {x:Kx2, y:Ky ,li: K15000.li, hi : K15000.hi,e: 15, xl:0};
 	with (K18000) {
 		let i =0;
         const {h,l,xr,yr} = shape_cuve_v1(x,y,'Europe 2','V',li,hi,'#ffb');// console.log('K18000',xr,yr,h,l);
@@ -683,23 +689,23 @@ function affiche_trame() {
         y1 = shape_sonde(x,y1,e,e/3,e/2,'S1_QUR_CAMPAGNE',50,false); //32
 
 // bache à sel Py
-	let R19900 = {x:(width*0.47), y:(height*0.85), li : (width*0.11), hi: (height*0.08), e: 4};
+	let R19900 = {x:(width*0.01), y:(height*0.85), li : (width*0.09), hi: (height*0.05), e: 4};
 	with (R19900) {
 		const {h,l,xr,yr} = shape_cuve_v1(x,y,'R19900','H',li,hi);
 		shape_level(x+l+l-li,y,7,h,15,'E-LX19901',50,false);
 		y1=shape_sonde_v1(x+li*0.11,yr+hi*0.2,hT,lT,'E-T19908',50,false);
 		y1=shape_sonde_v1(x+li*0.11,y1,hT,lT,'E-TS19801',50,false);
 		y1=shape_sonde_v1(x+li*0.11,y1,hT,lT,'E-TX19902',50,false);
-		y1 = shape_sonde_v1(x,y*0.82,hT,lT,'E-AO19993',50,false);
+		y1 = shape_sonde_v1(x,yr-h,hT,lT,'E-AO19993',50,false);
 		y1 = shape_sonde_v1(x,y1,hT,lT,'E-AO19994',50,false);
 		y1 = shape_sonde_v1(x,y1,hT,lT,'E-AO19991',50,false);
 		y1 = shape_sonde_v1(x,y1,hT,lT,'E-AO19992',50,false);
 	}
 // bache à sel E2
-    let R19000 = {x:(width*0.47), y:(height*0.75), li : (width*0.11), hi: (height*0.08), e: 4};
+    let R19000 = {x:(R19900.x), y:(R19900.y+R19900.hi*1.07), li : R19900.li, hi: R19900.hi, e: 4};
 	with (R19000) {
         const {h,l,xr,yr} = shape_cuve_v1(x,y,'R19000','H',li,hi);
-        shape_level(x+l+l-li,y,7,h,15,'E-LX19901',50,false);
+        shape_level(x+l+l-li,y,7,h,15,'E-LX19001',50,false);
         y1=shape_sonde_v1(x+li*0.11,yr+hi*0.2,hT,lT,'E-T19008',50,false);
 //        y1=shape_sonde_v1(x+li*0.11,y1,hT,lT,'E-TS19001',50,false);
         y1=shape_sonde_v1(x+li*0.11,y1,hT,lT,'E-TX19002',50,false);
@@ -762,19 +768,21 @@ function affiche_trame() {
         y1 = shape_sonde_v1(x+l/10,y1,hT,lT,'E-LS18603',50,false);
 	}
 // Condenseur
-	let E15100 = {x:(K15000.x*1.1), y:(K15000.y+K15000.hi*1.05), li: (width*0.047), hi : (height*0.05), e: 2};
+	let E15100 = {x:(K15000.x+K15000.li*0.6), y:(K15000.y+K15000.hi*1.05), li: (width*0.047), hi : (height*0.05), e: 2};
 	with (E15100) {
 		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E15100','H',li,hi,'#ffb');
 		y1 = shape_sonde_v1(xr+l/3,yr+h/2,hT,lT,'E-T15101',50,false);
 		y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-P15104',50,false);
 		shape_temp(xr+li,yr,5,3,8,'E-TC15202',50,false);
 	}
-	let E18100 = {x:(K18000.x*1.1), y:(K18000.y+K18000.hi*1.05), li: (width*0.047), hi : (height*0.05), e: 2};
+	let E18100 = {x:(K18000.x+K18000.li*0.6), y:(K18000.y+K18000.hi*1.05), li: (width*0.047), hi : (height*0.05), e: 2};
 	with (E18100) {
 		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E18100','H',li,hi,'#ffb');
         y1 = shape_sonde_v1(xr+l/3,yr+h/2,hT,lT,'E-T18101',50,false);
         y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-P18104',50,false);
         shape_temp(xr+li,y,5,3,8,'E-TC18202',50,false);
+        shape_sonde_v1(xr+l/3,yr+h*1.5,1,1,'Ct1',0,false);
+        shape_sonde_v1(xr+l*3,yr+h/2,1,1,'Ct2',0,false);
 	}
 	let E15300 = {x:(E15500.x), y:(E15500.y+E15500.hi), e: 2};
 	with (E15300) {
@@ -809,6 +817,12 @@ function affiche_trame() {
         y1=shape_sonde_v1(x-w_i/2,y,hT,lT,'E-T18707',50,false);
         y1=shape_sonde_v1(x-w_i/2,y1,hT,lT,'E-T18708',50,false);
 	}
+    // Colonne D210
+    let D21000 = {x:(width*0.62), y:(height*0.75), li: (width*0.03), hi : (height*0.10) ,e: 15, xl:0};
+    with (D21000) {
+        let i =0;
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'D210','V',li,hi,'#ffb'); //console.log('K15000',xr,yr,h,l);
+    }
 
 }
 function refresh() {
@@ -1100,21 +1114,21 @@ function aff_valeur() {
 //--------------
 // on affiche les listes de valeur sur le coté ...
 function aff_liste_T(liste,decalage) {
-	let h_g= height-65;
-	let inc = Math.round(0.97*h_g/(liste.length/2));
-	let w = 0.03; decalage = (1-(w+0.0)*2)*width;
+	let h_g= height-65,ll=liste.length;
+	let inc = Math.round(0.97*h_g/(ll/4));
+	let w = 0.01; decalage = (1-(w*4))*width;
     let liste_T = svg.append('g').selectAll('g').data(liste).enter().append('g')
                         .attr('transform', (d,i)=> 
-                            {return 'translate('+(decalage+(Math.round(i/liste.length)* (w * width +2)))+','+(51+ (i%(liste.length/2))*inc)+')';})
+                            {return 'translate('+(decalage+(Math.trunc(i/ll*4)* w * width ))+','+(51+ (i%(ll/4))*inc)+')';})
                         .on('click',refresh)
                         .on('mouseover',(d,i)=> {
-                            d3.selectAll('#rect_refresh'+d).style('fill','red');
+//                            d3.selectAll('#rect_refresh'+d).style('fill','red');
                             d3.selectAll('#'+d+'_r').style('fill','red');  })
                         .on('mouseout',(d,i)=> {
-                            d3.selectAll('#rect_refresh'+d).style('fill','#1e3F5E');
+//                            d3.selectAll('#rect_refresh'+d).style('fill','#1e3F5E');
                             d3.selectAll('#'+d+'_r').style('fill','white');  });
 
-        liste_T.append('rect').attr('rx',1).attr('ry',1).attr('id',(d,i) => { return 'rect_refresh'+d; })
+/*        liste_T.append('rect').attr('rx',1).attr('ry',1).attr('id',(d,i) => { return 'rect_refresh'+d; })
             .attr('width',(w*width)).attr('height',(inc-2)).style('fill', '#1e3F5E'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
         liste_T.append('text').attr('x',(w/2*width)) //.attr('y',10)
             .attr('y',(inc/2+1)).attr('id',d=>{return d}) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
@@ -1124,8 +1138,8 @@ function aff_liste_T(liste,decalage) {
             .text('val').style('font-size','0.6vw')
             .on('mouseover',d=>{d3.select('#'+d).text(d)})
             .on('mouseout',d=>{d3.select('#'+d).text(valFormat(dashData[d][0].values[0].value)+' '+dashData[d][0].unit)});
-        liste_T.append('circle').attr('cx',5).attr('cy',5).attr('id',d=>{return (d+'_c')})
-            .attr('r',(4)).style('fill', 'yellow'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+*/        liste_T.append('circle').attr('cx',3).attr('cy',3).attr('id',d=>{return (d+'_c')})
+            .attr('r',(3)).style('fill', 'yellow'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
 }
 //------
     function aff_histo (){
@@ -1194,7 +1208,7 @@ function aff_liste_T(liste,decalage) {
 	const g_line = svgAff
 	    .append("g").attr('id','histo')
 	    .attr("class","g_line")
-    	.attr("transform", "translate(" + (45) + "," + (height/2) + ")");
+    	.attr("transform", "translate(" + (width/2) + "," + (55) + ")");
 //    g_line.append('rect').attr('width',w_g).attr('height',h_g).style('fill','#333').style('opacity',0.2);
     // Ajout de l'axe X
     g_line.append("g").raise()
@@ -1276,13 +1290,16 @@ let tempData = histData;
                 with (surface) {
                     data = histData[0].values.filter(v=>{ return (v.timestamp>=x1 & v.timestamp<=x2);})
                     val = compute_surface(data);
-                    area = val[0], mean = val[1], day = val[2];
-                    d3.select('#compute').text('| [moyenne '+valFormat(mean)+' ]  -  [/24h : '+ valFormat(day)+' ]   '+histData[0].unit);
+                    area = val[0], mean = val[1], day = val[2], elapse = val[3], trend = val[4], delta=val[5];
+                    let elapseHMS = new Date(elapse*3600*1000); console.log(elapseHMS.toISOString());
+                    let ej = Math.trunc(elapse/24), eh = Math.trunc(elapse-ej*24), em=Math.trunc((elapse-ej*24-eh)*60);
+                    let elapseStr = (ej>0?ej:'')+' '+(eh>9?'':'0')+eh+':'+(em>9?'':'0')+em;
+                    d3.select('#compute').text('| [moy '+valFormat(mean)+' ]  -  [/24h : '+ valFormat(day)+'] [T:'+elapseStr+'][D:'+valFormat(delta)+'][P:'+trend+'% ]   ('+histData[0].unit+') ('+area+')');
                 }
                 break;
-        case 2: surface.flip =0; surface.x1 =0; 
-                surface.data =[]; surface.x2 = 0;
-                surface.area=0; surface.mean = 0;
+        case 2: surface.flip =0; surface.x1 =0; surface.delta=0;
+                surface.data =[]; surface.x2 = 0; surface.elapse=0;
+                surface.area=0; surface.mean = 0; surface.trend=0;
                 d3.select('#compute').text('calculs');
         case 0: surface.flip += 1;
                 surface.x1 = xDate;
@@ -1348,9 +1365,12 @@ function compute_surface (data_surface) {
     polyArea.push([(end-start),0]);
     let area = d3.polygonArea(polyArea);
     let mean = area/(end-start);
-    let day = mean*((end-start)/1000/3600)/24;
+    let elapse = (end-start)/1000/3600;
+    let day = elapse>24?0:(mean*elapse/24);
+    let delta = (data_surface[data_surface.length-1].value - data_surface[0].value);
+    let trend = Math.trunc(Math.atan(delta/(data_surface.length))/2/Math.PI*360.0);
     console.log(polyArea,start,end,area,(area/(end-start)));
-    return [Math.round(area/1000), mean, day];
+    return [Math.trunc(area/1000000), mean, day, elapse, trend, delta];
 }
 //----------------------------------------------------------------
 //
