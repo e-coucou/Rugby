@@ -178,7 +178,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Pyrénées/Pirineos</div>
-  <aside >April, 2021<br><br> | v 3.30</aside>
+  <aside >April, 2021<br><br> | v 3.59</aside>
         <div>
         <form name="saisie" onSubmit="return credClick()">
         <input type="text" id="search">
@@ -219,25 +219,25 @@ input:focus {
     let liste2 = ['E-PS15007','E-T15006','E-TC15002','E-TC15005','E-TY15004','E-T15401'];
     */
     let liste3 = []; //['E-F15154','E-FC15167','E-P15104','E-P16151','E-PO16151','E-T15106','E-TC15103'];
-    let pathData = [{source:'E-FCS14325',cible:'E-TC17601',color:'#0E99B5', s:0,c:0,e:3,anim:'E-FCV14325'},
-    				{source:'E-FCS12085',cible:'E-TC17601',color:'#7E0EB5', s:0,c:0,e:5,anim:'E-CV12086A'},
-    				{source:'E-FC16325',cible:'E-TC17601',color:'#B52A0E', s:0,c:0,e:4,anim:'E-CV16325A'},
-    				{source:'E-FC12001',cible:'E-CV12086A',color:'#7E0EB5', s:0,c:0,e:5,anim:'E-CV12086A'},
-    				{source:'E-CV12086A',cible:'E-FCS12085',color:'#7E0EB5', s:0,c:0,e:6,anim:'E-CV12086A'},
-    				{source:'E-FS31053',cible:'E-CV12086A',color:'grey', s:0,c:0,e:2,anim:'E-CV12086A'},
-    				{source:'E-TC17601',cible:'E-CV18167',color:'#45B50E', s:0,c:0,e:5,anim:'E-CV18167'},
-    				{source:'E-TC17601',cible:'E-CV15167A',color:'#45B50E', s:0,c:0,e:3,anim:'E-CV15167A'},
-                    {source:'E-TC17601',cible:'E-CV15167B',color:'#45B50E', s:0,c:0,e:2,anim:'E-CV15167B'},
-    				{source:'E-CV15167A',cible:'E-FC15167',color:'#45B50E', s:0,c:0,e:3,anim:'E-CV15167A'},
-                    {source:'E-CV15167B',cible:'E-FC15167',color:'#45B50E', s:0,c:0,e:2,anim:'E-CV15167B'},
-                    {source:'E-CV18167',cible:'ROC_Debit_massique_entree_Reacteur_Europe2',color:'#45B50E', s:0,c:0,e:5,anim:'E-CV18167'},
+    let pathData = [{cible:'E-FCS14325',source:'E-TC17601',color:'#0E99B5', s:0,c:0,e:3,anim:'E-FCV14325'},
+    				{cible:'E-FCS12085',source:'E-TC17601',color:'#7E0EB5', s:0,c:0,e:5,anim:'E-CV12086A'},
+    				{cible:'E-FC16325',source:'E-TC17601',color:'#B52A0E', s:0,c:0,e:4,anim:'E-CV16325A'},
+    				{cible:'E-FC12001',source:'E-CV12086A',color:'#7E0EB5', s:0,c:0,e:5,anim:'E-CV12086A'},
+    				{cible:'E-CV12086A',source:'E-FCS12085',color:'#7E0EB5', s:0,c:0,e:6,anim:'E-CV12086A'},
+    				{cible:'E-FS31053',source:'E-CV12086A',color:'grey', s:0,c:0,e:2,anim:'E-CV12086A'},
+    				{cible:'E-TC17601',source:'E-CV18167',color:'#45B50E', s:0,c:0,e:5,anim:'E-CV18167'},
+    				{cible:'E-TC17601',source:'E-CV15167A',color:'#45B50E', s:0,c:0,e:3,anim:'E-CV15167A'},
+                    {cible:'E-TC17601',source:'E-CV15167B',color:'#45B50E', s:0,c:0,e:2,anim:'E-CV15167B'},
+    				{cible:'E-CV15167A',source:'E-FC15167',color:'#45B50E', s:0,c:0,e:3,anim:'E-CV15167A'},
+                    {cible:'E-CV15167B',source:'E-FC15167',color:'#45B50E', s:0,c:0,e:2,anim:'E-CV15167B'},
+                    {cible:'E-CV18167',source:'ROC_Debit_massique_entree_Reacteur_Europe2',color:'#45B50E', s:0,c:0,e:5,anim:'E-CV18167'},
     				{source:'E-FC15167',cible:'Pyrénées',color:'#45B50E', s:1,c:1,e:4,anim:'E-CV15167A'},
 //                    {source:'Ct4',cible:'Pyrénées',color:'#45B50E', s:0,c:1,e:4,anim:'E-CV15167A'},
     				{source:'ROC_Debit_massique_entree_Reacteur_Europe2',cible:'Europe 2',color:'#45B50E', s:1,c:1,e:5,anim:'E-CV18167'},
 //                    {source:'Ct3',cible:'Europe 2',color:'#45B50E', s:0,c:1,e:5,anim:'E-CV18167'},
-    				{source:'E-FCV14325',cible:'E-FCS14325',color:'#0E99B5', s:0,c:0,e:3,anim:'E-FCV14325'},
-    				{source:'E-CV16325A',cible:'E-FC16325',color:'#B52A0E', s:0,c:0,e:1,anim:'E-CV16325A'},
-    				{source:'E-CV16325B',cible:'E-FC16325',color:'#B52A0E', s:0,c:0,e:2,anim:'E-CV16325B'},
+    				{cible:'E-FCV14325',source:'E-FCS14325',color:'#0E99B5', s:0,c:0,e:3,anim:'E-FCV14325'},
+    				{cible:'E-CV16325A',source:'E-FC16325',color:'#B52A0E', s:0,c:0,e:1,anim:'E-CV16325A'},
+    				{cible:'E-CV16325B',source:'E-FC16325',color:'#B52A0E', s:0,c:0,e:2,anim:'E-CV16325B'},
                     {source:'Pyrénées',cible:'E15100',color:'#FEFA32', s:1,c:0,e:4,anim:'E-CV15167A'},
                     {source:'Europe 2',cible:'E18100',color:'#FEFA32', s:1,c:0,e:5,anim:'E-CV18167'},
                     {source:'E15100',cible:'Ct1',color:'#FEFA32', s:0,c:0,e:4,anim:'E-CV15167A'},
@@ -547,48 +547,46 @@ let ligne1 = height*0.01+50, ligne2 = height*0.2;
         yx = shape_temp(6*w_i,ligne1,e,3,8,'E-QUR-E2',50,false,'QUR E2');
 y=ligne2;
 //débit C3
+let xC3= x+6*w_i;
         y1 = shape_temp(x,y,e,3,8,'E-FC16325-CPT',50,false,'Cpt C3');
-        y1 = shape_vanne(x+w_i,y,e,3,8,'E-CV16325A',50,false);
-        y1 = shape_vanne(x+w_i,y1,e,3,8,'E-CV16325B',50,false);
-        y1 = shape_temp(x+2*w_i,y,e,3,8,'E-FC16325',50,false);
+        y1 = shape_vanne(x+5*w_i,y,e,3,8,'E-CV16325A',50,false);
+        y1 = shape_vanne(x+5*w_i,y1,e,3,8,'E-CV16325B',50,false);
+        y1 = shape_temp(x+4*w_i,y,e,3,8,'E-FC16325',50,false);
 //débit Eau
-        y3 = shape_vanne(x+w_i,y1+h_i,e,3,8,'E-FCV14325',50,false);
-        y1 = shape_temp(x+2*w_i,y1+h_i,e,3,8,'E-FCS14325',50,false);
+        y3 = shape_vanne(x+5*w_i,y1+h_i,e,3,8,'E-FCV14325',50,false);
+        y1 = shape_temp(x+4*w_i,y1+h_i,e,3,8,'E-FCS14325',50,false);
 //off gaz
-		y1 = shape_temp(x,y1+h_i/2,e,3,8,'E-PS31052',50,false);
-		y2 = shape_temp(x,y1,e,3,8,'E-TS31051',50,false) ;
-		y2 = shape_temp(x,y2,e,3,8,'E-FC12001',50,false);
-        y2 = shape_temp(x,y2,e,3,8,'E-FS31053',50,false);
+        y1 = shape_temp(x+6*w_i,y+h_i,e,3,8,'E-FC12001',50,false);
+		y1 = shape_temp(x+6*w_i,y1+h_i*1.5,e,3,8,'E-PS31052',50,false);
+		y2 = shape_temp(x+6*w_i,y1,e,3,8,'E-TS31051',50,false) ;
+        y2 = shape_temp(x+6*w_i,y2,e,3,8,'E-FS31053',50,false);
 // compresseur
-		x += w_i;
-		y2 = shape_vanne(x,y1,e,3,8,'E-CV12086A',50,false);
-        y2 = shape_vanne(x,y2,e,3,8,'E-CV12086B',50,false);
+		y2 = shape_vanne(x+5*w_i,y1,e,3,8,'E-CV12086A',50,false);
+        y2 = shape_vanne(x+5*w_i,y2,e,3,8,'E-CV12086B',50,false);
 //        y2 = shape_vanne(x,y2,e,3,8,'E-CV12086C',50,false);
-		y2 = shape_temp(x,y2,e,3,8,'E-I12000',50,false);
-		y2 = shape_temp(x,y2,e,3,8,'E-TY12008',50,false);
+		y2 = shape_temp(x+5*w_i,y2,e,3,8,'E-I12000',50,false);
+		y2 = shape_temp(x+5*w_i,y2,e,3,8,'E-TY12008',50,false);
 //debit d'air
-		x += w_i;
-		y1 = shape_temp(x,y1,e,3,8,'E-FCS12085',50,false);
+		y1 = shape_temp(x+4*w_i,y1,e,3,8,'E-FCS12085',50,false);
 //réchauffeur
-		x += w_i*1.5; y1=y+3.5*h_i; //ici
-		y2 = shape_temp(x,y1,e,3,8,'E-TC17601',50,false);
-        y2 = shape_temp(x,y2,e,3,8,'E-CONS-UCS17501',50,false,'C3/O2');
-        y2 = shape_temp(x,y2,e,3,8,'E-CONS-UCS17001',50,false,'O2/Inerte');
+		//x += w_i*1.5;
+//        y1=y+3.5*h_i; //ici
+		y1 = shape_temp(x+3*w_i,y+2.5*h_i,e,3,8,'E-TC17601',50,false);
+        y2 = shape_temp(x+3*w_i,y1,e,3,8,'E-CONS-UCS17501',50,false,'C3/O2');
+        y2 = shape_temp(x+3*w_i,y2,e,3,8,'E-CONS-UCS17001',50,false,'O2/Inerte');
 // ouverture
-        x += w_i;
-        y2 = shape_vanne(x,y1-20,e,1,2,'E-CV18167',50,false) +30;
-        y2 = shape_vanne(x,y2,e,1,2,'E-CV15167A',50,false);
-        y2 = shape_vanne(x,y2,e,1,2,'E-CV15167B',50,false);
+        y2 = shape_vanne(x+2*w_i,y+2.5*h_i,e,1,2,'E-CV15167A',50,false);
+        y2 = shape_vanne(x+2*w_i,y2,e,1,2,'E-CV15167B',50,false);
+        y2 = shape_vanne(x+2*w_i,y2+h_i,e,1,2,'E-CV18167',50,false) +30;
 //débits
-		x += w_i*0.9;
 //		y2 = shape_temp(x,y1-20,e,3,8,'E-F18161',50,false) +30;
-        y2 = shape_temp(x+w_i*0.7,y1-20,e,3,8,'ROC_Debit_massique_entree_Reacteur_Europe2',50,false,'F- E2');
 //        y2 = shape_connecteur(x+1.3*w_i,y2,1,1,'Ct3')+30;
 //        y3 = shape_connecteur(x+w_i,y2+30,1,1,'Ct4');
-        y2 = shape_temp(x,y2+10,e,3,8,'E-F15161',50,false);
+        y2 = shape_temp(x,y+1.5*h_i,e,3,8,'E-F15161',50,false);
         y2 = shape_temp(x,y2,e,3,8,'E-PY15071',50,false);
 		y2 = shape_temp(x,y2,e,3,8,'E-FC15167',50,false);
-		y2 = shape_temp(x+w_i*0.7,y1-42,e,3,8,'E-PY18071',50,false);
+        y2 = shape_temp(x+w_i,y+5*h_i,e,3,8,'ROC_Debit_massique_entree_Reacteur_Europe2',50,false,'F- E2');
+		y2 = shape_temp(x+w_i,y+4*h_i,e,3,8,'E-PY18071',50,false);
 	}
 
 	// réacteur K15000
