@@ -7,6 +7,12 @@
 <title>Pyrénées 2.0</title>
 <style>
 @import url(../css/new.css);
+.rky {
+    background-color: #E8FAFD;
+}
+.rky rect {
+    color:  red;
+}
 #menu {
     position : absolute;
     left: 65%;
@@ -172,7 +178,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Pyrénées/Pirineos</div>
-  <aside >April, 2021<br><br> | v 2.96</aside>
+  <aside >April, 2021<br><br> | v 3.00a</aside>
         <div>
         <form name="saisie" onSubmit="return credClick()">
         <input type="text" id="search">
@@ -1366,7 +1372,7 @@ let tempData = histData;
     	.attr("transform", "translate(10,3)");
 	mouseG.append('rect') 
 		.attr('width', w_g) .attr('height', h_g)
-		.attr('fill', 'none')
+		.style('fill', 'none')
 		.attr('pointer-events', 'all')
         .on('click', function (g,i) {
     let mouse = d3.mouse(this); // console.log(g,i,mouse);
@@ -1381,7 +1387,7 @@ let tempData = histData;
                     let elapseHMS = new Date(elapse*3600*1000); console.log(elapseHMS.toISOString());
                     let ej = Math.trunc(elapse/24), eh = Math.trunc(elapse-ej*24), em=Math.trunc((elapse-ej*24-eh)*60);
                     let elapseStr = (ej>0?ej:'')+' '+(eh>9?'':'0')+eh+':'+(em>9?'':'0')+em;
-                    d3.select('#compute').text('| [moy '+valFormat(mean)+' ]  -  [/24h : '+ valFormat(day)+'] [T:'+elapseStr+'][D:'+valFormat(delta)+'][P:'+trend+'% ]   ('+histData[0].unit+') ('+area+')');
+                    d3.select('#compute').text('| [moy '+valFormat(mean)+' ]  -  [Cumul : '+ valFormat(day)+'] [T:'+elapseStr+'] [D:'+valFormat(delta)+'] [P:'+trend+'% ]   ('+histData[0].unit+') ('+area+')');
                 }
                 break;
         case 2: surface.flip =0; surface.x1 =0; surface.delta=0;
@@ -1446,16 +1452,18 @@ let tempData = histData;
 function compute_surface (data_surface) {
     polyArea = [];
     let start= data_surface[0].timestamp,
-        end = data_surface[data_surface.length-1].timestamp;
+        end = data_surface[data_surface.length-1].timestamp,
+        nbPt = data_surface.length;
     polyArea.push([0,0]);
     data_surface.forEach(v=>{ polyArea.push([(v.timestamp-start),v.value])});
     polyArea.push([(end-start),0]);
     let area = d3.polygonArea(polyArea);
     let mean = area/(end-start);
     let elapse = (end-start)/1000/3600;
-    let day = elapse>24?0:(mean*elapse/24);
-    let delta = (data_surface[data_surface.length-1].value - data_surface[0].value);
-    let trend = Math.trunc(Math.atan(delta/(data_surface.length))/2/Math.PI*360.0);
+    let day = (mean*elapse/24); //elapse>24?0:(mean*elapse/24);
+    let delta = (data_surface[nbPt-1].value - data_surface[0].value);
+//    let trend = Math.trunc(Math.atan(delta/elapse/data_surface[0].value)/2/Math.PI*360.0);
+    let trend = Math.trunc((delta/elapse/data_surface[0].value)*10000.0)/100.0;
     console.log(polyArea,start,end,area,(area/(end-start)));
     return [Math.trunc(area/1000000), mean, day, elapse, trend, delta];
 }
