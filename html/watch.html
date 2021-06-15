@@ -651,7 +651,7 @@ let xC3= x+6*w_i;
 //réchauffeur
 		//x += w_i*1.5;
 //        y1=y+3.5*h_i; //ici
-        y1 = shape_connecteur(x+3.5*w_i+(5.1*5),y+0.5*h_i,1,1,'Ctx');
+        y1 = shape_connecteur(x+3.5*w_i+(0.0235*width),y+0.5*h_i,1,1,'Ctx');
 		y1 = shape_temp(x+3.5*w_i,y+1.5*h_i,e,3,8,'E-TC17601',50,false);
         y2 = shape_temp(x,y1,e,3,8,'E-CONS-UCS17501',50,false,'C3/O2');
         y2 = shape_temp(x,y2,e,3,8,'E-CONS-UCS17001',50,false,'O2/Inerte');
@@ -1103,6 +1103,8 @@ function shape_vanne (x,y,ech,h,l,id,val,status) {
 }
 function shape_temp (x,y,ech,h,l,id,val,status,libelle) {
 	liste3.push(id); ech = 5; h= ech *3.9; l=10.2*ech;
+    h=0.027*height; l=0.047*width;
+
 	let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
 					.attr('transform','translate('+x+','+y+')').raise()
 					.on('click',getHistorique)
