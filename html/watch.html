@@ -178,7 +178,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Pyrénées/Pirineos</div>
-  <aside >April, 2021<br><br> | v 3.77</aside>
+  <aside >April, 2021<br><br> | v 3.91</aside>
         <div>
         <form name="saisie" onSubmit="return credClick()">
         <input type="text" id="search">
@@ -212,7 +212,7 @@ input:focus {
    	var interval = 'PT1M'  // PnYnMnD  TnHnMnS
     var urlRes = '&resolution='+interval;
     var url = '';
-    var Couleur = { Eau:'#3333FF',GR:'#FF3399', Air:'#33FF99', C3:'#FF3333', OffGaz:'#9933FF', Reacteur:'#FF9933' }
+    var Couleur = { Eau:'#33FFFF',GR:'#FF3399', Air:'#33FF99', C3:'#FF3333', OffGaz:'#9933FF', Reacteur:'#FF9933', D210:'#DFDF2D', Acro:'#FFFF33', sel: '#ddd' , Acide:'#FF3333', MSH:'#3333FF', MMP:'#99FF33', Torche:'#869F6C', V10:'#26BFBF', V40:'#1A8080'}
     /*
     let listeT1 = ['E-T15021','E-T15022','E-T15023','E-T15024','E-T15025','E-T15026','E-T15027','E-T15028','E-T15029','E-T15030','E-T15031','E-T15032']
     let listeT2 = ['E-T15041','E-T15042','E-T15043','E-T15044','E-T15045','E-T15046','E-T15047','E-T15048','E-T15049','E-T15050','E-T15051','E-T15052']
@@ -246,18 +246,18 @@ input:focus {
                     {source:'Ct1',cible:'Ct2',color:Couleur.Reacteur, s:0,c:0,e:4,anim:'E-CV15167A'},
                     {source:'E18100',cible:'Ct2',color:Couleur.Reacteur, s:0,c:0,e:5,anim:'E-CV18167'},
                     {source:'Ct2',cible:'D210',color:Couleur.Reacteur, s:0,c:-1,e:7,anim:'E-CV15167A'},
-                    {source:'D210',cible:'Ct8',color:'#FEFA32', s:-1,c:0,e:7,anim:'E-CV15167A'},
-                    {source:'Ct8',cible:'Ct7',color:'#FEFA32', s:0,c:0,e:7,anim:'E-CV15167A'},
-                    {source:'Ct7',cible:'D310',color:'#FEFA32', s:0,c:-1,e:7,anim:'E-CV15167A'},
-                    {source:'D410',cible:'E-FCQ41102',color:'black', s:0,c:0,e:2,anim:'E-FCV41102'},
-                    {source:'E-FCQ41102',cible:'E-FCV41102',color:'black', s:0,c:0,e:2,anim:'E-FCV41102'},
-                    {source:'D410',cible:'E-FQ41504',color:'#BF2676', s:1,c:0,e:8,anim:'E-FCV41102'},
-                    {source:'D210',cible:'D220',color:'#BF2676', s:1,c:-1,e:2,anim:'E-CV15167A'},
-                    {source:'D210',cible:'D220',color:'#BF2676', s:0,c:0,e:2,anim:'E-CV15167A'},
-                    {source:'D310',cible:'Ct6',color:'#BF2676', s:1,c:0,e:2,anim:'E-CV15167A'},
-                    {source:'Ct6',cible:'D330',color:'#BF2676', s:0,c:0,e:2,anim:'E-CV15167A'},
-                    {source:'D330',cible:'Ct5',color:'#BF2676', s:-1,c:0,e:2,anim:'E-CV15167A'},
-                    {source:'Ct5',cible:'D410',color:'#BF2676', s:0,c:0,e:2,anim:'E-CV15167A'},
+                    {source:'D210',cible:'Ct8',color:Couleur.D210, s:-1,c:0,e:7,anim:'E-CV15167A'},
+                    {source:'Ct8',cible:'Ct7',color:Couleur.D210, s:0,c:0,e:7,anim:'E-CV15167A'},
+                    {source:'Ct7',cible:'D310',color:Couleur.D210, s:0,c:-1,e:7,anim:'E-CV15167A'},
+                    {source:'D410',cible:'E-FCQ41102',color:Couleur.MSH, s:0,c:0,e:4,anim:'E-FCV41102'},
+                    {source:'E-FCQ41102',cible:'E-FCV41102',color:Couleur.MSH, s:0,c:0,e:4,anim:'E-FCV41102'},
+                    {source:'D410',cible:'E-FQ41504',color:Couleur.MMP, s:1,c:0,e:8,anim:'E-FCV41102'},
+                    {source:'D210',cible:'D220',color:Couleur.Acide, s:1,c:-1,e:2,anim:'E-CV15167A'},
+                    {source:'D210',cible:'D220',color:Couleur.Reacteur, s:0,c:0,e:2,anim:'E-CV15167A'},
+                    {source:'D310',cible:'Ct6',color:'#FFFF66', s:1,c:0,e:9,anim:'E-CV15167A'},
+                    {source:'Ct6',cible:'D330',color:'#FFFF66', s:0,c:0,e:9,anim:'E-CV15167A'},
+                    {source:'D330',cible:'Ct5',color:Couleur.Acro, s:-1,c:0,e:8,anim:'E-CV15167A'},
+                    {source:'Ct5',cible:'D410',color:Couleur.Acro, s:0,c:0,e:8,anim:'E-CV15167A'},
                     {cible:'D310',source:'CtO',color:'grey', s:0,c:1,e:2,anim:'E-CV12086A'},
                     {source:'E-FS31053',cible:'CtO',color:'grey', s:1,c:0,e:2,anim:'E-CV12086A'},
     				];
@@ -285,6 +285,86 @@ input:focus {
 	var dispatch = d3.dispatch('histo');
     dispatch.on('histo',aff_histo);
     var t_cycle = setInterval(refreshData,300000);
+// les gradients de couleurs ...
+// Set the gradient
+    svg.append("linearGradient")
+      .attr("id", "Reacteur")
+      .attr("gradientUnits", "userSpaceOnUse")
+      .attr("x1", 0).attr("y1", 0)
+      .attr("x2", 0).attr("y2", height/3)
+      .selectAll("stop")
+        .data([
+          {offset: "0%", color: Couleur.GR},
+          {offset: "100%", color: Couleur.Reacteur}
+        ])
+      .enter().append("stop")
+        .attr("offset", function(d) { return d.offset; })
+        .attr("stop-color", function(d) { return d.color; });
+    svg.append("linearGradient")
+      .attr("id", "D210")
+      .attr("gradientUnits", "userSpaceOnUse")
+      .attr("x1", 0).attr("y1", 0)
+      .attr("x2", 0).attr("y2", height/3)
+      .selectAll("stop")
+        .data([
+          {offset: "0%", color: Couleur.D210},
+          {offset: "100%", color: Couleur.Reacteur}
+        ])
+      .enter().append("stop")
+        .attr("offset", function(d) { return d.offset; })
+        .attr("stop-color", function(d) { return d.color; });
+    svg.append("linearGradient")
+      .attr("id", "D220")
+      .attr("gradientUnits", "userSpaceOnUse")
+      .attr("x1", 0).attr("y1", 0)
+      .attr("x2", 0).attr("y2", height/6)
+      .selectAll("stop")
+        .data([
+          {offset: "0%", color: Couleur.Reacteur},
+          {offset: "100%", color: '#FF3333'}
+        ])
+      .enter().append("stop")
+        .attr("offset", function(d) { return d.offset; })
+        .attr("stop-color", function(d) { return d.color; });
+    svg.append("linearGradient")
+      .attr("id", "D310")
+      .attr("gradientUnits", "userSpaceOnUse")
+      .attr("x1", 0).attr("y1", 0)
+      .attr("x2", 0).attr("y2", height/3)
+      .selectAll("stop")
+        .data([
+          {offset: "0%", color: 'grey'},
+          {offset: "100%", color: Couleur.D210}
+        ])
+      .enter().append("stop")
+        .attr("offset", function(d) { return d.offset; })
+        .attr("stop-color", function(d) { return d.color; });
+    svg.append("linearGradient")
+      .attr("id", "D330")
+      .attr("gradientUnits", "userSpaceOnUse")
+      .attr("x1", 0).attr("y1", 0)
+      .attr("x2", 0).attr("y2", height/3)
+      .selectAll("stop")
+        .data([
+          {offset: "0%", color: Couleur.Acro},
+          {offset: "100%", color: '#FFFFCC'}
+        ])
+      .enter().append("stop")
+        .attr("offset", function(d) { return d.offset; })
+        .attr("stop-color", function(d) { return d.color; });
+    svg.append("linearGradient")
+      .attr("id", "D410")
+      .attr("gradientUnits", "userSpaceOnUse")
+      .attr("x1", 0).attr("y1", 0)
+      .attr("x2", 0).attr("y2", height/3)
+      .selectAll("stop")
+        .data([
+          {offset: "0%", color: Couleur.Torche},
+          {offset: "100%", color: Couleur.MMP}
+        ])
+      .enter().append("stop")
+        .attr("offset", function(d) { return d.offset; })
+        .attr("stop-color", function(d) { return d.color; });
 // menu
 let ii=0
 const data_menu = [
@@ -595,7 +675,7 @@ let xC3= x+6*w_i;
 	let K15000 = {x:Kx, y:Ky, li: (width*0.08), hi : (height*0.345) ,e: 15, xl:0};
 	with (K15000) {
 		let i =0;
-        const {h,l,xr,yr} = shape_cuve_v1(x,y,'Pyrénées','V',li,hi,'#BFBB26'); console.log('K15000',xr,yr,h,l);
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'Pyrénées','V',li,hi,'url(#Reacteur)'); console.log('K15000',xr,yr,h,l); //'#BFBB26'
         xl = xr+l; y = yr; y1 = yr+ h/8; x = xr+3;
 		y1 = shape_temp_v1(x,y1,hC,lC,'E-T15008',50,false);
 		y1 = shape_temp_v1(x,y1,hC,lC,'E-P15162',50,false);
@@ -649,7 +729,7 @@ let xC3= x+6*w_i;
 	let K18000 = {x:Kx2, y:Ky ,li: K15000.li, hi : K15000.hi,e: 15, xl:0};
 	with (K18000) {
 		let i =0;
-        const {h,l,xr,yr} = shape_cuve_v1(x,y,'Europe 2','V',li,hi,'#BFBB26');// console.log('K18000',xr,yr,h,l);
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'Europe 2','V',li,hi,'url(#Reacteur)');// console.log('K18000',xr,yr,h,l);
         xl = xr+l; y = yr; y1 = yr+ h/8; x = xr+3;
         y1 = shape_temp_v1(x,y1,hC,lC,'E-T18008',50,false);
         y1 = shape_temp_v1(x,y1,hC,lC,'E-P18162',50,false);
@@ -716,7 +796,7 @@ let xC3= x+6*w_i;
 // bache à sel Py
 	let R19900 = {x:(width*0.01), y:(height*0.85), li : (width*0.09), hi: (height*0.05), e: 4};
 	with (R19900) {
-		const {h,l,xr,yr} = shape_cuve_v1(x,y,'R19900','H',li,hi);
+		const {h,l,xr,yr} = shape_cuve_v1(x,y,'R19900','H',li,hi,Couleur.sel);
 		shape_level(x+l+l-li,y,7,h,8,'E-LX19901',50,false);
 		y1=shape_sonde_v1(x+li*0.11,yr+hi*0.2,hT,lT,'E-T19908',50,false);
 		y1=shape_sonde_v1(x+li*0.11,y1,hT,lT,'E-TS19801',50,false);
@@ -729,7 +809,7 @@ let xC3= x+6*w_i;
 // bache à sel E2
     let R19000 = {x:(R19900.x), y:(R19900.y+R19900.hi*1.07), li : R19900.li, hi: R19900.hi, e: 4};
 	with (R19000) {
-        const {h,l,xr,yr} = shape_cuve_v1(x,y,'R19000','H',li,hi);
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'R19000','H',li,hi,Couleur.sel);
         shape_level(x+l+l-li,y,7,h,8,'E-LX19001',50,false);
         y1=shape_sonde_v1(x+li*0.11,yr+hi*0.2,hT,lT,'E-T19008',50,false);
 //        y1=shape_sonde_v1(x+li*0.11,y1,hT,lT,'E-TS19001',50,false);
@@ -739,7 +819,7 @@ let xC3= x+6*w_i;
 	let E15400 = {x:(K15000.x-(width*0.037)), y:(K15000.y), li: (width*0.031), hi : (height*0.1), e: 10};
 	with (E15400) {
 		let i =0;
-		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E15400','V',li,hi,'#fdd'); y += 12; x += 3;// console.log('size : ',h,l)
+		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E15400','V',li,hi,Couleur.sel); y += 12; x += 3;// console.log('size : ',h,l)
 //        hC=0.027*height, lC=0.03*width;
 		y = shape_sonde_v1(x+l/10,yr+h/3,hT,lT,'E-T15408',50,false);
 		y = shape_sonde_v1(x+l/10,y,hT,lT,'E-J15406',50,false);
@@ -750,7 +830,7 @@ let xC3= x+6*w_i;
 	let E18400 = {x:(K18000.x+K18000.li), y:(K18000.y), li: (width*0.031), hi : (height*0.1),e: 10};
 	with (E18400) {
 		let i =0;
-		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E18400','V',li,hi,'#fdd'); y += 12; x += 3;// console.log('size : ',h,l)
+		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E18400','V',li,hi,Couleur.sel); y += 12; x += 3;// console.log('size : ',h,l)
         y = shape_sonde_v1(x+l/10,yr+h/3,hT,lT,'E-T18408',50,false);
         y = shape_sonde_v1(x+l/10,y,hT,lT,'E-J18406',50,false);
         y = shape_sonde_v1(x+l/10,y,hT,lT,'E-TS18409',50,false);
@@ -760,7 +840,7 @@ let xC3= x+6*w_i;
     let E15500 = {x:(E15400.x-width*0.044), y:(K15000.y), li: (width*0.04), hi : (height*0.1), e: 10};
 	with (E15500) {
 		let i =0;
-        const {h,l,xr,yr} = shape_cuve_v1(x,y,'E15500','V',li,hi,'#329CFE'); y += 12; x += 3;// console.log('size : ',h,l)
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'E15500','V',li,hi,Couleur.V40); y += 12; x += 3;// console.log('size : ',h,l)
 		shape_level(x+l-15,y,e,h-e*2,10,'E-LC15504',50,false);
         y1 = shape_sonde_v1(x+l/10,yr+h/3,hT,lT,'E-PC15506',50,false);
         y1 = shape_sonde_v1(x+l/10,y1,hT,lT,'E-LS15503',50,false);
@@ -769,7 +849,7 @@ let xC3= x+6*w_i;
     let E15600 = {x:(E15400.x-width*0.044), y:(K15000.y+K15000.hi/2), li: (width*0.04), hi : (height*0.1), e: 10};
 	with (E15600) {
 		let i =0;
-        const {h,l,xr,yr} = shape_cuve_v1(x,y,'E15600','V',li,hi,'#32FEFA'); y += 12; x += 3;// console.log('size : ',h,l)
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'E15600','V',li,hi,Couleur.V10); y += 12; x += 3;// console.log('size : ',h,l)
 		shape_level(x+l-15,y,e,h-e*2,10,'E-LC15604',50,false);
         y1 = shape_sonde_v1(x+l/10,yr+h/3,hT,lT,'E-PC15606',50,false);
         y1 = shape_sonde_v1(x+l/10,y1,hT,lT,'E-LS15603',50,false);
@@ -778,7 +858,7 @@ let xC3= x+6*w_i;
 	let E18500 = {x:(E18400.x + E18400.li), y:K18000.y, li: (width*0.04), hi : (height*0.1), e: 10};
 	with (E18500) {
 		let i =0;
-		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E18500','V',li,hi,'#329CFE'); y += 12; x += 3;// console.log('size : ',h,l)
+		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E18500','V',li,hi,Couleur.V40); y += 12; x += 3;// console.log('size : ',h,l)
         shape_level(x+l-15,y,e,h-e*2,10,'E-LC18504',50,false);
         y1 = shape_sonde_v1(x+l/10,yr+h/3,hT,lT,'E-PC18506',50,false);
         y1 = shape_sonde_v1(x+l/10,y1,hT,lT,'E-LS18503',50,false);
@@ -787,7 +867,7 @@ let xC3= x+6*w_i;
 	let E18600 = {x:(E18500.x), y:(K18000.y+K18000.hi/2),  li: (width*0.04), hi : (height*0.1), e: 11};
 	with (E18600) {
 		let i =0;
-		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E18600','V',li,hi,'#32FEFA'); y += 12, x += 3;
+		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E18600','V',li,hi,Couleur.V10); y += 12, x += 3;
         shape_level(x+l-15,y,e,h-e*2,10,'E-LC18604',50,false);
         y1 = shape_sonde_v1(x+l/10,yr+h/3,hT,lT,'E-PC18606',50,false);
         y1 = shape_sonde_v1(x+l/10,y1,hT,lT,'E-LS18603',50,false);
@@ -795,14 +875,14 @@ let xC3= x+6*w_i;
 // Condenseur
 	let E15100 = {x:(K15000.x+K15000.li*0.6), y:(K15000.y+K15000.hi*1.05), li: (width*0.047), hi : (height*0.05), e: 2};
 	with (E15100) {
-		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E15100','H',li,hi,'#DEDB2C');
+		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E15100','H',li,hi,Couleur.Reacteur);
 		y1 = shape_sonde_v1(xr+l/3,yr+h/2,hT,lT,'E-T15101',50,false);
 		y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-P15104',50,false);
 		shape_temp(xr+li,yr-5,5,3,8,'E-TC15202',50,false);
 	}
 	let E18100 = {x:(K18000.x+K18000.li*0.6), y:(K18000.y+K18000.hi*1.05), li: (width*0.047), hi : (height*0.05), e: 2};
 	with (E18100) {
-		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E18100','H',li,hi,'#DEDB2C');
+		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E18100','H',li,hi,Couleur.Reacteur);
         y1 = shape_sonde_v1(xr+l/3,yr+h/2,hT,lT,'E-T18101',50,false);
         y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-P18104',50,false);
         shape_temp(xr+li,y-5,5,3,8,'E-TC18202',50,false);
@@ -846,7 +926,7 @@ let xC3= x+6*w_i;
     let D21000 = {x:(width*0.48), y:(height*0.55), li: (width*0.05), hi : (height*0.40) ,e: 15, xl:0};
     with (D21000) {
         let i =0;
-        const {h,l,xr,yr} = shape_cuve_v1(x,y,'D210','V',li,hi,'#DEDB2C'); //console.log('K15000',xr,yr,h,l);
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'D210','V',li,hi,'url(#D210'); //console.log('K15000',xr,yr,h,l);
         y1 = shape_sonde_v1(xr+l/3,yr+h*0.14,hT,lT,'E-T21004',50,false); //32
         y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-P21012',50,false); //32
         y1 = shape_sonde_v1(xr+l/3,yr+h*0.83,hT,lT,'E-T21003',50,false); //32
@@ -858,7 +938,7 @@ let xC3= x+6*w_i;
     let D22000 = {x:(width*0.55), y:(D21000.y+D21000.hi/2), li: (width*0.036), hi : (height*0.20) ,e: 15, xl:0};
     with (D22000) {
         let i =0;
-        const {h,l,xr,yr} = shape_cuve_v1(x,y,'D220','V',li,hi,'#7F7D19'); //console.log('K15000',xr,yr,h,l);
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'D220','V',li,hi,'url(#D220'); //console.log('K15000',xr,yr,h,l);
         y1 = shape_sonde_v1(xr+l/3,yr+h*0.15,hT,lT,'E-T22004',50,false); //32
         y1 = shape_sonde_v1(xr+l/3,yr+h*0.85,hT,lT,'E-T22003',50,false); //32
         y1 = shape_sonde_v1(xr+l/3,yr+h*0.5,hT,lT,'E-PD22013',50,false); //32
@@ -867,7 +947,7 @@ let xC3= x+6*w_i;
     let D31000 = {x:(width*0.65), y:(height*0.5), li: (width*0.045), hi : (height*0.40) ,e: 15, xl:0};
     with (D31000) {
         let i =0;
-        const {h,l,xr,yr} = shape_cuve_v1(x,y,'D310','V',li,hi,'#FEFB4C'); //console.log('K15000',xr,yr,h,l);
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'D310','V',li,hi,'url(#D310)'); //console.log('K15000',xr,yr,h,l);
         y1 = shape_sonde_v1(xr+l/3,yr+h*0.15,hT,lT,'E-PC31012',50,false); //32
         y1 = shape_temp_v1(xr+l/10,y1,hC,l*0.8,'E-A31031A',50,false,'xxAcro');
         y1 = shape_temp_v1(xr+l/10,y1,hC,l*0.8,'E-A31031E',50,false,'xxC3H6');
@@ -881,7 +961,7 @@ let xC3= x+6*w_i;
     let D33000 = {x:(width*0.73), y:(height*0.53), li: (width*0.045), hi : (height*0.40) ,e: 15, xl:0};
     with (D33000) {
         let i =0;
-        const {h,l,xr,yr} = shape_cuve_v1(x,y,'D330','V',li,hi,'#FEFA32'); //console.log('K15000',xr,yr,h,l);
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'D330','V',li,hi,'url(#D330)'); //console.log('K15000',xr,yr,h,l);
         y1 = shape_sonde_v1(xr+l/3,yr+h*0.15,hT,lT,'E-T33004',50,false); //32
         y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-PS33012',50,false); //32
         y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-PD33014',50,false); //32
@@ -896,7 +976,7 @@ let xC3= x+6*w_i;
     let D41000 = {x:(width*0.81), y:(height*0.5), li: (width*0.055), hi : (height*0.40) ,e: 15, xl:0};
     with (D41000) {
         let i =0;
-        const {h,l,xr,yr} = shape_cuve_v1(x,y,'D410','V',li,hi,'#8F8F76'); //console.log('K15000',xr,yr,h,l);
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'D410','V',li,hi,'url(#D410)'); //console.log('K15000',xr,yr,h,l);
         y1 = shape_vanne(xr+li*1.05+w_i,yr+h/3,3,3,8,'E-FCV41102',50,false);
         y1 = shape_temp_v1(xr+li*1.05+w_i/3,yr+h/3,hC,lC,'E-FCQ41102',50,false);
         yx = shape_temp_v1(xr+li*1.05+w_i/3,yr+h,hC,lC*1.2,'E-QUR-E2',50,false,'xxQUR');
@@ -1373,7 +1453,8 @@ let tempData = histData;
         .attr("id",(d,i)=>{return "l"+i;})//.transition().duration(2000)
         .attr("d", (d)=>{ return line( tempData[0]); })       //histData[0].values);})
 //        .attr("d", (d)=>{return d.scale==0?line(d.values):lineR(d.values);})
-        .style("stroke", function(d,i) { return couleur[(i*5)%nbCouleur];}).style("stroke-width", "2px");
+        .style("stroke",  function(d,i) { return couleur[(i*5)%nbCouleur];})
+        .style("stroke-width", "2px");
     // curseur
     var class_mpl = 'mpl'+selectValue, class_ml='ml'+selectValue;
 	var mouseG = g_line.append("g").lower()
