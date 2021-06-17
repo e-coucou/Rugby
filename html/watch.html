@@ -178,7 +178,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Pyrénées/Pirineos</div>
-  <aside >April, 2021<br><br> | v 3.91</aside>
+  <aside >April, 2021<br><br> | v 3.97</aside>
         <div>
         <form name="saisie" onSubmit="return credClick()">
         <input type="text" id="search">
@@ -641,7 +641,7 @@ let xC3= x+6*w_i;
 		y2 = shape_temp(x+6.5*w_i,y1,e,3,8,'E-TS31051',50,false) ;
         y2 = shape_temp(x+6.5*w_i,y2,e,3,8,'E-FS31053',50,false);
 // compresseur
-		y2 = shape_vanne(x+5.5*w_i,ligne1+1.5*h_i,e,3,8,'E-CV12086A',50,false);
+		y2 = shape_vanne(x+5.5*w_i,ligne1+2*h_i,e,3,8,'E-CV12086A',50,false);
         y2 = shape_vanne(x+5.5*w_i,y2,e,3,8,'E-CV12086B',50,false);
 //        y2 = shape_vanne(x,y2,e,3,8,'E-CV12086C',50,false);
 		y2 = shape_temp(x+5.5*w_i,y2+0.5*h_i,e,3,8,'E-I12000',50,false);
@@ -923,7 +923,7 @@ let xC3= x+6*w_i;
         y1=shape_sonde_v1(x-w_i/2,y1,hT,lT,'E-T18708',50,false);
 	}
     // Colonne D210
-    let D21000 = {x:(width*0.48), y:(height*0.55), li: (width*0.05), hi : (height*0.40) ,e: 15, xl:0};
+    let D21000 = {x:(width*0.46), y:(height*0.55), li: (width*0.05), hi : (height*0.38) ,e: 15, xl:0};
     with (D21000) {
         let i =0;
         const {h,l,xr,yr} = shape_cuve_v1(x,y,'D210','V',li,hi,'url(#D210'); //console.log('K15000',xr,yr,h,l);
@@ -935,7 +935,7 @@ let xC3= x+6*w_i;
         shape_connecteur(xr+l*1.5,y,1,1,'Ct8');
     }
     // Colonne D220
-    let D22000 = {x:(width*0.55), y:(D21000.y+D21000.hi/2), li: (width*0.036), hi : (height*0.20) ,e: 15, xl:0};
+    let D22000 = {x:(width*0.52), y:(D21000.y+D21000.hi*0.45), li: (width*0.036), hi : (height*0.20) ,e: 15, xl:0};
     with (D22000) {
         let i =0;
         const {h,l,xr,yr} = shape_cuve_v1(x,y,'D220','V',li,hi,'url(#D220'); //console.log('K15000',xr,yr,h,l);
@@ -944,7 +944,7 @@ let xC3= x+6*w_i;
         y1 = shape_sonde_v1(xr+l/3,yr+h*0.5,hT,lT,'E-PD22013',50,false); //32
     }
     // Colonne D310
-    let D31000 = {x:(width*0.65), y:(height*0.5), li: (width*0.045), hi : (height*0.40) ,e: 15, xl:0};
+    let D31000 = {x:(width*0.59), y:(height*0.5), li: (width*0.045), hi : (height*0.38) ,e: 15, xl:0};
     with (D31000) {
         let i =0;
         const {h,l,xr,yr} = shape_cuve_v1(x,y,'D310','V',li,hi,'url(#D310)'); //console.log('K15000',xr,yr,h,l);
@@ -958,7 +958,7 @@ let xC3= x+6*w_i;
         shape_connecteur(xr-l*0.2,yr+h*1.03,1,1,'Ct7');
     }
     // Colonne D330
-    let D33000 = {x:(width*0.73), y:(height*0.53), li: (width*0.045), hi : (height*0.40) ,e: 15, xl:0};
+    let D33000 = {x:(width*0.66), y:(height*0.5), li: (width*0.045), hi : (height*0.38) ,e: 15, xl:0};
     with (D33000) {
         let i =0;
         const {h,l,xr,yr} = shape_cuve_v1(x,y,'D330','V',li,hi,'url(#D330)'); //console.log('K15000',xr,yr,h,l);
@@ -969,27 +969,27 @@ let xC3= x+6*w_i;
         y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-PD33013',50,false); //32
         y1 = shape_sonde_v1(xr+l/3,yr+h*0.5,hT,lT,'E-TO33007',50,false); //32
         shape_level(xr+2,yr+0.8*h,10,35,10,'E-LC33001',50,false);
-        shape_connecteur(xr+l*1.2,y,1,1,'Ct5');
+        shape_connecteur(xr+l*1.2,yr,1,1,'Ct5');
         y1 = shape_sonde_v1(xr-l*0.4,yr+h/2,hT,lT,'E-FC33005',50,false); //32
     }
     // Colonne D410
-    let D41000 = {x:(width*0.81), y:(height*0.5), li: (width*0.055), hi : (height*0.40) ,e: 15, xl:0};
+    let D41000 = {x:(width*0.75), y:(height*0.5), li: (width*0.055), hi : (height*0.40) ,e: 15, xl:0};
     with (D41000) {
         let i =0;
         const {h,l,xr,yr} = shape_cuve_v1(x,y,'D410','V',li,hi,'url(#D410)'); //console.log('K15000',xr,yr,h,l);
         y1 = shape_vanne(xr+li*1.05+w_i,yr+h/3,3,3,8,'E-FCV41102',50,false);
         y1 = shape_temp_v1(xr+li*1.05+w_i/3,yr+h/3,hC,lC,'E-FCQ41102',50,false);
-        yx = shape_temp_v1(xr+li*1.05+w_i/3,yr+h,hC,lC*1.2,'E-QUR-E2',50,false,'xxQUR');
-        yx = shape_temp_v1(xr+li*1.05+w_i/3,yx,hC,lC*1.2,'ROC_E2_Prod_MMP_brut',50,false,'xxMMP B');
-        y1 = shape_temp_v1(xr+li*1.05+w_i/3,yx,hC,lC*1.2,'E-FQ41504',50,false);
+        yx = shape_temp_v1(xr+li*1.1+w_i/3,yr+h*0.82,hC,lC*1.2,'E-QUR-E2',50,false,'xxQUR');
+        yx = shape_temp_v1(xr+li*1.1+w_i/3,yx,hC,lC*1.2,'ROC_E2_Prod_MMP_brut',50,false,'xxMMP B');
+        y1 = shape_temp_v1(xr+li*1.1+w_i/3,yx,hC,lC*1.2,'E-FQ41504',50,false);
         y1 = shape_sonde_v1(xr+l/3,yr+h*0.13,hT,lT,'E-T41015',50,false); //32
         y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-P41009',50,false); //32
         y1 = shape_sonde_v1(xr+l/3,yr+h*0.5,hT,lT,'E-TC41401',50,false); //32
         y1 = shape_sonde_v1(xr+l/3,yr+h*0.83,hT,lT,'E-T41003',50,false); //32
 //        y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-LC41001',50,false); //32
-        y1 = shape_sonde_v1(xr+l,yr+h*1.01,hT,lT,'E-A41311A',50,false,'xxAcro'); //32
-        y1 = shape_sonde_v1(xr+l,y1,hT,lT,'E-A41311B',50,false,'xxMSH'); //32
-        y1 = shape_sonde_v1(xr+l,y1,hT,lT,'E-A41311C',50,false,'xxEau'); //32
+        y1 = shape_sonde_v1(xr+l*1.1,yr+h*0.82,hT,lT,'E-A41311A',50,false,'xxAcro'); //32
+        y1 = shape_sonde_v1(xr+l*1.1,y1,hT,lT,'E-A41311B',50,false,'xxMSH'); //32
+        y1 = shape_sonde_v1(xr+l*1.1,y1,hT,lT,'E-A41311C',50,false,'xxEau'); //32
         shape_level(xr+2,yr+0.8*h,10,35,10,'E-LC41001',50,false);
     }
 
@@ -1103,7 +1103,7 @@ function shape_vanne (x,y,ech,h,l,id,val,status) {
 }
 function shape_temp (x,y,ech,h,l,id,val,status,libelle) {
 	liste3.push(id); ech = 5; h= ech *3.9; l=10.2*ech;
-    h=0.027*height; l=0.047*width;
+    h=0.027*height; l=0.042*width;
 
 	let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
 					.attr('transform','translate('+x+','+y+')').raise()
