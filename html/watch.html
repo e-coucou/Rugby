@@ -178,7 +178,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Pyrénées/Pirineos</div>
-  <aside >April, 2021<br><br> | v 3.97</aside>
+  <aside >April, 2021<br><br> | v 3.98</aside>
         <div>
         <form name="saisie" onSubmit="return credClick()">
         <input type="text" id="search">
@@ -368,7 +368,8 @@ input:focus {
 // menu
 let ii=0
 const data_menu = [
-        { n:ii++, x:-320, m:'trophy', a: (30*24) , val: '30j',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-320, m:'trophy', a: (3*30*24) , val: '3m',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-320, m:'trophy', a: (30*24) , val: '1m',http:'/RWC-2019.html'},  //th
         { n:ii++, x:-320, m:'trophy', a: (14*24) , val: '14j',http:'/RWC-2019.html'},  //th
         { n:ii++, x:-280, m:'trophy', a: (7*24) , val: '7j',http:'/RWC-2019.html'},  //th
         { n:ii++, x:-280, m:'trophy', a: 72 , val: '72h',http:'/RWC-2019.html'},  //th
@@ -377,6 +378,7 @@ const data_menu = [
         { n:ii++, x:-280, m:'trophy', a: 12 , val: '12h',http:'/RWC-2019.html'},  //th
         { n:ii++, x:-280, m:'trophy', a: 6 , val: '6h',http:'/RWC-2019.html'},  //th
         { n:ii++, x:-280, m:'trophy', a: 2 , val: '2h',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-280, m:'trophy', a: 0 , val: '(o)',http:'/RWC-2019.html'},  //th
  //       { n:7, x:-280, m:'trophy', a: 336 , val: '15j',http:'/RWC-2019.html'},  //th
     ];
 var svgMenu = d3.select("#menu").append("svg")
@@ -401,10 +403,13 @@ var menuCircle=false, histTime = data_menu[selGraphe].a;
             .text(f=>{return f.val;}).style('font-size','1vw');
 function clickMenu (d) {
     console.log(d);
-    histTime = d.a; selGraphe = d.n;
+    selGraphe = d.n;
     d3.select('#menu').selectAll('rect').style('fill',(f,i)=>(f.n==selGraphe)?'#B233FF':'#4C33FF');
     switch (d.n) {
-        case 0 : break;
+        case (ii-1) : histOffset = 0; break;
+        default :
+            histTime = d.a;
+            break;
     }
     getHistorique(histList[0]);
 }
@@ -439,7 +444,7 @@ function getValeurListe(urlTime,liste) {
 		getDashData(url,tag,'#'+tag);
 	});
 }
-function getHistorique(d,i,start) {
+function getHistorique (d,i,start) {
 //	console.log(d,i,start);
     //epxx mettre selection rectangle
     histList[0] = d;
