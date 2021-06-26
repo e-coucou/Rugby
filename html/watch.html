@@ -178,7 +178,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Pyrénées/Pirineos</div>
-  <aside >April, 2021<br><br> | v 4.01</aside>
+  <aside >April, 2021<br><br> | v 4.02</aside>
         <div>
         <form name="saisie" onSubmit="return credClick()">
         <input type="text" id="search">
@@ -443,16 +443,6 @@ function getValeurListe(urlTime,liste) {
 		url = urlBase+encodeURIComponent(tag)+urlTime+'&resolution=PT1M';
 		getDashData(url,tag,'#'+tag);
 	});
-}
-function getDataPoint(d,i,start) {
-    let now = new Date(Date.now());
-    let end = new Date(Date.now());
-    now.setMinutes(now.getMinutes()-11);
-    urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
-    url = urlBase+encodeURIComponent(d)+urlTime+'&resolution=PT1M';
-    getDashData(url,d,'#'+d);
-//    getValeurListe(urlTime,liste3);
-    getHistorique(d,i,start);
 }
 function getHistorique (d,i,start) {
 //	console.log(d,i,start);
@@ -1122,7 +1112,7 @@ function shape_temp (x,y,ech,h,l,id,val,status,libelle) {
 
 	let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
 					.attr('transform','translate('+x+','+y+')').raise()
-					.on('click',getDataPoint)
+					.on('click',getHistorique)
 					.on('mouseover',(d) => {
                             d3.selectAll('#'+d+'_r').style('fill','#48D5EC');  })
 					.on('mouseout',(d) => {
