@@ -178,7 +178,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Pyrénées/Pirineos</div>
-  <aside >April, 2021<br><br> | v 4.02</aside>
+  <aside >April, 2021<br><br> | v 4.10</aside>
         <div>
         <form name="saisie" onSubmit="return credClick()">
         <input type="text" id="search">
@@ -402,7 +402,7 @@ var menuCircle=false, histTime = data_menu[selGraphe].a;
             .style('font-weight', 'bold').style('dominant-baseline','middle')
             .text(f=>{return f.val;}).style('font-size','1vw');
 function clickMenu (d) {
-    console.log(d);
+//    console.log(d);
     selGraphe = d.n;
     d3.select('#menu').selectAll('rect').style('fill',(f,i)=>(f.n==selGraphe)?'#B233FF':'#4C33FF');
     switch (d.n) {
@@ -450,6 +450,7 @@ function getDataPoint(d,i,start) {
     now.setMinutes(now.getMinutes()-11);
     urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
     url = urlBase+encodeURIComponent(d)+urlTime+'&resolution=PT1M';
+    d3.selectAll('#'+d+'_txt').style('fill','yellow');
     getDashData(url,d,'#'+d);
 //    getValeurListe(urlTime,liste3);
     getHistorique(d,i,start);
@@ -478,6 +479,7 @@ function getHistorique (d,i,start) {
 //----------------------------------------
 
 function getDashData (urldata,index,id) {
+  console.log('coucou :',urldata,index,id);
     var opt = fetch(urldata, {method: 'GET',headers: new Headers({'Access-Control-Allow-Origin':'*','Accept':'application/json',
         'mode':'no-cors','credentials':'includes','Authorization':'basic '+code})}).then(response => {
         return response.json();
@@ -491,6 +493,7 @@ function getDashData (urldata,index,id) {
 //            console.log(id,value);
             if (value != null) {
                 d3.selectAll(id+'_c').style('fill','#32FE94');
+                d3.selectAll(id+'_txt').style('fill','black');
                 d3.selectAll(id).text(valFormat(value)+' '+data[0].unit);
                 d3.selectAll(id+'_r').style('fill','#fff');
                 d3.selectAll('#date').text('| '+i_c(data[0].values[0].timestamp));
@@ -690,7 +693,7 @@ let xC3= x+6*w_i;
 	let K15000 = {x:Kx, y:Ky, li: (width*0.08), hi : (height*0.345) ,e: 15, xl:0};
 	with (K15000) {
 		let i =0;
-        const {h,l,xr,yr} = shape_cuve_v1(x,y,'Pyrénées','V',li,hi,'url(#Reacteur)'); console.log('K15000',xr,yr,h,l); //'#BFBB26'
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'Pyrénées','V',li,hi,'url(#Reacteur)'); //console.log('K15000',xr,yr,h,l); //'#BFBB26'
         xl = xr+l; y = yr; y1 = yr+ h/8; x = xr+3;
 		y1 = shape_temp_v1(x,y1,hC,lC,'E-T15008',50,false);
 		y1 = shape_temp_v1(x,y1,hC,lC,'E-P15162',50,false);
@@ -1053,7 +1056,7 @@ function shape_cuve_v1 (x,y,id,forme,l,h,color='#eee') {
         shape.append('path').attr('d', compute_cuve(forme,l,h)).style('stroke-width',1).style('stroke','#666').style('fill',color).attr('id',id+'_p');
     let rect = document.getElementById(id+'_p').getBoundingClientRect();
         itemData[id] = {x:rect.x,y:rect.y,h:rect.height,l:rect.width};
-        console.log('cuve : ',rect, x,y,l,h);
+        //console.log('cuve : ',rect, x,y,l,h);
         shape.append('text').text(id).raise()
             .attr('x',(0.5*l)).attr('y',forme=='V'?(h-rect.height):(width*0.006))
             .style('text-anchor', 'middle').style('fill','black').style('font-size','1.4vh')
@@ -1065,7 +1068,7 @@ function shape_level (x,y,ech,h,l,id,val,status) {
 	liste3.push(id);// ech = 5;// h= ech *10; l=2*ech;
 	let level = svg.append('g').selectAll('g').data([id]).enter().append('g')
 					.attr('transform','translate('+x+','+y+')').raise()
-					.on('click',getHistorique); // scale('+ech+')').raise();
+					.on('click',getDataPoint); // scale('+ech+')').raise();
 		level.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',1).style('stroke-width',1)
 			 .style('stroke','#666').style('fill','#fff').attr('id',id+'_s');
 		level.append('rect').attr('width',(l-2)).attr('x',2).attr('y',(h*(100-val)/100)+1).attr('height',(h*val/100)).raise()
@@ -1083,7 +1086,7 @@ function shape_motor (x,y,ech,h,l,id,val,status) {
 	h= ech ;
 	let vanne = svg.append('g').selectAll('g').data([id]).enter().append('g')
 					.attr('transform','translate('+(x+h)+','+(y+h)+')').raise()
-					.on('click',getHistorique); // scale('+ech+')').raise();
+					.on('click',getDataPoint); // scale('+ech+')').raise();
 //		vanne.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',ech*2).style('stroke-width',1)
 //			 .style('stroke','#666').style('fill','#fff').attr('id',id+'_v');
 		vanne.append('circle').attr('r',1).raise()
@@ -1102,7 +1105,7 @@ function shape_vanne (x,y,ech,h,l,id,val,status) {
 	h= ech ; l=10.2*ech;
 	let vanne = svg.append('g').selectAll('g').data([id]).enter().append('g')
 					.attr('transform','translate('+x+','+y+')').raise()
-					.on('click',getHistorique); // scale('+ech+')').raise();
+					.on('click',getDataPoint); // scale('+ech+')').raise();
 		vanne.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',ech*2).style('stroke-width',1)
 			 .style('stroke','#666').style('fill','#fff').attr('id',id+'_v');
 		vanne.append('rect').attr('height',(h)).attr('y',ech*2).attr('x',1).attr('width',(l*val/100)).raise()
@@ -1122,7 +1125,7 @@ function shape_temp (x,y,ech,h,l,id,val,status,libelle) {
 
 	let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
 					.attr('transform','translate('+x+','+y+')').raise()
-					.on('click',getHistorique)
+					.on('click',getDataPoint)
 					.on('mouseover',(d) => {
                             d3.selectAll('#'+d+'_r').style('fill','#48D5EC');  })
 					.on('mouseout',(d) => {
@@ -1145,7 +1148,7 @@ function shape_temp (x,y,ech,h,l,id,val,status,libelle) {
 }
 function shape_temp_v1 (x,y,h,l,id,val,status,libelle) {
     liste3.push(id);
-    console.log(id,x,y,h,l);
+    //console.log(id,x,y,h,l);
     let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
                     .attr('transform','translate('+x+','+y+')').raise()
                     .on('click',getDataPoint)
@@ -1173,7 +1176,7 @@ function shape_sonde (x,y,ech,h,l,id,val,status) {
     liste3.push(id); ech = 5; h= ech *1.9; l=10.2*ech;
     let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
                     .attr('transform','translate('+(x-ech)+','+y+')').raise()
-                    .on('click',getHistorique)
+                    .on('click',getDataPoint)
                     .on('mouseover',(d) => {
                             d3.selectAll('#'+d+'_txt').style('fill','red');  })
                     .on('mouseout',(d) => {
@@ -1198,7 +1201,7 @@ function shape_sonde_v1 (x,y,h,l,id,val,status) {
     liste3.push(id);
     let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
                     .attr('transform','translate('+(x)+','+y+')').raise()
-                    .on('click',getHistorique)
+                    .on('click',getDataPoint)
                     .on('mouseover',(d) => {
                             d3.selectAll('#'+d+'_txt').style('fill','red');  })
                     .on('mouseout',(d) => {
@@ -1260,7 +1263,7 @@ function path_item () {
             data2.push({x:x3,y:y3});
         }
         if (a.s==1) {
-            console.log(itemData[a.source],x1,y1,x2,y2);
+            //console.log(itemData[a.source],x1,y1,x2,y2);
         }
         let color = '#777', stroke = 1;
 //        console.log(a.anim, dashData[a.anim][0]);
@@ -1507,7 +1510,7 @@ let tempData = histData;
                     data = histData[0].values.filter(v=>{ return (v.timestamp>=x1 & v.timestamp<=x2);})
                     val = compute_surface(data);
                     area = val[0], mean = val[1], day = val[2], elapse = val[3], trend = val[4], delta=val[5];
-                    let elapseHMS = new Date(elapse*3600*1000); console.log(elapseHMS.toISOString());
+                    let elapseHMS = new Date(elapse*3600*1000); //console.log(elapseHMS.toISOString());
                     let ej = Math.trunc(elapse/24), eh = Math.trunc(elapse-ej*24), em=Math.trunc((elapse-ej*24-eh)*60);
                     let elapseStr = (ej>0?ej:'')+' '+(eh>9?'':'0')+eh+':'+(em>9?'':'0')+em;
                     d3.select('#compute').text('| [moy '+valFormat(mean)+' ]  -  [Cumul : '+ valFormat(day)+'] [T:'+elapseStr+'] [D:'+valFormat(delta)+'] [P:'+trend+'% ]   ('+histData[0].unit+') ('+area+')');
@@ -1522,7 +1525,7 @@ let tempData = histData;
                 d3.select('#compute').text('choisir second point');
                 break;
     }
-    console.log(surface);
+    //console.log(surface);
 }            )
 //        .on('click',get_surface)
 		.on('mouseout', function () { // on mouse out hide line, circles and text
