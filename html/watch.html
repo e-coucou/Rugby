@@ -738,7 +738,10 @@ let xC3= x+6*w_i;
         y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15270',50,false); //32
 
 		y1 = shape_temp_v1(xr+1,yr+h*0.92,hC,lC,'E-TY15012',50,false);
-        y1 = shape_temp_v1(xr+1,y1,hC,lC,'ROC_Coef_Encra_Reacteur_PYRENEES',50,false,'xxEnc Py');
+    y1 = shape_temp_v1(xr+1,y1,hC,lC,'ROC_Coef_Encra_Reacteur_PYRENEES',50,false,'xxEnc Py');
+    y1 = shape_sonde_v1(x+1,y1+hT,hT,lT,'E-A15211A',50,false);
+    y1 = shape_sonde_v1(x+1,y1+hT,hT,lT,'E-A15211B',50,false);
+    y1 = shape_sonde_v1(x+1,y1+hT,hT,lT,'E-A15211C',50,false);
 		y1 = shape_temp_v1(xr+2*l/3,yr+h*0.92,hC,lC,'E-TC15019',50,false);
 		y1 = shape_temp_v1(xr+2*l/3,y1,hC,lC,'E-T15099',50,false);
 		y2 = shape_temp_v1(x+l-l/7,y,hC,lC,'E-PS15007',50,false);
@@ -793,6 +796,7 @@ let xC3= x+6*w_i;
 
         y1 = shape_temp_v1(xr+1,yr+h*0.92,hC,lC,'E-TY18012',50,false);
         y1 = shape_temp_v1(xr+1,y1,hC,lC,'ROC_Coef_Encra_Reacteur_Europe2',50,false,'xxEnc E2');
+        y1 = shape_sonde_v1(xr+1,y1+hT,hT,lT,'E-A18211A',50,false); //32
         y1 = shape_temp_v1(xr+2*l/3,yr+h*0.92,hC,lC,'E-TC18019',50,false);
         y1 = shape_temp_v1(xr+2*l/3,y1,hC,lC,'E-T18099',50,false);
         y2 = shape_temp_v1(x-l/3,y,hC,lC,'E-PS18007',50,false);
@@ -810,6 +814,9 @@ let xC3= x+6*w_i;
         y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18049',50,false); //32
         y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18050',50,false); //32
         y1 = shape_sonde(x,y1,e,e/3,e/2,'S1_QUR_CAMPAGNE',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-QUR-S1',50,false);
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'ROC_S1_Prod_MMP_brut',50,false);
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-F41504',50,false);
 
 // bache à sel Py
 	let R19900 = {x:(width*0.01), y:(height*0.85), li : (width*0.09), hi: (height*0.05), e: 4};
