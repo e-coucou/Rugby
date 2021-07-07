@@ -178,7 +178,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Pyrénées/Pirineos</div>
-  <aside >April, 2021<br><br> | v 4.10</aside>
+  <aside >April, 2021<br><br> | v 4.11</aside>
         <div>
         <form name="saisie" onSubmit="return credClick()">
         <input type="text" id="search">
@@ -422,19 +422,10 @@ function getValeur() {
     let refDashboard='';
     let now = new Date(Date.now());
     let end = new Date(Date.now());
-//    let offset = now.getTimezoneOffset();
-//    let hour = now.getHours()+offset/60;
-//	now.setHours(hour);
 	now.setMinutes(now.getMinutes()-11);
-//	console.log('heure',now,end);
     urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
-//    console.log(urlTime);
     url = urlBase+encodeURIComponent('E-T15099')+urlTime+'&resolution=PT1M';
     getDashData(url,'coucou','#info');
-//    getValeurListe(urlTime,listeT1);
-//    getValeurListe(urlTime,listeT2);
-//    getValeurListe(urlTime,liste1);
-//    getValeurListe(urlTime,liste2);
     getValeurListe(urlTime,liste3);
     getHistorique(histList[0]);
 }
@@ -447,16 +438,15 @@ function getValeurListe(urlTime,liste) {
 function getDataPoint(d,i,start) {
     let now = new Date(Date.now());
     let end = new Date(Date.now());
-    now.setMinutes(now.getMinutes()-11);
+    now.setMinutes(now.getMinutes()-15);
     urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
     url = urlBase+encodeURIComponent(d)+urlTime+'&resolution=PT1M';
     d3.selectAll('#'+d+'_txt').style('fill','yellow');
     getDashData(url,d,'#'+d);
-//    getValeurListe(urlTime,liste3);
     getHistorique(d,i,start);
 }
 function getHistorique (d,i,start) {
-//	console.log(d,i,start);
+//console.log(d,i,start);
     //epxx mettre selection rectangle
     histList[0] = d;
     let now = new Date(Date.now());
@@ -479,7 +469,7 @@ function getHistorique (d,i,start) {
 //----------------------------------------
 
 function getDashData (urldata,index,id) {
-  console.log('coucou :',urldata,index,id);
+//console.log('coucou :',urldata,index,id);
     var opt = fetch(urldata, {method: 'GET',headers: new Headers({'Access-Control-Allow-Origin':'*','Accept':'application/json',
         'mode':'no-cors','credentials':'includes','Authorization':'basic '+code})}).then(response => {
         return response.json();
@@ -488,7 +478,8 @@ function getDashData (urldata,index,id) {
             dashData[index]=data;
             let num = data[0].values.findIndex(x => x.value==null)-1;
             //console.log('getData',data,test.lastIndexOf(null)); //data[0].values.lastIndexOf(x=>{ console.log(x);return x.value==null;}));
-            //console.log('getData', temp, num, data[0].values[num]);
+            //
+            if (index=='E-TC17601') {console.log('getData',data, num, data[0].values[num]);}
             let value = data[0].values[num].value, unit = data[0].unit;
 //            console.log(id,value);
             if (value != null) {
@@ -511,7 +502,7 @@ function getDashData (urldata,index,id) {
 		dashData[index]=[{values:[{timestamp:0,value:-1}],unit:' xxx'}];
         d3.selectAll(id).text(valFormat(-1)+' '+'xxx');
         d3.selectAll(id+'_c').style('fill','#ff0');
-      console.log(err);
+      console.log(err,data);
     })   
 }
 //--------------------------
@@ -673,6 +664,8 @@ let xC3= x+6*w_i;
 		y1 = shape_temp(x+3.5*w_i,y+1.5*h_i,e,3,8,'E-TC17601',50,false);
         y2 = shape_temp(x,y1,e,3,8,'E-CONS-UCS17501',50,false,'C3/O2');
         y2 = shape_temp(x,y2,e,3,8,'E-CONS-UCS17001',50,false,'O2/Inerte');
+        y2 = shape_temp(x,y2,e,3,8,'E-A16026',50,false,'C3 entrée');
+        y2 = shape_temp(x,y2,e,3,8,'E-A17511D',50,false,'C3 entrée');
 // ouverture
         y2 = shape_vanne(x+3*w_i,y+3*h_i,e,1,2,'E-CV15167A',50,false);
         y2 = shape_vanne(x+3*w_i,y2,e,1,2,'E-CV15167B',50,false);
@@ -796,7 +789,9 @@ let xC3= x+6*w_i;
 
         y1 = shape_temp_v1(xr+1,yr+h*0.92,hC,lC,'E-TY18012',50,false);
         y1 = shape_temp_v1(xr+1,y1,hC,lC,'ROC_Coef_Encra_Reacteur_Europe2',50,false,'xxEnc E2');
-        y1 = shape_sonde_v1(xr+1,y1+hT,hT,lT,'E-A18211A',50,false); //32
+        y1 = shape_sonde_v1(xr+lT/3,y1+hT,hT,lT,'E-A18211A',50,false); //32
+        y1 = shape_sonde_v1(xr+lT/3,y1+hT,hT,lT,'E-A18211B',50,false); //32
+        y1 = shape_sonde_v1(xr+lT/3,y1+hT,hT,lT,'E-A18211C',50,false); //32
         y1 = shape_temp_v1(xr+2*l/3,yr+h*0.92,hC,lC,'E-TC18019',50,false);
         y1 = shape_temp_v1(xr+2*l/3,y1,hC,lC,'E-T18099',50,false);
         y2 = shape_temp_v1(x-l/3,y,hC,lC,'E-PS18007',50,false);
