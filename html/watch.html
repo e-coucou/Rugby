@@ -1001,7 +1001,9 @@ let xC3= x+6*w_i;
         y1 = shape_temp_v1(xr+li*1.05+w_i/3,yr+h/3,hC,lC,'E-FCQ41102',50,false);
         yx = shape_temp_v1(xr+li*1.1+w_i/3,yr+h*0.82,hC,lC*1.2,'E-QUR-E2',50,false,'xxQUR');
         yx = shape_temp_v1(xr+li*1.1+w_i/3,yx,hC,lC*1.2,'ROC_E2_Prod_MMP_brut',50,false,'xxMMP B');
-        y1 = shape_temp_v1(xr+li*1.1+w_i/3,yx,hC,lC*1.2,'E-FQ41504',50,false);
+        yx = shape_temp_v1(xr+li*1.1+w_i/3,yx,hC,lC*1.2,'E-FQ41504',50,false); y1=yx;
+        yx = shape_temp_v1(xr+li*1.1+w_i/3,yx,hC,lC*1.2,'BGS_Prod_AT88',50,false,'AT88');
+        yx = shape_temp_v1(xr+li*1.1+w_i/3,yx,hC,lC*1.2,'BGS_Prod_diaria_AT88',50,false,'AT88/d');
         y1 = shape_sonde_v1(xr+l/3,yr+h*0.13,hT,lT,'E-T41015',50,false); //32
         y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-P41009',50,false); //32
         y1 = shape_sonde_v1(xr+l/3,yr+h*0.5,hT,lT,'E-TC41401',50,false); //32
