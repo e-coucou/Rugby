@@ -130,7 +130,7 @@
 <header>
   <div id='h1'>COVID-19</div>
   <div id='h1'>e-Coucou</div>
-  <aside >Mars, 2021</aside><div id="version"></div>
+  <aside >Juillet, 2021</aside><div id="version"></div>
   <div id='menu'></div>
   <div id='dateUP'></div>
   <div id='dateDOWN'></div>
@@ -705,7 +705,7 @@
             .attr('width',4).attr('height',14).style('fill', (d,i)=>{return (i===itemID)?'#00B':'#DDD' ;}); //'#0a88ff');
         liste.append('rect').attr('rx',2).attr('ry',2)
             .attr('width','10vw').attr('height',14).style('fill', (d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
-        liste.append('text').attr('x','5vw') //.attr('y',10)
+        liste.append('text').attr('x',(0.05*width)) //.attr('y',10)
             .attr('y',7) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
             .style('text-anchor', 'middle')
@@ -713,7 +713,7 @@
             .text((d,i)=>(d.item)).style('font-size','0.9vw');
         liste.append('rect').attr('rx',2).attr('ry',2).attr('x','10.2vw')
             .attr('width','6vw').attr('height',14).style('fill', (d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
-        liste.append('text').attr('x','13.2vw') //.attr('y',10)
+        liste.append('text').attr('x',(0.132*width)) //.attr('y',10)
             .attr('y',7) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
             .style('text-anchor', 'middle')
@@ -721,7 +721,7 @@
             .text((d,i)=>(d.date)).style('font-size','0.9vw');
         liste.append('rect').attr('rx',2).attr('ry',2).attr('x','16.4vw')
             .attr('width','12vw').attr('height',14).style('fill', (d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
-        liste.append('text').attr('x','22.4vw') //.attr('y',10)
+        liste.append('text').attr('x', (0.224*width)) //.attr('y',10)
             .attr('y',7).attr('id','info_liste')
 //            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
             .style('text-anchor', 'middle')
