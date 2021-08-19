@@ -206,11 +206,12 @@ input:focus {
   </footer>
   <script type="text/javascript">
     var config = {credOK: false, tagOK:false, dataOK:false, arcOK:false, arbreOK: false};
-    var urlBase = 'https://cors-rky.herokuapp.com/https://oianalytics-100.optimistik.fr/api/optimistik/data/time_values?dataReferenceList=';
-	var urlBaseOld = 'https://oianalytics-100.optimistik.fr/api/optimistik/data/time_values?dataReferenceList=';
+//    var urlBase = 'https://cors-rky.herokuapp.com/https://oianalytics-100.optimistik.fr/api/optimistik/data/time_values?dataReferenceList=';
+    var urlBase = 'https://cors-rky.herokuapp.com/https://oianalytics-100.optimistik.fr/api/oianalytics/time-values/query?data-reference=';
+//    var urlBaseOld = 'https://oianalytics-100.optimistik.fr/api/optimistik/data/time_values?data-reference=';
     var urlTime = '';
    	var interval = 'PT1M'  // PnYnMnD  TnHnMnS
-    var urlRes = '&resolution='+interval;
+    var urlRes = '&aggregation-period='+interval;
     var url = '';
     var Couleur = { Eau:'#33FFFF',GR:'#FF3399', Air:'#33FF99', C3:'#FF3333', OffGaz:'#9933FF', Reacteur:'#FF9933', D210:'#DFDF2D', Acro:'#FFFF33', sel: '#ddd' , Acide:'#FF3333', MSH:'#3333FF', MMP:'#99FF33', Torche:'#869F6C', V10:'#26BFBF', V40:'#1A8080'}
     /*
@@ -424,14 +425,14 @@ function getValeur() {
     let end = new Date(Date.now());
 	now.setMinutes(now.getMinutes()-11);
     urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
-    url = urlBase+encodeURIComponent('E-T15099')+urlTime+'&resolution=PT1M';
+    url = urlBase+encodeURIComponent('E-T15099')+urlTime+'&aggregation-period=PT1M';
     getDashData(url,'coucou','#info');
     getValeurListe(urlTime,liste3);
     getHistorique(histList[0]);
 }
 function getValeurListe(urlTime,liste) {
 	liste.forEach( tag => {
-		url = urlBase+encodeURIComponent(tag)+urlTime+'&resolution=PT1M';
+		url = urlBase+encodeURIComponent(tag)+urlTime+'&aggregation-period=PT1M';
 		getDashData(url,tag,'#'+tag);
 	});
 }
@@ -440,7 +441,7 @@ function getDataPoint(d,i,start) {
     let end = new Date(Date.now());
     now.setMinutes(now.getMinutes()-15);
     urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
-    url = urlBase+encodeURIComponent(d)+urlTime+'&resolution=PT1M';
+    url = urlBase+encodeURIComponent(d)+urlTime+'&aggregation-period=PT1M';
     d3.selectAll('#'+d+'_txt').style('fill','yellow');
     getDashData(url,d,'#'+d);
     getHistorique(d,i,start);
@@ -459,7 +460,7 @@ function getHistorique (d,i,start) {
 //	console.log('heure',now,end);
     urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
 //    console.log(urlTime);
-	url = urlBase+encodeURIComponent(d)+urlTime+'&resolution=PT1M'; // PnYnMnD  TnHnMnS
+	url = urlBase+encodeURIComponent(d)+urlTime+'&aggregation-period=PT1M'+'&aggregation=TIME'; // PnYnMnD  TnHnMnS
 //	console.log(urlTime,url);
 	getHistData(url,d,'#'+d);
 //	console.log('data read ?');
@@ -515,7 +516,7 @@ function getHistData(urldata,index,id) {
         })
     .then(data => { 
         histData = data;
-//            console.log(data);
+            console.log('data Historique',data);
 //            aff_histo();
             dispatch.call('histo');
         })
@@ -1371,7 +1372,10 @@ function aff_liste_T (liste,decalage) {
 //        affiche_curve(dReg[getIndexdata('fullFR')].data.slice(),"fullFR",svgfrAll);
     path_item();
     }
-
+function toUnixTime(s) {
+    r = new Date(s).getTime();//    console.log(r);
+    return r;
+}
 //-----------------------------------------------------------
 //-  CURVE / LINE CHART STANDARD
 //-----
@@ -1395,7 +1399,7 @@ function aff_liste_T (liste,decalage) {
 //    const yL = d3.scaleSymlog()
 //        .range([h_g,0]);
     var line = d3.line()
-        .x(function(d) { return x(d.timestamp); }) //vep
+        .x(function(d) { return x(toUnixTime(d.timestamp)); }) //vep
         .y(function(d) { return y(d.value);}) //(d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
         .curve(d3.curveLinear);
 /*    var lineR = d3.line()
@@ -1405,10 +1409,10 @@ function aff_liste_T (liste,decalage) {
 	 x.domain([
         d3.min(histData, function(c) {
         return d3.min(c.values, function(v) {
-        return v.timestamp; });}),
+        return toUnixTime(v.timestamp); });}),
         d3.max(histData, function(c) {
         return d3.max(c.values, function(v) {
-        return v.timestamp; });})]);
+        return toUnixTime(v.timestamp); });})]);
 	y.domain([
         d3.min(histData, function(c) {
         return d3.min(c.values, function(v) {
@@ -1470,7 +1474,7 @@ function aff_liste_T (liste,decalage) {
 
 let tempData = histData;
         tempData = tempData.map( o => { return o.values.filter( v=> { return v.value != null; }) });
-// console.log(tempData[0]);
+console.log('data a afficher en historique',tempData[0]);
 // console.log(histData[0].values);
     g_lines.append("path")
         .attr("class", "line")
@@ -1511,7 +1515,7 @@ let tempData = histData;
         case 1: surface.flip += 1;
                 surface.x2 = xDate;
                 with (surface) {
-                    data = histData[0].values.filter(v=>{ return (v.timestamp>=x1 & v.timestamp<=x2);})
+                    data = histData[0].values.filter(v=>{ return (toUnixTime(v.timestamp)>=x1 & toUnixTime(v.timestamp)<=x2);})
                     val = compute_surface(data);
                     area = val[0], mean = val[1], day = val[2], elapse = val[3], trend = val[4], delta=val[5];
                     let elapseHMS = new Date(elapse*3600*1000); //console.log(elapseHMS.toISOString());
@@ -1547,7 +1551,7 @@ let tempData = histData;
 				d3.selectAll("."+class_mpl)
       				.attr("transform", function (d, i) {
 						var xDate = x.invert(mouse[0]),
-							bisect = d3.bisector(function (d) { return d.timestamp; }).left;
+							bisect = d3.bisector(function (d) { return toUnixTime(d.timestamp); }).left;
 							idx = bisect(d.values, xDate); //console.log(idx,d.values[idx].date);
                             try {
                             laDate = new Date(d.values[idx].timestamp); //.toLocaleDateString("fr-FR");
@@ -1564,7 +1568,7 @@ let tempData = histData;
 									var data = "M" + x(d.values[idx].timestamp) + "," + h_g;
 										data += " " + x(d.values[idx].timestamp) + "," + 0; //console.log(data);
 									return data; });
-							  return "translate(" + (x(histData[0].values[idx].timestamp)) + "," + ((y(histData[0].values[idx].value)) )+ ")";
+							  return "translate(" + (x(toUnixTime(histData[0].values[idx].timestamp))) + "," + ((y(histData[0].values[idx].value)) )+ ")";
                             } catch {console.log('erreur2');}
 					});
   			});
