@@ -178,7 +178,7 @@ input:focus {
 </style>
 <header>
   <div id='h1'>Pyrénées/Pirineos</div>
-  <aside >April, 2021<br><br> | v 4.11</aside>
+  <aside >April, 2021<br><br> | v 4.30</aside>
         <div>
         <form name="saisie" onSubmit="return credClick()">
         <input type="text" id="search">
@@ -1557,7 +1557,7 @@ console.log('data a afficher en historique',tempData[0]);
                             laDate = new Date(d.values[idx].timestamp); //.toLocaleDateString("fr-FR");
                             laDateText = laDate.getHours()+':'+laDate.getMinutes();
 //                            console.log(laDate.getHours());
-                            laDateX = x(d.values[idx].timestamp); //console.log('laDateX',laDateX);
+//ep                            laDateX = x(d.values[idx].timestamp); //console.log('laDateX',laDateX);
                         //    d3.select("#laDate").attr("x",laDateX).text(laDate);
                         } catch{ console.log('erreur 1');}
                             try {
@@ -1565,8 +1565,8 @@ console.log('data a afficher en historique',tempData[0]);
 								.text((y.invert(y(d.values[idx].value)).toFixed(2))+" ["+(laDateText)+"]"); //d.dataReference avant valformat
 							  d3.select("."+class_ml)
 								.attr("d", function () {
-									var data = "M" + x(d.values[idx].timestamp) + "," + h_g;
-										data += " " + x(d.values[idx].timestamp) + "," + 0; //console.log(data);
+									var data = "M" + x(toUnixTime(d.values[idx].timestamp)) + "," + h_g;
+										data += " " + x(toUnixTime(d.values[idx].timestamp)) + "," + 0; //console.log(data);
 									return data; });
 							  return "translate(" + (x(toUnixTime(histData[0].values[idx].timestamp))) + "," + ((y(histData[0].values[idx].value)) )+ ")";
                             } catch {console.log('erreur2');}
@@ -1616,11 +1616,11 @@ function clickBack(d) {
 }
 function compute_surface (data_surface) {
     polyArea = [];
-    let start= data_surface[0].timestamp,
-        end = data_surface[data_surface.length-1].timestamp,
+    let start= toUnixTime(data_surface[0].timestamp),
+        end = toUnixTime(data_surface[data_surface.length-1].timestamp),
         nbPt = data_surface.length;
     polyArea.push([0,0]);
-    data_surface.forEach(v=>{ polyArea.push([(v.timestamp-start),v.value])});
+    data_surface.forEach(v=>{ polyArea.push([(toUnixTime(v.timestamp)-start),v.value])});
     polyArea.push([(end-start),0]);
     let area = d3.polygonArea(polyArea);
     let mean = area/(end-start);
