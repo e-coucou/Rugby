@@ -3,14 +3,18 @@ Corona
 Urgence
 Hosp. Corona
 n_dose1
-n_dose2
+n_complet
 n_cum_dose1
-n_cum_dose2
+n_cum_complet
+couv_dose1
+couv_complet
 Hospitalisation
 Réanimation
 Guérisons
 Morts
 region
+libelle_reg
+libelle_dep
 Incidence
 R
 taux_occupation_sae
@@ -21,6 +25,7 @@ nbDelta
 P
 T
 pop
+Nom
 NbArr
 NbCan
 NbCom

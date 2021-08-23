@@ -1,0 +1,24 @@
+item,date
+Corona,2021-08-21
+Urgence,2021-08-21
+Hosp. Corona,2021-08-21
+n_dose1,2021-08-19
+n_complet,2021-08-19
+n_cum_dose1,2021-08-19
+n_cum_complet,2021-08-19
+couv_dose1,2021-08-19
+couv_complet,2021-08-19
+Hospitalisation,2021-08-22
+Réanimation,2021-08-22
+Guérisons,2021-08-22
+Morts,2021-08-22
+nbReg,2021-08-19
+nbDelta,2021-08-19
+P,2021-08-19
+T,2021-08-19
+Incidence,2021-08-19
+R,2021-08-14
+taux_occupation_sae,2021-08-22
+Positivité,2021-08-19
+tx_reg,2021-08-19
+dc_by_d,2021-08-22
