@@ -92,7 +92,7 @@ table {
   <script type="text/javascript">
 	var rwc_index = [[ "1","2","3","4","5","952","1023","1238","1558"],["145","344","854","883","913","927","965","1005","1054","1077","1164","1184","1243","1244","1622","1623","1782","1783","1933","1934"],["1183","1236","1296","1557","364","714","855","886","926","940","970","995","1056","1135","1697","1764","1807","1992"],["1577","2015"],["925","957","971","1006","1072","1130","1166","1235","1273","1569","1653","1769"]]; // rwc , six nation , 4 nations , xx , wrc pacific
     // format ...
-    let valFormat = (a) => { 
+    let valFormat = (a) => {
         let r = (a>100) ? Math.round(a) : ( (a>1)? Math.round(a*100.0)/100 : Math.round(a*1000.0)/1000);
         return String(r).replace(/(.)(?=(\d{3})+$)/g,'$1 ');
 //        return r;
@@ -141,7 +141,7 @@ function init() {
 //    t = setInterval(cycle,5000); t_veille = setInterval(veille,300000);
     clearInterval(t);
     changeComp();
-    updateComp(1); 
+    updateComp(1);
 }
 
 //--------------
@@ -179,7 +179,7 @@ async function timeline(id) {
 }
 async function stats(id) {
     console.log('get stats');
-    let urlStats = 'https://cmsapi.pulselive.com/rugby/match/25290/stats';
+    let urlStats = 'http://cmsapi.pulselive.com/rugby/match/25290/stats';
     dataStats=[];
     dataStats = await getData2(urlStats);
     console.log(dataStats);
@@ -230,7 +230,7 @@ function change() {
     url = '';
     dataTimeline=[];
     listeMatchs=[];dataInfo=[];
-    updateComp(-1); 
+    updateComp(-1);
 }
 
 //--------------
@@ -250,7 +250,7 @@ function changeComp() {
 //    .append('g')
 //    .attr('transform',function (d,i){ return ('translate('+ (intWidth-20-i*25)+','+11+')');})
 //    .on('click',click);
-        
+
 //    svgInt.append('circle').attr('fill','#2E2D88')
 //        .attr('r',10).attr('cx',-25)
     svgInt.append('path').attr('fill','#B233FF').attr('id','updw')
@@ -288,7 +288,7 @@ function changeComp() {
     svgDOWN.append('rect').attr('fill','white')
         .attr('rx',5).attr('ry',5).style('stroke-width',2).style('stroke','#24a')
         .attr('width',30).attr('height',21).style('fill','ivory');//.style('stroke-color', (d,i)=>teamColor[i]);
-    svgDOWN.append('text').attr('x',0).attr('dx',15).attr('y',11) 
+    svgDOWN.append('text').attr('x',0).attr('dx',15).attr('y',11)
             .style('fill','#212').style('text-anchor', 'middle').style('font-weight', 'bold').style('dominant-baseline','middle')
             .text('<<').style('font-size','1.3vw');
 
@@ -336,7 +336,7 @@ function selPage(idPage) {
 		//console.log('Page : '+idPage);
 		selMenu=idPage;
 		switch (idPage) {
-		  case 4 : 
+		  case 4 :
 //		  click(); //epxxx
 	  		try {
                 console.log('selPage : live!',dataLive); } catch(e) { console.log('selPage no live!'); dataLive = dataInfo; } /// a enlever !!!
@@ -461,7 +461,7 @@ function livePage() {
         time.append('text').attr('x',0).style('dominant-baseline','middle')
             .attr('dx',scoreSize/2+padding/2).attr('y',timeSize/2).style('fill','#002').style('text-anchor', 'middle')
             .text((d)=>{ return min+' : '+(sec<9?'0':'')+sec;}).style('font-size','1.2vw');
-			
+
 		// les Essai Try
 		let tryG = listeG.append('g')
 			.attr('transform',(d,i)=>{return ('translate('+(i==0?(largeur/2-scoreSize):(padding))+','+(timeSize+scoreSize+2*padding)+')');});
@@ -473,9 +473,9 @@ function livePage() {
             .attr('dx',0).attr('y',padding).style('dominant-baseline','middle')
             .style('fill', '#000').style('text-anchor', 'left').style('font-weight', 'normal')
             .text('Try').style('font-size','0.6vw');
-            
+
         // les Essai Drop
-        let DrGG = listeG.append('g') 
+        let DrGG = listeG.append('g')
             .attr('transform',(d,i)=>{return ('translate('+(i==0?(largeur/2-scoreSize):(padding))+','+(scoreSize+timeSize+5*padding)+')');});
         DrGG.selectAll('g').data((d,i)=> {try {console.log(dataLive.teams[i].scoring.DG[0]);return (dataLive.teams[i].scoring.DG);} catch(e){return [];};})
             .enter().append('g').each(function (a,c) {d3.select(this)
@@ -486,7 +486,7 @@ function livePage() {
             .style('fill', '#000').style('text-anchor', 'left').style('font-weight', 'normal')
             .text('Drop').style('font-size','0.6vw');
         // les Pénalités
-        let PenG = listeG.append('g') 
+        let PenG = listeG.append('g')
             .attr('transform',(d,i)=>{return ('translate('+(i==0?(largeur/2-scoreSize):(padding))+','+(scoreSize+timeSize+8*padding)+')');});
         PenG.selectAll('g').data((d,i)=> {try {console.log(dataLive.teams[i].scoring.Pen[0]);return (dataLive.teams[i].scoring.Pen);} catch(e){return [];};})
             .enter().append('g').each(function (a,c,i) {d3.select(this)
@@ -497,7 +497,7 @@ function livePage() {
             .style('fill', '#000').style('text-anchor', 'left').style('font-weight', 'normal')
             .text('Pen').style('font-size','0.6vw');
         // les conversions ...
-        let ConG = listeG.append('g') 
+        let ConG = listeG.append('g')
             .attr('transform',(d,i)=>{return ('translate('+(i==0?(largeur/2-scoreSize):(padding))+','+(scoreSize+timeSize+11*padding)+')');});
         ConG.selectAll('g').data((d,i)=> {try {console.log(dataLive.teams[i].scoring.Con[0]);return (dataLive.teams[i].scoring.Con);} catch(e){return [];};})
             .enter().append('g').each(function (a,c,i) {d3.select(this)
@@ -508,13 +508,13 @@ function livePage() {
             .style('fill', '#000').style('text-anchor', 'left').style('font-weight', 'normal')
             .text('Con').style('font-size','0.6vw');
         // les Sanctions
-        let YCG = listeG.append('g') 
+        let YCG = listeG.append('g')
             .attr('transform',(d,i)=>{return ('translate('+(i==0?(largeur/2-scoreSize):(padding))+','+(scoreSize+timeSize-2*padding)+')');});
         YCG.selectAll('g').data((d,i)=> {try {console.log(dataLive.teams[i].disciplinary.YC[0]);return (dataLive.teams[i].disciplinary.YC);} catch(e){return [];};})
             .enter().append('g').each(function (a,c,i) {d3.select(this)
             .append('rect').attr('x',(d,j)=>{ return (2*(c+3)*padding);}) //.attr('ry',2*padding)
             .attr('width',padding*2-1).attr('height',padding*2).style('fill', '#ff0').raise();});
-        let RCG = listeG.append('g') 
+        let RCG = listeG.append('g')
             .attr('transform',(d,i)=>{return ('translate('+(i==0?(largeur/2-scoreSize):(padding))+','+(scoreSize+timeSize-4*padding)+')');});
         YCG.selectAll('g').data((d,i)=> {try {console.log(dataLive.teams[i].disciplinary.RC[0]);return (dataLive.teams[i].disciplinary.RC);} catch(e){return [];};})
             .enter().append('g').each(function (a,c,i) {d3.select(this)
@@ -574,7 +574,7 @@ function livePage() {
 				.append('circle').attr('cx',x(tlFilter[nbTL-1].position.x)).attr('cy',y(tlFilter[nbTL-1].position.y*.7)).attr('r',5).style('fill','red');
 			}
 		catch(e) {console.log('aff timeline out : erreur ->',e);}
-	
+
 }
 function updateRank() {
         teamsInfo[dataRank.team.id]=dataRank;
@@ -614,7 +614,7 @@ function affPool(stadeG,dim_x,pos_y,pool) {
             tr.append('th').text((d)=>{return d.triesFor;});
             tr.append('th').text((d)=>{return d.triesAgainst;});
             tr.append('th').text((d)=>{return d.bonusPoints;});
-            tr.append('th').text((d)=>{return d.points;}).style('font-size','1.2vw');    
+            tr.append('th').text((d)=>{return d.points;}).style('font-size','1.2vw');
 }
 //--------------
 // Affichage de la liste des matches
@@ -742,7 +742,7 @@ function affListe() {
             affPool(stadeG,(width/1.5),(400),null); //function affPool(stadeG,stadeSize,stadeLargeur,pool)
         }
 
-}// end 
+}// end
 //--------------
 // Get Info
 async function getInfo(d,i) {
@@ -847,17 +847,17 @@ function affStade(largeur,graph,padding,tlSpace) {
             .append('circle').attr('cx',d=>x(d[0])).attr('cy',d=>y(d[1])).attr('r',3).style('fill','#fff');
         stadeG.selectAll('g').data(stadeLine).enter()
             .append('line').attr('x1',d=>x(d[0])).attr('y1',d=>y(d[1])).attr('x2',d=>x(d[2])).attr('y2',d=>y(d[3])).style('stroke','#fff').style('stroke-dasharray',d=>lineDash[d[4]]);
-        //les infos sur le stade    
+        //les infos sur le stade
         stadeG.append('text').attr('x',stadeSize/2).attr('y',stadeLargeur).attr('dy','1em').style('text-anchor','middle').style('fill','#005').text(dataLive.match.venue.name).style('font-size','2.5vw').style('font-weight','bold');
         stadeG.append('text').attr('x',stadeSize/2).attr('y',stadeLargeur).attr('dy','3em').style('text-anchor','middle').style('fill','#005').text(dataLive.match.attendance+' spectateurs').style('font-size','1.5vw');
-        
+
         let officialG = stadeG.append('g').attr('transform',(d)=>{ return 'translate('+(stadeSize/2)+','+(stadeLargeur*1.33)+')';});
         officialG.selectAll('g').data(dataLive.officials).enter()
             .append('text').attr('x',0).attr('y',(d,i)=>i*largeur/60).style('text-anchor','middle').style('fill','#501').text((d)=>{return d.official.name.display+' - '+d.position+' ['+d.official.country+']';}).style('font-size','1vw');
-        
+
         //-----------------------
         // on affiche les essai / les pé,nalité et les drops ... ?
-        
+
         for (t in [0,1]) {
             try {
                 stadeG.append('g').selectAll('ellipse').data(dataLive.teams[t].scoring.Try).enter()
@@ -929,7 +929,7 @@ async function getData2(url) {
      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-     
+
      ga('create', 'UA-69988969-1', 'auto');
      ga('send', 'pageview');
 </script>
