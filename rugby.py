@@ -4,7 +4,9 @@
     Rugby
 
     update rank in 2021
-    
+
+
+    2021 : move to python 3.
 """
 import json, requests, argparse, time
 
@@ -16,9 +18,9 @@ def get_data(url):
 #    requete = s.get(url,proxies=p)
 #    print requete.content
     code = requete.status_code
-    while code<>200:
-        print url
-        print requete.status_code
+    while (code!=200):
+        print(url)
+        print(requete.status_code)
         requete = s.get(url,proxies=p)
         code = requete.status_code
         time.sleep(10)
@@ -28,17 +30,17 @@ def get_data(url):
 def get_rank(json,date):
     for e in json:
         if CSV:
-            print "{3:};{0:d};{1:};{7:};{2:.1f};{4:d};{5:.1f};{6:d}".format(e['pos'],e['team']['name'], e['pts'] , date, e['matches'], e['previousPts'], e['previousPos'], e['team']['abbreviation'])
+            print ("{3:};{0:d};{1:};{7:};{2:.1f};{4:d};{5:.1f};{6:d}".format(e['pos'],e['team']['name'], e['pts'] , date, e['matches'], e['previousPts'], e['previousPos'], e['team']['abbreviation']))
         else:
-            print "{3:11}{0:3d} {1:37}{7:5}{2:5.2f}{4:6d}{5:7.2f}{6:6d}".format(e['pos'],e['team']['name'], e['pts'] , date, e['matches'], e['previousPts'], e['previousPos'], e['team']['abbreviation'])
+            print ("{3:11}{0:3d} {1:37}{7:5}{2:5.2f}{4:6d}{5:7.2f}{6:6d}".format(e['pos'],e['team']['name'], e['pts'] , date, e['matches'], e['previousPts'], e['previousPos'], e['team']['abbreviation']))
 
 def get_rk(json,ABB):
     for f in json:
-        if f['team']['abbreviation'] == ABB : 
+        if f['team']['abbreviation'] == ABB :
             return f
             break
     return 0
-            
+
 def get_all_csv(base):
     entete()
     oMaj, maj = '', ''
@@ -51,7 +53,7 @@ def get_all_csv(base):
                 try:
                     maj = j['effective']['label']
                     #print d, maj, '(',oMaj,')'
-                    if (maj <> oMaj) :
+                    if (maj != oMaj) :
                         get_rank(j['entries'],maj.replace('-','/'))
                         oMaj = maj
                 except:
@@ -65,9 +67,9 @@ def get_rank_json_init():
 def get_rank_json(base,begin,end):
     global name,oMaj,maj,js
     for y in range(begin,end): #2016 to update
-        print y
+        print (y)
         for m in range(1,13,1): #1,13
-            print str(m)+'/'+str(y)
+            print (str(m)+'/'+str(y))
             for dd in range(1,32,6):
                 d = str(y)+'-'+str(m)+'-'+str(dd)
                 yy = y + ((m-1)*30.4+dd)/365.0
@@ -75,7 +77,7 @@ def get_rank_json(base,begin,end):
                 j = get_data(u)
                 try:
                     maj = j['effective']['label']
-                    if (maj <> oMaj) :
+                    if (maj != oMaj) :
                         for e in j['entries']:
                             try :
                                 name[str(e['team']['id'])]['points'].append([yy,e['pts']])
@@ -91,7 +93,7 @@ def get_rank_json(base,begin,end):
                         oMaj = maj
                 except:
                     j=j
-        print "delai ..."
+        print ("delai ...")
 #        time.sleep(2)
     f = open(r"html/data/ranking.json",'w')
     for n in name :
@@ -99,23 +101,23 @@ def get_rank_json(base,begin,end):
     json.dump(js,f)
     f.close()
     return
-                    
+
 def get_date(u):
     j = get_data(u)
     try:
         maj = j['effective']['label']
-        print 'Date de mise à jour :',maj
+        print ('Date de mise à jour :',maj)
         entete()
         get_rank(j['entries'],maj.replace('-','/'))
     except:
-        print 'no data'
+        print ('no data')
     return j
 
 def entete():
     if CSV :
-        print "Date;Clst;Nom;Abbrev;Pts;Matches;oldPts;oldClst"
+        print ("Date;Clst;Nom;Abbrev;Pts;Matches;oldPts;oldClst")
     else :
-        print "{3:11}{0:3} {1:37}{7:5} {2:5}  {4:6}{5:7}{6:6}".format('Rk','Nom','pts' , 'date', '#M', 'oPts','oRk','ab.')
+        print ("{3:11}{0:3} {1:37}{7:5} {2:5}  {4:6}{5:7}{6:6}".format('Rk','Nom','pts' , 'date', '#M', 'oPts','oRk','ab.'))
 
 def get_info(crit,dict):
     for fiche in dict:
@@ -147,7 +149,7 @@ def get_duel(t1,t2,startDate,endDate):
     t={}
     t[t1]={'v':0,'d':0,'n':0,'p':0,'c':0}
     t[t2]={'v':0,'d':0,'n':0,'p':0,'c':0}
-    print "Liste des matchs entre "+t1+" - "+t2
+    print ("Liste des matchs entre "+t1+" - "+t2)
     if CSV :
         fo=open("duel.csv",'w')
         fo.write("Id;Local;Pts1;Pts2;Visiteur;Date;Stade;Cpt\n")
@@ -171,7 +173,7 @@ def get_duel(t1,t2,startDate,endDate):
                     if e['events'][0]['sport']=='mru' :
                         if CSV :
                             fo.write("{0:};{5:};{1:};{2:};{3:};{4:};{6:};{7:}\n".format(int(e['matchId']),e['teams'][0]['name'],int(e['scores'][0]),int(e['scores'][1]),e['teams'][1]['name'],e['events'][0]['start']['label'],e['events'][0]['label'],i+1))
-                        print "{0:5d} {5} -> {1:15} {2:3d}  -  {3:3d} {4:15} {6:50} ({7:})".format(int(e['matchId']),e['teams'][0]['name'],int(e['scores'][0]),int(e['scores'][1]),e['teams'][1]['name'],e['events'][0]['start']['label'],e['events'][0]['label'],i+1)
+                        print ("{0:5d} {5} -> {1:15} {2:3d}  -  {3:3d} {4:15} {6:50} ({7:})".format(int(e['matchId']),e['teams'][0]['name'],int(e['scores'][0]),int(e['scores'][1]),e['teams'][1]['name'],e['events'][0]['start']['label'],e['events'][0]['label'],i+1))
                         i = i+1
                         # gestion du tableau
                         t[l1]['p'] = t[l1]['p'] + int(e['scores'][0])
@@ -188,11 +190,11 @@ def get_duel(t1,t2,startDate,endDate):
                             t[l1]['n'] = t[l1]['n'] + 1
                             t[l2]['n'] = t[l2]['n'] + 1
                 except :
-                    if DEBUG : print e
+                    if DEBUG : print (e)
     fo.close()
-    print '\n--------------------------------------------------'
-    print '{0:5} : victoire/defaite = {1:}/{2:} pour/contre = {3:}/{4:}'.format(t1,t[t1]['v'],t[t1]['d'],t[t1]['p'],t[t1]['c'])
-    print '{0:5} : victoire/defaite = {1:}/{2:} pour/contre = {3:}/{4:}'.format(t2,t[t2]['v'],t[t2]['d'],t[t2]['p'],t[t2]['c'])
+    print ('\n--------------------------------------------------')
+    print ('{0:5} : victoire/defaite = {1:}/{2:} pour/contre = {3:}/{4:}'.format(t1,t[t1]['v'],t[t1]['d'],t[t1]['p'],t[t1]['c']))
+    print ('{0:5} : victoire/defaite = {1:}/{2:} pour/contre = {3:}/{4:}'.format(t2,t[t2]['v'],t[t2]['d'],t[t2]['p'],t[t2]['c']))
     return
 
 def get_team(j):
@@ -220,49 +222,49 @@ def get_match(match):
     url = 'https://cmsapi.pulselive.com/rugby/match/'
     u = url+match+'/summary?language=en&client=pulse'
     j = get_data(u)
-    print u
+    print (u)
     team=get_team(j)
     t = time.gmtime(j['match']['time']['millis']/1000+7200)
     d= time.strftime('%A %d %B %Y', t)
-    print '--------------------------------------------'
-    print time.strftime('%A %d %B %Y')
-    print '--------------------------------------------'
-    print "({0:}) - {1:} au {2:}  -> ({3:} personnes)\n{4:}\n".format(j['match']['matchId'],j['match']['events'][0]['label'],j['match']['venue']['name'].encode('windows-1252'),j['match']['attendance'],d)
+    print ('--------------------------------------------')
+    print (time.strftime('%A %d %B %Y'))
+    print ('--------------------------------------------')
+    print ("({0:}) - {1:} au {2:}  -> ({3:} personnes)\n{4:}\n".format(j['match']['matchId'],j['match']['events'][0]['label'],j['match']['venue']['name'].encode('windows-1252'),j['match']['attendance'],d))
     for e in j['officials']:
         try :
-            print "{0:20} {1:25}  ({2:})".format(e['position'],e['official']['name']['display'],e['official']['pob'].encode('windows-1252'))
+            print ("{0:20} {1:25}  ({2:})".format(e['position'],e['official']['name']['display'],e['official']['pob'].encode('windows-1252')))
         except:
-            if DEBUG : print e
-    print '\n',j['match']['teams'][0]['name'],j['match']['scores'][0],'  -  ',j['match']['scores'][1], j['match']['teams'][1]['name'],'\n'
+            if DEBUG : print (e)
+    print ('\n',j['match']['teams'][0]['name'],j['match']['scores'][0],'  -  ',j['match']['scores'][1], j['match']['teams'][1]['name'],'\n')
     for i in [0,1]:
-        print '--------------------------------------------'
-        print '--',j['match']['teams'][i]['name'],'              ',
-        try : 
+        print ('--------------------------------------------')
+        print ('--',j['match']['teams'][i]['name'],'              ',)
+        try :
             for p in team[i]['Pen'] :
-                print "Essai Penalite={0:7}".format(p['tps']),
-            print '\n'
-        except : 
-            print '\n'
+                print ("Essai Penalite={0:7}".format(p['tps']),)
+            print ('\n')
+        except :
+            print ('\n')
         captain = j['teams'][i]['teamList']['captainId']
         for e in j['teams'][i]['teamList']['list']:
             c=''
             if captain == e['player']['id'] : c='c'
-            print "{4:1} {2:3d} ({0:5}) {1:30}  '{3:12}'".format(e['player']['id'],e['player']['name']['display'].encode('windows-1252'),int(e['number']),e['positionLabel'],c),
-            try : 
+            print ("{4:1} {2:3d} ({0:5}) {1:30}  '{3:12}'".format(e['player']['id'],e['player']['name']['display'].encode('windows-1252'),int(e['number']),e['positionLabel'],c),)
+            try :
                 for p in team[i][str(e['player']['id'])] :
-                    print "{0:}={1:7}".format(p['type'],p['tps']),
-                print ''
-            except : 
-                print '' #joueur,team[i],
-        print
-    print '-------------------------------------------'
+                    print ("{0:}={1:7}".format(p['type'],p['tps']),)
+                print ('')
+            except :
+                print ('') #joueur,team[i],
+        print()
+    print ('-------------------------------------------')
     return
 def get_json():
     EVENT = '1238'
     base_u = 'https://cmsapi.pulselive.com/rugby/event'
     event = str(raw_input("Choisir le numero de l'evenement ["+EVENT+"]: ")) or EVENT
     u = base_u +'/'+event+'/schedule?language=en&client=pulse'+'&status=C'
-    print u
+    print (u)
     j = get_data(u)
     # nodes : name group send receive OU
     # links : source target value
@@ -306,23 +308,23 @@ def get_json():
             i = i+1
         #           json['links'].append('"source":'+e['teams'][0]['id'])
         except :
-            print 'erreur'
+            print ('erreur')
     for e in name:
         js['nodes'].append(name[e])
-    print js
+    print (js)
     f = open(r"html/data/WRC2015.json",'w')
     json.dump(js,f)
     f.close()
     return
 
 def get_event(startDate,endDate):
-    global EVENT 
+    global EVENT
     base_u = 'https://cmsapi.pulselive.com/rugby/event'
     pageSize='100'
     page=0
     i=0
     nbPage=9
-    print "Liste de evenements ... : filtre'"+args.filtre+"'"
+    print ("Liste de evenements ... : filtre'"+args.filtre+"'")
     while page < nbPage :
         u = base_u + '?startDate='+startDate+'&endDate='+endDate+'&pageSize='+pageSize+'&page='+str(page)
         page = page+1
@@ -330,14 +332,14 @@ def get_event(startDate,endDate):
         nbPage = int(j['pageInfo']['numPages'])
         for e in j['content']:
             if (e['sport'] == args.source) & (args.filtre in e['label']) :
-                print "{0:5d} - {1:60}  ({2:} / {3:})".format(int(e['id']),e['label'].encode('windows-1252'),e['start']['label'],e['end']['label'])
+                print ("{0:5d} - {1:60}  ({2:} / {3:})".format(int(e['id']),e['label'].encode('windows-1252'),e['start']['label'],e['end']['label']))
                 EVENT = str(int(e['id']))
     event = str(raw_input("Choisir le numero de l'evenement ["+EVENT+"]: ")) or EVENT
     u = base_u +'/'+event+'/schedule?language=en&client=pulse'+'&status=C'
     j = get_data(u)
     #print j
-    print '-------------------------------------------'
-    print "{0:} du {1:} au {2:}\n-".format(j['event']['label'], j['event']['start']['label'], j['event']['end']['label'])
+    print ('-------------------------------------------')
+    print ("{0:} du {1:} au {2:}\n-".format(j['event']['label'], j['event']['start']['label'], j['event']['end']['label']))
     for e in j['matches']:
         t = time.gmtime(e['time']['millis']/1000+7200)
         d= time.strftime('%Y-%m-%d', t)
@@ -347,20 +349,20 @@ def get_event(startDate,endDate):
         f1 = get_rk(j_rk['entries'],e['teams'][1]['abbreviation'])
         s0,s1=0,0
         p0,p1 = 0,0
-        if f0 : 
+        if f0 :
             p0=f0['pts']
-        if f1 : 
+        if f1 :
             p1=f1['pts']
         if e['status']== 'C' :
             s0,s1 = get_result(p0,p1,e['scores'][0],e['scores'][1],j['event']['rankingsWeight'])
         try :
-            print "{13:5} {2:2}{0:13} {3:3} -{4:3} {1:13}{7:14} {5:} {8:5} -> ({11:4.1f}-{12:4.1f}) {6:}".format(e['teams'][0]['name'],e['teams'][1]['name'],e['status'],e['scores'][0],e['scores'][1], time.strftime('%d/%m %H:%M', t),e['venue']['name'].encode('windows-1252'),e['eventPhase'],e['attendance'],p0,p1,s0,s1,e['matchId'])
+            print ("{13:5} {2:2}{0:13} {3:3} -{4:3} {1:13}{7:14} {5:} {8:5} -> ({11:4.1f}-{12:4.1f}) {6:}".format(e['teams'][0]['name'],e['teams'][1]['name'],e['status'],e['scores'][0],e['scores'][1], time.strftime('%d/%m %H:%M', t),e['venue']['name'].encode('windows-1252'),e['eventPhase'],e['attendance'],p0,p1,s0,s1,e['matchId']))
         except :
-            print "{13:5} {2:2}{0:13} {3:3} -{4:3} {1:13}{7:14} {5:} {8:5} -> ({11:4.1f}-{12:4.1f}) {6:}".format(e['teams'][0]['name'],e['teams'][1]['name'],e['status'],e['scores'][0],e['scores'][1], time.strftime('%d/%m %H:%M', t),p0,e['eventPhase'],e['attendance'],p0,p1,s0,s1,e['matchId'])
-    print '-------------------------------------------'
+            print ("{13:5} {2:2}{0:13} {3:3} -{4:3} {1:13}{7:14} {5:} {8:5} -> ({11:4.1f}-{12:4.1f}) {6:}".format(e['teams'][0]['name'],e['teams'][1]['name'],e['status'],e['scores'][0],e['scores'][1], time.strftime('%d/%m %H:%M', t),p0,e['eventPhase'],e['attendance'],p0,p1,s0,s1,e['matchId']))
+    print ('-------------------------------------------')
     return
 
-    
+
 def get_args():
     global p, args
     global DEBUG, OUTSIDE, VERBOSE, CSV
@@ -392,7 +394,7 @@ def get_args():
     CSV = args.csv
     if VERBOSE :
         #       print auth.username, auth.password
-        print '--------------------------------------------------------------------------'
+        print ('--------------------------------------------------------------------------')
         aff('Arguments ...','')
         aff('Men/Wemen    :',args.source)
         aff('proxy : ',proxy)
@@ -409,7 +411,7 @@ def event():
     get_event(startDate,endDate)
     match = str(raw_input("Choisir le numero du match [14232]: ")) or '14232'
     get_match(match)
-    return  
+    return
 
 def match():
     match = str(raw_input("Choisir le numero du match [14232]: ")) or '14232'
@@ -437,7 +439,7 @@ if __name__ == "__main__":
     uv = 'https://cmsapi.pulselive.com/rugby/match?startDate=2015-10-12&endDate=2019-01-12&states=U,L&pageSize=10&client=pulse'
 
     mode = args.mode.lower()
-    if args.input <> None : mode = 'input'
+    if args.input != None : mode = 'input'
     if mode == 'date' :
         u = u +  args.Date
         j = get_date(u)
@@ -449,18 +451,18 @@ if __name__ == "__main__":
         j = get_date(u)
         visiteur = get_info(args.Visiteur,j['entries'])
         local =  get_info(args.Local,j['entries'])
-    
+
         score = args.Score.split('-')
-        if (local<>None) & (visiteur<>None) :
-            print "[{1:3}] - {0:35}[{3:3}] - {2:35}".format(local['team']['name'],local['pos'],visiteur['team']['name'],visiteur['pos'])
-            print "       {0:5.1f}                                      {1:5.1f}".format(local['pts'],visiteur['pts'])
-            print "    ({0:5d})                                    ({1:5d})".format(int(score[0]),int(score[1]))
+        if (local!=None) & (visiteur!=None) :
+            print ("[{1:3}] - {0:35}[{3:3}] - {2:35}".format(local['team']['name'],local['pos'],visiteur['team']['name'],visiteur['pos']))
+            print ("       {0:5.1f}                                      {1:5.1f}".format(local['pts'],visiteur['pts']))
+            print ("    ({0:5d})                                    ({1:5d})".format(int(score[0]),int(score[1])))
             v,l = get_result(local['pts'],visiteur['pts'],int(score[0]),int(score[1]), 2)
-            print "       {0:5.2f}                                      {1:5.2f}".format(v,l)
+            print ("       {0:5.2f}                                      {1:5.2f}".format(v,l))
     elif mode == 'all' :
         get_all_csv(u)
     elif mode == 'input' :
-        print args.input
+        print (args.input)
     elif mode == 'event' :
         event()
     elif mode == 'match' :
@@ -471,10 +473,10 @@ if __name__ == "__main__":
         end = 2022
         while not q:
             options=menu.keys()
-            options.sort()
+#            options.sort()
             for entry in options:
-                print entry, menu[entry]
-            sel=raw_input("# selection :")
+                print (entry, menu[entry])
+            sel=input("# selection :")
             if sel =='1':
                 match()
             elif sel == '2':
@@ -493,9 +495,9 @@ if __name__ == "__main__":
                 q=True
                 break
             else:
-                print "Mauvaise option !"
-    print "\nby e-Coucou 2015, révision 2021"
-"""    
+                print ("Mauvaise option !")
+    print ("\nby e-Coucou 2015, révision 2021")
+"""
         structure json :  pour une competition ... par event
             nodes : name group send receive OU // equivalence equipe id pour contre match
             links : source target value // equivalence id-1 id-2 pour-contre
