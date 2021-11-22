@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<title>WATCH 2.0</title>
+<meta name="description" content="Get data a,d keep an eyes on ...">
+<meta name="author" content="e-Coucou">
+<html class="rky">
+<meta charset="utf-8">
+<title>Pyrénées 2.0</title>
+<style>
+@import url(../css/new.css);
+.rky {
+    background-color: #E8FAFD;
+}
+.rky rect {
+    color:  red;
+}
+#menu {
+    position : absolute;
+    left: 65%;
+    margin-top: 5px;
+}
+#compute {
+    position : absolute;
+    left: 65%;
+    margin-bottom: 0px;
+    color: white;
+}
+#search {
+    position : absolute;
+    left: 50%;
+    margin-bottom: 0px;
+    color: white;
+}
+.rky header {
+    position: fixed;
+    top:0px;
+    left:0px;
+    width:100%;
+    height: 50px;
+    z-index: 0;
+    background: #1e3F5E; /*#FE6F5E;/*#b0c4de; /*add8e6; /*f0f8FF;*/
+  color: #fff;
+  font-family: "helvetica neue", sans-serif;
+}
+
+.rky header aside{
+    left:20px;
+    width:100%;
+    height: 20px;
+  font-size: 11px;
+  float: left;
+  margin-right: 0.8em;
+  padding-top: .2em;
+  color: #fff;
+}
+.rky aside {
+  font-size: 1.5vh;
+  font-family: "helvetica neue", sans-serif;
+  font-weight: 150;
+  text-anchor: end;
+  margin-right: 0.9vh;
+    float: right;
+/*    box-shadow: inset 5px 0 5px -5px #29627e;*/
+}
+#svg {
+	display: block;
+	margin: auto;
+	opacity: 1;
+/*	position : relative;*/
+}
+.rky h1 {
+  font-family: "helvetica neue", sans-serif;
+  font-size: 5vh;
+  letter-spacing: 0.2vh;
+  margin-left: 0px;
+  margin-bottom: 0px;
+  font-weight: 50;
+  text-rendering: optimizeLegibility;
+}
+#h1 {
+  font-size: 28px;
+  font-weight: 250;
+  letter-spacing: 2px;
+  margin-left: 150px;
+  margin-top: 5px;
+  position: absolute;
+  text-rendering: optimizeLegibility;
+}
+.rky footer aside{
+    left:20px;
+    width:50%;
+    height: 20px;
+  font-size: 11px;
+  float: left;
+  margin-right: 0.8em;
+  padding-top: .2em;
+  color: #fff;
+}
+.rky footer {
+  position: fixed;
+  bottom: 0px;
+    left:0px;
+    width:100%;
+    height: 20px;
+  font-size: 11px;
+  float: left;
+  margin-right: 0.8em;
+  padding-top: .5em;
+    background: #1e3F5E; /*#FE6F5E;/*#b0c4de; /*add8e6; /*f0f8FF;*/
+}
+.rky footer aside:after {
+  padding-left: .5em;
+  content: "|";
+}
+.rky footer {
+  margin-top: 0.1em;
+}
+#date {
+	left: 100px;
+	color: 'red';
+}
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+.horizontalGrid {
+	fill : none;
+	shape-rendering : crispEdges;
+	stroke : lightgrey;
+	stroke-width : 1px;
+}
+.verticalLine {
+	fill : none;
+	shape-rendering : crispEdges;
+	stroke : lightgrey;
+	stroke-width : 1px;
+}
+input#search{ 
+    border: 1px dotted #ccc;
+    background: white;
+    font-family: monospace;
+    padding: 2 1;
+    font-size: 12px;
+    margin: 1% 1% 1% 1%;
+    width : 10%;
+    height: 25;
+    color: red;
+}
+input#username,
+input#password,
+input#connexion { 
+    border: 1px dotted #ccc;
+    background: white;
+    font-family: monospace;
+    padding: 2% 2%;
+    font-size: 18px;
+    margin: 2% 2% 2% 5%;
+    width : 85%;
+    height: 40%;
+    color: red;
+}
+input:focus { 
+    background-color:#0cf; color: red; outline: none;
+}
+#credentials {
+  left: 30%;
+  top: 100px;
+  margin: 10px;
+  padding: 10px;
+  width: 40%;
+  position: absolute;
+  border: 3px solid #ff7788;
+}
+#date {
+	right:100px;
+	width: 30%;
+}
+</style>
+<header>
+  <div id='h1'>Pyrénées/Pirineos</div>
+  <aside >April, 2021<br><br> | v 4.30</aside>
+        <div>
+        <form name="saisie" onSubmit="return credClick()">
+        <input type="text" id="search">
+    </form></div>
+  <div id='menu'></div>
+</header>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="https://unpkg.com/d3@5.7.0/dist/d3.min.js" charset="utf-8"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.js" charset="utf-8"></script>
+<body>
+    <div id="chart"></div>
+    <div id="histo"></div>
+    <div id="credentials">
+    <form name="saisie" onSubmit="return credClick()">
+        <input type="text" id="username"><br>
+        <input type="password" id="password">
+<!--        <input name="Submit"  type="submit" id="connexion" value="Connexion" > -->
+    </form></div>
+  <footer>
+  	<div>
+      <aside>(c) e-Coucou | y2kL | Juin, 2021</aside> 
+      <aside id="date">time</aside>
+      <aside id="compute">calculs</aside>
+    </div>
+  </footer>
+  <script type="text/javascript">
+    var config = {credOK: false, tagOK:false, dataOK:false, arcOK:false, arbreOK: false};
+//    var urlBase = 'https://cors-rky.herokuapp.com/https://oianalytics-100.optimistik.fr/api/optimistik/data/time_values?dataReferenceList=';
+    var urlBase = 'https://cors-rky.herokuapp.com/https://oianalytics-100.optimistik.fr/api/oianalytics/time-values/query?data-reference=';
+//    var urlBaseOld = 'https://oianalytics-100.optimistik.fr/api/optimistik/data/time_values?data-reference=';
+    var urlTime = '';
+   	var interval = 'PT1M'  // PnYnMnD  TnHnMnS
+    var urlRes = '&aggregation-period='+interval;
+    var url = '';
+    var Couleur = { Eau:'#33FFFF',GR:'#FF3399', Air:'#33FF99', C3:'#FF3333', OffGaz:'#9933FF', Reacteur:'#FF9933', D210:'#DFDF2D', Acro:'#FFFF33', sel: '#ddd' , Acide:'#FF3333', MSH:'#3333FF', MMP:'#99FF33', Torche:'#869F6C', V10:'#26BFBF', V40:'#1A8080'}
+    /*
+    let listeT1 = ['E-T15021','E-T15022','E-T15023','E-T15024','E-T15025','E-T15026','E-T15027','E-T15028','E-T15029','E-T15030','E-T15031','E-T15032']
+    let listeT2 = ['E-T15041','E-T15042','E-T15043','E-T15044','E-T15045','E-T15046','E-T15047','E-T15048','E-T15049','E-T15050','E-T15051','E-T15052']
+    let liste1 = ['E-T15099','E-TS19801','E-T19908','E-LX19901','E-TX19902','E-AO19991','E-F15154','E-PS15007','E-PS15011','E-PS15505','E-PS15605','E-AO19992','E-AO19993','E-AO19994'];
+    let liste2 = ['E-PS15007','E-T15006','E-TC15002','E-TC15005','E-TY15004','E-T15401'];
+    */
+    let liste3 = []; //['E-F15154','E-FC15167','E-P15104','E-P16151','E-PO16151','E-T15106','E-TC15103'];
+    let pathData = [{source:'E-FCS14325',cible:'Ctx',color:Couleur.Eau, s:0,c:0,e:3,anim:'E-FCV14325'},
+    				{cible:'E-FCS12085',source:'Ctx',color:Couleur.Air, s:0,c:0,e:5,anim:'E-CV12086A'},
+    				{source:'E-FC16325',cible:'Ctx',color:Couleur.C3, s:0,c:0,e:4,anim:'E-CV16325A'},
+                    {source:'Ctx',cible:'E-TC17601',color:Couleur.GR, s:1,c:1,e:5,anim:'E-CV16325A'},
+    				{cible:'E-FC12001',source:'E-CV12086A',color:Couleur.Air, s:0,c:0,e:5,anim:'E-CV12086A'},
+    				{cible:'E-CV12086A',source:'E-FCS12085',color:Couleur.Air, s:0,c:0,e:6,anim:'E-CV12086A'},
+    				{cible:'E-FS31053',source:'E-CV12086A',color:'grey', s:0,c:0,e:2,anim:'E-CV12086A'},
+    				{source:'E-TC17601',cible:'E-CV18167',color:Couleur.GR, s:1,c:0,e:5,anim:'E-CV18167'},
+    				{cible:'E-TC17601',source:'E-CV15167A',color:Couleur.GR, s:0,c:-1,e:3,anim:'E-CV15167A'},
+                    {cible:'E-TC17601',source:'E-CV15167B',color:Couleur.GR, s:0,c:-1,e:2,anim:'E-CV15167B'},
+    				{cible:'E-CV15167A',source:'E-FC15167',color:Couleur.GR, s:0,c:0,e:3,anim:'E-CV15167A'},
+                    {cible:'E-CV15167B',source:'E-FC15167',color:Couleur.GR, s:0,c:0,e:2,anim:'E-CV15167B'},
+                    {source:'E-CV18167',cible:'ROC_Debit_massique_entree_Reacteur_Europe2',color:Couleur.GR, s:0,c:0,e:5,anim:'E-CV18167'},
+    				{source:'E-FC15167',cible:'Pyrénées',color:Couleur.GR, s:1,c:1,e:4,anim:'E-CV15167A'},
+//                    {source:'Ct4',cible:'Pyrénées',color:'#45B50E', s:0,c:1,e:4,anim:'E-CV15167A'},
+    				{source:'ROC_Debit_massique_entree_Reacteur_Europe2',cible:'Europe 2',color:Couleur.GR, s:1,c:1,e:5,anim:'E-CV18167'},
+//                    {source:'Ct3',cible:'Europe 2',color:'#45B50E', s:0,c:1,e:5,anim:'E-CV18167'},
+    				{source:'E-FCV14325',cible:'E-FCS14325',color:Couleur.Eau, s:0,c:0,e:3,anim:'E-FCV14325'},
+    				{source:'E-CV16325A',cible:'E-FC16325',color:Couleur.C3, s:0,c:0,e:1,anim:'E-CV16325A'},
+    				{source:'E-CV16325B',cible:'E-FC16325',color:Couleur.C3, s:0,c:0,e:2,anim:'E-CV16325B'},
+                    {source:'Pyrénées',cible:'E15100',color:Couleur.Reacteur, s:1,c:0,e:4,anim:'E-CV15167A'},
+                    {source:'Europe 2',cible:'E18100',color:Couleur.Reacteur, s:1,c:0,e:5,anim:'E-CV18167'},
+                    {source:'E15100',cible:'Ct1',color:Couleur.Reacteur, s:0,c:0,e:4,anim:'E-CV15167A'},
+                    {source:'Ct1',cible:'Ct2',color:Couleur.Reacteur, s:0,c:0,e:4,anim:'E-CV15167A'},
+                    {source:'E18100',cible:'Ct2',color:Couleur.Reacteur, s:0,c:0,e:5,anim:'E-CV18167'},
+                    {source:'Ct2',cible:'D210',color:Couleur.Reacteur, s:0,c:-1,e:7,anim:'E-CV15167A'},
+                    {source:'D210',cible:'Ct8',color:Couleur.D210, s:-1,c:0,e:7,anim:'E-CV15167A'},
+                    {source:'Ct8',cible:'Ct7',color:Couleur.D210, s:0,c:0,e:7,anim:'E-CV15167A'},
+                    {source:'Ct7',cible:'D310',color:Couleur.D210, s:0,c:-1,e:7,anim:'E-CV15167A'},
+                    {source:'D410',cible:'E-FCQ41102',color:Couleur.MSH, s:0,c:0,e:4,anim:'E-FCV41102'},
+                    {source:'E-FCQ41102',cible:'E-FCV41102',color:Couleur.MSH, s:0,c:0,e:4,anim:'E-FCV41102'},
+                    {source:'D410',cible:'E-FQ41504',color:Couleur.MMP, s:1,c:0,e:8,anim:'E-FCV41102'},
+                    {source:'D210',cible:'D220',color:Couleur.Acide, s:1,c:-1,e:2,anim:'E-CV15167A'},
+                    {source:'D210',cible:'D220',color:Couleur.Reacteur, s:0,c:0,e:2,anim:'E-CV15167A'},
+                    {source:'D310',cible:'Ct6',color:'#FFFF66', s:1,c:0,e:9,anim:'E-CV15167A'},
+                    {source:'Ct6',cible:'D330',color:'#FFFF66', s:0,c:0,e:9,anim:'E-CV15167A'},
+                    {source:'D330',cible:'Ct5',color:Couleur.Acro, s:-1,c:0,e:8,anim:'E-CV15167A'},
+                    {source:'Ct5',cible:'D410',color:Couleur.Acro, s:0,c:0,e:8,anim:'E-CV15167A'},
+                    {cible:'D310',source:'CtO',color:'grey', s:0,c:1,e:2,anim:'E-CV12086A'},
+                    {source:'E-FS31053',cible:'CtO',color:'grey', s:1,c:0,e:2,anim:'E-CV12086A'},
+    				];
+    let itemData = [];
+    let surface = {x1:0,x2:0,data:[],flip:0, area:0, mean:0, day: 0, elapse:0, trend:0, delta:0};
+	// Chart dimensions.
+	var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    	width = window.innerWidth; // - margin.right-margin.left,
+    	height = window.innerHeight; // - margin.top - margin.bottom;
+	var couleur = ['#3C73F0','green','violet','cyan','blue','orange','yellow','red'],
+	    nbCouleur = couleur.length;
+
+	var dashData=[],histData=[]; username='Username', password='Password', search_text='cherche';
+    var histList = ['E-TC15002'], histOffset = 0;
+	// Create the SVG container and set the origin.
+	const svg = d3.select('#chart').append("svg")
+    	.attr("id", "svg")
+    	.attr("width", (width))
+    	.attr("height", (height));
+	const svgHisto = d3.select('#histo').append("svg")
+    	.attr("id", "svgHisto")//.attr("position", 1)
+    	.attr("width", (width/2))
+    	.attr("height", (height/2));
+//    	.append('g').attr('transform','translate('+0+','+(height/2.0)+')').raise();
+	var dispatch = d3.dispatch('histo');
+    dispatch.on('histo',aff_histo);
+    var t_cycle = setInterval(refreshData,300000);
+// les gradients de couleurs ...
+// Set the gradient
+    svg.append("linearGradient")
+      .attr("id", "Reacteur")
+      .attr("gradientUnits", "userSpaceOnUse")
+      .attr("x1", 0).attr("y1", 0)
+      .attr("x2", 0).attr("y2", height/3)
+      .selectAll("stop")
+        .data([
+          {offset: "0%", color: Couleur.GR},
+          {offset: "100%", color: Couleur.Reacteur}
+        ])
+      .enter().append("stop")
+        .attr("offset", function(d) { return d.offset; })
+        .attr("stop-color", function(d) { return d.color; });
+    svg.append("linearGradient")
+      .attr("id", "D210")
+      .attr("gradientUnits", "userSpaceOnUse")
+      .attr("x1", 0).attr("y1", 0)
+      .attr("x2", 0).attr("y2", height/3)
+      .selectAll("stop")
+        .data([
+          {offset: "0%", color: Couleur.D210},
+          {offset: "100%", color: Couleur.Reacteur}
+        ])
+      .enter().append("stop")
+        .attr("offset", function(d) { return d.offset; })
+        .attr("stop-color", function(d) { return d.color; });
+    svg.append("linearGradient")
+      .attr("id", "D220")
+      .attr("gradientUnits", "userSpaceOnUse")
+      .attr("x1", 0).attr("y1", 0)
+      .attr("x2", 0).attr("y2", height/6)
+      .selectAll("stop")
+        .data([
+          {offset: "0%", color: Couleur.Reacteur},
+          {offset: "100%", color: '#FF3333'}
+        ])
+      .enter().append("stop")
+        .attr("offset", function(d) { return d.offset; })
+        .attr("stop-color", function(d) { return d.color; });
+    svg.append("linearGradient")
+      .attr("id", "D310")
+      .attr("gradientUnits", "userSpaceOnUse")
+      .attr("x1", 0).attr("y1", 0)
+      .attr("x2", 0).attr("y2", height/3)
+      .selectAll("stop")
+        .data([
+          {offset: "0%", color: 'grey'},
+          {offset: "100%", color: Couleur.D210}
+        ])
+      .enter().append("stop")
+        .attr("offset", function(d) { return d.offset; })
+        .attr("stop-color", function(d) { return d.color; });
+    svg.append("linearGradient")
+      .attr("id", "D330")
+      .attr("gradientUnits", "userSpaceOnUse")
+      .attr("x1", 0).attr("y1", 0)
+      .attr("x2", 0).attr("y2", height/3)
+      .selectAll("stop")
+        .data([
+          {offset: "0%", color: Couleur.Acro},
+          {offset: "100%", color: '#FFFFCC'}
+        ])
+      .enter().append("stop")
+        .attr("offset", function(d) { return d.offset; })
+        .attr("stop-color", function(d) { return d.color; });
+    svg.append("linearGradient")
+      .attr("id", "D410")
+      .attr("gradientUnits", "userSpaceOnUse")
+      .attr("x1", 0).attr("y1", 0)
+      .attr("x2", 0).attr("y2", height/3)
+      .selectAll("stop")
+        .data([
+          {offset: "0%", color: Couleur.Torche},
+          {offset: "100%", color: Couleur.MMP}
+        ])
+      .enter().append("stop")
+        .attr("offset", function(d) { return d.offset; })
+        .attr("stop-color", function(d) { return d.color; });
+// menu
+let ii=0
+const data_menu = [
+        { n:ii++, x:-320, m:'trophy', a: (3*30*24) , val: '3m',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-320, m:'trophy', a: (30*24) , val: '1m',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-320, m:'trophy', a: (14*24) , val: '14j',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-280, m:'trophy', a: (7*24) , val: '7j',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-280, m:'trophy', a: 72 , val: '72h',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-280, m:'trophy', a: 48 , val: '48h',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-280, m:'trophy', a: 24 , val: '24h',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-280, m:'trophy', a: 12 , val: '12h',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-280, m:'trophy', a: 6 , val: '6h',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-280, m:'trophy', a: 2 , val: '2h',http:'/RWC-2019.html'},  //th
+        { n:ii++, x:-280, m:'trophy', a: 0 , val: '(o)',http:'/RWC-2019.html'},  //th
+ //       { n:7, x:-280, m:'trophy', a: 336 , val: '15j',http:'/RWC-2019.html'},  //th
+    ];
+var svgMenu = d3.select("#menu").append("svg")
+    .attr('width',45*data_menu.length).attr('height',40);
+var menuG = svgMenu.selectAll('g').data(data_menu).enter()
+        .append('g')
+        .attr('transform',(d,i)=>{return 'translate('+(i*40+20)+',10)';})
+        .on('click',clickMenu);
+let selGraphe = 3;
+var menuCircle=false, histTime = data_menu[selGraphe].a;
+    menuG.append('rect').style('fill',(d,i)=>(d.n==selGraphe)?'#B233FF':'#4C33FF').attr('id','menuRect')
+        .attr('r',17).attr('width',38).attr('height',39).attr('x',-8).attr('y',-9).attr("rx",4).attr("ry",4)
+        .on('mouseover',function(d) {d3.select(this).style('fill','#33CAFF')})
+        .on('mouseout',function(d){d3.select(this).style('fill',(d,i)=>(d.n==selGraphe)?'#B233FF':'#4C33FF')});
+    if (menuCircle) {
+        menuG.append('circle').style('fill',(d,i)=>(d.n==selGraphe)?'red':'#FE6FcE')
+            .attr('r',17).attr('cx',(d,i)=>{return 10;}).attr('cy',10);
+    }
+    menuG.append('text').attr('x',(13)) //.attr('y',10)
+            .attr('y',13).style('text-anchor', 'middle').style('fill','white')
+            .style('font-weight', 'bold').style('dominant-baseline','middle')
+            .text(f=>{return f.val;}).style('font-size','1vw');
+function clickMenu (d) {
+//    console.log(d);
+    selGraphe = d.n;
+    d3.select('#menu').selectAll('rect').style('fill',(f,i)=>(f.n==selGraphe)?'#B233FF':'#4C33FF');
+    switch (d.n) {
+        case (ii-1) : histOffset = 0; break;
+        default :
+            histTime = d.a;
+            break;
+    }
+    getHistorique(histList[0]);
+}
+//credentials ...
+	let code =btoa(username+':'+password);
+	cred();
+//---------------
+// get Data
+function getValeur() {
+    let refDashboard='';
+    let now = new Date(Date.now());
+    let end = new Date(Date.now());
+	now.setMinutes(now.getMinutes()-11);
+    urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
+    url = urlBase+encodeURIComponent('E-T15099')+urlTime+'&aggregation-period=PT1M';
+    getDashData(url,'coucou','#info');
+    getValeurListe(urlTime,liste3);
+    getHistorique(histList[0]);
+}
+function getValeurListe(urlTime,liste) {
+	liste.forEach( tag => {
+		url = urlBase+encodeURIComponent(tag)+urlTime+'&aggregation-period=PT1M';
+		getDashData(url,tag,'#'+tag);
+	});
+}
+function getDataPoint(d,i,start) {
+    let now = new Date(Date.now());
+    let end = new Date(Date.now());
+    now.setMinutes(now.getMinutes()-15);
+    urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
+    url = urlBase+encodeURIComponent(d)+urlTime+'&aggregation-period=PT1M';
+    d3.selectAll('#'+d+'_txt').style('fill','yellow');
+    getDashData(url,d,'#'+d);
+    getHistorique(d,i,start);
+}
+function getHistorique (d,i,start) {
+//console.log(d,i,start);
+    //epxx mettre selection rectangle
+    histList[0] = d;
+    let now = new Date(Date.now());
+    let end = new Date(Date.now());
+//    let offset = now.getTimezoneOffset();
+//    let hour = now.getHours()+offset/60;
+//	now.setHours(hour);
+	now.setHours(now.getHours()- (histTime * (histOffset+1)));
+	end.setHours(end.getHours()- (histTime * histOffset) +0.1);
+//	console.log('heure',now,end);
+    urlTime = '&from='+encodeURIComponent(now.toISOString())+'&to='+encodeURIComponent(end.toISOString());
+//    console.log(urlTime);
+	url = urlBase+encodeURIComponent(d)+urlTime+'&aggregation-period=PT1M'+'&aggregation=TIME'; // PnYnMnD  TnHnMnS
+//	console.log(urlTime,url);
+	getHistData(url,d,'#'+d);
+//	console.log('data read ?');
+}
+//----------------------------------------------------------------------------------------
+//- lecture du dashboard ...
+//----------------------------------------
+
+function getDashData (urldata,index,id) {
+//console.log('coucou :',urldata,index,id);
+    var opt = fetch(urldata, {method: 'GET',headers: new Headers({'Access-Control-Allow-Origin':'*','Accept':'application/json',
+        'mode':'no-cors','credentials':'includes','Authorization':'basic '+code})}).then(response => {
+        return response.json();
+        })
+    .then(data => { 
+            dashData[index]=data;
+            let num = data[0].values.findIndex(x => x.value==null)-1;
+            //console.log('getData',data,test.lastIndexOf(null)); //data[0].values.lastIndexOf(x=>{ console.log(x);return x.value==null;}));
+            //
+            if (index=='E-TC17601') {console.log('getData',data, num, data[0].values[num]);}
+            let value = data[0].values[num].value, unit = data[0].unit;
+//            console.log(id,value);
+            if (value != null) {
+                d3.selectAll(id+'_c').style('fill','#32FE94');
+                d3.selectAll(id+'_txt').style('fill','black');
+                d3.selectAll(id).text(valFormat(value)+' '+data[0].unit);
+                d3.selectAll(id+'_r').style('fill','#fff');
+                d3.selectAll('#date').text('| '+i_c(data[0].values[0].timestamp));
+                update_level(id,value,unit,true);
+                update_vanne(id,value,unit,true);
+            } else {
+                d3.selectAll(id+'_c').style('fill','#0ff');
+//            dispatch.call('histo');
+            }
+        })
+    .catch(err => {
+//        infoG.select('text').text("ERREUR : "+err);
+//        infoG.select('circle').attr('fill','black');
+//        config.dataOK=false;
+		dashData[index]=[{values:[{timestamp:0,value:-1}],unit:' xxx'}];
+        d3.selectAll(id).text(valFormat(-1)+' '+'xxx');
+        d3.selectAll(id+'_c').style('fill','#ff0');
+      console.log(err,data);
+    })   
+}
+//--------------------------
+//- Lecture de l'historique
+//
+function getHistData(urldata,index,id) {
+    var opt = fetch(urldata, {method: 'GET',headers: new Headers({'Access-Control-Allow-Origin':'*','Accept':'application/json',
+        'mode':'no-cors','credentials':'includes','Authorization':'basic '+code})}).then(response => {
+        return response.json();
+        })
+    .then(data => { 
+        histData = data;
+            console.log('data Historique',data);
+//            aff_histo();
+            dispatch.call('histo');
+        })
+    .catch(err => {
+      console.log(err);
+    })   
+}
+
+let valFormat = (a) => { 
+        let r = (a>10) ? Math.round(a) : ( (a>1)? Math.round(a*10.0)/10 : Math.round(a*100.0)/100);
+        return String(r).replace(/(.)(?=(\d{3})+$)/g,'$1 ');
+}
+var format = d3.timeFormat("%H:%M:%S");
+    function i_c(d) { 
+    	return format( new Date(d));
+    }
+//----------------------------------------------------------------
+// CREDENTIALS
+//
+function cred() {
+    svg.attr("viewBox", "0 0 "+(width )+" "+(height))
+    let connexion = svg.append('g').selectAll('g').data([0]).enter().append('g')
+                        .attr('transform', (d,i)=> {return 'translate('+(0.25*width)+','+(0.6*height)+')';})
+                        .on('click',get_connexion)
+                        .on('mouseover',(d,i)=> {
+                            d3.selectAll('#rect_connexion').style('fill','#33CAFF')  })
+                        .on('mouseout',(d)=> {
+                            d3.selectAll('#rect_connexion').style('fill','#4C33FF')  });
+
+        connexion.append('rect').attr('rx',6).attr('ry',6).attr('id','rect_connexion')
+            .attr('width',(0.5*width)).attr('height',(0.1*height)).style('fill', '#4C33FF'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+        connexion.append('text').attr('x',(0.25*width)) //.attr('y',10)
+            .attr('y',(0.07*height)).attr('id','connexion') //.attr('id',(d)=>{return ('en0_'+d.matchId);})
+//            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
+            .style('text-anchor', 'middle').style('fill','white')
+            .style('font-weight', 'bold').style('dominant-baseline','middle')
+            .text('Connexion').style('font-size','4vw');
+    var credential = [
+                {name: 'username', type: 'text', display: 'Username'},
+                {name: 'password', type: 'text', display: 'Password'},
+                {name: 'submit', type: 'submit', display: 'Username'}
+            ];
+    let size={l:200,h:200};
+/*    let credG = graph.append('g')
+        .append('foreignObject').attr('x',10).attr('y',10).attr('width',300).attr('height',150);
+    credG.append('rect').attr('x',width/2-size.l/2+margin.left).attr('y',80)
+        .attr('width',size.l).attr('height',size.h).style('fill','#BCD4E6');
+		*/
+        d3.select('#credentials').attr('width',300).style('display','inline').raise();
+        d3.select('#username').attr('placeholder',username).on('change',credClick);
+        d3.select('#password').attr('placeholder',password).on('change',credClick);
+        d3.select('#search').attr('placeholder',search_text).on('change',searchClick);
+}
+
+function credClick() {
+    let val = d3.select('#username').property('value');
+    if (val!='') username=val;
+    val = d3.select('#password').property('value');
+    if (val!='') password=val;
+    code =btoa(username+':'+password);
+	if (username!='Username' && password != 'Password') {
+		config.credOK=true;
+	} else {
+		console.log('saisie credential');
+    }
+//	d3.select('#connexion').style('background',"yellow");
+//	console.log(code);
+    return false;
+}
+function get_connexion() {
+	console.log('Code sécurisé de connexion :',code);
+	clearSVG();
+	affiche_trame();
+/*	aff_valeur();
+	aff_liste_T(listeT1,0.01*width);
+	aff_liste_T(listeT2,0.81*width);
+	aff_liste_T(liste1,0.20*width);
+	aff_liste_T(liste2,0.39*width);
+*/	aff_liste_T(liste3,0.9*width);
+	
+	getValeur();
+}
+function searchClick () {
+    search_text = d3.select('#search').property('value');
+    console.log('search ',search_text);
+    let search_id = "[id*='"+search_text+"_txt']";
+    d3.selectAll(search_id).style("fill", "lime")
+}
+var shape = { cuveV : 'M 0,2 Q 3,0 6,2 L 6,13 Q 3,15 0,13 Z', cuveH : 'M 0,1 M 5,0 L 35,0 Q 40,8 35,16 L 5,16 Q 0,8 5,0 Z' }
+function affiche_trame() {
+	//intervalles largeur / hauteur
+	let w_i = (width/2/8) ; h_i = height/2/15;
+    let init_w = width/6;
+	let alim = {x:w_i*0.2, y:60, e: 4};
+    let hT=0.012*height, lT=0.03*width;
+    let hC=0.027*height, lC=0.03*width;
+
+	with (alim) {
+//		const {h,l} = shape_cuve(x,y,e,'R19900',shape.cuveH,1)
+//		shape_level(x+l-5*7,y,7,h,15,'E-LX19901',50,false);
+//diver
+let ligne1 = height*0.01+50, ligne2 = height*0.2;
+//        yx = shape_temp(w_i,ligne1,e,3,8,'ROC_MMP_PROD_BRUT_TOT'+'\u00e8'+'ne',50,false,'MMP B');
+//        yx = shape_temp(w_i,height/2-65,e,3,8,'ROC_E2_QUR_Propyl'+'\u00e8'+'ne',50,false,'QUR C3 E3');
+        yx = shape_temp(10,height/2,e,3,8,'ROC_K150_Cumul_C3H6',50,false,'C3 Py');
+        yx = shape_temp(10,yx,e,3,8,'ROC_K180_Cumul_C3H6',50,false,'C3 E2');
+        yx = shape_temp(10,yx+2,e,3,8,'E-A15211-TCONV',50,false,'Tconv Py');
+        yx = shape_temp(10,yx,e,3,8,'E-A18211-TCONV',50,false,'TConv E2');
+//        yx = shape_temp(3*w_i,ligne1,e,3,8,'ROC_Masse_MMP_Net_Produite_MMPE2',50,false,'MMP');
+        yx = shape_temp(10,yx+2,e,3,8,'ROC_PY_Temp_Pt_Chaud_Max_SondPY_ZoneG2',50,false,'PY PtC G2');
+        yx = shape_temp(10,yx,e,3,8,'ROC_PY_Temp_Pt_Chaud_Max_SondPY_ZoneH1',50,false,'PY PtC H1');
+//        yx = shape_temp(4*w_i,ligne1,e,3,8,'ROC_Masse_MMP_Net_Produite_MMPE2',50,false,'MMP');
+        yx = shape_temp(10,yx+2,e,3,8,'ROC_E2_Temp_Pt_Chaud_Max_Sonde4_ZoneG2',50,false,'E2 PtC G2');
+        yx = shape_temp(10,yx,e,3,8,'ROC_E2_Temp_Pt_Chaud_Max_Sonde4_ZoneH1',50,false,'E2 PtC H1');
+//        yx = shape_temp(5*w_i,ligne1,e,3,8,'ROC_Masse_MMP_Net_Produite_MMPE2',50,false,'MMP');
+//        yx = shape_temp(5*w_i,yx,e,3,8,'ROC_S1_Temp_Pt_Chaud_Max_Toutes_Sondes_ZoneG2',50,false,'S1 PtC G2');
+//        yx = shape_temp(5*w_i,yx,e,3,8,'ROC_S1_Temp_Pt_Chaud_Max_Toutes_Sondes_ZoneH1',50,false,'S1 Ptc H1');
+y=ligne2;
+//débit C3
+let xC3= x+6*w_i;
+        y1 = shape_temp(x,ligne1,e,3,8,'E-FC16325-CPT',50,false,'Cpt C3');
+        y2 = shape_vanne(x+w_i,ligne1,e,3,8,'E-CV16325A',50,false);
+        y2 = shape_vanne(x+w_i,y2,e,3,8,'E-CV16325B',50,false);
+        y1 = shape_temp(x+2*w_i,ligne1+h_i/2,e,3,8,'E-FC16325',50,false);
+//débit Eau
+        y3 = shape_vanne(x+w_i,y2+h_i,e,3,8,'E-FCV14325',50,false);
+        y3 = shape_temp(x+2*w_i,y2+h_i,e,3,8,'E-FCS14325',50,false);
+//offgaz
+        y1 = shape_connecteur(width*0.49,height*0.52,1,1,'CtO');
+        y1 = shape_temp(x+6.5*w_i,ligne1,e,3,8,'E-FC12001',50,false);
+		y1 = shape_temp(x+6.5*w_i,y1+h_i*1.5,e,3,8,'E-PS31052',50,false);
+		y2 = shape_temp(x+6.5*w_i,y1,e,3,8,'E-TS31051',50,false) ;
+        y2 = shape_temp(x+6.5*w_i,y2,e,3,8,'E-FS31053',50,false);
+// compresseur
+		y2 = shape_vanne(x+5.5*w_i,ligne1+2*h_i,e,3,8,'E-CV12086A',50,false);
+        y2 = shape_vanne(x+5.5*w_i,y2,e,3,8,'E-CV12086B',50,false);
+//        y2 = shape_vanne(x,y2,e,3,8,'E-CV12086C',50,false);
+		y2 = shape_temp(x+5.5*w_i,y2+0.5*h_i,e,3,8,'E-I12000',50,false);
+		y2 = shape_temp(x+5.5*w_i,y2,e,3,8,'E-TY12008',50,false);
+//debit d'air
+		y1 = shape_temp(x+4.5*w_i,ligne1+2*h_i,e,3,8,'E-FCS12085',50,false);
+//réchauffeur
+		//x += w_i*1.5;
+//        y1=y+3.5*h_i; //ici
+        y1 = shape_connecteur(x+3.5*w_i+(0.0235*width),y+0.5*h_i,1,1,'Ctx');
+		y1 = shape_temp(x+3.5*w_i,y+1.5*h_i,e,3,8,'E-TC17601',50,false);
+        y2 = shape_temp(x,y1,e,3,8,'E-CONS-UCS17501',50,false,'C3/O2');
+        y2 = shape_temp(x,y2,e,3,8,'E-CONS-UCS17001',50,false,'O2/Inerte');
+        y2 = shape_temp(x,y2,e,3,8,'E-A16026',50,false,'C3 entrée');
+        y2 = shape_temp(x,y2,e,3,8,'E-A17511D',50,false,'C3 entrée');
+// ouverture
+        y2 = shape_vanne(x+3*w_i,y+3*h_i,e,1,2,'E-CV15167A',50,false);
+        y2 = shape_vanne(x+3*w_i,y2,e,1,2,'E-CV15167B',50,false);
+        y2 = shape_vanne(x+4*w_i,y+3*h_i,e,1,2,'E-CV18167',50,false) +30;
+//débits
+//		y2 = shape_temp(x,y1-20,e,3,8,'E-F18161',50,false) +30;
+//        y2 = shape_connecteur(x+1.3*w_i,y2,1,1,'Ct3')+30;
+//        y3 = shape_connecteur(x+w_i,y2+30,1,1,'Ct4');
+        y2 = shape_temp(x+2*w_i,y+3*h_i,e,3,8,'E-F15161',50,false);
+        y2 = shape_temp(x+2*w_i,y2,e,3,8,'E-PY15071',50,false);
+		y2 = shape_temp(x+2*w_i,y2,e,3,8,'E-FC15167',50,false);
+        y2 = shape_temp(x+5*w_i,y+4*h_i,e,3,8,'ROC_Debit_massique_entree_Reacteur_Europe2',50,false,'F- E2');
+		y2 = shape_temp(x+5*w_i,y+3*h_i,e,3,8,'E-PY18071',50,false);
+	}
+
+	// réacteur K15000
+    let Kx = width*0.15, Kx2 = Kx + width*.13, Ky = height*0.5;
+	let K15000 = {x:Kx, y:Ky, li: (width*0.08), hi : (height*0.345) ,e: 15, xl:0};
+	with (K15000) {
+		let i =0;
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'Pyrénées','V',li,hi,'url(#Reacteur)'); //console.log('K15000',xr,yr,h,l); //'#BFBB26'
+        xl = xr+l; y = yr; y1 = yr+ h/8; x = xr+3;
+		y1 = shape_temp_v1(x,y1,hC,lC,'E-T15008',50,false);
+		y1 = shape_temp_v1(x,y1,hC,lC,'E-P15162',50,false);
+        y1 = shape_temp_v1(x,y1,hC,lC,'E-PD15010',50,false)+h/15;y3=y1;
+        y1 = shape_temp_v1(x+l/2,yr+h/8,hC,lC,'E-TC15002',50,false);
+        y1 = shape_temp_v1(x+l/2,y1,hC,lC,'E-T15006',50,false);
+        y1 = shape_temp_v1(x+l/2,y1,hC,lC,'E-TC15005',50,false);
+
+//		y1 = shape_temp(x,y1,e,e/3,e/2,'E-P15071',50,false);
+//ep        shape_temp(x+0.6*l,y1,e,e/3,e/2,'ROC_PY_Temp_Pt_Chaud_Max_Sonde1',50,false,'Py PtC');
+		y1 = shape_sonde_v1(x,yr+h/2,hT,lT,'E-T15221',50,false);y2=y1; //021
+		y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15222',50,false); //024
+		y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15223',50,false); // 28
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15224',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15225',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15226',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15227',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15228',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15229',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T15230',50,false); //32
+
+        y1 = shape_sonde_v1(x+l/3,yr+h/2,hT,lT,'E-T15241',50,false); //y2=y1; //021
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15242',50,false); //024
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15243',50,false); // 28
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15244',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15245',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15246',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15247',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15248',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15249',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T15250',50,false); //32
+
+        y1 = shape_sonde_v1(x+2*l/3,yr+h/2,hT,lT,'E-T15261',50,false); //y2=y1; //021
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15262',50,false); //024
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15263',50,false); // 28
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15264',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15265',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15266',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15267',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15268',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15269',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T15270',50,false); //32
+
+		y1 = shape_temp_v1(xr+1,yr+h*0.92,hC,lC,'E-TY15012',50,false);
+    y1 = shape_temp_v1(xr+1,y1,hC,lC,'ROC_Coef_Encra_Reacteur_PYRENEES',50,false,'xxEnc Py');
+    y1 = shape_sonde_v1(x+1,y1+hT,hT,lT,'E-A15211A',50,false);
+    y1 = shape_sonde_v1(x+1,y1+hT,hT,lT,'E-A15211B',50,false);
+    y1 = shape_sonde_v1(x+1,y1+hT,hT,lT,'E-A15211C',50,false);
+		y1 = shape_temp_v1(xr+2*l/3,yr+h*0.92,hC,lC,'E-TC15019',50,false);
+		y1 = shape_temp_v1(xr+2*l/3,y1,hC,lC,'E-T15099',50,false);
+		y2 = shape_temp_v1(x+l-l/7,y,hC,lC,'E-PS15007',50,false);
+	}
+	// réacteur K18000
+	let K18000 = {x:Kx2, y:Ky ,li: K15000.li, hi : K15000.hi,e: 15, xl:0};
+	with (K18000) {
+		let i =0;
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'Europe 2','V',li,hi,'url(#Reacteur)');// console.log('K18000',xr,yr,h,l);
+        xl = xr+l; y = yr; y1 = yr+ h/8; x = xr+3;
+        y1 = shape_temp_v1(x,y1,hC,lC,'E-T18008',50,false);
+        y1 = shape_temp_v1(x,y1,hC,lC,'E-P18162',50,false);
+        y1 = shape_temp_v1(x,y1,hC,lC,'E-PD18010',50,false)+h/15;y3=y1;
+        y1 = shape_temp_v1(x+l/2,yr+h/8,hC,lC,'E-TC18002',50,false);
+        y1 = shape_temp_v1(x+l/2,y1,hC,lC,'E-T18006',50,false);
+        y1 = shape_temp_v1(x+l/2,y1,hC,lC,'E-T18005',50,false);
+
+//      y1 = shape_temp(x,y1,e,e/3,e/2,'E-P18071',50,false);
+//ep        shape_temp(x+0.6*l,y1,e,e/3,e/2,'ROC_PY_Temp_Pt_Chaud_Max_Sonde1',50,false,'Py PtC');
+        y1 = shape_sonde_v1(x,yr+h/2,hT,lT,'E-T18221',50,false);y2=y1; //021
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T18222',50,false); //024
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T18223',50,false); // 28
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T18224',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T18225',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T18226',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T18227',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T18228',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T18229',50,false); //32
+        y1 = shape_sonde_v1(x,y1,hT,lT,'E-T18230',50,false); //32
+
+        y1 = shape_sonde_v1(x+l/3,yr+h/2,hT,lT,'E-T18241',50,false); //y2=y1; //021
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T18242',50,false); //024
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T18243',50,false); // 28
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T18244',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T18245',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T18246',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T18247',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T18248',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T18249',50,false); //32
+        y1 = shape_sonde_v1(x+l/3,y1,hT,lT,'E-T18250',50,false); //32
+
+        y1 = shape_sonde_v1(x+2*l/3,yr+h/2,hT,lT,'E-T18261',50,false); //y2=y1; //021
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T18262',50,false); //024
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T18263',50,false); // 28
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T18264',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T18265',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T18266',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T18267',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T18268',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T18269',50,false); //32
+        y1 = shape_sonde_v1(x+2*l/3,y1,hT,lT,'E-T18270',50,false); //32
+
+        y1 = shape_temp_v1(xr+1,yr+h*0.92,hC,lC,'E-TY18012',50,false);
+        y1 = shape_temp_v1(xr+1,y1,hC,lC,'ROC_Coef_Encra_Reacteur_Europe2',50,false,'xxEnc E2');
+        y1 = shape_sonde_v1(xr+lT/3,y1+hT,hT,lT,'E-A18211A',50,false); //32
+        y1 = shape_sonde_v1(xr+lT/3,y1+hT,hT,lT,'E-A18211B',50,false); //32
+        y1 = shape_sonde_v1(xr+lT/3,y1+hT,hT,lT,'E-A18211C',50,false); //32
+        y1 = shape_temp_v1(xr+2*l/3,yr+h*0.92,hC,lC,'E-TC18019',50,false);
+        y1 = shape_temp_v1(xr+2*l/3,y1,hC,lC,'E-T18099',50,false);
+        y2 = shape_temp_v1(x-l/3,y,hC,lC,'E-PS18007',50,false);
+    }
+// Samourai
+ y1=0.7*height; x=width*0.9;e=15;
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18041',50,false);; //021
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18042',50,false); //024
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18043',50,false); // 28
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18044',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18045',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18046',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18047',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18048',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18049',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18050',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S1_QUR_CAMPAGNE',50,false); //32
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'E-QUR-S1',50,false);
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'ROC_S1_Prod_MMP_brut',50,false);
+        y1 = shape_sonde(x,y1,e,e/3,e/2,'S-F41504',50,false);
+
+// bache à sel Py
+	let R19900 = {x:(width*0.01), y:(height*0.85), li : (width*0.09), hi: (height*0.05), e: 4};
+	with (R19900) {
+		const {h,l,xr,yr} = shape_cuve_v1(x,y,'R19900','H',li,hi,Couleur.sel);
+		shape_level(x+l+l-li,y,7,h,8,'E-LX19901',50,false);
+		y1=shape_sonde_v1(x+li*0.11,yr+hi*0.2,hT,lT,'E-T19908',50,false);
+		y1=shape_sonde_v1(x+li*0.11,y1,hT,lT,'E-TS19801',50,false);
+		y1=shape_sonde_v1(x+li*0.11,y1,hT,lT,'E-TX19902',50,false);
+		y1 = shape_sonde_v1(x,yr-h,hT,lT,'E-AO19993',50,false);
+		y1 = shape_sonde_v1(x,y1,hT,lT,'E-AO19994',50,false);
+		y1 = shape_sonde_v1(x,y1,hT,lT,'E-AO19991',50,false);
+		y1 = shape_sonde_v1(x,y1,hT,lT,'E-AO19992',50,false);
+	}
+// bache à sel E2
+    let R19000 = {x:(R19900.x), y:(R19900.y+R19900.hi*1.07), li : R19900.li, hi: R19900.hi, e: 4};
+	with (R19000) {
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'R19000','H',li,hi,Couleur.sel);
+        shape_level(x+l+l-li,y,7,h,8,'E-LX19001',50,false);
+        y1=shape_sonde_v1(x+li*0.11,yr+hi*0.2,hT,lT,'E-T19008',50,false);
+//        y1=shape_sonde_v1(x+li*0.11,y1,hT,lT,'E-TS19001',50,false);
+        y1=shape_sonde_v1(x+li*0.11,y1,hT,lT,'E-TX19002',50,false);
+	}	
+    // rechauffeur Electrique
+	let E15400 = {x:(K15000.x-(width*0.037)), y:(K15000.y), li: (width*0.031), hi : (height*0.1), e: 10};
+	with (E15400) {
+		let i =0;
+		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E15400','V',li,hi,Couleur.sel); y += 12; x += 3;// console.log('size : ',h,l)
+//        hC=0.027*height, lC=0.03*width;
+		y = shape_sonde_v1(x+l/10,yr+h/3,hT,lT,'E-T15408',50,false);
+		y = shape_sonde_v1(x+l/10,y,hT,lT,'E-J15406',50,false);
+		y = shape_sonde_v1(x+l/10,y,hT,lT,'E-TS15409',50,false);
+		y = shape_sonde_v1(x+l/10,y,hT,lT,'E-TDX15407',50,false);
+	}
+// rechauffeur Electrique
+	let E18400 = {x:(K18000.x+K18000.li), y:(K18000.y), li: (width*0.031), hi : (height*0.1),e: 10};
+	with (E18400) {
+		let i =0;
+		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E18400','V',li,hi,Couleur.sel); y += 12; x += 3;// console.log('size : ',h,l)
+        y = shape_sonde_v1(x+l/10,yr+h/3,hT,lT,'E-T18408',50,false);
+        y = shape_sonde_v1(x+l/10,y,hT,lT,'E-J18406',50,false);
+        y = shape_sonde_v1(x+l/10,y,hT,lT,'E-TS18409',50,false);
+        y = shape_sonde_v1(x+l/10,y,hT,lT,'E-TDX18407',50,false);
+	}
+// GV 40
+    let E15500 = {x:(E15400.x-width*0.044), y:(K15000.y), li: (width*0.04), hi : (height*0.1), e: 10};
+	with (E15500) {
+		let i =0;
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'E15500','V',li,hi,Couleur.V40); y += 12; x += 3;// console.log('size : ',h,l)
+		shape_level(x+l-15,y,e,h-e*2,10,'E-LC15504',50,false);
+        y1 = shape_sonde_v1(x+l/10,yr+h/3,hT,lT,'E-PC15506',50,false);
+        y1 = shape_sonde_v1(x+l/10,y1,hT,lT,'E-LS15503',50,false);
+	}
+// GV 10
+    let E15600 = {x:(E15400.x-width*0.044), y:(K15000.y+K15000.hi/2), li: (width*0.04), hi : (height*0.1), e: 10};
+	with (E15600) {
+		let i =0;
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'E15600','V',li,hi,Couleur.V10); y += 12; x += 3;// console.log('size : ',h,l)
+		shape_level(x+l-15,y,e,h-e*2,10,'E-LC15604',50,false);
+        y1 = shape_sonde_v1(x+l/10,yr+h/3,hT,lT,'E-PC15606',50,false);
+        y1 = shape_sonde_v1(x+l/10,y1,hT,lT,'E-LS15603',50,false);
+	}
+// GV 40
+	let E18500 = {x:(E18400.x + E18400.li), y:K18000.y, li: (width*0.04), hi : (height*0.1), e: 10};
+	with (E18500) {
+		let i =0;
+		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E18500','V',li,hi,Couleur.V40); y += 12; x += 3;// console.log('size : ',h,l)
+        shape_level(x+l-15,y,e,h-e*2,10,'E-LC18504',50,false);
+        y1 = shape_sonde_v1(x+l/10,yr+h/3,hT,lT,'E-PC18506',50,false);
+        y1 = shape_sonde_v1(x+l/10,y1,hT,lT,'E-LS18503',50,false);
+	}
+// GV 10
+	let E18600 = {x:(E18500.x), y:(K18000.y+K18000.hi/2),  li: (width*0.04), hi : (height*0.1), e: 11};
+	with (E18600) {
+		let i =0;
+		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E18600','V',li,hi,Couleur.V10); y += 12, x += 3;
+        shape_level(x+l-15,y,e,h-e*2,10,'E-LC18604',50,false);
+        y1 = shape_sonde_v1(x+l/10,yr+h/3,hT,lT,'E-PC18606',50,false);
+        y1 = shape_sonde_v1(x+l/10,y1,hT,lT,'E-LS18603',50,false);
+	}
+// Condenseur
+	let E15100 = {x:(K15000.x+K15000.li*0.6), y:(K15000.y+K15000.hi*1.05), li: (width*0.047), hi : (height*0.05), e: 2};
+	with (E15100) {
+		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E15100','H',li,hi,Couleur.Reacteur);
+		y1 = shape_sonde_v1(xr+l/3,yr+h/2,hT,lT,'E-T15101',50,false);
+		y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-P15104',50,false);
+		shape_temp(xr+li,yr-5,5,3,8,'E-TC15202',50,false);
+	}
+	let E18100 = {x:(K18000.x+K18000.li*0.6), y:(K18000.y+K18000.hi*1.05), li: (width*0.047), hi : (height*0.05), e: 2};
+	with (E18100) {
+		const {h,l,xr,yr} = shape_cuve_v1(x,y,'E18100','H',li,hi,Couleur.Reacteur);
+        y1 = shape_sonde_v1(xr+l/3,yr+h/2,hT,lT,'E-T18101',50,false);
+        y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-P18104',50,false);
+        shape_temp(xr+li,y-5,5,3,8,'E-TC18202',50,false);
+        shape_connecteur(xr+l/3,yr+h*1.4,1,1,'Ct1');
+        shape_connecteur(xr+l*3,yr+h*1.4,1,1,'Ct2');
+	}
+	let E15300 = {x:(E15500.x), y:(E15500.y+E15500.hi), e: 2};
+	with (E15300) {
+		shape_level(x+10,y,e,24,6,'E-LS15301',50,false);
+		shape_level(x+10+w_i/4,y,e,24,6,'E-LS15302',50,false);
+		shape_motor(x+w_i/4,y-10,e,10,2,'E-JY15306',50,false);
+		y1=shape_sonde_v1(x+w_i/1.5,y,hT,lT,'E-T15307',50,false);
+		y1=shape_sonde_v1(x+w_i/1.5,y1,hT,lT,'E-T15308',50,false);
+//		shape_temp(x+20,y+40,5,3,8,'E-TC15102',50,false);
+	}
+	let E15700 = {x:(E15500.x), y:(E15600.y+E15600.hi), e: 2};
+	with (E15700) {
+		shape_level(x+10,y,e,24,6,'E-LS15701',50,false);
+//		shape_level(x+w_i/2,y-35,e,24,6,'E-LS15302',50,false);
+		shape_motor(x+w_i/4,y-10,e,10,2,'E-JY15706',50,false);
+		y1=shape_sonde_v1(x+w_i/1.5,y,hT,lT,'E-T15707',50,false);
+		y1=shape_sonde_v1(x+w_i/1.5,y1,hT,lT,'E-T15708',50,false);
+	}
+	let E18300 = {x:(E18500.x), y:(E18500.y+E18500.hi), e: 2};
+	with (E18300) {
+        shape_level(x+10,y,e,24,6,'E-LS18301',50,false);
+        shape_level(x+10+w_i/4,y,e,24,6,'E-LS18302',50,false);
+        shape_motor(x+w_i/4,y-10,e,10,2,'E-JY18306',50,false);
+        y1=shape_sonde_v1(x-w_i/2,y,hT,lT,'E-T18307',50,false);
+        y1=shape_sonde_v1(x-w_i/2,y1,hT,lT,'E-T18308',50,false);
+//      shape_temp(x+20,y+40,5,3,8,'E-TC15102',50,false);
+	}
+	let E18700 = {x:(E18500.x), y:(E18600.y+E18600.hi), e: 2};
+	with (E18700) {
+        shape_level(x+10,y,e,24,6,'E-LS18701',50,false);
+        shape_motor(x+w_i/4,y-10,e,10,2,'E-JY18706',50,false);
+        y1=shape_sonde_v1(x-w_i/2,y,hT,lT,'E-T18707',50,false);
+        y1=shape_sonde_v1(x-w_i/2,y1,hT,lT,'E-T18708',50,false);
+	}
+    // Colonne D210
+    let D21000 = {x:(width*0.46), y:(height*0.55), li: (width*0.05), hi : (height*0.38) ,e: 15, xl:0};
+    with (D21000) {
+        let i =0;
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'D210','V',li,hi,'url(#D210'); //console.log('K15000',xr,yr,h,l);
+        y1 = shape_sonde_v1(xr+l/3,yr+h*0.14,hT,lT,'E-T21004',50,false); //32
+        y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-P21012',50,false); //32
+        y1 = shape_sonde_v1(xr+l/3,yr+h*0.83,hT,lT,'E-T21003',50,false); //32
+        y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-P21011',50,false); //32
+        shape_level(xr+2,yr+0.8*h,10,35,10,'E-LXS21002',50,false);
+        shape_connecteur(xr+l*1.5,y,1,1,'Ct8');
+    }
+    // Colonne D220
+    let D22000 = {x:(width*0.52), y:(D21000.y+D21000.hi*0.45), li: (width*0.036), hi : (height*0.20) ,e: 15, xl:0};
+    with (D22000) {
+        let i =0;
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'D220','V',li,hi,'url(#D220'); //console.log('K15000',xr,yr,h,l);
+        y1 = shape_sonde_v1(xr+l/3,yr+h*0.15,hT,lT,'E-T22004',50,false); //32
+        y1 = shape_sonde_v1(xr+l/3,yr+h*0.85,hT,lT,'E-T22003',50,false); //32
+        y1 = shape_sonde_v1(xr+l/3,yr+h*0.5,hT,lT,'E-PD22013',50,false); //32
+    }
+    // Colonne D310
+    let D31000 = {x:(width*0.59), y:(height*0.5), li: (width*0.045), hi : (height*0.38) ,e: 15, xl:0};
+    with (D31000) {
+        let i =0;
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'D310','V',li,hi,'url(#D310)'); //console.log('K15000',xr,yr,h,l);
+        y1 = shape_sonde_v1(xr+l/3,yr+h*0.15,hT,lT,'E-PC31012',50,false); //32
+        y1 = shape_temp_v1(xr+l/10,y1,hC,l*0.8,'E-A31031A',50,false,'xxAcro');
+        y1 = shape_temp_v1(xr+l/10,y1,hC,l*0.8,'E-A31031E',50,false,'xxC3H6');
+        y1 = shape_temp_v1(xr+l/10,y1,hC,l*0.8,'E-A31025',50,false,'xxO2');
+        y1 = shape_sonde_v1(xr+l/3,y1+10,hT,lT,'E-PD31014',50,false); //32
+        y1 = shape_sonde_v1(xr+l/3,yr+h*0.83,hT,lT,'E-PY31011',50,false); //32
+        shape_connecteur(xr+l*1.22,yr+h*1.03,1,1,'Ct6');
+        shape_connecteur(xr-l*0.2,yr+h*1.03,1,1,'Ct7');
+    }
+    // Colonne D330
+    let D33000 = {x:(width*0.66), y:(height*0.5), li: (width*0.045), hi : (height*0.38) ,e: 15, xl:0};
+    with (D33000) {
+        let i =0;
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'D330','V',li,hi,'url(#D330)'); //console.log('K15000',xr,yr,h,l);
+        y1 = shape_sonde_v1(xr+l/3,yr+h*0.15,hT,lT,'E-T33004',50,false); //32
+        y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-PS33012',50,false); //32
+        y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-PD33014',50,false); //32
+        y1 = shape_sonde_v1(xr+l/3,yr+h*0.83,hT,lT,'E-T33003',50,false); //32
+        y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-PD33013',50,false); //32
+        y1 = shape_sonde_v1(xr+l/3,yr+h*0.5,hT,lT,'E-TO33007',50,false); //32
+        shape_level(xr+2,yr+0.8*h,10,35,10,'E-LC33001',50,false);
+        shape_connecteur(xr+l*1.2,yr,1,1,'Ct5');
+        y1 = shape_sonde_v1(xr-l*0.4,yr+h/2,hT,lT,'E-FC33005',50,false); //32
+    }
+    // Colonne D410
+    let D41000 = {x:(width*0.75), y:(height*0.5), li: (width*0.055), hi : (height*0.40) ,e: 15, xl:0};
+    with (D41000) {
+        let i =0;
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'D410','V',li,hi,'url(#D410)'); //console.log('K15000',xr,yr,h,l);
+        y1 = shape_vanne(xr+li*1.05+w_i,yr+h/3,3,3,8,'E-FCV41102',50,false);
+        y1 = shape_temp_v1(xr+li*1.05+w_i/3,yr+h/3,hC,lC,'E-FCQ41102',50,false);
+        yx = shape_temp_v1(xr+li*1.1+w_i/3,yr+h*0.82,hC,lC*1.2,'E-QUR-E2',50,false,'xxQUR');
+        yx = shape_temp_v1(xr+li*1.1+w_i/3,yx,hC,lC*1.2,'ROC_E2_Prod_MMP_brut',50,false,'xxMMP B');
+        yx = shape_temp_v1(xr+li*1.1+w_i/3,yx,hC,lC*1.2,'E-FQ41504',50,false); y1=yx;
+        yx = shape_temp_v1(xr+li*1.1+w_i/3,yx,hC,lC*1.2,'BGS_Prod_AT88',50,false,'AT88');
+        yx = shape_temp_v1(xr+li*1.1+w_i/3,yx,hC,lC*1.2,'BGS_Prod_diaria_AT88',50,false,'AT88/d');
+        y1 = shape_sonde_v1(xr+l/3,yr+h*0.13,hT,lT,'E-T41015',50,false); //32
+        y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-P41009',50,false); //32
+        y1 = shape_sonde_v1(xr+l/3,yr+h*0.5,hT,lT,'E-TC41401',50,false); //32
+        y1 = shape_sonde_v1(xr+l/3,yr+h*0.83,hT,lT,'E-T41003',50,false); //32
+//        y1 = shape_sonde_v1(xr+l/3,y1,hT,lT,'E-LC41001',50,false); //32
+        y1 = shape_sonde_v1(xr+l*1.1,yr+h*0.82,hT,lT,'E-A41311A',50,false,'xxAcro'); //32
+        y1 = shape_sonde_v1(xr+l*1.1,y1,hT,lT,'E-A41311B',50,false,'xxMSH'); //32
+        y1 = shape_sonde_v1(xr+l*1.1,y1,hT,lT,'E-A41311C',50,false,'xxEau'); //32
+        shape_level(xr+2,yr+0.8*h,10,35,10,'E-LC41001',50,false);
+    }
+
+}
+function refresh() {
+	d3.selectAll('circle').style('fill','black');
+    let sel_rect = "[id*='_r']";
+    d3.selectAll(sel_rect).style('fill','#aaa').style('stroke','#666');
+//	d3.selectAll('rect').style('fill','#aaa').style('stroke','#666');
+	getValeur();
+}
+function refreshData() {
+    refresh();
+}
+//-----------------------
+//
+function shape_cuve (x,y,ech,id,forme,rot) {
+	let shape= svg.append('g').selectAll('g').data([0]).enter().append('g')
+					.attr('transform','translate('+x+','+(y)+') scale('+ech+','+(ech*rot)+')'); // rotate('+rot+')');
+		shape.append('path').attr('d', forme).style('stroke-width',1/ech).style('stroke','#666').style('fill','#EEE').attr('id',id+'_p');
+	let rect = document.getElementById(id+'_p').getBoundingClientRect();
+	let h = rect.height;
+	let l = rect.width;
+		shape.append('text').text(id).raise()
+			.attr('x',(0.5*l/ech)).attr('y',(0.5*h/ech/7))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',10/ech)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+        itemData[id] = {x:rect.x,y:rect.y,h:h,l:l};
+ 	return {h: h, l: l};
+}
+function compute_cuve(forme,l,h) {
+//var shape = { cuveV : 'M 0,2 Q 3,0 6,2 L 6,13 Q 3,15 0,13 Z', cuveH : 'M 0,1 M 5,0 L 35,0 Q 40,8 35,16 L 5,16 Q 0,8 5,0 Z' }
+    let h_i = Math.round(h*0.11), l_i = Math.round(l*0.11), shape = '';
+    switch(forme) {
+        case 'V' : shape = 'M 0,'+h_i+' Q '+l/2+',0 '+l+','+h_i+' L '+l+','+(h-h_i)+' Q '+l/2+','+h+' 0,'+(h-h_i)+' Z';
+                    break;
+        case 'H' : shape = 'M '+l_i+',0 L '+(l-l_i)+',0 Q '+(l)+','+(h/2)+' '+(l-l_i)+','+h+' L '+l_i+','+h+' Q 0,'+(h/2)+' '+l_i+',0 Z' ;
+                    break;
+    }
+    return shape;
+}
+function shape_cuve_v1 (x,y,id,forme,l,h,color='#eee') {
+//    console.log(x,y,l,h);
+    let shape= svg.append('g').selectAll('g').data([0]).enter().append('g')
+                    .attr('transform','translate('+x+','+(y)+')');
+        shape.append('path').attr('d', compute_cuve(forme,l,h)).style('stroke-width',1).style('stroke','#666').style('fill',color).attr('id',id+'_p');
+    let rect = document.getElementById(id+'_p').getBoundingClientRect();
+        itemData[id] = {x:rect.x,y:rect.y,h:rect.height,l:rect.width};
+        //console.log('cuve : ',rect, x,y,l,h);
+        shape.append('text').text(id).raise()
+            .attr('x',(0.5*l)).attr('y',forme=='V'?(h-rect.height):(width*0.006))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size','1.4vh')
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style('font-family',"helvetica neue");
+//console.log(id,itemData[id]);
+    return {h: rect.height, l: rect.width, xr: rect.x, yr: rect.y};
+}
+function shape_level (x,y,ech,h,l,id,val,status) {
+	liste3.push(id);// ech = 5;// h= ech *10; l=2*ech;
+	let level = svg.append('g').selectAll('g').data([id]).enter().append('g')
+					.attr('transform','translate('+x+','+y+')').raise()
+					.on('click',getDataPoint); // scale('+ech+')').raise();
+		level.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',1).style('stroke-width',1)
+			 .style('stroke','#666').style('fill','#fff').attr('id',id+'_s');
+		level.append('rect').attr('width',(l-2)).attr('x',2).attr('y',(h*(100-val)/100)+1).attr('height',(h*val/100)).raise()
+			.attr('id',id+'_val')
+			.style('stroke-width',1).style('stroke','#666').style('fill',status?'#00b':'#ccc');
+		level.append('text').text(val).attr('id',id+'_txt').raise()
+			.attr('x',(0.7*l)).attr('y',(0.5*h))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',1.5*5)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+        itemData[id] = {x:x,y:y,h:h,l:l};
+		return;
+}
+function shape_motor (x,y,ech,h,l,id,val,status) {
+	liste3.push(id);// 
+	h= ech ;
+	let vanne = svg.append('g').selectAll('g').data([id]).enter().append('g')
+					.attr('transform','translate('+(x+h)+','+(y+h)+')').raise()
+					.on('click',getDataPoint); // scale('+ech+')').raise();
+//		vanne.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',ech*2).style('stroke-width',1)
+//			 .style('stroke','#666').style('fill','#fff').attr('id',id+'_v');
+		vanne.append('circle').attr('r',1).raise()
+			.attr('id',id+'_val')
+			.style('stroke-width',1).style('stroke','#666').style('fill',status?'#00b':'#ccc');
+		vanne.append('text').text(val).attr('id',id+'_txt').raise()
+			.attr('x',(0.5*l)).attr('y',(0.5*h*2))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',1.5*5)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+
+        itemData[id] = {x:x,y:y,h:ech*4,l:l};
+		return (y+h*4);
+}
+function shape_vanne (x,y,ech,h,l,id,val,status) {
+	liste3.push(id);// 
+	h= ech ; l=10.2*ech;
+	let vanne = svg.append('g').selectAll('g').data([id]).enter().append('g')
+					.attr('transform','translate('+x+','+y+')').raise()
+					.on('click',getDataPoint); // scale('+ech+')').raise();
+		vanne.append('rect').attr('width',l).attr('height',h).attr('x',1).attr('y',ech*2).style('stroke-width',1)
+			 .style('stroke','#666').style('fill','#fff').attr('id',id+'_v');
+		vanne.append('rect').attr('height',(h)).attr('y',ech*2).attr('x',1).attr('width',(l*val/100)).raise()
+			.attr('id',id+'_val')
+			.style('stroke-width',1).style('stroke','#666').style('fill',status?'#00b':'#ccc');
+		vanne.append('text').text(val).attr('id',id+'_txt').raise()
+			.attr('x',(0.5*l)).attr('y',(0.5*h*2))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',1.5*5)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+
+        itemData[id] = {x:x,y:y,h:ech*4,l:l};
+		return (y+h*4);
+}
+function shape_temp (x,y,ech,h,l,id,val,status,libelle) {
+	liste3.push(id); ech = 5; h= ech *3.9; l=10.2*ech;
+    h=0.027*height; l=0.042*width;
+
+	let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
+					.attr('transform','translate('+x+','+y+')').raise()
+					.on('click',getDataPoint)
+					.on('mouseover',(d) => {
+                            d3.selectAll('#'+d+'_r').style('fill','#48D5EC');  })
+					.on('mouseout',(d) => {
+                            d3.selectAll('#'+d+'_r').style('fill','white');  }); // scale('+ech+')').raise();
+		temp.append('rect').attr('width',l).attr('height',h).attr('x',0).attr('y',0).style('stroke-width',1).style('stroke','#bbb').style('fill','#aaa').style('rx',3).style('ry',3).attr('id',id+'_r');
+		temp.append('text').text(val).attr('id',id+'_txt')
+			.attr('x',(0.52*l)).attr('y',(0.8*h))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size','1.2vh')
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+//        if (libelle == '') {libelle=id;}
+        libelle = (typeof libelle !== 'undefined') ? libelle : id;
+		temp.append('text') // no id
+			.attr('x',(0.52*l)).attr('y',(0.4*h))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size','1.2vh')
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue")
+            .text(libelle);
+//        temp.append('circle').attr('r',1).attr('cx',1).attr('cy',1).style('fill','red').attr('id',id+'_c');
+        itemData[id] = {x:x,y:y,h:h,l:l};
+		return (y+h*1.1);
+}
+function shape_temp_v1 (x,y,h,l,id,val,status,libelle) {
+    liste3.push(id);
+    //console.log(id,x,y,h,l);
+    let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
+                    .attr('transform','translate('+x+','+y+')').raise()
+                    .on('click',getDataPoint)
+                    .on('mouseover',(d) => {
+                            d3.selectAll('#'+d+'_r').style('fill','#48D5EC');  })
+                    .on('mouseout',(d) => {
+                            d3.selectAll('#'+d+'_r').style('fill','white');  }); // scale('+ech+')').raise();
+        temp.append('rect').attr('width',l).attr('height',h).attr('x',0).attr('y',0).style('stroke-width',1).style('stroke','#bbb').style('fill','#aaa').style('rx',3).style('ry',3).attr('id',id+'_r');
+        temp.append('text').text(val).attr('id',id+'_txt')
+            .attr('x',(0.52*l)).attr('y',(0.8*h))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size','1.2vh')
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+//        if (libelle == '') {libelle=id;}
+        libelle = (typeof libelle !== 'undefined') ? libelle : id;
+        temp.append('text') // no id
+            .attr('x',(0.52*l)).attr('y',(0.4*h))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size','1.2vh')
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue")
+            .text(libelle.substring(2));
+//        temp.append('circle').attr('r',1).attr('cx',1).attr('cy',1).style('fill','red').attr('id',id+'_c');
+        itemData[id] = {x:x,y:y,h:h,l:l};
+        return (y+h*1.05);
+}
+function shape_sonde (x,y,ech,h,l,id,val,status) {
+    liste3.push(id); ech = 5; h= ech *1.9; l=10.2*ech;
+    let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
+                    .attr('transform','translate('+(x-ech)+','+y+')').raise()
+                    .on('click',getDataPoint)
+                    .on('mouseover',(d) => {
+                            d3.selectAll('#'+d+'_txt').style('fill','red');  })
+                    .on('mouseout',(d) => {
+                            d3.selectAll('#'+d+'_txt').style('fill','black');  }); // scale('+ech+')').raise();
+//        temp.append('rect').attr('width',l).attr('height',h).attr('x',0).attr('y',0).style('stroke-width',1).style('stroke','#666').style('fill','#fff').style('rx',1).style('ry',1).attr('id',id+'_r');
+        temp.append('text').text(val).attr('id',id+'_txt')
+            .attr('x',(0.30*l)).attr('y',(0))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',1.7*ech)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue").raise();
+//        if (libelle == '') {libelle=id;}
+//        libelle = (typeof libelle !== 'undefined') ? libelle : id;
+/*        temp.append('text') // no id
+            .attr('x',(0.52*l)).attr('y',(0.4*h))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size',1.7*ech)
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue")
+            .text(libelle);
+//        temp.append('circle').attr('r',1).attr('cx',1).attr('cy',1).style('fill','red').attr('id',id+'_c');
+*/        itemData[id] = {x:x,y:y,h:h,l:l};
+        return (y+h*1.1);
+}
+function shape_sonde_v1 (x,y,h,l,id,val,status) {
+    liste3.push(id);
+    let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
+                    .attr('transform','translate('+(x)+','+y+')').raise()
+                    .on('click',getDataPoint)
+                    .on('mouseover',(d) => {
+                            d3.selectAll('#'+d+'_txt').style('fill','red');  })
+                    .on('mouseout',(d) => {
+                            d3.selectAll('#'+d+'_txt').style('fill','black');  });
+        temp.append('text').text(val).attr('id',id+'_txt')
+            .attr('x',(0.30*l)).attr('y',(0))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size','1.2vh')
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+        itemData[id] = {x:x,y:y,h:h,l:l};
+        return (y+h*1.02);
+}
+function shape_connecteur (x,y,h,l,id) {
+//    liste3.push(id);
+    let temp = svg.append('g').selectAll('g').data([id]).enter().append('g')
+                    .attr('transform','translate('+(x)+','+y+')');
+/*        temp.append('text').text(val).attr('id',id+'_txt')
+            .attr('x',(0.30*l)).attr('y',(0))
+            .style('text-anchor', 'middle').style('fill','black').style('font-size','1.2vh')
+            .style('font-weight', 'normal').style('dominant-baseline','middle').style(  'font-family',"helvetica neue");
+*/        itemData[id] = {x:x,y:y,h:0,l:0};
+        return (y);
+}
+function path_item () {
+	let lineP = d3.line()
+    	.x((d) => { return d.x;})
+    	.y((d) => { return d.y;})
+        .curve(d3.curveMonotoneX);
+
+    let data2=[], data3 = [];
+    pathData.forEach((a)=>{
+//    	console.log(a);
+    	data2=[];
+        let x1 = (itemData[a.source].x) , //+ itemData[a.source].l * (a.s==0?1:0.5) ), 
+            y1 = (itemData[a.source].y) ; //+ itemData[a.source].h * (a.s==0?0.5:1));
+        switch(a.s) {
+            case 0: x1 += itemData[a.source].l ;
+                    y1 += itemData[a.source].h * 0.5; break;
+            case 1: x1 += itemData[a.source].l * 0.5;
+                    y1 += itemData[a.source].h ; break;
+            case -1: x1 += itemData[a.source].l * 0.5;
+                    y1 += itemData[a.source].h * (0); break;
+        }
+        let x2 = (itemData[a.cible].x), // + itemData[a.cible].l  * (a.c==0?0.0:0.5) ),
+            y2 = (itemData[a.cible].y); //  + itemData[a.cible].h  * (a.c==0?0.5:0));
+        switch(a.c) {
+            case 0: x2 += itemData[a.cible].l *0;
+                    y2 += itemData[a.cible].h * 0.5; break;
+            case 1: x2 += itemData[a.cible].l * 0.5;
+                    y2 += itemData[a.cible].h *0 ; break;
+            case -1: x2 += itemData[a.cible].l * 0.5;
+                    y2 += itemData[a.cible].h * (1); break;
+        }
+//        let x1 = (itemData[a.source].x + itemData[a.source].l), y1 = (itemData[a.source].y+(itemData[a.source].l==0?0:0.5)*itemData[a.source].h);
+//        let x2 = (itemData[a.cible].x), y2 = (itemData[a.cible].y+(itemData[a.cible].l==0?0:0.5)*itemData[a.cible].h);
+    	data2.push({x:x1,y:y1});
+        data2.push({x:x1+(a.s==0?3:0),y:y1+(a.s==0?0:(a.s*7))});
+        if (a.c==1) {
+            let x3 = x1 + (x2-x1) /3 , y3 = y1 + 2*(y2-y1)/3;
+            data2.push({x:x3,y:y3});
+        }
+        if (a.s==1) {
+            //console.log(itemData[a.source],x1,y1,x2,y2);
+        }
+        let color = '#777', stroke = 1;
+//        console.log(a.anim, dashData[a.anim][0]);
+        if (dashData[a.anim][0].values[0].value>0.05)
+            { color = a.color, stroke = a.e ;
+            }
+        data2.push({x:x2-(a.c==0?3:0),y:y2-(a.c==0?0:(5*a.c))});
+    	data2.push({x:x2, y:y2});
+    	data3.push({values:data2,color:color, stroke:stroke});
+    });
+//    let data3 = [{values:data2}];
+
+//  console.log('PATH',data3);
+	d3.select('#flow').remove();
+	let path = svg.append('g').attr('id','flow').attr("fill", "none").attr("stroke", "currentColor")
+	.selectAll('path').data(data3).enter()
+	.append('path')
+		.attr('class','g_line')
+    	.attr("d", d => { return lineP(d.values);})
+        .style("stroke", d=>d.color).style("stroke-width", d=>d.stroke);
+}
+function update_level(id,val,unit,status){ //console.log('rect_s',id);
+	try {
+        if (unit == "Ø") { val = val *100; unit = "%"}
+		let h = d3.select(id+'_s').node().getBoundingClientRect().height; 
+		d3.selectAll(id+'_val').attr('y',(h*(100-val)/100)+1).attr('height',(h*val/100)).style('fill',status?'#32FE94':'black');
+	} catch (error) {
+	  // not level
+	}
+	d3.selectAll(id+'_txt').text(valFormat(val)+' '+unit);
+}
+function update_vanne(id,val,unit,status){ //console.log('rect_s',id);
+	try {
+        if (unit == "Ø") { val = val *100; unit = "%"}
+		let l = d3.select(id+'_v').node().getBoundingClientRect().width; 
+		d3.selectAll(id+'_val').attr('x',1).attr('width',(l*val/100)).style('fill',status?'#32FE94':'black');
+	} catch (error) {
+	  // not level
+	}
+	d3.selectAll(id+'_txt').text(valFormat(val)+' '+unit);
+}
+function aff_valeur() {
+	//on affiche
+//	console.log(width,height);
+	let h_g= height-50-20;
+    let liste = svg.append('g').selectAll('g').data(['E-T15099','futur']).enter().append('g')
+                        .attr('transform', (d,i)=> {return 'translate('+(0.20*width)+','+(0.01*h_g+50 +i*h_g/2)+')';})
+                        .on('click',refresh)
+                        .on('mouseover',(d,i)=> {
+                            d3.selectAll('#rect_refresh'+i).style('fill','red');
+                              })
+                        .on('mouseout',(d,i)=> {
+                            d3.selectAll('#rect_refresh'+i).style('fill','#337')  });
+
+        liste.append('rect').style('rx',5).style('ry',5).attr('id',(d,i)=>{return 'rect_refresh'+i; })
+            .attr('width',(width*0.6)).attr('height',(0.47*h_g)).style('fill', '#337'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+        liste.append('text').attr('x',(0.3*width)) //.attr('y',10)
+            .attr('y',(0.27*h_g)).attr('id','info') //.attr('id',(d)=>{return ('en0_'+d.matchId);})
+//            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
+            .style('text-anchor', 'middle').style('fill','white')
+            .style('font-weight', 'bold').style('dominant-baseline','middle')
+            .text('val').style('font-size','13vw')
+            .on('mouseover',d=>{d3.select('#info').text(d)})
+            .on('mouseout',d=>{d3.select('#info').text(valFormat(dashData['coucou'][0].values[0].value)+' '+dashData['coucou'][0].unit)});
+}
+//--------------
+// on affiche les listes de valeur sur le coté ...
+function aff_liste_T (liste,decalage) {
+	let h_g= height-65,ll=liste.length;
+	let inc = Math.round(0.97*h_g/(ll/4));
+	let w = 0.01; decalage = (1-(w*4))*width;
+    let liste_T = svg.append('g').selectAll('g').data(liste).enter().append('g')
+                        .attr('transform', (d,i)=> 
+                            {return 'translate('+(decalage+(Math.trunc(i/ll*4)* w * width ))+','+(51+ (i%(ll/4))*inc)+')';})
+                        .on('click',refresh)
+                        .on('mouseover',(d,i)=> {
+//                            d3.selectAll('#rect_refresh'+d).style('fill','red');
+                            d3.selectAll('#'+d+'_r').style('fill','red');  })
+                        .on('mouseout',(d,i)=> {
+//                            d3.selectAll('#rect_refresh'+d).style('fill','#1e3F5E');
+                            d3.selectAll('#'+d+'_r').style('fill','white');  });
+
+/*        liste_T.append('rect').attr('rx',1).attr('ry',1).attr('id',(d,i) => { return 'rect_refresh'+d; })
+            .attr('width',(w*width)).attr('height',(inc-2)).style('fill', '#1e3F5E'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+        liste_T.append('text').attr('x',(w/2*width)) //.attr('y',10)
+            .attr('y',(inc/2+1)).attr('id',d=>{return d}) //.attr('id',(d)=>{return ('en0_'+d.matchId);})
+//            .style('fill', (d,i,a) => { return a[i].__data__>a[(i+1)%2].__data__?'#fff':'#ccc';})
+            .style('text-anchor', 'middle').style('fill','white')
+            .style('font-weight', 'normal').style(  'font-family','arial') //"helvetica neue")//'dominant-baseline','middle')
+            .text('val').style('font-size','0.6vw')
+            .on('mouseover',d=>{d3.select('#'+d).text(d)})
+            .on('mouseout',d=>{d3.select('#'+d).text(valFormat(dashData[d][0].values[0].value)+' '+dashData[d][0].unit)});
+*/        liste_T.append('circle').attr('cx',3).attr('cy',3).attr('id',d=>{return (d+'_c')})
+            .attr('r',(5)).style('fill', 'black'); //(d,i)=>{return (i%2===0)?'#BBB':'#DDD' ;}); //'#0a88ff');
+}
+//------
+    function aff_histo (){
+        d3.select("#histo").remove();
+        console.log('histData',histData);
+        affiche_curve(histData[0],"Histo",svg);
+//        affiche_curve(dReg[getIndexdata('fullFR')].data.slice(),"fullFR",svgfrAll);
+    path_item();
+    }
+function toUnixTime(s) {
+    r = new Date(s).getTime();//    console.log(r);
+    return r;
+}
+//-----------------------------------------------------------
+//-  CURVE / LINE CHART STANDARD
+//-----
+//
+    function affiche_curve(dMult, selectValue, svgAff) {
+//    console.log('dMult',dMult);
+    //console.log(svgAff);
+//    let w_g = svgAff._groups[0][0].attributes[1].nodeValue-margin.left-margin.right , //-margin.padding,
+//        h_g = svgAff._groups[0][0].attributes[2].nodeValue-margin.top-margin.bottom
+	let w_g = (width/2)-100, h_g = (height/2)-100,
+        n_ticks = (w_g/15 | 0); //-h_header;//-margin.padding;
+    //console.log(dMult[0].name,'x',w_g,'y',h_g);
+	//	let w_g=width-margin.left-margin.right-margin.padding, h_g=height-margin.top-margin.bottom-h_header-margin.padding;
+    // ontrace des courbes
+    const x = d3.scaleLinear()
+        .range([0, w_g]); //width-margin.left-margin.right-margin.padding]);
+    const y = d3.scaleLinear()
+        .range([h_g,0]);
+//    const yR = d3.scaleLinear() //right scale
+ //       .range([h_g,0]);
+//    const yL = d3.scaleSymlog()
+//        .range([h_g,0]);
+    var line = d3.line()
+        .x(function(d) { return x(toUnixTime(d.timestamp)); }) //vep
+        .y(function(d) { return y(d.value);}) //(d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
+        .curve(d3.curveLinear);
+/*    var lineR = d3.line()
+        .x(function(d) { return x(d.timestamp); }) //vep
+        .y(function(d) { return yR(d.value);}) //(d3.select("#log_i")._groups[0][0].checked) ? yL(d.value) : y(d.value); }) //byEP
+        .curve(d3.curveCardinal);*/
+	 x.domain([
+        d3.min(histData, function(c) {
+        return d3.min(c.values, function(v) {
+        return toUnixTime(v.timestamp); });}),
+        d3.max(histData, function(c) {
+        return d3.max(c.values, function(v) {
+        return toUnixTime(v.timestamp); });})]);
+	y.domain([
+        d3.min(histData, function(c) {
+        return d3.min(c.values, function(v) {
+        return v.value; });})
+        , d3.max(histData, function(c) {
+      	return d3.max(c.values, function(v) { //console.log(v);
+        return v.value; });})]);
+/*	yL.domain([0, d3.max(dMult, function(c) {
+      	return d3.max(c.values, function(v) {
+        return v.value; });})]);
+
+    yR.domain([0, d3.max(dMult, function(c) { //console.log(c);
+        return c.scale==0?0:d3.max(c.values, function(v) {
+        return v.value; });})]);
+*/
+//    let index=dHist.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
+//    let indexReg=dReg.findIndex(d=>{return d.item==selectValue;}); //console.log('item',index,selectValue);
+//console.log(line(histData[0].values));
+	const g_line = svgAff
+	    .append("g").attr('id','histo')
+	    .attr("class","g_line")
+    	.attr("transform", "translate(" + (width/2) + "," + (55) + ")");
+//    g_line.append('rect').attr('width',w_g).attr('height',h_g).style('fill','#333').style('opacity',0.2);
+    // Ajout de l'axe X
+    g_line.append("g").raise()
+        .attr("transform", "translate(0," + (h_g) + ")")
+        .call(d3.axisBottom(x).ticks(n_ticks).tickFormat(d3.timeFormat("%d/ %H:%M")))
+//        .call(d3.axisBottom(x).ticks(dHist[0].values.length-1).tickFormat(d3.timeFormat("%a %d/%m")))
+        .selectAll("text")	
+        	.style("text-anchor", "end")
+        	.attr("dx", "-.8em")
+        	.attr("dy", ".15em")
+        	.attr("transform", "rotate(-65)");
+    // Ajout de l'axe Y et du texte associé pour la légende
+    g_line.append("g")
+        .call(d3.axisLeft(y))
+        .append("text")
+            .attr("fill", "#000")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", "0.71em")
+            .style("text-anchor", "end")
+            .text(histData[0].unit);
+    // Ajout de l'axe yR et du texte associé pour la légende
+/*    g_line.append("g").attr('transform','translate('+(w_g)+',0)')
+        .call(d3.axisRight(yR))
+        .append("text")
+            .attr("fill", "#000")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", "0.71em")
+            .style("text-anchor", "end")
+            .text("#");*/
+    // on trace toutes les courbes
+//    console.log(dMult.values[0],y(dMult.values[0].value),x(dMult.values[0].timestamp));
+    var g_lines = g_line.selectAll(".selected").raise()
+        .data(histData).enter().append("g")
+        .attr("class", "selected");
+
+let tempData = histData;
+        tempData = tempData.map( o => { return o.values.filter( v=> { return v.value != null; }) });
+console.log('data a afficher en historique',tempData[0]);
+// console.log(histData[0].values);
+    g_lines.append("path")
+        .attr("class", "line")
+        .attr("id",(d,i)=>{return "l"+i;})//.transition().duration(2000)
+        .attr("d", (d)=>{ return line( tempData[0]); })       //histData[0].values);})
+//        .attr("d", (d)=>{return d.scale==0?line(d.values):lineR(d.values);})
+        .style("stroke",  function(d,i) { return couleur[(i*5)%nbCouleur];})
+        .style("stroke-width", "2px");
+    // curseur
+    var class_mpl = 'mpl'+selectValue, class_ml='ml'+selectValue;
+	var mouseG = g_line.append("g").lower()
+  		.attr("class", "mouse-over-effects");
+	mouseG.append("path")
+		.attr("class", class_ml)
+		.style("stroke", "grey")
+		.style("stroke-width", "1px").style("stroke-dasharray",2)
+		.style("opacity", "1");
+	var mousePerLine = mouseG.selectAll('.'+class_mpl)
+		.data(histData).enter()
+ 		.append("g").attr("class", class_mpl);
+    // reperage du point d'intersection curseur/courbe
+	mousePerLine.append("circle")
+		.attr("r", 3)
+		.style("stroke", function (d,i) { return couleur[(i*5)%nbCouleur];})
+		.style("fill", "none").style("stroke-width", "2px").style("opacity", "0");
+	mousePerLine.append('text')
+    	.attr("class", "hover-text").style('font-size','1.5vh').style("font-family","arial") //"HelveticaNeue-Light")
+    	.attr("dy", "0.1em")
+    	.attr("transform", "translate(10,3)");
+	mouseG.append('rect') 
+		.attr('width', w_g) .attr('height', h_g).attr("id","curve_r")
+		.style('fill', 'none')
+		.attr('pointer-events', 'all')
+        .on('click', function (g,i) {
+    let mouse = d3.mouse(this); // console.log(g,i,mouse);
+    let xDate = x.invert(mouse[0]);
+    switch (surface.flip) {
+        case 1: surface.flip += 1;
+                surface.x2 = xDate;
+                with (surface) {
+                    data = histData[0].values.filter(v=>{ return (toUnixTime(v.timestamp)>=x1 & toUnixTime(v.timestamp)<=x2);})
+                    val = compute_surface(data);
+                    area = val[0], mean = val[1], day = val[2], elapse = val[3], trend = val[4], delta=val[5];
+                    let elapseHMS = new Date(elapse*3600*1000); //console.log(elapseHMS.toISOString());
+                    let ej = Math.trunc(elapse/24), eh = Math.trunc(elapse-ej*24), em=Math.trunc((elapse-ej*24-eh)*60);
+                    let elapseStr = (ej>0?ej:'')+' '+(eh>9?'':'0')+eh+':'+(em>9?'':'0')+em;
+                    d3.select('#compute').text('| [moy '+valFormat(mean)+' ]  -  [Cumul : '+ valFormat(day)+'] [T:'+elapseStr+'] [D:'+valFormat(delta)+'] [P:'+trend+'% ]   ('+histData[0].unit+') ('+area+')');
+                }
+                break;
+        case 2: surface.flip =0; surface.x1 =0; surface.delta=0;
+                surface.data =[]; surface.x2 = 0; surface.elapse=0;
+                surface.area=0; surface.mean = 0; surface.trend=0;
+                d3.select('#compute').text('calculs');
+        case 0: surface.flip += 1;
+                surface.x1 = xDate;
+                d3.select('#compute').text('choisir second point');
+                break;
+    }
+    //console.log(surface);
+}            )
+//        .on('click',get_surface)
+		.on('mouseout', function () { // on mouse out hide line, circles and text
+  			d3.select("."+class_ml).style("opacity", "0");
+			d3.selectAll("."+class_mpl+" circle").style("opacity", "0");
+			d3.selectAll("."+class_mpl+" text").style("opacity", "0");
+			})
+		.on('mouseover', function () { // on mouse in show line, circles and text
+			d3.select("."+class_ml).style("opacity", "1");
+			d3.selectAll("."+class_mpl+" circle").style("opacity", "1");
+			d3.selectAll("."+class_mpl+" text").style("opacity", "1");
+  			})
+		.on('mousemove', function () { // mouse moving over canvas
+			var mouse = d3.mouse(this);
+				d3.selectAll("."+class_mpl)
+      				.attr("transform", function (d, i) {
+						var xDate = x.invert(mouse[0]),
+							bisect = d3.bisector(function (d) { return toUnixTime(d.timestamp); }).left;
+							idx = bisect(d.values, xDate); //console.log(idx,d.values[idx].date);
+                            try {
+                            laDate = new Date(d.values[idx].timestamp); //.toLocaleDateString("fr-FR");
+                            laDateText = laDate.getHours()+':'+laDate.getMinutes();
+//                            console.log(laDate.getHours());
+//ep                            laDateX = x(d.values[idx].timestamp); //console.log('laDateX',laDateX);
+                        //    d3.select("#laDate").attr("x",laDateX).text(laDate);
+                        } catch{ console.log('erreur 1');}
+                            try {
+							  d3.select(this).select('text')
+								.text((y.invert(y(d.values[idx].value)).toFixed(2))+" ["+(laDateText)+"]"); //d.dataReference avant valformat
+							  d3.select("."+class_ml)
+								.attr("d", function () {
+									var data = "M" + x(toUnixTime(d.values[idx].timestamp)) + "," + h_g;
+										data += " " + x(toUnixTime(d.values[idx].timestamp)) + "," + 0; //console.log(data);
+									return data; });
+							  return "translate(" + (x(toUnixTime(histData[0].values[idx].timestamp))) + "," + ((y(histData[0].values[idx].value)) )+ ")";
+                            } catch {console.log('erreur2');}
+					});
+  			});
+    let ButtonLine_h = 0.06*height, ButtonLine_w = 0.01*width;
+    var lineBack = g_lines.selectAll('g').append("g").data(['g','d']).enter().append('g')
+        .attr("transform", (d,i) => { return ("translate("+(i==0?(-0.05*w_g):(w_g*1))+","+(h_g/2.5)+")");});
+        lineBack.append('rect').raise()
+            .attr('rx',3).attr('ry',3).attr('width',ButtonLine_w).attr('height',ButtonLine_h)
+            .style('fill','#EEFBFD').style('opacity',0.3)
+            .on('click',clickBack)
+            .on('mouseover',function() { return d3.select(this).style('opacity',1);})
+            .on('mouseout', function() { return d3.select(this).style('opacity',0.3);});
+
+        const btn = { 'g': 'M '+(ButtonLine_w-3)+',3 L 3,'+(ButtonLine_h/2)+' L '+(ButtonLine_w-3)+','+(ButtonLine_h-3) , 
+                    'd': 'M 3,3 L '+(ButtonLine_w-3)+','+(ButtonLine_h/2)+ ' L 3,' +(ButtonLine_h-3)};
+
+        lineBack.append("path").attr('d', d=> {return (btn[d]);}).style('stroke-width',5).style('stroke','#76E0F1').style('fill','#E8FAFD')
+                    .style('opacity',0.3).raise()
+                    .on('click',clickBack)
+                    .on('mouseover',function() { return d3.select(this).style('opacity',1);})
+                    .on('mouseout', function() { return d3.select(this).style('opacity',0.3);});
+
+    var  legendM = g_lines.append("g")
+        .attr("class","legend")
+        .attr("transform",(d,i)=>{ return "translate(50,"+(30+i*16)+")";});
+        legendM.append('circle')
+            .attr('r',5).attr('cx',1).attr('cy',2).style('fill',(d,i)=>{return couleur[(i*5)%nbCouleur];})
+            .on('mouseover',function(d,i){ d3.select(this).style('fill','blue').attr('r',7);})
+            .on('mouseout',function(d,i){ d3.select(this).style('fill',couleur[(i*5)%nbCouleur]).attr('r',5);});
+        legendM.append("text").style("font-size","1.7vh").attr('x',10).attr('y',6).style('text-anchor','start').style("font-family","arial")
+            .text((d)=>{return d.dataReference;});
+
+
+	}
+function clickBack(d) {
+    console.log(d)
+    switch (d) {
+        case 'g':   histOffset += 1;
+        break;
+        case 'd':  histOffset = (histOffset==0?0:(histOffset-1));
+        break;
+    }
+    //ep xx desactiver le bouton droit
+    getHistorique(histList[0]);
+}
+function compute_surface (data_surface) {
+    polyArea = [];
+    let start= toUnixTime(data_surface[0].timestamp),
+        end = toUnixTime(data_surface[data_surface.length-1].timestamp),
+        nbPt = data_surface.length;
+    polyArea.push([0,0]);
+    data_surface.forEach(v=>{ polyArea.push([(toUnixTime(v.timestamp)-start),v.value])});
+    polyArea.push([(end-start),0]);
+    let area = d3.polygonArea(polyArea);
+    let mean = area/(end-start);
+    let elapse = (end-start)/1000/3600;
+    let day = (mean*elapse/24); //elapse>24?0:(mean*elapse/24);
+    let delta = (data_surface[nbPt-1].value - data_surface[0].value);
+//    let trend = Math.trunc(Math.atan(delta/elapse/data_surface[0].value)/2/Math.PI*360.0);
+    let trend = Math.trunc((delta/elapse/data_surface[0].value)*10000.0)/100.0;
+    console.log(polyArea,start,end,area,(area/(end-start)));
+    return [Math.trunc(area/1000000), mean, day, elapse, trend, delta];
+}
+//----------------------------------------------------------------
+//
+function clearSVG() {
+    d3.select('#credentials').style('display','none');
+    svg.selectAll('g').remove();
+}
+  </script>
+</body>
+</html>

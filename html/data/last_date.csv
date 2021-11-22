@@ -1,4 +1,5 @@
 item,date
+<<<<<<< HEAD
 dep,2021-08-22
 Corona,2021-08-21
 Urgence,2021-08-21
@@ -33,3 +34,39 @@ NbCom,2021-08-22
 PopM,2021-08-22
 PopT,2021-08-22
 dc_by_d,2021-08-22
+=======
+dep,2021-08-19
+Corona,2021-08-18
+Urgence,2021-08-18
+Hosp. Corona,2021-08-18
+n_dose1,2021-08-18
+n_complet,2021-08-18
+n_cum_dose1,2021-08-18
+n_cum_complet,2021-08-18
+couv_dose1,2021-08-18
+couv_complet,2021-08-18
+Hospitalisation,2021-08-19
+Réanimation,2021-08-19
+Guérisons,2021-08-19
+Morts,2021-08-19
+region,2021-08-19
+libelle_reg,2021-08-19
+libelle_dep,2021-08-19
+Incidence,2021-08-16
+R,2021-08-12
+taux_occupation_sae,2021-08-19
+Positivité,2021-08-16
+tx_reg,2021-08-16
+nbReg,2021-08-19
+nbDelta,2021-08-19
+P,2021-08-16
+T,2021-08-16
+pop,2021-08-16
+Nom,2021-08-19
+NbArr,2021-08-19
+NbCan,2021-08-19
+NbCom,2021-08-19
+PopM,2021-08-19
+PopT,2021-08-19
+dc_by_d,2021-08-19
+>>>>>>> origin/master
