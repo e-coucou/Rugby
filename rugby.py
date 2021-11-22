@@ -262,7 +262,7 @@ def get_match(match):
 def get_json():
     EVENT = '1238'
     base_u = 'https://cmsapi.pulselive.com/rugby/event'
-    event = str(raw_input("Choisir le numero de l'evenement ["+EVENT+"]: ")) or EVENT
+    event = str(input("Choisir le numero de l'evenement ["+EVENT+"]: ")) or EVENT
     u = base_u +'/'+event+'/schedule?language=en&client=pulse'+'&status=C'
     print (u)
     j = get_data(u)
@@ -334,7 +334,7 @@ def get_event(startDate,endDate):
             if (e['sport'] == args.source) & (args.filtre in e['label']) :
                 print ("{0:5d} - {1:60}  ({2:} / {3:})".format(int(e['id']),e['label'].encode('windows-1252'),e['start']['label'],e['end']['label']))
                 EVENT = str(int(e['id']))
-    event = str(raw_input("Choisir le numero de l'evenement ["+EVENT+"]: ")) or EVENT
+    event = str(input("Choisir le numero de l'evenement ["+EVENT+"]: ")) or EVENT
     u = base_u +'/'+event+'/schedule?language=en&client=pulse'+'&status=C'
     j = get_data(u)
     #print j
@@ -402,27 +402,27 @@ def get_args():
 """ ----------------------------------------------------------------------------------------------------------------------------"""
 def rank():
     l = 'A quelle date souhaitez vous le classement : ['+args.Date+']: '
-    d = str(raw_input(l)) or args.Date
+    d = str(input(l)) or args.Date
     u = 'https://cmsapi.pulselive.com/rugby/rankings/'+args.source+'?date='+d
     j = get_date(u)
 def event():
-    startDate = str(raw_input('Date de debut [2015-01-01] :')) or '2015-01-01'
-    endDate=str(raw_input('Date de fin [2015-12-31] :')) or '2015-12-31'
+    startDate = str(input('Date de debut [2015-01-01] :')) or '2015-01-01'
+    endDate=str(input('Date de fin [2015-12-31] :')) or '2015-12-31'
     get_event(startDate,endDate)
-    match = str(raw_input("Choisir le numero du match [14232]: ")) or '14232'
+    match = str(input("Choisir le numero du match [14232]: ")) or '14232'
     get_match(match)
     return
 
 def match():
-    match = str(raw_input("Choisir le numero du match [14232]: ")) or '14232'
+    match = str(input("Choisir le numero du match [14232]: ")) or '14232'
     get_match(match)
     return
 
 def duel():
-    team1 = str(raw_input("Abreviation de la premiere equipe [FRA]: ")) or 'FRA'
-    team2 = str(raw_input("Abreviation de la premiere equipe [NZL]: ")) or 'NZL'
-    startDate = str(raw_input('Date de debut [1995-01-01] :')) or '1995-01-01'
-    endDate=str(raw_input('Date de fin [2015-12-31] :')) or '2015-12-31'
+    team1 = str(input("Abreviation de la premiere equipe [FRA]: ")) or 'FRA'
+    team2 = str(input("Abreviation de la premiere equipe [NZL]: ")) or 'NZL'
+    startDate = str(input('Date de debut [1995-01-01] :')) or '1995-01-01'
+    endDate=str(input('Date de fin [2015-12-31] :')) or '2015-12-31'
     get_duel(team1,team2,startDate,endDate)
 
 """-----------------------------------------------------------------------------------------------------------------------------"""
