@@ -4,10 +4,13 @@ Urgence
 Hosp. Corona
 n_dose1
 n_complet
+n_rappel
 n_cum_dose1
 n_cum_complet
+n_cum_rappel
 couv_dose1
 couv_complet
+couv_rappel
 Hospitalisation
 Réanimation
 Guérisons
