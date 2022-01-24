@@ -1,7 +1,7 @@
 item,date
-Corona,2022-01-21
-Urgence,2022-01-21
-Hosp. Corona,2022-01-21
+Corona,2022-01-22
+Urgence,2022-01-22
+Hosp. Corona,2022-01-22
 n_dose1,2022-01-20
 n_complet,2022-01-20
 n_rappel,2022-01-20
@@ -11,17 +11,17 @@ n_cum_rappel,2022-01-20
 couv_dose1,2022-01-20
 couv_complet,2022-01-20
 couv_rappel,2022-01-20
-Hospitalisation,2022-01-22
-Réanimation,2022-01-22
-Guérisons,2022-01-22
-Morts,2022-01-22
-nbReg,2022-01-19
-nbDelta,2022-01-19
-P,2022-01-19
-T,2022-01-19
-Incidence,2022-01-19
+Hospitalisation,2022-01-23
+Réanimation,2022-01-23
+Guérisons,2022-01-23
+Morts,2022-01-23
+nbReg,2022-01-20
+nbDelta,2022-01-20
+P,2022-01-20
+T,2022-01-20
+Incidence,2022-01-20
 R,2022-01-14
-taux_occupation_sae,2022-01-22
-Positivité,2022-01-19
-tx_reg,2022-01-19
-dc_by_d,2022-01-22
+taux_occupation_sae,2022-01-23
+Positivité,2022-01-20
+tx_reg,2022-01-20
+dc_by_d,2022-01-23
