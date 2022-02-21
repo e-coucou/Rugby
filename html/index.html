@@ -558,8 +558,8 @@
                     while ((n < m.teams[0].teamList.list.length) || (o < m.teams[1].teamList.list.length)) {
                         if (n < m.teams[0].teamList.list.length) {
                             html += "<tr><td>" + m.teams[0].teamList.list[n].player.name.display + (m.teams[0]
-                                    .teamList.list[n].player.id === cap0 ? "<a id='captain'> (c) </a>(" : " ("
-                                    ) + m.teams[0].teamList.list[n++].positionLabel + ")</td><td>";
+                                .teamList.list[n].player.id === cap0 ? "<a id='captain'> (c) </a>(" : " ("
+                            ) + m.teams[0].teamList.list[n++].positionLabel + ")</td><td>";
                         } else {
                             html += "<tr><td> </td><td>"
                         }
