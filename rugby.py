@@ -18,21 +18,25 @@ def get_data(url):
 #    requete = s.get(url,proxies=p)
 #    print requete.content
     code = requete.status_code
-    while (code!=200):
+    js={}
+    while (code!=200 and code!=400 and code!=404):
         print(url)
         print(requete.status_code)
         requete = s.get(url,proxies=p)
         code = requete.status_code
         time.sleep(10)
-    js = json.loads(requete.content)
+    if(code==200):
+        js = json.loads(requete.content)
     return js
 
 def get_rank(json,date):
     for e in json:
+        # print(e)
         if CSV:
-            print ("{3:};{0:d};{1:};{7:};{2:.1f};{4:d};{5:.1f};{6:d}".format(e['pos'],e['team']['name'], e['pts'] , date, e['matches'], e['previousPts'], e['previousPos'], e['team']['abbreviation']))
+            print ("{3:};{0:d};{1:};{7:};{2:.1f};{4:d};{5:.1f};{6:d}".format(e['pos'],e['team']['name'], e['pts'] , date, 100, e['previousPts'], e['previousPos'], e['team']['abbreviation']))
         else:
-            print ("{3:11}{0:3d} {1:37}{7:5}{2:5.2f}{4:6d}{5:7.2f}{6:6d}".format(e['pos'],e['team']['name'], e['pts'] , date, e['matches'], e['previousPts'], e['previousPos'], e['team']['abbreviation']))
+            print ("{3:11}{0:3d} {1:37}{6:5}{2:5.2f}{4:7.2f}{5:6d}".format(e['pos'],e['team']['name'], e['pts'] , date, e['previousPts'], e['previousPos'], e['team']['abbreviation']))
+            # print ("{3:11}{0:3d} {1:37}{7:5}{2:5.2f}{4:6d}{5:7.2f}{6:6d}".format(e['pos'],e['team']['name'], e['pts'] , date, e['matches'], e['previousPts'], e['previousPos'], e['team']['abbreviation']))
 
 def get_rk(json,ABB):
     for f in json:
@@ -74,23 +78,27 @@ def get_rank_json(base,begin,end):
                 d = str(y)+'-'+str(m)+'-'+str(dd)
                 yy = y + ((m-1)*30.4+dd)/365.0
                 u = base+d
+                # print(u)
                 j = get_data(u)
                 try:
-                    maj = j['effective']['label']
-                    if (maj != oMaj) :
-                        for e in j['entries']:
-                            try :
-                                name[str(e['team']['id'])]['points'].append([yy,e['pts']])
-                                name[str(e['team']['id'])]['rank'].append([yy,e['pos']])
-                                name[str(e['team']['id'])]['matchs'].append([yy,e['matches']])
-                            except :
-                                name[str(e['team']['id'])] = {}
-                                name[str(e['team']['id'])]['name'] = str(e['team']['name'])
-                                name[str(e['team']['id'])]['id'] = e['team']['id']
-                                name[str(e['team']['id'])]['points'] = []
-                                name[str(e['team']['id'])]['rank'] = []
-                                name[str(e['team']['id'])]['matchs'] = []
-                        oMaj = maj
+                    # print(j['effective'])
+                    # maj = j['effective']['label']
+                    # if (maj != oMaj) :
+                    for e in j['entries']:
+                        # print(e)
+                        try :
+                            name[str(e['team']['id'])]['points'].append([yy,e['pts']])
+                            name[str(e['team']['id'])]['rank'].append([yy,e['pos']])
+                            name[str(e['team']['id'])]['matchs'].append([yy,100])
+                            # name[str(e['team']['id'])]['matchs'].append([yy,e['matches']])
+                        except :
+                            name[str(e['team']['id'])] = {}
+                            name[str(e['team']['id'])]['name'] = str(e['team']['name'])
+                            name[str(e['team']['id'])]['id'] = e['team']['id']
+                            name[str(e['team']['id'])]['points'] = []
+                            name[str(e['team']['id'])]['rank'] = []
+                            name[str(e['team']['id'])]['matchs'] = []
+                        # oMaj = maj
                 except:
                     j=j
         print ("delai ...")
@@ -141,7 +149,8 @@ def get_result(l_pts,v_pts,l_score,v_score,wc):
 
 # Recupere les information sur les duels
 def get_duel(t1,t2,startDate,endDate):
-    url ='https://cmsapi.pulselive.com/rugby/match'
+    # url ='https://cmsapi.pulselive.com/rugby/match'
+    url ='https://api.wr-rims-prod.pulselive.com/rugby/v3/match/'
     pageSize='100'
     page=0
     i=0
@@ -219,7 +228,7 @@ def get_team(j):
 
 # Recupere les information sur le match
 def get_match(match):
-    url = 'https://cmsapi.pulselive.com/rugby/match/'
+    url = 'https://api.wr-rims-prod.pulselive.com/rugby/v3/match/'
     u = url+match+'/summary?language=en&client=pulse'
     j = get_data(u)
     print (u)
@@ -248,8 +257,9 @@ def get_match(match):
         captain = j['teams'][i]['teamList']['captainId']
         for e in j['teams'][i]['teamList']['list']:
             c=''
-            if captain == e['player']['id'] : c='c'
-            print ("{4:1} {2:3d} ({0:5}) {1:30}  '{3:12}'".format(e['player']['id'],e['player']['name']['display'].encode('windows-1252'),int(e['number']),e['positionLabel'],c),)
+            if captain == e['player']['id'] : c='c'            # print('ici',e,e['number'])
+            # print ("{2:1} {1:30} ({0:5})".format(e['player']['id'] , e['player']['name']['display'].encode('windows-1252') , c))
+            print ("{3:1} ({0:5}) {1:30}  '{2:12}'".format(e['player']['id'],e['player']['name']['display'],e['positionLabel'],c),)
             try :
                 for p in team[i][str(e['player']['id'])] :
                     print ("{0:}={1:7}".format(p['type'],p['tps']),)
@@ -261,7 +271,7 @@ def get_match(match):
     return
 def get_json():
     EVENT = '1238'
-    base_u = 'https://cmsapi.pulselive.com/rugby/event'
+    base_u = 'https://api.wr-rims-prod.pulselive.com/rugby/v3/event'
     event = str(input("Choisir le numero de l'evenement ["+EVENT+"]: ")) or EVENT
     u = base_u +'/'+event+'/schedule?language=en&client=pulse'+'&status=C'
     print (u)
@@ -319,7 +329,7 @@ def get_json():
 
 def get_event(startDate,endDate):
     global EVENT
-    base_u = 'https://cmsapi.pulselive.com/rugby/event'
+    base_u = 'https://api.wr-rims-prod.pulselive.com/rugby/v3/event'
     pageSize='100'
     page=0
     i=0
@@ -332,7 +342,9 @@ def get_event(startDate,endDate):
         nbPage = int(j['pageInfo']['numPages'])
         for e in j['content']:
             if (e['sport'] == args.source) & (args.filtre in e['label']) :
-                print ("{0:5d} - {1:60}  ({2:} / {3:})".format(int(e['id']),e['label'].encode('windows-1252'),e['start']['label'],e['end']['label']))
+                # print(e)
+                print ("{0:5d} - {1:60}  ({2:} / {3:})".format(int(e['id']),e['label'],e['start']['label'],e['end']['label']))
+                # print ("{0:5d} - {1:60}  ({2:} / {3:})".format(int(e['id']),e['label'].encode('windows-1252'),e['start']['label'],e['end']['label']))
                 EVENT = str(int(e['id']))
     event = str(input("Choisir le numero de l'evenement ["+EVENT+"]: ")) or EVENT
     u = base_u +'/'+event+'/schedule?language=en&client=pulse'+'&status=C'
@@ -343,7 +355,10 @@ def get_event(startDate,endDate):
     for e in j['matches']:
         t = time.gmtime(e['time']['millis']/1000+7200)
         d= time.strftime('%Y-%m-%d', t)
-        u_rk = 'https://cmsapi.pulselive.com/rugby/rankings/'+args.source+'?date='+d
+        #xxxxxxxxx
+        # u_rk = 'https://api.wr-rims-prod.pulselive.com/rugby/v3/rankings/mru?language=fr'+args.source+'?date='+d
+        u_rk = 'https://api.wr-rims-prod.pulselive.com/rugby/v3/rankings/'+args.source+'?date='+d
+        # u_rk = 'https://cmsapi.pulselive.com/rugby/rankings/'+args.source+'?date='+d
         j_rk = get_data(u_rk)
         f0 = get_rk(j_rk['entries'],e['teams'][0]['abbreviation'])
         f1 = get_rk(j_rk['entries'],e['teams'][1]['abbreviation'])
@@ -403,11 +418,12 @@ def get_args():
 def rank():
     l = 'A quelle date souhaitez vous le classement : ['+args.Date+']: '
     d = str(input(l)) or args.Date
-    u = 'https://cmsapi.pulselive.com/rugby/rankings/'+args.source+'?date='+d
+    #xxxxxx
+    u = 'https://api.wr-rims-prod.pulselive.com/rugby/v3/rankings/'+args.source+'?date='+d
     j = get_date(u)
 def event():
-    startDate = str(input('Date de debut [2015-01-01] :')) or '2015-01-01'
-    endDate=str(input('Date de fin [2015-12-31] :')) or '2015-12-31'
+    startDate = str(input('Date de debut [2023-01-01] :')) or '2023-01-01'
+    endDate=str(input('Date de fin [2023-09-08] :')) or '2023-09-08'
     get_event(startDate,endDate)
     match = str(input("Choisir le numero du match [14232]: ")) or '14232'
     get_match(match)
@@ -434,9 +450,9 @@ if __name__ == "__main__":
     s = requests.Session()
     t0 = time.time()
     #   u = 'http://cmsapi.pulselive.com/rugby/rankings/mru?language=en&client=pulse'
-    u = 'https://cmsapi.pulselive.com/rugby/rankings/'+args.source+'?date='
-    uu = 'https://cmsapi.pulselive.com/rugby/match?endDate=2015-10-13&startDate=2015-07-12&sort=desc&states=C&pageSize=10&client=pulse'
-    uv = 'https://cmsapi.pulselive.com/rugby/match?startDate=2015-10-12&endDate=2019-01-12&states=U,L&pageSize=10&client=pulse'
+    u = 'https://api.wr-rims-prod.pulselive.com/rugby/v3/rankings/'+args.source+'?date='
+    uu = 'https://api.wr-rims-prod.pulselive.com/rugby/v3/match?endDate=2015-10-13&startDate=2015-07-12&sort=desc&states=C&pageSize=10&client=pulse'
+    uv = 'https://api.wr-rims-prod.pulselive.com/rugby/v3/match?startDate=2015-10-12&endDate=2019-01-12&states=U,L&pageSize=10&client=pulse'
 
     mode = args.mode.lower()
     if args.input != None : mode = 'input'
@@ -470,7 +486,7 @@ if __name__ == "__main__":
     elif mode == 'menu' :
         q=False
         start=2003
-        end = 2023
+        end = 2024
         while not q:
             options=menu.keys()
 #            options.sort()

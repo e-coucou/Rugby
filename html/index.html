@@ -204,7 +204,7 @@
 <p class="attribution">Source: <a href="https://github.com/e-coucou/Rugby">e-Coucou</a>, <a
         href="http://www.pulselive.com">PulseLive</a>.
     <aside>
-        <p>Passez la souris au dessus de l'axe des abscisses pour vous déplacer dans le temps.<br><br>
+        <p> Passez la souris au dessus de l'axe des abscisses pour vous déplacer dans le temps.<br><br>
             Cliquez sur les pastilles des Pays pour voir l'évolution des classements.<br><br>
             Passez la souris sur les dates de Coupes du Monde pour voir les statistiques.<br><br>
             Cliquez sur les compétions pour découvrir les matches. En passant la souris sur les matchs vous découvrirez
@@ -222,7 +222,7 @@
     <p>Mille et un remerciements à <a href="http://bl.ocks.org/mbostock">Mike Bostock</a> et à <a
             href="http://alignedleft.com/tutorials/d3/">Scott Murray</a>.</p><br><br><br>
     <footer>
-        <aside>(c) e-Coucou | y2kL | Data février 2022</aside>
+        <aside>(c) e-Coucou | y2kL | Data Septembre 2023</aside>
         <div id="info"></div>
         <a href="index.html" rel="author">e-Coucou</a>
     </footer>
@@ -260,7 +260,9 @@
             return d.name;
         }
 
-        var endYear = 2023,
+        var urlBase = 'https://api.wr-rims-prod.pulselive.com/rugby/v3/';
+
+        var endYear = 2024,
             padd = 100;
         // Chart dimensions.
         var margin = {
@@ -386,9 +388,9 @@
         function update_event(id_liste) {
             var teams = [];
             var rwc_index = [
-                ["5", "952", "1023", "1238", "1558"],
+                ["5", "952", "1023", "1238", "1558",],
                 ["145", "344", "854", "883", "913", "927", "965", "1005", "1054", "1077", "1164", "1184", "1243",
-                    "1244", "1622", "1623", "1782", "1783", "1933", "1934"
+                    "1244", "1622", "1623", "1782", "1783", "1933", "1934","2033","2092"
                 ],
                 ["1183", "1236", "1296", "1557", "364", "714", "855", "886", "926", "940", "970", "995", "1056",
                     "1135", "1697", "1764", "1807", "1992"
@@ -400,11 +402,12 @@
             d3.selectAll(".line").remove();
 
             for (index = 0; index < rwc_index[id_liste].length; index++) {
-                var url = "http://cmsapi.pulselive.com/rugby/event/" + rwc_index[id_liste][index] +
-                    "/numbers?language=en&client=pulse";
-                d3.json(url, function (data) { // event numbers
-                    var date_s = new Date(data.event.start.millis);
-                    var date_e = new Date(data.event.end.millis);
+                var url = urlBase + "event/"+ rwc_index[id_liste][index]+""; //&language=en&client=pulse"; // numbers?
+                // var url = urlBase + "event/"+ rwc_index[id_liste][index]+"/schedule"; //&language=en&client=pulse"; // numbers?
+                d3.json(url, function (data) { // event numbers                    console.log(data);
+                    // console.log(data)
+                    var date_s = new Date(data.start.millis);
+                    var date_e = new Date(data.end.millis);
                     var start = date_s.getFullYear() + (date_s.getMonth() * 30.4 + date_s.getDate()) / (365.0);
                     var end = date_e.getFullYear() + (date_e.getMonth() * 30.4 + date_e.getDate()) / (365.0);
 
@@ -412,14 +415,14 @@
                         .attr("class", "abs label")
                         .attr("text-anchor", "begin")
                         .attr("transform", "translate(" + dScale(end) + "," + (height - 20) + ") rotate(-90)")
-                        .text(data.event.label)
+                        .text(data.label)
                         .on("mouseover", function (d) {
-                            return info(data.event.id);
+                            return info(data.id);
                         }) //function(d){ return rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);});
                         .on("click", function (d) {
-                            return matches(data.event.id);
+                            return matches(data.id);
                         }); //function(d){ return rwc.text("Coupe du monde du "+data.event.start.label+" au "+data.event.end.label);});
-                    if ((data.event.rankingsWeight == 2) || (start > 2008.0)) {
+                    if ((data.rankingsWeight == 2) || (start > 2008.0)) {
                         var datal = [dScale(start), dScale(end)];
 
                         svg.append("path")
@@ -430,41 +433,44 @@
 
                     function info(index) {
                         // selectionne les équipes participantes a la compétition ...
-                        var url_team = "http://cmsapi.pulselive.com/rugby/event/" + index + "/teams";
+                        var url_team = urlBase + "event/" + index + "/teams";
+                        // console.log(url_team)
                         teams = [];
                         d3.json(url_team, function (liste) {
+                            console.log('equipes : ',liste)
                             liste.teams.forEach(function (d, i) {
                                 teams.push(d.id);
                             })
                         });
+                        console.log('full data : ',data);
                         // affichage du résumé
-                        rwc.text(data.event.label + "   [" + data.event.id + "]");
+                        rwc.text(data.label + "   [" + data.id + "]");
                         rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.8em").attr("x", 24).text(
                             "du " + date_s.getDate() + "/" + (date_s.getMonth() + 1) + "/" + date_s
                             .getFullYear() + " au " + date_e.getDate() + "/" + (date_e.getMonth() + 1) +
                             "/" + date_e.getFullYear());
-                        if (data.event.winningTeam != null) {
+                        if (data.winningTeam != null) {
                             rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24)
-                                .text("VAINQUEUR       : " + data.event.winningTeam.name);
+                                .text("VAINQUEUR       : " + data.winningTeam.name);
                         };
-                        rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
-                            "# Matchs        : " + data.data.matches);
-                        rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
-                            "Fréquentation   : " + data.data.attendance);
-                        rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
-                            "Points marqués  : " + data.data.points);
-                        rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
-                            "Essais          : " + data.data.tries);
-                        rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
-                            "Drops           : " + data.data.dropGoals);
-                        rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
-                            "Pénalités       : " + data.data.penalties);
-                        rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
-                            "Transformations : " + data.data.conversions);
-                        rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
-                            "Cartons Jaunes  : " + data.data.yellowCards);
-                        rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
-                            "Cartons Rouges  : " + data.data.redCards);
+                        // rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
+                        //     "# Matchs        : " + data.data.matches);
+                        // rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
+                        //     "Fréquentation   : " + data.data.attendance);
+                        // rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
+                        //     "Points marqués  : " + data.data.points);
+                        // rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
+                        //     "Essais          : " + data.data.tries);
+                        // rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
+                        //     "Drops           : " + data.data.dropGoals);
+                        // rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
+                        //     "Pénalités       : " + data.data.penalties);
+                        // rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
+                        //     "Transformations : " + data.data.conversions);
+                        // rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
+                        //     "Cartons Jaunes  : " + data.data.yellowCards);
+                        // rwc.append("tspan").attr("class", "rwc tspan").attr("dy", "1.2em").attr("x", 24).text(
+                        //     "Cartons Rouges  : " + data.data.redCards);
                         d3.selectAll(".dot")
                             .style("fill", function (d) {
                                 return colorScale(color(d));
@@ -472,7 +478,7 @@
                     }
 
                     function matches(index) {
-                        var url = "http://cmsapi.pulselive.com/rugby/event/" + index +
+                        var url = urlBase + "event/" + index +
                             "/schedule?language=en&client=pulse";
                         //console.log(teams);
                         // commencons par effacer les équipes non concernées par la compétition ...
@@ -536,7 +542,7 @@
             }; // end for event
             function matchs(data, i) {
                 date = new Date(data.matches[i].time.millis);
-                var url = "http://cmsapi.pulselive.com/rugby/match/" + data.matches[i].matchId +
+                var url = urlBase + "match/" + data.matches[i].matchId +
                     "/summary?language=en&client=pulse";
                 var html = data.matches[i].venue.name + " (" + date.getDate() + "/" + (date.getMonth() + 1) + "/" + date
                     .getFullYear() + ") | " + data.matches[i].attendance + " personnes.<hr>";
@@ -583,11 +589,11 @@
         } // end function event
         // Load the data.
         d3.json("data/ranking.json", function (irb) {
-
             // A bisector since many nation's data is sparsely-defined.
             var bisect = d3.bisector(function (d) {
                 return d[0];
             });
+            console.log(irb)
 
             // Add a dot per nation. Initialize the data at 2003, and set the colors... 20 aleatoires
             var dot = svg.append("g")
@@ -777,8 +783,9 @@
 
             // Interpolates the dataset for the given (fractional) year.
             function interpolateData(year, masq) {
+            // console.log(year)
                 return irb.map(function (d) {
-                    //console.log(d);
+                    // console.log(d);
                     return {
                         name: d.name,
                         id: d.id,
