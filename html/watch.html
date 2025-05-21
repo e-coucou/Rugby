@@ -4,7 +4,7 @@
 <meta name="author" content="e-Coucou">
 <html class="rky">
 <meta charset="utf-8">
-<title>Pyrénées 2.0</title>
+<title>P</title>
 <style>
 @import url(../css/new.css);
 .rky {
@@ -177,7 +177,7 @@ input:focus {
 }
 </style>
 <header>
-  <div id='h1'>Pyrénées/Pirineos</div>
+  <div id='h1'>Titre</div>
   <aside >April, 2021<br><br> | v 4.30</aside>
         <div>
         <form name="saisie" onSubmit="return credClick()">
@@ -234,15 +234,13 @@ input:focus {
     				{cible:'E-CV15167A',source:'E-FC15167',color:Couleur.GR, s:0,c:0,e:3,anim:'E-CV15167A'},
                     {cible:'E-CV15167B',source:'E-FC15167',color:Couleur.GR, s:0,c:0,e:2,anim:'E-CV15167B'},
                     {source:'E-CV18167',cible:'ROC_Debit_massique_entree_Reacteur_Europe2',color:Couleur.GR, s:0,c:0,e:5,anim:'E-CV18167'},
-    				{source:'E-FC15167',cible:'Pyrénées',color:Couleur.GR, s:1,c:1,e:4,anim:'E-CV15167A'},
-//                    {source:'Ct4',cible:'Pyrénées',color:'#45B50E', s:0,c:1,e:4,anim:'E-CV15167A'},
+    				{source:'E-FC15167',cible:'Py',color:Couleur.GR, s:1,c:1,e:4,anim:'E-CV15167A'},
     				{source:'ROC_Debit_massique_entree_Reacteur_Europe2',cible:'Europe 2',color:Couleur.GR, s:1,c:1,e:5,anim:'E-CV18167'},
-//                    {source:'Ct3',cible:'Europe 2',color:'#45B50E', s:0,c:1,e:5,anim:'E-CV18167'},
     				{source:'E-FCV14325',cible:'E-FCS14325',color:Couleur.Eau, s:0,c:0,e:3,anim:'E-FCV14325'},
     				{source:'E-CV16325A',cible:'E-FC16325',color:Couleur.C3, s:0,c:0,e:1,anim:'E-CV16325A'},
     				{source:'E-CV16325B',cible:'E-FC16325',color:Couleur.C3, s:0,c:0,e:2,anim:'E-CV16325B'},
-                    {source:'Pyrénées',cible:'E15100',color:Couleur.Reacteur, s:1,c:0,e:4,anim:'E-CV15167A'},
-                    {source:'Europe 2',cible:'E18100',color:Couleur.Reacteur, s:1,c:0,e:5,anim:'E-CV18167'},
+                    {source:'Py',cible:'E15100',color:Couleur.Reacteur, s:1,c:0,e:4,anim:'E-CV15167A'},
+                    {source:'Euro',cible:'E18100',color:Couleur.Reacteur, s:1,c:0,e:5,anim:'E-CV18167'},
                     {source:'E15100',cible:'Ct1',color:Couleur.Reacteur, s:0,c:0,e:4,anim:'E-CV15167A'},
                     {source:'Ct1',cible:'Ct2',color:Couleur.Reacteur, s:0,c:0,e:4,anim:'E-CV15167A'},
                     {source:'E18100',cible:'Ct2',color:Couleur.Reacteur, s:0,c:0,e:5,anim:'E-CV18167'},
@@ -687,7 +685,7 @@ let xC3= x+6*w_i;
 	let K15000 = {x:Kx, y:Ky, li: (width*0.08), hi : (height*0.345) ,e: 15, xl:0};
 	with (K15000) {
 		let i =0;
-        const {h,l,xr,yr} = shape_cuve_v1(x,y,'Pyrénées','V',li,hi,'url(#Reacteur)'); //console.log('K15000',xr,yr,h,l); //'#BFBB26'
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'Py','V',li,hi,'url(#Reacteur)'); //console.log('K15000',xr,yr,h,l); //'#BFBB26'
         xl = xr+l; y = yr; y1 = yr+ h/8; x = xr+3;
 		y1 = shape_temp_v1(x,y1,hC,lC,'E-T15008',50,false);
 		y1 = shape_temp_v1(x,y1,hC,lC,'E-P15162',50,false);
@@ -744,7 +742,7 @@ let xC3= x+6*w_i;
 	let K18000 = {x:Kx2, y:Ky ,li: K15000.li, hi : K15000.hi,e: 15, xl:0};
 	with (K18000) {
 		let i =0;
-        const {h,l,xr,yr} = shape_cuve_v1(x,y,'Europe 2','V',li,hi,'url(#Reacteur)');// console.log('K18000',xr,yr,h,l);
+        const {h,l,xr,yr} = shape_cuve_v1(x,y,'Euro','V',li,hi,'url(#Reacteur)');// console.log('K18000',xr,yr,h,l);
         xl = xr+l; y = yr; y1 = yr+ h/8; x = xr+3;
         y1 = shape_temp_v1(x,y1,hC,lC,'E-T18008',50,false);
         y1 = shape_temp_v1(x,y1,hC,lC,'E-P18162',50,false);
@@ -797,7 +795,7 @@ let xC3= x+6*w_i;
         y1 = shape_temp_v1(xr+2*l/3,y1,hC,lC,'E-T18099',50,false);
         y2 = shape_temp_v1(x-l/3,y,hC,lC,'E-PS18007',50,false);
     }
-// Samourai
+// Ss
  y1=0.7*height; x=width*0.9;e=15;
         y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18041',50,false);; //021
         y1 = shape_sonde(x,y1,e,e/3,e/2,'S-T18042',50,false); //024
